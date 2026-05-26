@@ -1,0 +1,14 @@
+{
+  "schema": "ni.project.v0",
+  "id": "namba-ai-upgrade",
+  "name": "namba-ai upgrade planning",
+  "created_for": "locked pre-runtime upgrade plan for namba-ai",
+  "kernel_phase": "planning",
+  "commands": [
+    "init",
+    "status",
+    "end",
+    "run"
+  ],
+  "prompt_max_chars": 4000
+}

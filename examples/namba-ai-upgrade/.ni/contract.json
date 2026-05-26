@@ -1,0 +1,261 @@
+{
+  "schema": "ni.contract.v0",
+  "readiness_profile": "prototype",
+  "product_type": "software",
+  "delivery_surfaces": [
+    "cli",
+    "document",
+    "workflow"
+  ],
+  "interaction_mode": "human_to_system",
+  "project": {
+    "id": "namba-ai-upgrade",
+    "name": "namba-ai upgrade planning",
+    "purpose": "Create a locked planning contract for upgrading namba-ai so downstream implementation can start from explicit limitations, boundaries, targets, risks, and evaluations without running or modifying namba-ai.",
+    "status": "accepted"
+  },
+  "non_goals": [
+    {
+      "id": "NG-001",
+      "title": "Do not modify namba-ai in this planning example."
+    },
+    {
+      "id": "NG-002",
+      "title": "Do not execute namba-ai, Codex, shell adapters, queues, PR automation, or downstream runtimes from this example."
+    },
+    {
+      "id": "NG-003",
+      "title": "Do not create a SPEC runner or mandatory sequential execution task list."
+    },
+    {
+      "id": "NG-004",
+      "title": "Do not make NI own namba-ai runtime state; generated outputs remain seed material derived from the lock."
+    }
+  ],
+  "capabilities": [
+    {
+      "id": "CAP-001",
+      "title": "Capture current namba-ai upgrade limitations as planning evidence",
+      "status": "accepted",
+      "requirements": [
+        "REQ-001"
+      ],
+      "evaluations": [
+        "EVAL-001"
+      ],
+      "risks": [
+        "RISK-001"
+      ],
+      "artifacts": [
+        "ART-001",
+        "ART-004"
+      ]
+    },
+    {
+      "id": "CAP-002",
+      "title": "Model SDD sequencing and collaboration issues as graph-oriented planning constraints",
+      "status": "accepted",
+      "requirements": [
+        "REQ-002"
+      ],
+      "evaluations": [
+        "EVAL-002"
+      ],
+      "risks": [
+        "RISK-002"
+      ],
+      "artifacts": [
+        "ART-002",
+        "ART-004"
+      ]
+    },
+    {
+      "id": "CAP-003",
+      "title": "Preserve a Codex-limited, pre-runtime planning compiler boundary",
+      "status": "accepted",
+      "requirements": [
+        "REQ-003",
+        "REQ-004"
+      ],
+      "evaluations": [
+        "EVAL-003"
+      ],
+      "risks": [
+        "RISK-003",
+        "RISK-004"
+      ],
+      "artifacts": [
+        "ART-003",
+        "ART-004"
+      ]
+    },
+    {
+      "id": "CAP-004",
+      "title": "Define downstream targets and validation expectations without execution tasks",
+      "status": "accepted",
+      "requirements": [
+        "REQ-005",
+        "REQ-006"
+      ],
+      "evaluations": [
+        "EVAL-004",
+        "EVAL-005"
+      ],
+      "risks": [
+        "RISK-005"
+      ],
+      "artifacts": [
+        "ART-004",
+        "ART-005"
+      ]
+    }
+  ],
+  "requirements": [
+    {
+      "id": "REQ-001",
+      "title": "The plan must state namba-ai's current upgrade-planning limitations: implicit runtime coupling, vague acceptance traceability, sequence pressure, and unclear evidence ownership.",
+      "status": "accepted"
+    },
+    {
+      "id": "REQ-002",
+      "title": "The plan must describe the SDD sequence and collaboration problem as dependency graph planning, not a mandatory linear SPEC chain.",
+      "status": "accepted"
+    },
+    {
+      "id": "REQ-003",
+      "title": "The plan must define a Codex-limited boundary: Codex may consume a compiled prompt, but NI must not invoke Codex or depend on Codex execution state.",
+      "status": "accepted"
+    },
+    {
+      "id": "REQ-004",
+      "title": "The plan must position NI as a pre-runtime planning compiler that locks intent before namba-ai or any downstream harness receives seed material.",
+      "status": "accepted"
+    },
+    {
+      "id": "REQ-005",
+      "title": "The plan must name downstream targets including Codex prompt handoff, namba-ai seed guidance, human-team review, and generated harness proposals.",
+      "status": "accepted"
+    },
+    {
+      "id": "REQ-006",
+      "title": "The generated Codex prompt must be saved under examples/namba-ai-upgrade/generated/ and remain 4000 characters or less.",
+      "status": "accepted"
+    }
+  ],
+  "decisions": [
+    {
+      "id": "DEC-001",
+      "title": "Use NI as the source-of-truth planning compiler for this upgrade before any namba-ai execution design is accepted.",
+      "status": "accepted"
+    },
+    {
+      "id": "DEC-002",
+      "title": "Represent SDD work as graph-compatible boundaries with dependencies and validation references rather than total-order execution.",
+      "status": "accepted"
+    },
+    {
+      "id": "DEC-003",
+      "title": "Compile the first downstream artifact with ni run --target codex only; do not call Codex exec.",
+      "status": "accepted"
+    }
+  ],
+  "risks": [
+    {
+      "id": "RISK-001",
+      "title": "Planning may invent namba-ai behavior instead of recording observed limitations and boundaries.",
+      "severity": "high",
+      "status": "accepted",
+      "mitigation": "Treat this example as upgrade planning only; require downstream implementers to verify namba-ai repository facts before changing namba-ai."
+    },
+    {
+      "id": "RISK-002",
+      "title": "A SPEC-style sequence may hide parallel work, collaboration conflicts, or weakened acceptance criteria.",
+      "severity": "high",
+      "status": "accepted",
+      "mitigation": "Require graph and dependency language, conflict checks, and traceability to CAP/REQ/EVAL/RISK IDs before implementation packets are selected."
+    },
+    {
+      "id": "RISK-003",
+      "title": "Codex handoff could be mistaken for NI executing Codex.",
+      "severity": "high",
+      "status": "accepted",
+      "mitigation": "State that ni run compiles prompt text only; any Codex use is downstream, manual, and outside NI-owned state."
+    },
+    {
+      "id": "RISK-004",
+      "title": "NI could drift into a task runner while dogfooding the upgrade plan.",
+      "severity": "high",
+      "status": "accepted",
+      "mitigation": "Keep non-goals explicit and reject shell adapters, queues, SPEC runners, and execution task creation in this example."
+    },
+    {
+      "id": "RISK-005",
+      "title": "Generated seed material may be treated as authoritative after the lock changes.",
+      "severity": "medium",
+      "status": "accepted",
+      "mitigation": "Require generated material to point back to .ni/plan.lock.json and stop with BLOCKED on lock mismatch."
+    }
+  ],
+  "evaluations": [
+    {
+      "id": "EVAL-001",
+      "title": "Limitation coverage review",
+      "method": "Inspect docs/plan/00_project_brief.md and docs/plan/05_constraints.md for the limitation list required by REQ-001."
+    },
+    {
+      "id": "EVAL-002",
+      "title": "SDD graph-boundary review",
+      "method": "Inspect docs/plan/02_capabilities.md, docs/plan/04_domain_state.md, and docs/plan/09_execution_strategy.md for dependency graph language and absence of mandatory execution tasks."
+    },
+    {
+      "id": "EVAL-003",
+      "title": "Pre-runtime boundary review",
+      "method": "Run ni status and inspect docs/plan/03_interaction_contract.md plus generated prompt for no Codex execution, shell adapter, queue, or runtime state ownership."
+    },
+    {
+      "id": "EVAL-004",
+      "title": "Downstream target review",
+      "method": "Inspect docs/plan/08_delivery_operation.md for Codex, namba-ai, human-team, and generated harness targets with derived-only ownership."
+    },
+    {
+      "id": "EVAL-005",
+      "title": "Prompt artifact validation",
+      "method": "Run ni end and ni run --target codex --out examples/namba-ai-upgrade/generated/codex.goal.prompt.txt, then confirm the file is 4000 characters or less."
+    }
+  ],
+  "artifacts": [
+    {
+      "id": "ART-001",
+      "path": "docs/plan/00_project_brief.md",
+      "kind": "plan_doc"
+    },
+    {
+      "id": "ART-002",
+      "path": "docs/plan/02_capabilities.md",
+      "kind": "plan_doc"
+    },
+    {
+      "id": "ART-003",
+      "path": "docs/plan/03_interaction_contract.md",
+      "kind": "plan_doc"
+    },
+    {
+      "id": "ART-004",
+      "path": ".ni/contract.json",
+      "kind": "contract"
+    },
+    {
+      "id": "ART-005",
+      "path": "generated/codex.goal.prompt.txt",
+      "kind": "compiled_prompt"
+    }
+  ],
+  "open_questions": [
+    {
+      "id": "OQ-001",
+      "title": "Which exact namba-ai repository files should downstream implementation inspect first?",
+      "blocker": false,
+      "status": "closed"
+    }
+  ]
+}
