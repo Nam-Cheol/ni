@@ -2,6 +2,7 @@ package main
 
 import (
 	"bytes"
+	"encoding/json"
 	"os"
 	"path/filepath"
 	"strings"
@@ -90,13 +91,90 @@ func TestStatusJSON(t *testing.T) {
 	}
 }
 
-func TestUnknownCommand(t *testing.T) {
+func TestEndBlocked(t *testing.T) {
+	dir := t.TempDir()
+	if code := run([]string{"init", "--dir", dir}, &bytes.Buffer{}, &bytes.Buffer{}); code != 0 {
+		t.Fatalf("init expected exit code 0, got %d", code)
+	}
+
 	var stderr bytes.Buffer
-	code := run([]string{"end"}, &bytes.Buffer{}, &stderr)
+	code := run([]string{"end", "--dir", dir}, &bytes.Buffer{}, &stderr)
 	if code != 1 {
 		t.Fatalf("expected exit code 1, got %d", code)
 	}
-	if !strings.Contains(stderr.String(), "unknown command: end") {
+	if !strings.Contains(stderr.String(), "readiness is BLOCKED") {
+		t.Fatalf("expected blocked error, got %q", stderr.String())
+	}
+}
+
+func TestEndCreatesLockfile(t *testing.T) {
+	dir := t.TempDir()
+	if code := run([]string{"init", "--dir", dir}, &bytes.Buffer{}, &bytes.Buffer{}); code != 0 {
+		t.Fatalf("init expected exit code 0, got %d", code)
+	}
+	writeReadyContractForCLI(t, dir)
+
+	var stdout bytes.Buffer
+	code := run([]string{"end", "--dir", dir}, &stdout, &bytes.Buffer{})
+	if code != 0 {
+		t.Fatalf("expected exit code 0, got %d", code)
+	}
+	if !strings.Contains(stdout.String(), "locked plan") {
+		t.Fatalf("expected lock summary, got %q", stdout.String())
+	}
+	if _, err := os.Stat(filepath.Join(dir, ".ni", "plan.lock.json")); err != nil {
+		t.Fatalf("expected lockfile: %v", err)
+	}
+}
+
+func TestUnknownCommand(t *testing.T) {
+	var stderr bytes.Buffer
+	code := run([]string{"run"}, &bytes.Buffer{}, &stderr)
+	if code != 1 {
+		t.Fatalf("expected exit code 1, got %d", code)
+	}
+	if !strings.Contains(stderr.String(), "unknown command: run") {
 		t.Fatalf("expected unknown command error, got %q", stderr.String())
+	}
+}
+
+func writeReadyContractForCLI(t *testing.T, dir string) {
+	t.Helper()
+
+	contract := map[string]any{
+		"schema": "ni.contract.v0",
+		"project": map[string]any{
+			"id":      "cli-fixture",
+			"name":    "CLI Fixture",
+			"purpose": "Exercise ni end.",
+			"status":  "draft",
+		},
+		"non_goals": []any{
+			map[string]any{"id": "NG-001", "title": "Do not execute work."},
+		},
+		"capabilities": []any{
+			map[string]any{
+				"id":           "CAP-001",
+				"title":        "Capability",
+				"status":       "accepted",
+				"requirements": []string{"REQ-001"},
+				"evaluations":  []string{"EVAL-001"},
+				"risks":        []string{},
+				"artifacts":    []string{"ART-001"},
+			},
+		},
+		"requirements":   []any{map[string]any{"id": "REQ-001", "title": "Requirement", "status": "accepted"}},
+		"decisions":      []any{map[string]any{"id": "DEC-001", "title": "Decision", "status": "accepted"}},
+		"risks":          []any{},
+		"evaluations":    []any{map[string]any{"id": "EVAL-001", "title": "Evaluation", "method": "fixture"}},
+		"artifacts":      []any{map[string]any{"id": "ART-001", "path": "docs/plan/", "kind": "planning_docs"}},
+		"open_questions": []any{},
+	}
+	data, err := json.MarshalIndent(contract, "", "  ")
+	if err != nil {
+		t.Fatalf("marshaling ready contract: %v", err)
+	}
+	if err := os.WriteFile(filepath.Join(dir, ".ni", "contract.json"), append(data, '\n'), 0o644); err != nil {
+		t.Fatalf("writing ready contract: %v", err)
 	}
 }

@@ -175,6 +175,10 @@ func requireFile(root string, path string) error {
 	return nil
 }
 
+func RequiredDocs(root string) []string {
+	return requiredDocs(filepath.Clean(root))
+}
+
 func requiredDocs(root string) []string {
 	data, err := os.ReadFile(filepath.Join(root, ".ni", "readiness.rules.json"))
 	if err == nil {

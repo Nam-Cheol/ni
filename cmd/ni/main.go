@@ -7,6 +7,7 @@ import (
 	"os"
 
 	"ni/internal/core/docstore"
+	"ni/internal/core/lock"
 	"ni/internal/core/readiness"
 	"ni/internal/version"
 )
@@ -22,6 +23,8 @@ func run(args []string, stdout io.Writer, stderr io.Writer) int {
 	}
 
 	switch args[0] {
+	case "end":
+		return runEnd(args[1:], stdout, stderr)
 	case "init":
 		return runInit(args[1:], stdout, stderr)
 	case "status":
@@ -69,6 +72,33 @@ func runInit(args []string, stdout io.Writer, stderr io.Writer) int {
 	return 0
 }
 
+func runEnd(args []string, stdout io.Writer, stderr io.Writer) int {
+	dir := "."
+	for i := 0; i < len(args); i++ {
+		switch args[i] {
+		case "--dir":
+			if i+1 >= len(args) {
+				fmt.Fprintln(stderr, "missing value for --dir")
+				return 1
+			}
+			dir = args[i+1]
+			i++
+		default:
+			fmt.Fprintf(stderr, "unknown end option: %s\n", args[i])
+			return 1
+		}
+	}
+
+	lockfile, err := lock.Create(dir)
+	if err != nil {
+		fmt.Fprintf(stderr, "end failed: %v\n", err)
+		return 1
+	}
+	fmt.Fprintf(stdout, "locked plan at %s\n", lockfile.Path)
+	fmt.Fprintf(stdout, "status %s\n", lockfile.Readiness.Status)
+	return 0
+}
+
 func runStatus(args []string, stdout io.Writer, stderr io.Writer) int {
 	dir := "."
 	jsonOutput := false
@@ -112,11 +142,13 @@ func printHelp(w io.Writer) {
 
 Usage:
   ni --help
+  ni end --dir <path>
   ni init --dir <path>
   ni status --dir <path> [--json]
   ni version
 
 Commands:
+  end      Lock the accepted planning contract.
   init     Create planning docs and .ni skeleton.
   status   Validate planning readiness.
   version  Print the ni version.
