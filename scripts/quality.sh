@@ -15,4 +15,6 @@ if [[ -f go.mod ]]; then
   go test ./...
 fi
 
+bash scripts/smoke.sh
+
 echo "quality checks passed"
