@@ -1,0 +1,14 @@
+{
+  "schema": "ni.project.v0",
+  "id": "ni",
+  "name": "ni",
+  "created_for": "ni-kernel initial development",
+  "kernel_phase": "pre-v0",
+  "commands": [
+    "init",
+    "status",
+    "end",
+    "run"
+  ],
+  "prompt_max_chars": 4000
+}

@@ -1,0 +1,249 @@
+{
+  "schema": "ni.contract.v0",
+  "project": {
+    "id": "ni",
+    "name": "ni",
+    "purpose": "Compile planning conversations into a locked project contract before execution harness generation.",
+    "status": "draft"
+  },
+  "non_goals": [
+    {
+      "id": "NG-001",
+      "title": "Do not implement a task runner before readiness, lockfile, and prompt compiler exist."
+    },
+    {
+      "id": "NG-002",
+      "title": "Do not make Codex-specific behavior part of the kernel."
+    }
+  ],
+  "capabilities": [
+    {
+      "id": "CAP-001",
+      "title": "Initialize planning workspace",
+      "status": "accepted",
+      "requirements": [
+        "REQ-001"
+      ],
+      "evaluations": [
+        "EVAL-001"
+      ],
+      "risks": [],
+      "artifacts": [
+        "ART-001",
+        "ART-002"
+      ]
+    },
+    {
+      "id": "CAP-002",
+      "title": "Validate readiness",
+      "status": "accepted",
+      "requirements": [
+        "REQ-002"
+      ],
+      "evaluations": [
+        "EVAL-002",
+        "EVAL-003"
+      ],
+      "risks": [
+        "RISK-001"
+      ],
+      "artifacts": [
+        "ART-003"
+      ]
+    },
+    {
+      "id": "CAP-003",
+      "title": "Lock accepted plan",
+      "status": "accepted",
+      "requirements": [
+        "REQ-003"
+      ],
+      "evaluations": [
+        "EVAL-004"
+      ],
+      "risks": [
+        "RISK-002"
+      ],
+      "artifacts": [
+        "ART-004"
+      ]
+    },
+    {
+      "id": "CAP-004",
+      "title": "Compile locked goal prompt",
+      "status": "accepted",
+      "requirements": [
+        "REQ-004"
+      ],
+      "evaluations": [
+        "EVAL-005"
+      ],
+      "risks": [],
+      "artifacts": [
+        "ART-005"
+      ]
+    },
+    {
+      "id": "CAP-005",
+      "title": "Provide Codex planning skills",
+      "status": "accepted",
+      "requirements": [
+        "REQ-005"
+      ],
+      "evaluations": [
+        "EVAL-006"
+      ],
+      "risks": [
+        "RISK-003"
+      ],
+      "artifacts": [
+        "ART-006"
+      ]
+    }
+  ],
+  "requirements": [
+    {
+      "id": "REQ-001",
+      "title": "ni init creates docs/plan templates and .ni/contract.json",
+      "status": "accepted"
+    },
+    {
+      "id": "REQ-002",
+      "title": "ni status returns BLOCKED, READY_WITH_DEFERRALS, or READY",
+      "status": "accepted"
+    },
+    {
+      "id": "REQ-003",
+      "title": "ni end creates .ni/plan.lock.json with file hashes",
+      "status": "accepted"
+    },
+    {
+      "id": "REQ-004",
+      "title": "ni run outputs a 4000-character-or-less prompt and does not execute in v0",
+      "status": "accepted"
+    },
+    {
+      "id": "REQ-005",
+      "title": "repository-local skills exist for ni-start, ni-end, and ni-run",
+      "status": "accepted"
+    }
+  ],
+  "decisions": [
+    {
+      "id": "DEC-001",
+      "title": "ni is a project intent compiler",
+      "status": "accepted"
+    },
+    {
+      "id": "DEC-002",
+      "title": "ni run compiles a prompt in v0",
+      "status": "accepted"
+    },
+    {
+      "id": "DEC-003",
+      "title": "Codex skills are UX, CLI is authority",
+      "status": "accepted"
+    }
+  ],
+  "risks": [
+    {
+      "id": "RISK-001",
+      "title": "Model self-approval",
+      "severity": "high",
+      "status": "accepted",
+      "mitigation": "Readiness is enforced by ni status and not by model judgment."
+    },
+    {
+      "id": "RISK-002",
+      "title": "Criteria weakening after lock",
+      "severity": "high",
+      "status": "accepted",
+      "mitigation": "ni run verifies lock hashes and refuses stale docs."
+    },
+    {
+      "id": "RISK-003",
+      "title": "Codex lock-in",
+      "severity": "medium",
+      "status": "accepted",
+      "mitigation": "Keep Codex skills outside kernel and avoid Codex-specific schema fields."
+    }
+  ],
+  "evaluations": [
+    {
+      "id": "EVAL-001",
+      "title": "ni init creates required files",
+      "method": "integration fixture"
+    },
+    {
+      "id": "EVAL-002",
+      "title": "capability without evaluation is blocked",
+      "method": "fixture"
+    },
+    {
+      "id": "EVAL-003",
+      "title": "high risk without mitigation is blocked",
+      "method": "fixture"
+    },
+    {
+      "id": "EVAL-004",
+      "title": "stale lock blocks ni run",
+      "method": "fixture"
+    },
+    {
+      "id": "EVAL-005",
+      "title": "prompt output stays within 4000 characters",
+      "method": "unit test"
+    },
+    {
+      "id": "EVAL-006",
+      "title": "skills contain required metadata and authority boundary",
+      "method": "static check"
+    }
+  ],
+  "artifacts": [
+    {
+      "id": "ART-001",
+      "path": "docs/plan/",
+      "kind": "planning_docs"
+    },
+    {
+      "id": "ART-002",
+      "path": ".ni/contract.json",
+      "kind": "contract"
+    },
+    {
+      "id": "ART-003",
+      "path": "internal/core/readiness",
+      "kind": "code"
+    },
+    {
+      "id": "ART-004",
+      "path": ".ni/plan.lock.json",
+      "kind": "lockfile"
+    },
+    {
+      "id": "ART-005",
+      "path": ".ni/generated/goal.prompt.txt",
+      "kind": "generated_prompt"
+    },
+    {
+      "id": "ART-006",
+      "path": ".agents/skills/",
+      "kind": "codex_skills"
+    }
+  ],
+  "open_questions": [
+    {
+      "id": "OQ-001",
+      "title": "Exact Go package layout",
+      "blocker": false,
+      "status": "open"
+    },
+    {
+      "id": "OQ-002",
+      "title": "Whether to use a JSON schema library later",
+      "blocker": false,
+      "status": "open"
+    }
+  ]
+}

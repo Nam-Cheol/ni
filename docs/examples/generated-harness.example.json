@@ -1,0 +1,37 @@
+{
+  "schema": "ni.generated_harness.v0",
+  "source_lock_hash": "sha256:example",
+  "selected_capabilities": [
+    "CAP-001"
+  ],
+  "work_packets": [
+    {
+      "id": "WP-001",
+      "title": "Implement smallest safe increment",
+      "capabilities": [
+        "CAP-001"
+      ],
+      "evaluations": [
+        "EVAL-001"
+      ],
+      "artifacts": [
+        "ART-001"
+      ],
+      "depends_on": [],
+      "validation": [
+        "go test ./..."
+      ],
+      "evidence": [
+        "changed files",
+        "command output",
+        "remaining risks"
+      ]
+    }
+  ],
+  "non_goals": [
+    "Do not modify locked planning docs"
+  ],
+  "known_risks": [
+    "RISK-001"
+  ]
+}

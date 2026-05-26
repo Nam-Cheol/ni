@@ -1,0 +1,25 @@
+# OS / editor
+.DS_Store
+.idea/
+.vscode/
+*.swp
+
+# Build outputs
+/bin/
+/dist/
+/tmp/
+/coverage/
+*.test
+*.out
+
+# NI generated runtime outputs
+.ni/generated/
+.ni/tmp/
+.ni/runs/
+
+# Keep planning state tracked by default:
+# - .ni/project.json
+# - .ni/contract.json
+# - .ni/readiness.rules.json
+# - docs/plan/**
+# Do not ignore .ni/plan.lock.json once generated.
