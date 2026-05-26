@@ -21,11 +21,12 @@ If your interpretation conflicts with `ni status`, report the CLI result and sto
 
 ## Task
 
-Maintain planning state only across these files:
+Maintain planning state across these files:
 
 ```text
 docs/plan/**
 .ni/contract.json
+.ni/session.json
 ```
 
 The skill may read supporting files such as `AGENTS.md`, `.ni/project.json`,
@@ -33,10 +34,16 @@ The skill may read supporting files such as `AGENTS.md`, `.ni/project.json`,
 `.ni/plan.lock.json` to understand authority, profile, and lock state. It must
 not make downstream harness state the source of truth.
 
+`.ni/session.json` is persistent carryover context only. It is below
+`.ni/contract.json` and `docs/plan/**` in the source-of-truth order, must not
+override locked docs, must not mark docs complete, and must not store full raw
+chat logs by default.
+
 ## Start-of-turn process
 
-1. Read `AGENTS.md`, `.ni/contract.json`, `docs/plan/**`, and `.ni/plan.lock.json` if it exists.
+1. Read `AGENTS.md`, `.ni/contract.json`, `docs/plan/**`, `.ni/session.json` if it exists, and `.ni/plan.lock.json` if it exists.
 2. Summarize current planning state in a few concrete bullets:
+   - active planning focus from `.ni/session.json`, verified against docs and contract,
    - purpose and delivery surface,
    - accepted capabilities,
    - known decisions and non-goals,
@@ -66,14 +73,26 @@ After the user answers:
    visible as assumptions or open questions.
 3. Update Markdown docs for humans.
 4. Update `.ni/contract.json` for machine validation.
-5. Preserve stable IDs where possible.
-6. Add new IDs only when necessary.
-7. Keep trace links intact: capabilities should point to their requirements,
+5. Update `.ni/session.json` as bounded continuity state:
+   - active planning focus,
+   - last planning summary,
+   - pending questions,
+   - recent decisions,
+   - recent risks,
+   - last readiness status,
+   - last readiness blockers,
+   - last updated docs,
+   - the explicit note that raw transcript is not the source of truth.
+6. Preserve stable IDs where possible.
+7. Add new IDs only when necessary.
+8. Keep trace links intact: capabilities should point to their requirements,
    evaluations, risks, and artifacts when those records exist.
-8. Record decisions, assumptions, risks, non-goals, and open questions in both
+9. Record decisions, assumptions, risks, non-goals, and open questions in both
    the relevant plan docs and contract fields when they affect readiness.
-9. Run or report `ni status --dir .` at the end when available.
-10. Show readiness gaps and blocker questions from the CLI result.
+10. Run or report `ni status --dir .` at the end when available.
+11. Show readiness gaps and blocker questions from the CLI result.
+12. Reflect the CLI readiness status and blockers back into `.ni/session.json`
+    without treating the session file as readiness authority.
 
 Continue this loop until `ni status` reports no blocking issues. Suggest
 `ni-end` only when the readiness gate reports `READY` or
@@ -84,7 +103,8 @@ Continue this loop until `ni status` reports no blocking issues. Suggest
 When responding during planning:
 
 - Lead with the current planning summary or what changed.
-- Name the files changed when an answer updates planning state.
+- Name the files changed when an answer updates planning state, including
+  `.ni/session.json` when refreshed.
 - Ask only the next focused questions needed to unblock readiness.
 - If `ni status` reports `BLOCKED`, state the blockers plainly and keep
   planning open.
@@ -115,7 +135,9 @@ ni status --dir .
 - Do not write generated harness files.
 - Do not hide blocker questions.
 - Do not weaken evaluations to make the plan appear ready.
-- Do not edit files outside `docs/plan/**` and `.ni/contract.json` unless the user explicitly asks for a different NI maintenance task.
+- Do not edit files outside `docs/plan/**`, `.ni/contract.json`, and
+  `.ni/session.json` unless the user explicitly asks for a different NI
+  maintenance task.
 - Do not add user-facing contract `add`, `list`, or `set` commands.
 - Do not create SPEC runner behavior.
 - Do not directly call downstream runtimes.

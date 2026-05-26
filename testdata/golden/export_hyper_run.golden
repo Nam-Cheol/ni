@@ -43,7 +43,7 @@ Locked at: <TIMESTAMP>
 
 Source lock hash: sha256:<SHA256>
 
-Source of truth: .ni/plan.lock.json > .ni/contract.json > docs/plan/** > chat transcript > model guess
+Source of truth: .ni/plan.lock.json > .ni/contract.json > docs/plan/** > .ni/session.json > chat history
 
 Boundary rules:
 

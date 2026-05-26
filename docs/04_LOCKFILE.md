@@ -19,7 +19,9 @@ The lockfile records a hash snapshot of the accepted planning contract and docs.
   "source_of_truth": [
     ".ni/plan.lock.json",
     ".ni/contract.json",
-    "docs/plan/"
+    "docs/plan/**",
+    ".ni/session.json",
+    "chat history"
   ]
 }
 ```
@@ -37,3 +39,7 @@ ni run
   verifies hashes
   refuses stale docs
 ```
+
+The lock hashes `.ni/contract.json` and required `docs/plan/**` files. It does
+not hash `.ni/session.json`, because session state is mutable carryover context
+below locked docs in the source-of-truth order.

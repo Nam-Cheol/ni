@@ -118,11 +118,12 @@ func templateFiles(opts InitOptions) []templateFile {
 		{"docs/plan/11_decision_log.md", "# Decision log\n\n## DEC-001: TODO\n\nStatus: accepted\n\nRationale: TODO\n"},
 	}
 
-	files := make([]templateFile, 0, len(planDocs)+4)
+	files := make([]templateFile, 0, len(planDocs)+6)
 	files = append(files, planDocs...)
 	files = append(files,
 		templateFile{".ni/project.json", projectJSON},
 		templateFile{".ni/contract.json", contractJSON(opts)},
+		templateFile{".ni/session.json", sessionJSON},
 		templateFile{".ni/pressure.json", pressureJSON},
 		templateFile{".ni/harness.candidates.json", harnessCandidatesJSON},
 		templateFile{".ni/readiness.rules.json", readinessRulesJSON},
@@ -156,6 +157,32 @@ const pressureJSON = `{
 const harnessCandidatesJSON = `{
   "schema": "ni.harness_candidates.v0",
   "candidates": []
+}
+`
+
+const sessionJSON = `{
+  "schema": "ni.session.v0",
+  "active_planning_focus": "Initial planning workspace setup",
+  "last_planning_summary": "No planning summary has been recorded yet.",
+  "pending_questions": [],
+  "recent_decisions": [],
+  "recent_risks": [],
+  "last_readiness_status": "UNKNOWN",
+  "last_readiness_blockers": [],
+  "last_updated_docs": [],
+  "authority_order": [
+    ".ni/plan.lock.json",
+    ".ni/contract.json",
+    "docs/plan/**",
+    ".ni/session.json",
+    "chat history"
+  ],
+  "notes": {
+    "planning_aid_only": "Session state is a planning aid, not authority.",
+    "locked_docs": "Session state must not override locked docs.",
+    "completion": "Session state must not mark docs complete.",
+    "raw_transcript": "Raw transcript is not the source of truth."
+  }
 }
 `
 

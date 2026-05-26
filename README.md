@@ -61,13 +61,14 @@ python3 scripts/check-schema.py
 - `.ni/plan.lock.json`,
 - source-of-truth ordering,
 - prompt compilation from a locked plan,
+- `.ni/session.json` as non-authoritative planning continuity state,
 - downstream seed exports derived from a locked plan,
 - inert feedback, pressure, amendment, and collaboration records.
 
 After a plan is locked, the source-of-truth order is:
 
 ```text
-.ni/plan.lock.json > .ni/contract.json > docs/plan/** > chat transcript > model guess
+.ni/plan.lock.json > .ni/contract.json > docs/plan/** > .ni/session.json > chat history
 ```
 
 If a locked file hash no longer matches, `ni run`, `ni export`, feedback, and
@@ -259,7 +260,8 @@ go run ./cmd/ni end --dir <path>
 
 It runs the readiness gate, refuses `BLOCKED`, and writes
 `.ni/plan.lock.json` with hashes for `.ni/contract.json` and required
-`docs/plan/**` files.
+`docs/plan/**` files. `.ni/session.json` is not hashed because it is a mutable
+planning aid below locked docs.
 
 ### run
 

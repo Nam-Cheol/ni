@@ -10,8 +10,9 @@ required_phrases = {
     'ni-start': [
         'docs/plan/**',
         '.ni/contract.json',
+        '.ni/session.json',
         'Do not create `.ni/plan.lock.json`',
-        'Do not edit files outside `docs/plan/**` and `.ni/contract.json`',
+        'Do not edit files outside `docs/plan/**`, `.ni/contract.json`, and',
     ],
     'ni-end': [
         '`ni status` and `ni end` are the authority',

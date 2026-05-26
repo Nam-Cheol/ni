@@ -13,13 +13,19 @@ For each planning turn, the model should:
    open question.
 4. Update the relevant `docs/plan/**` files for human review.
 5. Update `.ni/contract.json` with matching IDs, statuses, and traceability.
-6. Preserve existing accepted criteria unless the user explicitly changes them.
-7. Run or recommend `ni status` when readiness may have changed.
+6. Update `.ni/session.json` with bounded carryover context for the next model
+   session.
+7. Preserve existing accepted criteria unless the user explicitly changes them.
+8. Run or recommend `ni status` when readiness may have changed.
 
 The docs and contract should move together. A conversation turn that changes a
 capability, requirement, risk, evaluation, non-goal, decision, artifact, or open
 question should update both the human-readable doc and the corresponding
 contract field.
+
+Session state should summarize the current focus, recent decisions and risks,
+pending questions, readiness status, readiness blockers, and docs updated. It
+is a planning aid, not authority.
 
 ## Classification rules
 
@@ -69,7 +75,7 @@ or not applicable when preserving the history matters.
 After `.ni/plan.lock.json` exists, the source-of-truth order is:
 
 ```text
-.ni/plan.lock.json > .ni/contract.json > docs/plan/** > chat transcript > model guess
+.ni/plan.lock.json > .ni/contract.json > docs/plan/** > .ni/session.json > chat history
 ```
 
 The model must verify lock state before silently changing locked planning docs.
@@ -87,4 +93,3 @@ decide the gate result:
 
 `ni run` remains a compiler. It must not execute Codex, shell commands,
 adapters, queues, generated harnesses, or downstream tools.
-

@@ -9,6 +9,7 @@ and approves decisions. The model turns that conversation into:
 
 - human-readable planning docs under `docs/plan/**`,
 - the machine-readable `.ni/contract.json`,
+- bounded continuity state in `.ni/session.json`,
 - visible open questions and assumptions,
 - readiness gaps that can be checked by `ni status`.
 
@@ -36,6 +37,9 @@ During planning conversation, the model extracts these elements:
 
 The model should preserve user language where it affects meaning, but it should
 normalize records into stable IDs and statuses that the CLI can validate.
+`.ni/session.json` may carry a short planning summary between model sessions,
+but it is below contract and docs authority and must be corrected when it
+conflicts with them.
 
 ## Uncertainty rule
 
@@ -71,10 +75,15 @@ If the model believes the docs are complete but `ni status` reports `BLOCKED`,
 the plan is blocked. If a lock hash mismatch exists, the model must stop and
 report `BLOCKED` instead of editing around the mismatch.
 
+After lock, the source-of-truth order is:
+
+```text
+.ni/plan.lock.json > .ni/contract.json > docs/plan/** > .ni/session.json > chat history
+```
+
 ## Non-authoring commands
 
 The authoring protocol must not add user-facing contract `add`, `list`, or
 `set` commands. Users should not have to manually edit `.ni/contract.json`.
 The model and skills maintain it from conversation, and the CLI validates the
 result.
-

@@ -95,6 +95,50 @@ func TestInitWithOptionsWritesProductDimensions(t *testing.T) {
 	}
 }
 
+func TestInitWritesSessionState(t *testing.T) {
+	dir := t.TempDir()
+
+	if _, err := Init(dir); err != nil {
+		t.Fatalf("Init returned error: %v", err)
+	}
+
+	data, err := os.ReadFile(filepath.Join(dir, ".ni", "session.json"))
+	if err != nil {
+		t.Fatalf("reading session state: %v", err)
+	}
+	var session struct {
+		Schema                string   `json:"schema"`
+		ActivePlanningFocus   string   `json:"active_planning_focus"`
+		LastPlanningSummary   string   `json:"last_planning_summary"`
+		PendingQuestions      []any    `json:"pending_questions"`
+		RecentDecisions       []any    `json:"recent_decisions"`
+		RecentRisks           []any    `json:"recent_risks"`
+		LastReadinessStatus   string   `json:"last_readiness_status"`
+		LastReadinessBlockers []string `json:"last_readiness_blockers"`
+		LastUpdatedDocs       []string `json:"last_updated_docs"`
+		AuthorityOrder        []string `json:"authority_order"`
+		Notes                 map[string]string
+	}
+	if err := json.Unmarshal(data, &session); err != nil {
+		t.Fatalf("unmarshaling session state: %v", err)
+	}
+	if session.Schema != "ni.session.v0" {
+		t.Fatalf("expected session schema, got %q", session.Schema)
+	}
+	if session.ActivePlanningFocus == "" || session.LastPlanningSummary == "" {
+		t.Fatalf("expected initialized session summary fields, got %#v", session)
+	}
+	if session.LastReadinessStatus != "UNKNOWN" {
+		t.Fatalf("expected UNKNOWN readiness status, got %q", session.LastReadinessStatus)
+	}
+	if len(session.AuthorityOrder) != 5 || session.AuthorityOrder[3] != ".ni/session.json" {
+		t.Fatalf("expected session state below docs/plan in authority order, got %#v", session.AuthorityOrder)
+	}
+	if session.Notes["raw_transcript"] != "Raw transcript is not the source of truth." {
+		t.Fatalf("expected raw transcript source-of-truth note, got %#v", session.Notes)
+	}
+}
+
 func TestInitPreservesExistingFiles(t *testing.T) {
 	dir := t.TempDir()
 	existingPath := filepath.Join(dir, "docs", "plan", "00_project_brief.md")

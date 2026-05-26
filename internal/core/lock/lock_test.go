@@ -31,6 +31,9 @@ func TestCreateAtWritesLockfile(t *testing.T) {
 	if len(lockfile.SourceOfTruth) == 0 || lockfile.SourceOfTruth[0] != ".ni/plan.lock.json" {
 		t.Fatalf("unexpected source of truth: %#v", lockfile.SourceOfTruth)
 	}
+	if len(lockfile.SourceOfTruth) != 5 || lockfile.SourceOfTruth[3] != ".ni/session.json" {
+		t.Fatalf("expected session state below docs/plan in source of truth: %#v", lockfile.SourceOfTruth)
+	}
 	if len(lockfile.Files) != 13 {
 		t.Fatalf("expected 13 hashed files, got %d", len(lockfile.Files))
 	}

@@ -14,6 +14,7 @@ schema/ni.readiness-rules.v0.json
 schema/ni.readiness-profiles.v0.json
 schema/ni.feedback.v0.json
 schema/ni.pressure.v0.json
+schema/ni.session.v0.json
 schema/ni.amendment.v0.json
 schema/ni.harness-candidate.v0.json
 ```
@@ -107,6 +108,10 @@ ni init --product-type conversation_product --surface conversation
 ```
 
 Product shape affects scaffold text and `ni status` guidance only. Because these fields live in the contract, their values are included in normal lock hashing, but they must not add product-specific readiness authority or `ni run` execution behavior.
+
+`.ni/session.json` is separately validated by `schema/ni.session.v0.json`. It is
+a planning continuity aid below `.ni/contract.json` and `docs/plan/**` in the
+source-of-truth order, so it is not part of readiness or lock hashing.
 
 ## ID prefixes
 

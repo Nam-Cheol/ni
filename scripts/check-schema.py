@@ -16,6 +16,7 @@ EXPECTED_SCHEMAS = {
     "ni.readiness-profiles.v0.json": "ni.readiness-profiles.v0",
     "ni.feedback.v0.json": "ni.feedback.v0",
     "ni.pressure.v0.json": "ni.pressure.v0",
+    "ni.session.v0.json": "ni.session.v0",
     "ni.amendment.v0.json": "ni.amendment.v0",
     "ni.harness-candidate.v0.json": "ni.harness-candidate.v0",
 }
@@ -118,6 +119,7 @@ def state_targets():
         (ROOT / ".ni/readiness.rules.json", "ni.readiness.rules.v0"),
         (ROOT / ".ni/readiness.profiles.json", "ni.readiness.profiles.v0"),
         (ROOT / ".ni/pressure.json", "ni.pressure.v0"),
+        (ROOT / ".ni/session.json", "ni.session.v0"),
         (ROOT / ".ni/harness.candidates.json", "ni.harness_candidates.v0"),
         (ROOT / ".ni/plan.lock.json", "ni.lock.v0"),
     ]

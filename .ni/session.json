@@ -1,0 +1,24 @@
+{
+  "schema": "ni.session.v0",
+  "active_planning_focus": "Add persistent planning session state for ni-start continuity.",
+  "last_planning_summary": "Session state is being added as a non-authoritative planning aid so future model sessions can resume from explicit state instead of hidden chat history.",
+  "pending_questions": [],
+  "recent_decisions": [],
+  "recent_risks": [],
+  "last_readiness_status": "UNKNOWN",
+  "last_readiness_blockers": [],
+  "last_updated_docs": [],
+  "authority_order": [
+    ".ni/plan.lock.json",
+    ".ni/contract.json",
+    "docs/plan/**",
+    ".ni/session.json",
+    "chat history"
+  ],
+  "notes": {
+    "planning_aid_only": "Session state is a planning aid, not authority.",
+    "locked_docs": "Session state must not override locked docs.",
+    "completion": "Session state must not mark docs complete.",
+    "raw_transcript": "Raw transcript is not the source of truth."
+  }
+}

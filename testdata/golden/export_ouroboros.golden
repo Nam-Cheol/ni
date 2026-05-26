@@ -75,7 +75,7 @@ Evidence references:
 
 ## Source-of-Truth References
 
-Source-of-truth order: .ni/plan.lock.json > .ni/contract.json > docs/plan/** > chat transcript > model guess
+Source-of-truth order: .ni/plan.lock.json > .ni/contract.json > docs/plan/** > .ni/session.json > chat history
 
 Locked files:
 

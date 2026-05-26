@@ -18,11 +18,14 @@ At the start of a planning turn, `ni-start` reads the current planning source:
 - `AGENTS.md` for repository authority rules,
 - `docs/plan/**` for human-readable planning state,
 - `.ni/contract.json` for machine-readable planning state,
+- `.ni/session.json` for non-authoritative carryover context,
 - `.ni/plan.lock.json` if present, to detect locked-plan authority.
 
 It then summarizes the current state before asking for more input. A useful
-summary names the purpose, accepted capabilities, delivery surface, decisions,
-non-goals, open questions, and known readiness blockers.
+summary names the active planning focus, purpose, accepted capabilities,
+delivery surface, decisions, non-goals, open questions, and known readiness
+blockers. Claims from `.ni/session.json` should be checked against the contract,
+docs, and `ni status`.
 
 ## Gap detection
 
@@ -48,15 +51,20 @@ a CLI smoke test, or a manual reviewer checklist?
 ## Persistence Rules
 
 After the user answers, `ni-start` updates both planning forms in the same
-authoring pass:
+authoring pass and refreshes session state:
 
 - `docs/plan/**` explains the plan for humans,
 - `.ni/contract.json` stores stable IDs, statuses, and trace links for the CLI.
+- `.ni/session.json` stores the latest focus, short summary, pending questions,
+  recent decisions, recent risks, readiness status, readiness blockers, and docs
+  changed in the turn.
 
 The skill records purpose, actors, capabilities, requirements, decisions,
 risks, evaluations, non-goals, constraints, artifacts, assumptions, and open
 questions when the conversation changes them. Tentative or inferred statements
 stay visible as assumptions or open questions until the user confirms them.
+Session state is only a planning aid. It must not override locked docs, must not
+mark docs complete, and must not store full raw chat logs by default.
 
 Existing IDs remain stable. New IDs are appended only when a distinct record is
 needed. Obsolete records should be marked rejected, deferred, or not applicable

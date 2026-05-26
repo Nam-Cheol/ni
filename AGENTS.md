@@ -75,7 +75,7 @@ and skills maintain it from conversation while the CLI validates the result.
 After `.ni/plan.lock.json` exists, use this order:
 
 ```text
-.ni/plan.lock.json > .ni/contract.json > docs/plan/** > chat transcript > model guess
+.ni/plan.lock.json > .ni/contract.json > docs/plan/** > .ni/session.json > chat history
 ```
 
 ## Initial command roadmap

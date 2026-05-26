@@ -48,6 +48,7 @@ func TestInit(t *testing.T) {
 		"docs/plan/00_project_brief.md",
 		".ni/project.json",
 		".ni/contract.json",
+		".ni/session.json",
 		".ni/pressure.json",
 		".ni/harness.candidates.json",
 		".ni/readiness.rules.json",
