@@ -6,6 +6,7 @@ The machine-readable project contract lives at `.ni/contract.json`.
 
 ```text
 schema
+readiness_profile
 project
 non_goals
 capabilities
@@ -16,6 +17,18 @@ evaluations
 artifacts
 open_questions
 ```
+
+`readiness_profile` selects how strict `ni status` is when converting readiness issues into blockers or deferrals. The valid values are:
+
+```text
+concept
+prototype
+mvp
+beta
+production
+```
+
+The default profile created by `ni init` is `prototype`.
 
 ## ID prefixes
 

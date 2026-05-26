@@ -8,6 +8,7 @@ import (
 	"strings"
 
 	"ni/internal/core/contract"
+	readinessprofile "ni/internal/core/profile"
 )
 
 type Status string
@@ -19,8 +20,9 @@ const (
 )
 
 type Result struct {
-	Status Status  `json:"status"`
-	Issues []Issue `json:"issues"`
+	Status  Status  `json:"status"`
+	Profile string  `json:"profile"`
+	Issues  []Issue `json:"issues"`
 }
 
 type Issue struct {
@@ -33,64 +35,90 @@ type rulesFile struct {
 	RequiredDocs []string `json:"required_docs"`
 }
 
+type profilesFile struct {
+	Schema         string              `json:"schema"`
+	DefaultProfile string              `json:"default_profile"`
+	Profiles       []profileRulesEntry `json:"profiles"`
+}
+
+type profileRulesEntry struct {
+	Name          string            `json:"name"`
+	IssueSeverity map[string]string `json:"issue_severity"`
+}
+
+type profileRules struct {
+	DefaultProfile string
+	IssueSeverity  map[string]map[string]string
+}
+
 func Evaluate(dir string) Result {
 	root := filepath.Clean(dir)
 	issues := make([]Issue, 0)
 
+	c, err := contract.LoadFile(filepath.Join(root, ".ni", "contract.json"))
+	activeProfile := readinessprofile.Default
+	if err == nil {
+		activeProfile = c.ReadinessProfile
+	}
+
+	rules, rulesErr := loadProfileRules(root)
+	if rulesErr != nil {
+		issues = append(issues, block("R011", rulesErr.Error()))
+	}
+
 	for _, path := range requiredDocs(root) {
 		if err := requireFile(root, path); err != nil {
-			issues = append(issues, block("R001", err.Error()))
+			issues = append(issues, issue(rules, activeProfile, "R001", err.Error()))
 		}
 	}
 
-	c, err := contract.LoadFile(filepath.Join(root, ".ni", "contract.json"))
 	if err != nil {
 		issues = append(issues, block("R002", err.Error()))
-		return resultFromIssues(issues)
+		return resultFromIssues(activeProfile, issues)
 	}
 
-	issues = append(issues, evaluateContract(c)...)
-	return resultFromIssues(issues)
+	issues = append(issues, evaluateContract(c, rules)...)
+	return resultFromIssues(activeProfile, issues)
 }
 
-func evaluateContract(c contract.Contract) []Issue {
+func evaluateContract(c contract.Contract, rules profileRules) []Issue {
 	var issues []Issue
 
 	evaluations := make(map[string]contract.Evaluation, len(c.Evaluations))
 	for _, evaluation := range c.Evaluations {
 		evaluations[evaluation.ID] = evaluation
 		if strings.TrimSpace(evaluation.Method) == "" {
-			issues = append(issues, block("R005", fmt.Sprintf("%s has no method", evaluation.ID)))
+			issues = append(issues, issue(rules, c.ReadinessProfile, "R005", fmt.Sprintf("%s has no method", evaluation.ID)))
 		}
 	}
 
 	if len(c.Capabilities) == 0 {
-		issues = append(issues, block("R003", "at least one capability is required"))
+		issues = append(issues, issue(rules, c.ReadinessProfile, "R003", "at least one capability is required"))
 	}
 	for _, capability := range c.Capabilities {
 		if capability.Status != "accepted" {
 			continue
 		}
 		if !hasLinkedEvaluation(capability, evaluations) {
-			issues = append(issues, block("R004", fmt.Sprintf("%s has no linked evaluation", capability.ID)))
+			issues = append(issues, issue(rules, c.ReadinessProfile, "R004", fmt.Sprintf("%s has no linked evaluation", capability.ID)))
 		}
 		if len(capability.Artifacts) == 0 && len(capability.Requirements) == 0 {
-			issues = append(issues, block("R007", fmt.Sprintf("%s has no artifact or requirement", capability.ID)))
+			issues = append(issues, issue(rules, c.ReadinessProfile, "R007", fmt.Sprintf("%s has no artifact or requirement", capability.ID)))
 		}
 	}
 
 	for _, risk := range c.Risks {
 		if strings.EqualFold(risk.Severity, "high") && strings.TrimSpace(risk.Mitigation) == "" {
-			issues = append(issues, block("R006", fmt.Sprintf("%s is high severity and has no mitigation", risk.ID)))
+			issues = append(issues, issue(rules, c.ReadinessProfile, "R006", fmt.Sprintf("%s is high severity and has no mitigation", risk.ID)))
 		}
 	}
 
 	for _, decision := range c.Decisions {
 		if !validDecisionStatus(decision.Status) {
-			issues = append(issues, block("R008", fmt.Sprintf("%s has invalid status %q", decision.ID, decision.Status)))
+			issues = append(issues, issue(rules, c.ReadinessProfile, "R008", fmt.Sprintf("%s has invalid status %q", decision.ID, decision.Status)))
 		}
 		if decision.Status == "deferred" {
-			issues = append(issues, deferIssue("D001", fmt.Sprintf("%s is deferred", decision.ID)))
+			issues = append(issues, issue(rules, c.ReadinessProfile, "D001", fmt.Sprintf("%s is deferred", decision.ID)))
 		}
 	}
 
@@ -99,14 +127,14 @@ func evaluateContract(c contract.Contract) []Issue {
 			continue
 		}
 		if openQuestion.Blocker {
-			issues = append(issues, block("R009", fmt.Sprintf("%s is a blocker open question", openQuestion.ID)))
+			issues = append(issues, issue(rules, c.ReadinessProfile, "R009", fmt.Sprintf("%s is a blocker open question", openQuestion.ID)))
 		} else {
-			issues = append(issues, deferIssue("D002", fmt.Sprintf("%s remains open", openQuestion.ID)))
+			issues = append(issues, issue(rules, c.ReadinessProfile, "D002", fmt.Sprintf("%s remains open", openQuestion.ID)))
 		}
 	}
 
 	if len(c.NonGoals) == 0 {
-		issues = append(issues, block("R010", "at least one non-goal is required"))
+		issues = append(issues, issue(rules, c.ReadinessProfile, "R010", "at least one non-goal is required"))
 	}
 
 	return issues
@@ -139,7 +167,7 @@ func isClosed(status string) bool {
 	}
 }
 
-func resultFromIssues(issues []Issue) Result {
+func resultFromIssues(activeProfile string, issues []Issue) Result {
 	status := StatusReady
 	for _, issue := range issues {
 		if issue.Severity == "blocker" {
@@ -150,7 +178,7 @@ func resultFromIssues(issues []Issue) Result {
 			status = StatusReadyWithDeferrals
 		}
 	}
-	return Result{Status: status, Issues: issues}
+	return Result{Status: status, Profile: activeProfile, Issues: issues}
 }
 
 func block(ruleID string, message string) Issue {
@@ -159,6 +187,28 @@ func block(ruleID string, message string) Issue {
 
 func deferIssue(ruleID string, message string) Issue {
 	return Issue{RuleID: ruleID, Severity: "deferral", Message: message}
+}
+
+func issue(rules profileRules, activeProfile string, ruleID string, message string) Issue {
+	severity := rules.severity(activeProfile, ruleID)
+	if severity == "blocker" {
+		return block(ruleID, message)
+	}
+	return deferIssue(ruleID, message)
+}
+
+func (rules profileRules) severity(activeProfile string, ruleID string) string {
+	if profileRules, ok := rules.IssueSeverity[activeProfile]; ok {
+		if severity, ok := profileRules[ruleID]; ok && severity != "" {
+			return severity
+		}
+	}
+	if profileRules, ok := rules.IssueSeverity[readinessprofile.Default]; ok {
+		if severity, ok := profileRules[ruleID]; ok && severity != "" {
+			return severity
+		}
+	}
+	return "blocker"
 }
 
 func requireFile(root string, path string) error {
@@ -177,6 +227,57 @@ func requireFile(root string, path string) error {
 
 func RequiredDocs(root string) []string {
 	return requiredDocs(filepath.Clean(root))
+}
+
+func loadProfileRules(root string) (profileRules, error) {
+	rules := defaultProfileRules()
+	data, err := os.ReadFile(filepath.Join(root, ".ni", "readiness.profiles.json"))
+	if err != nil {
+		if os.IsNotExist(err) {
+			return rules, nil
+		}
+		return rules, fmt.Errorf("cannot read readiness profiles: %w", err)
+	}
+
+	var file profilesFile
+	if err := json.Unmarshal(data, &file); err != nil {
+		return rules, fmt.Errorf("malformed readiness profiles JSON: %w", err)
+	}
+	if file.Schema != "ni.readiness.profiles.v0" {
+		return rules, fmt.Errorf("unsupported readiness profiles schema %q", file.Schema)
+	}
+	if err := readinessprofile.Validate(file.DefaultProfile); err != nil {
+		return rules, fmt.Errorf("invalid default readiness profile: %w", err)
+	}
+	if len(file.Profiles) == 0 {
+		return rules, fmt.Errorf("readiness profiles must define at least one profile")
+	}
+
+	loaded := profileRules{
+		DefaultProfile: file.DefaultProfile,
+		IssueSeverity:  make(map[string]map[string]string, len(file.Profiles)),
+	}
+	for _, entry := range file.Profiles {
+		if err := readinessprofile.Validate(entry.Name); err != nil {
+			return rules, err
+		}
+		if len(entry.IssueSeverity) == 0 {
+			return rules, fmt.Errorf("readiness profile %q has no issue severity map", entry.Name)
+		}
+		loaded.IssueSeverity[entry.Name] = make(map[string]string, len(entry.IssueSeverity))
+		for ruleID, severity := range entry.IssueSeverity {
+			if severity != "blocker" && severity != "deferral" {
+				return rules, fmt.Errorf("readiness profile %q rule %s has invalid severity %q", entry.Name, ruleID, severity)
+			}
+			loaded.IssueSeverity[entry.Name][ruleID] = severity
+		}
+	}
+	for _, name := range readinessprofile.Names() {
+		if _, ok := loaded.IssueSeverity[name]; !ok {
+			return rules, fmt.Errorf("readiness profiles missing %q definition", name)
+		}
+	}
+	return loaded, nil
 }
 
 func requiredDocs(root string) []string {
@@ -204,5 +305,83 @@ func defaultRequiredDocs() []string {
 		"docs/plan/09_execution_strategy.md",
 		"docs/plan/10_open_questions.md",
 		"docs/plan/11_decision_log.md",
+	}
+}
+
+func defaultProfileRules() profileRules {
+	return profileRules{
+		DefaultProfile: readinessprofile.Default,
+		IssueSeverity: map[string]map[string]string{
+			"concept": {
+				"R001": "blocker",
+				"R002": "blocker",
+				"R003": "deferral",
+				"R004": "deferral",
+				"R005": "deferral",
+				"R006": "blocker",
+				"R007": "deferral",
+				"R008": "blocker",
+				"R009": "blocker",
+				"R010": "deferral",
+				"D001": "deferral",
+				"D002": "deferral",
+			},
+			"prototype": {
+				"R001": "blocker",
+				"R002": "blocker",
+				"R003": "blocker",
+				"R004": "blocker",
+				"R005": "blocker",
+				"R006": "blocker",
+				"R007": "blocker",
+				"R008": "blocker",
+				"R009": "blocker",
+				"R010": "blocker",
+				"D001": "deferral",
+				"D002": "deferral",
+			},
+			"mvp": {
+				"R001": "blocker",
+				"R002": "blocker",
+				"R003": "blocker",
+				"R004": "blocker",
+				"R005": "blocker",
+				"R006": "blocker",
+				"R007": "blocker",
+				"R008": "blocker",
+				"R009": "blocker",
+				"R010": "blocker",
+				"D001": "deferral",
+				"D002": "deferral",
+			},
+			"beta": {
+				"R001": "blocker",
+				"R002": "blocker",
+				"R003": "blocker",
+				"R004": "blocker",
+				"R005": "blocker",
+				"R006": "blocker",
+				"R007": "blocker",
+				"R008": "blocker",
+				"R009": "blocker",
+				"R010": "blocker",
+				"D001": "deferral",
+				"D002": "deferral",
+			},
+			"production": {
+				"R001": "blocker",
+				"R002": "blocker",
+				"R003": "blocker",
+				"R004": "blocker",
+				"R005": "blocker",
+				"R006": "blocker",
+				"R007": "blocker",
+				"R008": "blocker",
+				"R009": "blocker",
+				"R010": "blocker",
+				"D001": "blocker",
+				"D002": "blocker",
+			},
+		},
 	}
 }

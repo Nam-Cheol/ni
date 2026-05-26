@@ -48,6 +48,7 @@ func TestInit(t *testing.T) {
 		".ni/project.json",
 		".ni/contract.json",
 		".ni/readiness.rules.json",
+		".ni/readiness.profiles.json",
 	}
 	for _, path := range required {
 		if _, err := os.Stat(filepath.Join(dir, path)); err != nil {
@@ -56,6 +57,30 @@ func TestInit(t *testing.T) {
 	}
 	if !strings.Contains(stdout.String(), "initialized ni planning workspace") {
 		t.Fatalf("expected init summary, got %q", stdout.String())
+	}
+	if !strings.Contains(stdout.String(), "readiness profile: prototype") {
+		t.Fatalf("expected prototype profile summary, got %q", stdout.String())
+	}
+}
+
+func TestInitWithProfile(t *testing.T) {
+	dir := t.TempDir()
+	var stdout bytes.Buffer
+
+	code := run([]string{"init", "--dir", dir, "--profile", "concept"}, &stdout, &bytes.Buffer{})
+	if code != 0 {
+		t.Fatalf("expected exit code 0, got %d", code)
+	}
+
+	data, err := os.ReadFile(filepath.Join(dir, ".ni", "contract.json"))
+	if err != nil {
+		t.Fatalf("reading contract: %v", err)
+	}
+	if !strings.Contains(string(data), `"readiness_profile": "concept"`) {
+		t.Fatalf("expected concept readiness profile, got %q", string(data))
+	}
+	if !strings.Contains(stdout.String(), "readiness profile: concept") {
+		t.Fatalf("expected concept profile summary, got %q", stdout.String())
 	}
 }
 
@@ -73,6 +98,9 @@ func TestStatus(t *testing.T) {
 	if !strings.Contains(stdout.String(), "BLOCKED") {
 		t.Fatalf("expected blocked status for template project, got %q", stdout.String())
 	}
+	if !strings.Contains(stdout.String(), "profile: prototype") {
+		t.Fatalf("expected active profile in status output, got %q", stdout.String())
+	}
 }
 
 func TestStatusJSON(t *testing.T) {
@@ -88,6 +116,9 @@ func TestStatusJSON(t *testing.T) {
 	}
 	if !strings.Contains(stdout.String(), `"status": "BLOCKED"`) {
 		t.Fatalf("expected JSON blocked status, got %q", stdout.String())
+	}
+	if !strings.Contains(stdout.String(), `"profile": "prototype"`) {
+		t.Fatalf("expected JSON profile, got %q", stdout.String())
 	}
 }
 
@@ -247,7 +278,8 @@ func writeReadyContractForCLI(t *testing.T, dir string) {
 	t.Helper()
 
 	contract := map[string]any{
-		"schema": "ni.contract.v0",
+		"schema":            "ni.contract.v0",
+		"readiness_profile": "prototype",
 		"project": map[string]any{
 			"id":      "cli-fixture",
 			"name":    "CLI Fixture",

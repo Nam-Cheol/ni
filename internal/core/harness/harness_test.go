@@ -111,6 +111,7 @@ func lockedHarnessProject(t *testing.T) string {
 
 const harnessContract = `{
   "schema": "ni.contract.v0",
+  "readiness_profile": "prototype",
   "project": {
     "id": "harness-fixture",
     "name": "Harness Fixture",

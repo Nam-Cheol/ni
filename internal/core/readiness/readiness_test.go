@@ -3,6 +3,7 @@ package readiness
 import (
 	"os"
 	"path/filepath"
+	"strings"
 	"testing"
 
 	"ni/internal/core/docstore"
@@ -15,6 +16,9 @@ func TestEvaluateReadyFixture(t *testing.T) {
 	if result.Status != StatusReady {
 		t.Fatalf("expected READY, got %#v", result)
 	}
+	if result.Profile != "prototype" {
+		t.Fatalf("expected prototype profile, got %#v", result)
+	}
 }
 
 func TestEvaluateReadyWithDeferralsFixture(t *testing.T) {
@@ -24,6 +28,29 @@ func TestEvaluateReadyWithDeferralsFixture(t *testing.T) {
 	if result.Status != StatusReadyWithDeferrals {
 		t.Fatalf("expected READY_WITH_DEFERRALS, got %#v", result)
 	}
+}
+
+func TestEvaluateConceptProfileTreatsTraceabilityGapAsDeferral(t *testing.T) {
+	dir := initFixtureProject(t, "capability_without_evaluation.json")
+	setContractProfile(t, dir, "concept")
+
+	result := Evaluate(dir)
+	if result.Status != StatusReadyWithDeferrals {
+		t.Fatalf("expected READY_WITH_DEFERRALS, got %#v", result)
+	}
+	requireIssueSeverity(t, result, "R004", "deferral")
+}
+
+func TestEvaluateProductionProfileTreatsOpenDeferralsAsBlockers(t *testing.T) {
+	dir := initFixtureProject(t, "ready_with_deferrals.json")
+	setContractProfile(t, dir, "production")
+
+	result := Evaluate(dir)
+	if result.Status != StatusBlocked {
+		t.Fatalf("expected BLOCKED, got %#v", result)
+	}
+	requireIssueSeverity(t, result, "D001", "blocker")
+	requireIssueSeverity(t, result, "D002", "blocker")
 }
 
 func TestEvaluateBlocksMissingPlanningDoc(t *testing.T) {
@@ -124,6 +151,23 @@ func writeContract(t *testing.T, dir string, data []byte) {
 	}
 }
 
+func setContractProfile(t *testing.T, dir string, readinessProfile string) {
+	t.Helper()
+
+	path := filepath.Join(dir, ".ni", "contract.json")
+	data, err := os.ReadFile(path)
+	if err != nil {
+		t.Fatalf("reading contract fixture: %v", err)
+	}
+	updated := strings.Replace(string(data), `"readiness_profile": "prototype"`, `"readiness_profile": "`+readinessProfile+`"`, 1)
+	if updated == string(data) {
+		t.Fatalf("contract fixture did not contain prototype profile")
+	}
+	if err := os.WriteFile(path, []byte(updated), 0o644); err != nil {
+		t.Fatalf("writing updated contract fixture: %v", err)
+	}
+}
+
 func requireIssue(t *testing.T, result Result, status Status, ruleID string) {
 	t.Helper()
 
@@ -132,6 +176,20 @@ func requireIssue(t *testing.T, result Result, status Status, ruleID string) {
 	}
 	for _, issue := range result.Issues {
 		if issue.RuleID == ruleID {
+			return
+		}
+	}
+	t.Fatalf("expected issue %s, got %#v", ruleID, result.Issues)
+}
+
+func requireIssueSeverity(t *testing.T, result Result, ruleID string, severity string) {
+	t.Helper()
+
+	for _, issue := range result.Issues {
+		if issue.RuleID == ruleID {
+			if issue.Severity != severity {
+				t.Fatalf("expected %s severity %s, got %#v", ruleID, severity, issue)
+			}
 			return
 		}
 	}

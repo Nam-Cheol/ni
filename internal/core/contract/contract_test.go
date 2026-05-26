@@ -18,6 +18,9 @@ func TestLoadFileValidContract(t *testing.T) {
 	if c.Project.ID != "ni" {
 		t.Fatalf("expected project id ni, got %q", c.Project.ID)
 	}
+	if c.ReadinessProfile != "prototype" {
+		t.Fatalf("expected readiness profile prototype, got %q", c.ReadinessProfile)
+	}
 }
 
 func TestLoadMalformedJSON(t *testing.T) {
@@ -35,7 +38,7 @@ func TestLoadMissingTopLevelFields(t *testing.T) {
 	if err == nil {
 		t.Fatal("expected missing field error")
 	}
-	for _, field := range []string{"project.name", "project.purpose", "project.status", "capabilities", "open_questions"} {
+	for _, field := range []string{"readiness_profile", "project.name", "project.purpose", "project.status", "capabilities", "open_questions"} {
 		if !strings.Contains(err.Error(), field) {
 			t.Fatalf("expected missing field %s in error %q", field, err.Error())
 		}
@@ -45,6 +48,7 @@ func TestLoadMissingTopLevelFields(t *testing.T) {
 func TestUnsupportedSchema(t *testing.T) {
 	_, err := Load([]byte(`{
 	  "schema": "ni.contract.v9",
+	  "readiness_profile": "prototype",
 	  "project": {
 	    "id": "p",
 	    "name": "P",
@@ -100,6 +104,7 @@ func TestValidateIDPrefixRejectsWrongPrefix(t *testing.T) {
 func TestLoadRejectsBadCapabilityReferencePrefix(t *testing.T) {
 	_, err := Load([]byte(`{
 	  "schema": "ni.contract.v0",
+	  "readiness_profile": "prototype",
 	  "project": {
 	    "id": "p",
 	    "name": "P",
@@ -130,6 +135,33 @@ func TestLoadRejectsBadCapabilityReferencePrefix(t *testing.T) {
 	}
 	if !strings.Contains(err.Error(), "REQ- prefix") {
 		t.Fatalf("expected REQ prefix error, got %v", err)
+	}
+}
+
+func TestLoadRejectsUnsupportedReadinessProfile(t *testing.T) {
+	_, err := Load([]byte(`{
+	  "schema": "ni.contract.v0",
+	  "readiness_profile": "launch",
+	  "project": {
+	    "id": "p",
+	    "name": "P",
+	    "purpose": "test",
+	    "status": "draft"
+	  },
+	  "non_goals": [],
+	  "capabilities": [],
+	  "requirements": [],
+	  "decisions": [],
+	  "risks": [],
+	  "evaluations": [],
+	  "artifacts": [],
+	  "open_questions": []
+	}`))
+	if err == nil {
+		t.Fatal("expected readiness profile error")
+	}
+	if !strings.Contains(err.Error(), "unsupported readiness profile") {
+		t.Fatalf("expected readiness profile error, got %v", err)
 	}
 }
 

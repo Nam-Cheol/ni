@@ -19,11 +19,13 @@ docs/05_PROMPT_COMPILER.md
 docs/06_CODEX_SKILLS.md
 docs/07_GENERATED_HARNESS.md
 docs/08_ROADMAP.md
+docs/12_READINESS_PROFILES.md
 
 docs/plan/*.md
 .ni/project.json
 .ni/contract.json
 .ni/readiness.rules.json
+.ni/readiness.profiles.json
 
 .agents/skills/ni-start/SKILL.md
 .agents/skills/ni-end/SKILL.md

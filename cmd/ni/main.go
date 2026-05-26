@@ -11,6 +11,7 @@ import (
 	"ni/internal/core/graph"
 	"ni/internal/core/harness"
 	"ni/internal/core/lock"
+	"ni/internal/core/profile"
 	"ni/internal/core/prompt"
 	"ni/internal/core/readiness"
 	"ni/internal/version"
@@ -131,6 +132,7 @@ func runHarness(args []string, stdout io.Writer, stderr io.Writer) int {
 
 func runInit(args []string, stdout io.Writer, stderr io.Writer) int {
 	dir := "."
+	readinessProfile := profile.Default
 	for i := 0; i < len(args); i++ {
 		switch args[i] {
 		case "--dir":
@@ -140,19 +142,31 @@ func runInit(args []string, stdout io.Writer, stderr io.Writer) int {
 			}
 			dir = args[i+1]
 			i++
+		case "--profile":
+			if i+1 >= len(args) {
+				fmt.Fprintln(stderr, "missing value for --profile")
+				return 1
+			}
+			readinessProfile = args[i+1]
+			if err := profile.Validate(readinessProfile); err != nil {
+				fmt.Fprintf(stderr, "invalid --profile value: %s (valid: %s)\n", readinessProfile, profile.NamesText())
+				return 1
+			}
+			i++
 		default:
 			fmt.Fprintf(stderr, "unknown init option: %s\n", args[i])
 			return 1
 		}
 	}
 
-	result, err := docstore.Init(dir)
+	result, err := docstore.InitWithProfile(dir, readinessProfile)
 	if err != nil {
 		fmt.Fprintf(stderr, "init failed: %v\n", err)
 		return 1
 	}
 
 	fmt.Fprintf(stdout, "initialized ni planning workspace at %s\n", result.Root)
+	fmt.Fprintf(stdout, "readiness profile: %s\n", readinessProfile)
 	for _, path := range result.Created {
 		fmt.Fprintf(stdout, "created %s\n", path)
 	}
@@ -272,6 +286,7 @@ func runStatus(args []string, stdout io.Writer, stderr io.Writer) int {
 	}
 
 	fmt.Fprintln(stdout, result.Status)
+	fmt.Fprintf(stdout, "profile: %s\n", result.Profile)
 	for _, issue := range result.Issues {
 		fmt.Fprintf(stdout, "%s %s: %s\n", issue.Severity, issue.RuleID, issue.Message)
 	}
@@ -286,7 +301,7 @@ Usage:
   ni end --dir <path>
   ni graph --dir <path> [--json]
   ni harness plan --dir <path> [--json]
-  ni init --dir <path>
+  ni init --dir <path> [--profile concept|prototype|mvp|beta|production]
   ni run --dir <path> [--out <path>] [--max-chars N]
   ni status --dir <path> [--json]
   ni version

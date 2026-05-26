@@ -1,9 +1,12 @@
 package docstore
 
 import (
+	"fmt"
 	"os"
 	"path/filepath"
 	"sort"
+
+	"ni/internal/core/profile"
 )
 
 type Result struct {
@@ -18,8 +21,15 @@ type templateFile struct {
 }
 
 func Init(dir string) (Result, error) {
+	return InitWithProfile(dir, profile.Default)
+}
+
+func InitWithProfile(dir string, readinessProfile string) (Result, error) {
+	if err := profile.Validate(readinessProfile); err != nil {
+		return Result{}, err
+	}
 	root := filepath.Clean(dir)
-	files := templateFiles()
+	files := templateFiles(readinessProfile)
 	result := Result{Root: root}
 
 	for _, file := range files {
@@ -44,7 +54,7 @@ func Init(dir string) (Result, error) {
 }
 
 func RequiredPaths() []string {
-	files := templateFiles()
+	files := templateFiles(profile.Default)
 	paths := make([]string, 0, len(files))
 	for _, file := range files {
 		paths = append(paths, file.path)
@@ -53,7 +63,7 @@ func RequiredPaths() []string {
 	return paths
 }
 
-func templateFiles() []templateFile {
+func templateFiles(readinessProfile string) []templateFile {
 	planDocs := []templateFile{
 		{"docs/plan/00_project_brief.md", "# Project brief\n\n## Purpose\n\nTODO\n\n## Problem\n\nTODO\n\n## Success definition\n\nTODO\n"},
 		{"docs/plan/01_actors_outcomes.md", "# Actors and outcomes\n\n## Actors\n\n- User: TODO\n- Planning model: TODO\n- CLI: validates readiness and lock state.\n\n## Outcomes\n\n- TODO\n"},
@@ -69,12 +79,13 @@ func templateFiles() []templateFile {
 		{"docs/plan/11_decision_log.md", "# Decision log\n\n## DEC-001: TODO\n\nStatus: accepted\n\nRationale: TODO\n"},
 	}
 
-	files := make([]templateFile, 0, len(planDocs)+3)
+	files := make([]templateFile, 0, len(planDocs)+4)
 	files = append(files, planDocs...)
 	files = append(files,
 		templateFile{".ni/project.json", projectJSON},
-		templateFile{".ni/contract.json", contractJSON},
+		templateFile{".ni/contract.json", contractJSON(readinessProfile)},
 		templateFile{".ni/readiness.rules.json", readinessRulesJSON},
+		templateFile{".ni/readiness.profiles.json", readinessProfilesJSON},
 	)
 	return files
 }
@@ -95,8 +106,13 @@ const projectJSON = `{
 }
 `
 
-const contractJSON = `{
+func contractJSON(readinessProfile string) string {
+	return fmt.Sprintf(contractJSONTemplate, readinessProfile)
+}
+
+const contractJSONTemplate = `{
   "schema": "ni.contract.v0",
+  "readiness_profile": %q,
   "project": {
     "id": "todo",
     "name": "TODO",
@@ -223,6 +239,10 @@ const readinessRulesJSON = `{
     {
       "id": "R010",
       "title": "at least one non-goal exists"
+    },
+    {
+      "id": "R011",
+      "title": "readiness profile definitions are valid"
     }
   ],
   "required_docs": [
@@ -238,6 +258,104 @@ const readinessRulesJSON = `{
     "docs/plan/09_execution_strategy.md",
     "docs/plan/10_open_questions.md",
     "docs/plan/11_decision_log.md"
+  ]
+}
+`
+
+const readinessProfilesJSON = `{
+  "schema": "ni.readiness.profiles.v0",
+  "default_profile": "prototype",
+  "profiles": [
+    {
+      "name": "concept",
+      "description": "A planning profile for early intent, audience, and uncertainty discovery before full traceability is required.",
+      "issue_severity": {
+        "R001": "blocker",
+        "R002": "blocker",
+        "R003": "deferral",
+        "R004": "deferral",
+        "R005": "deferral",
+        "R006": "blocker",
+        "R007": "deferral",
+        "R008": "blocker",
+        "R009": "blocker",
+        "R010": "deferral",
+        "D001": "deferral",
+        "D002": "deferral"
+      }
+    },
+    {
+      "name": "prototype",
+      "description": "The default planning profile for a small validated plan with capability, risk, evaluation, and boundary traceability.",
+      "issue_severity": {
+        "R001": "blocker",
+        "R002": "blocker",
+        "R003": "blocker",
+        "R004": "blocker",
+        "R005": "blocker",
+        "R006": "blocker",
+        "R007": "blocker",
+        "R008": "blocker",
+        "R009": "blocker",
+        "R010": "blocker",
+        "D001": "deferral",
+        "D002": "deferral"
+      }
+    },
+    {
+      "name": "mvp",
+      "description": "A planning profile for a usable first release plan with the same blocking traceability as prototype readiness.",
+      "issue_severity": {
+        "R001": "blocker",
+        "R002": "blocker",
+        "R003": "blocker",
+        "R004": "blocker",
+        "R005": "blocker",
+        "R006": "blocker",
+        "R007": "blocker",
+        "R008": "blocker",
+        "R009": "blocker",
+        "R010": "blocker",
+        "D001": "deferral",
+        "D002": "deferral"
+      }
+    },
+    {
+      "name": "beta",
+      "description": "A planning profile for broader validation where core traceability blocks lock and unresolved non-blocking questions remain explicit deferrals.",
+      "issue_severity": {
+        "R001": "blocker",
+        "R002": "blocker",
+        "R003": "blocker",
+        "R004": "blocker",
+        "R005": "blocker",
+        "R006": "blocker",
+        "R007": "blocker",
+        "R008": "blocker",
+        "R009": "blocker",
+        "R010": "blocker",
+        "D001": "deferral",
+        "D002": "deferral"
+      }
+    },
+    {
+      "name": "production",
+      "description": "A planning profile for high-confidence lock readiness where deferred decisions and open questions block the plan.",
+      "issue_severity": {
+        "R001": "blocker",
+        "R002": "blocker",
+        "R003": "blocker",
+        "R004": "blocker",
+        "R005": "blocker",
+        "R006": "blocker",
+        "R007": "blocker",
+        "R008": "blocker",
+        "R009": "blocker",
+        "R010": "blocker",
+        "D001": "blocker",
+        "D002": "blocker"
+      }
+    }
   ]
 }
 `

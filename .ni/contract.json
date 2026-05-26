@@ -1,5 +1,6 @@
 {
   "schema": "ni.contract.v0",
+  "readiness_profile": "prototype",
   "project": {
     "id": "ni",
     "name": "ni",
@@ -99,6 +100,27 @@
       "artifacts": [
         "ART-006"
       ]
+    },
+    {
+      "id": "CAP-006",
+      "title": "Select planning readiness profile",
+      "status": "accepted",
+      "requirements": [
+        "REQ-006"
+      ],
+      "evaluations": [
+        "EVAL-007",
+        "EVAL-008",
+        "EVAL-009"
+      ],
+      "risks": [
+        "RISK-004"
+      ],
+      "artifacts": [
+        "ART-007",
+        "ART-008",
+        "ART-009"
+      ]
     }
   ],
   "requirements": [
@@ -125,6 +147,11 @@
     {
       "id": "REQ-005",
       "title": "repository-local skills exist for ni-start, ni-end, and ni-run",
+      "status": "accepted"
+    },
+    {
+      "id": "REQ-006",
+      "title": "ni init accepts concept, prototype, mvp, beta, and production planning readiness profiles",
       "status": "accepted"
     }
   ],
@@ -166,6 +193,13 @@
       "severity": "medium",
       "status": "accepted",
       "mitigation": "Keep Codex skills outside kernel and avoid Codex-specific schema fields."
+    },
+    {
+      "id": "RISK-004",
+      "title": "Readiness profiles look like execution stages",
+      "severity": "high",
+      "status": "accepted",
+      "mitigation": "Document and validate profiles as planning readiness profiles only, with no runtime packets or agent execution semantics."
     }
   ],
   "evaluations": [
@@ -198,6 +232,21 @@
       "id": "EVAL-006",
       "title": "skills contain required metadata and authority boundary",
       "method": "static check"
+    },
+    {
+      "id": "EVAL-007",
+      "title": "ni init --profile concept creates a concept contract",
+      "method": "CLI integration check"
+    },
+    {
+      "id": "EVAL-008",
+      "title": "ni init --profile production creates a production contract",
+      "method": "CLI integration check"
+    },
+    {
+      "id": "EVAL-009",
+      "title": "ni status prints the active readiness profile",
+      "method": "CLI integration check"
     }
   ],
   "artifacts": [
@@ -230,6 +279,21 @@
       "id": "ART-006",
       "path": ".agents/skills/",
       "kind": "codex_skills"
+    },
+    {
+      "id": "ART-007",
+      "path": "docs/12_READINESS_PROFILES.md",
+      "kind": "planning_doc"
+    },
+    {
+      "id": "ART-008",
+      "path": ".ni/readiness.profiles.json",
+      "kind": "readiness_config"
+    },
+    {
+      "id": "ART-009",
+      "path": "internal/core/profile",
+      "kind": "code"
     }
   ],
   "open_questions": [

@@ -36,7 +36,26 @@ R007 every accepted capability has at least one artifact or requirement
 R008 decisions use accepted, deferred, rejected, or not_applicable
 R009 blocker open questions prevent lock
 R010 at least one non-goal exists
+R011 readiness profile definitions are valid
 ```
+
+## Planning profiles
+
+`ni status` evaluates issues under the selected `readiness_profile` in `.ni/contract.json`.
+
+Profiles are planning readiness profiles only. They are not implementation stages and do not imply runtime packets, task management, or agent execution.
+
+The supported profiles are:
+
+```text
+concept
+prototype
+mvp
+beta
+production
+```
+
+Profile definitions live in `.ni/readiness.profiles.json`. Each profile maps issue IDs to `blocker` or `deferral`. `prototype` is the default profile.
 
 ## Model boundary
 

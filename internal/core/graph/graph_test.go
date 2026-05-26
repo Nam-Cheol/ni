@@ -96,6 +96,7 @@ func requireEdge(t *testing.T, proposal Proposal, from string, to string, kind s
 
 const graphContract = `{
   "schema": "ni.contract.v0",
+  "readiness_profile": "prototype",
   "project": {
     "id": "graph-fixture",
     "name": "Graph Fixture",

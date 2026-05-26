@@ -39,9 +39,10 @@ The v0 workflow is:
 ```text
 ni init
   Create docs/plan templates and .ni/contract.json.
+  Defaults to readiness profile prototype unless --profile is provided.
 
 ni status
-  Validate whether the planning contract is ready.
+  Validate whether the planning contract is ready under the active profile.
 
 ni end
   Refuse if blocked. If ready, create .ni/plan.lock.json.
@@ -51,6 +52,8 @@ ni run
 ```
 
 `ni run` does not directly execute Codex in v0. It only compiles the prompt. Execution adapters come later.
+
+Readiness profiles are planning confidence profiles only: `concept`, `prototype`, `mvp`, `beta`, and `production`. They do not create implementation stages or execution lifecycle state.
 
 ## Source of truth
 

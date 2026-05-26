@@ -1,6 +1,6 @@
 {
   "schema": "ni.lock.v0",
-  "locked_at": "2026-05-26T06:27:09Z",
+  "locked_at": "2026-05-26T07:13:29Z",
   "source_of_truth": [
     ".ni/plan.lock.json",
     ".ni/contract.json",
@@ -14,7 +14,7 @@
   "files": [
     {
       "path": ".ni/contract.json",
-      "sha256": "c37698593a995daff2ab5f0e12c89f34b5c0afdc89109cad5a5eb161f7436529"
+      "sha256": "07b8fcf208974165c4a45831bb942326e5d84df8b81a2f33e8779240e2653531"
     },
     {
       "path": "docs/plan/00_project_brief.md",

@@ -1,6 +1,7 @@
 package docstore
 
 import (
+	"encoding/json"
 	"os"
 	"path/filepath"
 	"testing"
@@ -22,6 +23,32 @@ func TestInitCreatesRequiredFiles(t *testing.T) {
 		if _, err := os.Stat(filepath.Join(dir, path)); err != nil {
 			t.Fatalf("expected %s to exist: %v", path, err)
 		}
+	}
+}
+
+func TestInitWithProfileWritesSelectedReadinessProfile(t *testing.T) {
+	dir := t.TempDir()
+
+	if _, err := InitWithProfile(dir, "production"); err != nil {
+		t.Fatalf("InitWithProfile returned error: %v", err)
+	}
+
+	data, err := os.ReadFile(filepath.Join(dir, ".ni", "contract.json"))
+	if err != nil {
+		t.Fatalf("reading contract: %v", err)
+	}
+	var contract struct {
+		ReadinessProfile string `json:"readiness_profile"`
+	}
+	if err := json.Unmarshal(data, &contract); err != nil {
+		t.Fatalf("unmarshaling contract: %v", err)
+	}
+	if contract.ReadinessProfile != "production" {
+		t.Fatalf("expected production profile, got %q", contract.ReadinessProfile)
+	}
+
+	if _, err := os.Stat(filepath.Join(dir, ".ni", "readiness.profiles.json")); err != nil {
+		t.Fatalf("expected readiness profiles file: %v", err)
 	}
 }
 

@@ -45,6 +45,10 @@
     {
       "id": "R010",
       "title": "at least one non-goal exists"
+    },
+    {
+      "id": "R011",
+      "title": "readiness profile definitions are valid"
     }
   ],
   "required_docs": [

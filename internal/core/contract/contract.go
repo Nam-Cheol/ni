@@ -5,21 +5,24 @@ import (
 	"fmt"
 	"os"
 	"strings"
+
+	"ni/internal/core/profile"
 )
 
 const Schema = "ni.contract.v0"
 
 type Contract struct {
-	Schema        string         `json:"schema"`
-	Project       Project        `json:"project"`
-	NonGoals      []NonGoal      `json:"non_goals"`
-	Capabilities  []Capability   `json:"capabilities"`
-	Requirements  []Requirement  `json:"requirements"`
-	Decisions     []Decision     `json:"decisions"`
-	Risks         []Risk         `json:"risks"`
-	Evaluations   []Evaluation   `json:"evaluations"`
-	Artifacts     []Artifact     `json:"artifacts"`
-	OpenQuestions []OpenQuestion `json:"open_questions"`
+	Schema           string         `json:"schema"`
+	ReadinessProfile string         `json:"readiness_profile"`
+	Project          Project        `json:"project"`
+	NonGoals         []NonGoal      `json:"non_goals"`
+	Capabilities     []Capability   `json:"capabilities"`
+	Requirements     []Requirement  `json:"requirements"`
+	Decisions        []Decision     `json:"decisions"`
+	Risks            []Risk         `json:"risks"`
+	Evaluations      []Evaluation   `json:"evaluations"`
+	Artifacts        []Artifact     `json:"artifacts"`
+	OpenQuestions    []OpenQuestion `json:"open_questions"`
 }
 
 type Project struct {
@@ -108,6 +111,9 @@ func (c Contract) Validate() error {
 	if c.Schema == "" {
 		missing = append(missing, "schema")
 	}
+	if c.ReadinessProfile == "" {
+		missing = append(missing, "readiness_profile")
+	}
 	if c.Project.ID == "" {
 		missing = append(missing, "project.id")
 	}
@@ -149,6 +155,9 @@ func (c Contract) Validate() error {
 	}
 	if c.Schema != Schema {
 		return fmt.Errorf("unsupported contract schema %q", c.Schema)
+	}
+	if err := profile.Validate(c.ReadinessProfile); err != nil {
+		return err
 	}
 
 	if err := validateIDs(c); err != nil {
