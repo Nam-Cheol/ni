@@ -1,6 +1,6 @@
 {
   "schema": "ni.lock.v0",
-  "locked_at": "2026-05-26T06:06:37Z",
+  "locked_at": "2026-05-26T06:27:09Z",
   "source_of_truth": [
     ".ni/plan.lock.json",
     ".ni/contract.json",
