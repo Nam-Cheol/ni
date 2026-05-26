@@ -33,6 +33,17 @@ type FileHash struct {
 	SHA256 string `json:"sha256"`
 }
 
+type Verification struct {
+	Lockfile   Lockfile
+	Mismatches []Mismatch
+}
+
+type Mismatch struct {
+	Path     string
+	WantHash string
+	GotHash  string
+}
+
 func Create(dir string) (Lockfile, error) {
 	return CreateAt(dir, time.Now().UTC())
 }
@@ -78,6 +89,48 @@ func CreateAt(dir string, lockedAt time.Time) (Lockfile, error) {
 	return lockfile, nil
 }
 
+func LoadFile(path string) (Lockfile, error) {
+	data, err := os.ReadFile(path)
+	if err != nil {
+		return Lockfile{}, err
+	}
+	var lockfile Lockfile
+	if err := json.Unmarshal(data, &lockfile); err != nil {
+		return Lockfile{}, fmt.Errorf("malformed lockfile JSON: %w", err)
+	}
+	if lockfile.Schema != Schema {
+		return Lockfile{}, fmt.Errorf("unsupported lockfile schema %q", lockfile.Schema)
+	}
+	lockfile.Path = path
+	return lockfile, nil
+}
+
+func Verify(dir string) (Verification, error) {
+	root := filepath.Clean(dir)
+	lockPath := filepath.Join(root, ".ni", "plan.lock.json")
+	lockfile, err := LoadFile(lockPath)
+	if err != nil {
+		if os.IsNotExist(err) {
+			return Verification{}, fmt.Errorf("missing lockfile %s", lockPath)
+		}
+		return Verification{}, err
+	}
+
+	var mismatches []Mismatch
+	for _, file := range lockfile.Files {
+		got, err := fileSHA256(filepath.Join(root, file.Path))
+		if err != nil {
+			mismatches = append(mismatches, Mismatch{Path: file.Path, WantHash: file.SHA256, GotHash: "missing"})
+			continue
+		}
+		if got != file.SHA256 {
+			mismatches = append(mismatches, Mismatch{Path: file.Path, WantHash: file.SHA256, GotHash: got})
+		}
+	}
+
+	return Verification{Lockfile: lockfile, Mismatches: mismatches}, nil
+}
+
 func lockPaths(root string) []string {
 	paths := []string{".ni/contract.json"}
 	paths = append(paths, readiness.RequiredDocs(root)...)
@@ -88,15 +141,23 @@ func lockPaths(root string) []string {
 func hashFiles(root string, paths []string) ([]FileHash, error) {
 	files := make([]FileHash, 0, len(paths))
 	for _, path := range paths {
-		data, err := os.ReadFile(filepath.Join(root, path))
+		sum, err := fileSHA256(filepath.Join(root, path))
 		if err != nil {
 			return nil, fmt.Errorf("hash %s: %w", path, err)
 		}
-		sum := sha256.Sum256(data)
 		files = append(files, FileHash{
 			Path:   path,
-			SHA256: hex.EncodeToString(sum[:]),
+			SHA256: sum,
 		})
 	}
 	return files, nil
+}
+
+func fileSHA256(path string) (string, error) {
+	data, err := os.ReadFile(path)
+	if err != nil {
+		return "", err
+	}
+	sum := sha256.Sum256(data)
+	return hex.EncodeToString(sum[:]), nil
 }

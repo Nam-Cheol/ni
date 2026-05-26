@@ -5,9 +5,11 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"strconv"
 
 	"ni/internal/core/docstore"
 	"ni/internal/core/lock"
+	"ni/internal/core/prompt"
 	"ni/internal/core/readiness"
 	"ni/internal/version"
 )
@@ -27,6 +29,8 @@ func run(args []string, stdout io.Writer, stderr io.Writer) int {
 		return runEnd(args[1:], stdout, stderr)
 	case "init":
 		return runInit(args[1:], stdout, stderr)
+	case "run":
+		return runRun(args[1:], stdout, stderr)
 	case "status":
 		return runStatus(args[1:], stdout, stderr)
 	case "version":
@@ -99,6 +103,57 @@ func runEnd(args []string, stdout io.Writer, stderr io.Writer) int {
 	return 0
 }
 
+func runRun(args []string, stdout io.Writer, stderr io.Writer) int {
+	dir := "."
+	out := ""
+	maxChars := prompt.DefaultMaxChars
+	for i := 0; i < len(args); i++ {
+		switch args[i] {
+		case "--dir":
+			if i+1 >= len(args) {
+				fmt.Fprintln(stderr, "missing value for --dir")
+				return 1
+			}
+			dir = args[i+1]
+			i++
+		case "--out":
+			if i+1 >= len(args) {
+				fmt.Fprintln(stderr, "missing value for --out")
+				return 1
+			}
+			out = args[i+1]
+			i++
+		case "--max-chars":
+			if i+1 >= len(args) {
+				fmt.Fprintln(stderr, "missing value for --max-chars")
+				return 1
+			}
+			value, err := strconv.Atoi(args[i+1])
+			if err != nil {
+				fmt.Fprintf(stderr, "invalid --max-chars value: %s\n", args[i+1])
+				return 1
+			}
+			maxChars = value
+			i++
+		default:
+			fmt.Fprintf(stderr, "unknown run option: %s\n", args[i])
+			return 1
+		}
+	}
+
+	result, err := prompt.Compile(prompt.Options{Dir: dir, Out: out, MaxChars: maxChars})
+	if err != nil {
+		fmt.Fprintf(stderr, "run failed: %v\n", err)
+		return 1
+	}
+	if out != "" {
+		fmt.Fprintf(stdout, "compiled prompt at %s\n", result.Out)
+		return 0
+	}
+	fmt.Fprint(stdout, result.Prompt)
+	return 0
+}
+
 func runStatus(args []string, stdout io.Writer, stderr io.Writer) int {
 	dir := "."
 	jsonOutput := false
@@ -144,12 +199,14 @@ Usage:
   ni --help
   ni end --dir <path>
   ni init --dir <path>
+  ni run --dir <path> [--out <path>] [--max-chars N]
   ni status --dir <path> [--json]
   ni version
 
 Commands:
   end      Lock the accepted planning contract.
   init     Create planning docs and .ni skeleton.
+  run      Compile a goal prompt from the locked plan.
   status   Validate planning readiness.
   version  Print the ni version.
 `)

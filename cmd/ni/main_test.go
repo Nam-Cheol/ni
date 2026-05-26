@@ -127,13 +127,41 @@ func TestEndCreatesLockfile(t *testing.T) {
 	}
 }
 
+func TestRunWritesPrompt(t *testing.T) {
+	dir := t.TempDir()
+	if code := run([]string{"init", "--dir", dir}, &bytes.Buffer{}, &bytes.Buffer{}); code != 0 {
+		t.Fatalf("init expected exit code 0, got %d", code)
+	}
+	writeReadyContractForCLI(t, dir)
+	if code := run([]string{"end", "--dir", dir}, &bytes.Buffer{}, &bytes.Buffer{}); code != 0 {
+		t.Fatalf("end expected exit code 0, got %d", code)
+	}
+
+	out := filepath.Join(dir, ".ni", "generated", "goal.prompt.txt")
+	var stdout bytes.Buffer
+	code := run([]string{"run", "--dir", dir, "--out", out, "--max-chars", "4000"}, &stdout, &bytes.Buffer{})
+	if code != 0 {
+		t.Fatalf("expected exit code 0, got %d", code)
+	}
+	if !strings.Contains(stdout.String(), "compiled prompt") {
+		t.Fatalf("expected compile summary, got %q", stdout.String())
+	}
+	data, err := os.ReadFile(out)
+	if err != nil {
+		t.Fatalf("expected prompt file: %v", err)
+	}
+	if !strings.Contains(string(data), "Source of truth") {
+		t.Fatalf("expected compiled prompt content, got %q", string(data))
+	}
+}
+
 func TestUnknownCommand(t *testing.T) {
 	var stderr bytes.Buffer
-	code := run([]string{"run"}, &bytes.Buffer{}, &stderr)
+	code := run([]string{"graph"}, &bytes.Buffer{}, &stderr)
 	if code != 1 {
 		t.Fatalf("expected exit code 1, got %d", code)
 	}
-	if !strings.Contains(stderr.String(), "unknown command: run") {
+	if !strings.Contains(stderr.String(), "unknown command: graph") {
 		t.Fatalf("expected unknown command error, got %q", stderr.String())
 	}
 }
