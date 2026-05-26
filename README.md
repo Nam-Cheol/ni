@@ -1,88 +1,323 @@
 # ni
 
-`ni` is a project intent compiler.
+`ni` is a pre-runtime project intent compiler.
 
-It turns ongoing planning conversations into a locked project contract, then derives a project-specific harness from that contract. The first product target is not a generic task runner. The first target is a small planning kernel with four authoritative operations:
+It turns planning work into a machine-readable contract, checks whether that
+contract is ready, locks the accepted plan with hashes, and compiles short
+handoff prompts or seed material from the locked plan.
 
-1. maintain the planning contract,
-2. check readiness with deterministic rules,
-3. lock the accepted plan with hashes,
-4. compile a short execution goal prompt from the locked plan.
-
-Positioning: `ni` sits before execution runtimes. It is not a SPEC runner, multi-agent layer, task queue, or Hyper Run clone. It can produce downstream-compatible prompts or seed harness material after lock, but the kernel remains the authority for contract readiness, locking, and source-of-truth checks.
-
-## Product boundary
-
-`ni` has two layers.
+The current product is `ni-kernel`, not an execution harness.
 
 ```text
-ni-kernel
-  docs contract
-  readiness gate
-  lockfile
-  prompt compiler
-  source-of-truth rule
-
-ni-generated-harness
-  project-specific work graph
-  project-specific evaluation plan
-  project-specific evidence rules
-  project-specific adapter choices
+conversation -> docs/plan + .ni/contract.json -> ni status -> ni end -> ni run
 ```
 
-The kernel must stay small. The generated harness may vary by project.
+## What ni is
 
-## v0 goal
+`ni` is the authority for:
 
-The v0 workflow is:
+- planning docs and the `.ni/contract.json` schema,
+- deterministic readiness checks,
+- `.ni/plan.lock.json`,
+- source-of-truth ordering,
+- prompt compilation from a locked plan,
+- downstream seed exports derived from a locked plan,
+- inert feedback, pressure, amendment, and collaboration records.
+
+After a plan is locked, the source-of-truth order is:
 
 ```text
-ni init
-  Create docs/plan templates and .ni/contract.json.
-  Defaults to readiness profile prototype unless --profile is provided.
-
-ni status
-  Validate whether the planning contract is ready under the active profile.
-
-ni end
-  Refuse if blocked. If ready, create .ni/plan.lock.json.
-
-ni run
-  Read the locked plan and print a 4000-character-or-less goal prompt.
+.ni/plan.lock.json > .ni/contract.json > docs/plan/** > chat transcript > model guess
 ```
 
-`ni run` does not directly execute Codex in v0. It only compiles the prompt. Execution adapters come later.
+If a locked file hash no longer matches, `ni run`, `ni export`, feedback, and
+pressure commands stop with `BLOCKED`.
 
-Readiness profiles are planning confidence profiles only: `concept`, `prototype`, `mvp`, `beta`, and `production`. They do not create implementation stages or execution lifecycle state.
+## What ni is not
 
-## Source of truth
+`ni` is not:
 
-After `ni end`, the authority order is:
-
-```text
-.ni/plan.lock.json
-.ni/contract.json
-docs/plan/**
-chat transcript
-model inference
-```
-
-If hashes in `.ni/plan.lock.json` do not match current files, `ni run` must stop.
-
-## Non-goals before v0 contract/readiness/lock/prompt works
-
-Do not add these before the kernel is working:
-
-- shell adapter,
-- Codex exec adapter,
-- queue,
-- PR automation,
+- a task runner,
+- a SPEC runner,
+- a multi-agent execution layer,
+- a queue,
+- a shell or Codex adapter,
 - release automation,
-- hooks,
-- web UI,
-- multi-agent orchestration,
-- generic SPEC runner.
+- PR automation,
+- a Hyper Run clone.
 
-## Development mode
+Generated harnesses, prompts, and export packages are derived and mutable. They
+do not become kernel-owned execution state.
 
-Use the prompt files in `prompts/` sequentially. Treat each prompt as one small implementation unit and one commit.
+## Quickstart
+
+The repository currently runs as a Go CLI:
+
+```bash
+go run ./cmd/ni --help
+go run ./cmd/ni version
+```
+
+Create a planning workspace:
+
+```bash
+tmp="$(mktemp -d)"
+go run ./cmd/ni init --dir "$tmp/plan" --profile prototype
+go run ./cmd/ni status --dir "$tmp/plan"
+```
+
+A new template workspace is expected to print `BLOCKED` because it still has
+TODO values and an open blocker question. Fill in `docs/plan/**` and
+`.ni/contract.json`, then check readiness again:
+
+```bash
+go run ./cmd/ni status --dir "$tmp/plan"
+```
+
+Only after `ni status` reports `READY` or `READY_WITH_DEFERRALS`, lock and
+compile:
+
+```bash
+go run ./cmd/ni end --dir "$tmp/plan"
+go run ./cmd/ni run --dir "$tmp/plan" --target codex --out "$tmp/codex.prompt.txt"
+```
+
+To inspect this repository's already locked plan:
+
+```bash
+go run ./cmd/ni status --dir .
+go run ./cmd/ni run --dir . --target generic --max-chars 4000
+```
+
+## Core commands
+
+### init
+
+`ni init` creates the planning docs and `.ni` skeleton.
+
+```bash
+go run ./cmd/ni init --dir <path>
+go run ./cmd/ni init --dir <path> --profile concept
+go run ./cmd/ni init --dir <path> --product-type conversation_product --surface conversation --interaction-mode human_to_system
+```
+
+Supported readiness profiles:
+
+```text
+concept
+prototype
+mvp
+beta
+production
+```
+
+Supported product types:
+
+```text
+software
+conversation_product
+research_protocol
+operations_process
+education_program
+document_product
+physical_product
+mixed
+```
+
+Supported delivery surfaces:
+
+```text
+web
+cli
+api
+conversation
+document
+workflow
+human_service
+physical
+```
+
+These fields guide planning and status output. They do not create runtime
+stages or execution behavior.
+
+### status
+
+`ni status` evaluates readiness from deterministic rules.
+
+```bash
+go run ./cmd/ni status --dir <path>
+go run ./cmd/ni status --dir <path> --json
+```
+
+Status values:
+
+```text
+BLOCKED
+READY_WITH_DEFERRALS
+READY
+```
+
+A model may explain the status, but it may not override it.
+
+### end
+
+`ni end` locks a ready plan.
+
+```bash
+go run ./cmd/ni end --dir <path>
+```
+
+It runs the readiness gate, refuses `BLOCKED`, and writes
+`.ni/plan.lock.json` with hashes for `.ni/contract.json` and required
+`docs/plan/**` files.
+
+### run
+
+`ni run` compiles a 4000-character-or-less prompt from a locked plan.
+
+```bash
+go run ./cmd/ni run --dir <path>
+go run ./cmd/ni run --dir <path> --target codex
+go run ./cmd/ni run --dir <path> --target human-team --out <file>
+go run ./cmd/ni run --dir <path> --max-chars 2400
+```
+
+`ni run` does not execute Codex, shell commands, agents, queues, or adapters.
+
+## Targets
+
+List supported prompt/export targets:
+
+```bash
+go run ./cmd/ni targets
+go run ./cmd/ni targets --json
+```
+
+Built-in targets:
+
+```text
+generic     prompt   general downstream implementation prompt
+codex       prompt   Codex-oriented prompt seed
+human-team  handoff  team handoff prompt
+hyper-run   seed     Hyper Run seed material
+namba-ai    seed     namba-ai seed material
+ouroboros   seed     Ouroboros seed notes
+spec-kit    seed     Spec Kit seed notes
+```
+
+Targets are downstream shapes. They do not change kernel authority.
+
+## Export
+
+`ni export` writes locked-plan seed packages for supported downstream targets.
+
+```bash
+go run ./cmd/ni export --dir <path> --target hyper-run --out <dir>
+go run ./cmd/ni export --dir <path> --target namba-ai --out <dir>
+go run ./cmd/ni export --dir <path> --target ouroboros --out <dir>
+go run ./cmd/ni export --dir <path> --target spec-kit --out <dir>
+```
+
+Export requires `.ni/plan.lock.json`, verifies locked hashes, and refuses stale
+plans with `BLOCKED`. It writes seed Markdown only. It does not call external
+runtimes or create downstream runtime packets.
+
+## Feedback
+
+`ni feedback` records downstream observations without mutating the contract or
+lock.
+
+```bash
+go run ./cmd/ni feedback add --dir <path> --file testdata/feedback/codex.json
+go run ./cmd/ni feedback list --dir <path>
+go run ./cmd/ni feedback list --dir <path> --json
+```
+
+Feedback is appended to `.ni/feedback.jsonl` and translated into observed
+pressure items. It is evidence for a future planning cycle, not an automatic
+contract change.
+
+## Pressure
+
+`ni pressure` tracks recurring planning pressure without changing readiness
+rules by itself.
+
+```bash
+go run ./cmd/ni pressure status --dir <path>
+go run ./cmd/ni pressure promote P-001 --dir <path>
+go run ./cmd/ni pressure retire P-001 --dir <path>
+```
+
+Promotion is explicit and staged:
+
+```text
+observed -> repeated -> promotable -> accepted
+```
+
+Accepted pressure still requires a human planning decision before it changes a
+locked contract.
+
+## Amend and relock
+
+Locked planning docs must not be silently edited. Use amendments to explain why
+a locked plan changed, then relock.
+
+```bash
+go run ./cmd/ni amend create --dir <path> --title "Clarify acceptance criteria"
+go run ./cmd/ni amend list --dir <path>
+go run ./cmd/ni amend show AMEND-001 --dir <path>
+go run ./cmd/ni amend apply AMEND-001 --dir <path>
+go run ./cmd/ni relock --dir <path>
+```
+
+An applied amendment must include a reason, affected docs or contract IDs,
+proposed changes, risk impact, and readiness impact. `ni relock` refuses stale
+locks without an applied amendment and refuses blocked readiness.
+
+## Collaboration conflict checks
+
+`ni diff` and `ni conflicts` compare planning states without resolving or
+mutating them.
+
+```bash
+go run ./cmd/ni diff --base <path-or-lock> --head <path-or-lock>
+go run ./cmd/ni conflicts --base <path-or-lock> --head <path-or-lock>
+go run ./cmd/ni conflicts --base <path-or-lock> --head <path-or-lock> --json
+```
+
+Inputs may be a project directory, `.ni/contract.json`, or
+`.ni/plan.lock.json`. `ni conflicts` exits nonzero when blocking semantic
+conflicts are found, including stale locks, conflicting decisions, weakened
+accepted requirements, and risk severity reductions without mitigation context.
+
+## Generated harness
+
+`ni graph` and `ni harness` describe possible downstream work from a locked
+contract. They remain inert planning artifacts.
+
+```bash
+go run ./cmd/ni graph --dir <path>
+go run ./cmd/ni harness plan --dir <path>
+go run ./cmd/ni harness candidates --dir <path>
+go run ./cmd/ni harness propose --dir <path> --from-pressure P-001
+go run ./cmd/ni harness validate CAND-001 --dir <path> --evidence <path>
+go run ./cmd/ni harness accept CAND-001 --dir <path>
+go run ./cmd/ni harness retire CAND-001 --dir <path>
+```
+
+The kernel may propose work graphs, evaluation plans, and evidence rules. It
+must not execute them.
+
+## Development validation
+
+When Go code exists, run:
+
+```bash
+gofmt -w .
+go test ./...
+bash scripts/quality.sh
+```
+
+`scripts/quality.sh` already runs formatting, Go tests, JSON checks, Markdown
+fence checks, skill metadata checks, prompt budget checks, and core-boundary
+self-tests.

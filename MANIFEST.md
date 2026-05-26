@@ -24,6 +24,8 @@ docs/13_TARGET_HYPER_RUN.md
 docs/14_TARGET_NAMBA_AI.md
 docs/16_TARGET_SPEC_KIT.md
 docs/17_TARGET_OUROBOROS.md
+docs/18_EXAMPLES.md
+docs/19_RELEASE_NOTES_v0.1.md
 
 docs/plan/*.md
 .ni/project.json
