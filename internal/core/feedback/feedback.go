@@ -11,6 +11,7 @@ import (
 	"time"
 
 	"ni/internal/core/lock"
+	"ni/internal/core/pressure"
 )
 
 const Schema = "ni.feedback.v0"
@@ -71,6 +72,17 @@ func Add(opts AddOptions) (Entry, error) {
 		return Entry{}, err
 	}
 	if _, err := file.Write(append(data, '\n')); err != nil {
+		return Entry{}, err
+	}
+	if _, err := pressure.AddObserved(opts.Dir, pressure.FeedbackItems(
+		entry.SourceTarget,
+		entry.IngestedAt,
+		entry.RelatedCapabilities,
+		entry.ObservedBlockers,
+		entry.ValidationGaps,
+		entry.RecurringFailures,
+		entry.SuggestedContractChanges,
+	)); err != nil {
 		return Entry{}, err
 	}
 	return entry, nil

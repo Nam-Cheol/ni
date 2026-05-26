@@ -123,6 +123,7 @@ func templateFiles(opts InitOptions) []templateFile {
 	files = append(files,
 		templateFile{".ni/project.json", projectJSON},
 		templateFile{".ni/contract.json", contractJSON(opts)},
+		templateFile{".ni/pressure.json", pressureJSON},
 		templateFile{".ni/readiness.rules.json", readinessRulesJSON},
 		templateFile{".ni/readiness.profiles.json", readinessProfilesJSON},
 	)
@@ -142,6 +143,12 @@ const projectJSON = `{
     "run"
   ],
   "prompt_max_chars": 4000
+}
+`
+
+const pressureJSON = `{
+  "schema": "ni.pressure.v0",
+  "items": []
 }
 `
 

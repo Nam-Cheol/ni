@@ -15,6 +15,7 @@ import (
 	"ni/internal/core/graph"
 	"ni/internal/core/harness"
 	"ni/internal/core/lock"
+	"ni/internal/core/pressure"
 	"ni/internal/core/profile"
 	"ni/internal/core/prompt"
 	"ni/internal/core/readiness"
@@ -45,6 +46,8 @@ func run(args []string, stdout io.Writer, stderr io.Writer) int {
 		return runHarness(args[1:], stdout, stderr)
 	case "init":
 		return runInit(args[1:], stdout, stderr)
+	case "pressure":
+		return runPressure(args[1:], stdout, stderr)
 	case "run":
 		return runRun(args[1:], stdout, stderr)
 	case "status":
@@ -59,6 +62,122 @@ func run(args []string, stdout io.Writer, stderr io.Writer) int {
 		printHelp(stderr)
 		return 1
 	}
+}
+
+func runPressure(args []string, stdout io.Writer, stderr io.Writer) int {
+	if len(args) == 0 {
+		fmt.Fprintln(stderr, "usage: ni pressure status [--dir <path>] [--json]\n       ni pressure promote <id> [--dir <path>]\n       ni pressure retire <id> [--dir <path>]")
+		return 1
+	}
+
+	switch args[0] {
+	case "status":
+		return runPressureStatus(args[1:], stdout, stderr)
+	case "promote":
+		return runPressurePromote(args[1:], stdout, stderr)
+	case "retire":
+		return runPressureRetire(args[1:], stdout, stderr)
+	default:
+		fmt.Fprintf(stderr, "unknown pressure command: %s\n", args[0])
+		return 1
+	}
+}
+
+func runPressureStatus(args []string, stdout io.Writer, stderr io.Writer) int {
+	dir := "."
+	jsonOutput := false
+	for i := 0; i < len(args); i++ {
+		switch args[i] {
+		case "--dir":
+			if i+1 >= len(args) {
+				fmt.Fprintln(stderr, "missing value for --dir")
+				return 1
+			}
+			dir = args[i+1]
+			i++
+		case "--json":
+			jsonOutput = true
+		default:
+			fmt.Fprintf(stderr, "unknown pressure status option: %s\n", args[i])
+			return 1
+		}
+	}
+
+	ledger, err := pressure.Load(dir)
+	if err != nil {
+		fmt.Fprintf(stderr, "pressure status failed: %v\n", err)
+		return 1
+	}
+	if jsonOutput {
+		encoder := json.NewEncoder(stdout)
+		encoder.SetIndent("", "  ")
+		if err := encoder.Encode(ledger); err != nil {
+			fmt.Fprintf(stderr, "pressure status failed: %v\n", err)
+			return 1
+		}
+		return 0
+	}
+	fmt.Fprint(stdout, pressure.FormatText(ledger))
+	return 0
+}
+
+func runPressurePromote(args []string, stdout io.Writer, stderr io.Writer) int {
+	id, dir, ok := parsePressureIDAndDir(args, stderr, "promote")
+	if !ok {
+		return 1
+	}
+	item, err := pressure.Promote(dir, id)
+	if err != nil {
+		fmt.Fprintf(stderr, "pressure promote failed: %v\n", err)
+		return 1
+	}
+	fmt.Fprintf(stdout, "promoted %s to %s\n", item.ID, item.Status)
+	return 0
+}
+
+func runPressureRetire(args []string, stdout io.Writer, stderr io.Writer) int {
+	id, dir, ok := parsePressureIDAndDir(args, stderr, "retire")
+	if !ok {
+		return 1
+	}
+	item, err := pressure.Retire(dir, id)
+	if err != nil {
+		fmt.Fprintf(stderr, "pressure retire failed: %v\n", err)
+		return 1
+	}
+	fmt.Fprintf(stdout, "retired %s\n", item.ID)
+	return 0
+}
+
+func parsePressureIDAndDir(args []string, stderr io.Writer, command string) (string, string, bool) {
+	dir := "."
+	id := ""
+	for i := 0; i < len(args); i++ {
+		switch args[i] {
+		case "--dir":
+			if i+1 >= len(args) {
+				fmt.Fprintln(stderr, "missing value for --dir")
+				return "", "", false
+			}
+			dir = args[i+1]
+			i++
+		default:
+			if strings.HasPrefix(args[i], "--") {
+				fmt.Fprintf(stderr, "unknown pressure %s option: %s\n", command, args[i])
+				return "", "", false
+			}
+			if id != "" {
+				fmt.Fprintf(stderr, "unexpected pressure %s argument: %s\n", command, args[i])
+				return "", "", false
+			}
+			id = args[i]
+		}
+	}
+	if id == "" {
+		fmt.Fprintf(stderr, "missing pressure id for %s\n", command)
+		return "", "", false
+	}
+	return id, dir, true
 }
 
 func runFeedback(args []string, stdout io.Writer, stderr io.Writer) int {
@@ -553,6 +672,9 @@ Usage:
   ni graph --dir <path> [--json]
   ni harness plan --dir <path> [--json]
   ni init --dir <path> [--profile concept|prototype|mvp|beta|production] [--product-type <type>] [--surface <surface>] [--interaction-mode <mode>]
+  ni pressure status [--dir <path>] [--json]
+  ni pressure promote <id> [--dir <path>]
+  ni pressure retire <id> [--dir <path>]
   ni run --dir <path> [--target <target>] [--out <path>] [--max-chars N]
   ni status --dir <path> [--json]
   ni targets [--json]
@@ -565,6 +687,7 @@ Commands:
   graph    Propose a read-only work graph.
   harness  Propose a generated harness contract.
   init     Create planning docs and .ni skeleton.
+  pressure Track inert planning pressure without changing readiness rules.
   run      Compile a goal prompt from the locked plan.
   status   Validate planning readiness.
   targets  List downstream prompt/export targets.

@@ -48,6 +48,7 @@ func TestInit(t *testing.T) {
 		"docs/plan/00_project_brief.md",
 		".ni/project.json",
 		".ni/contract.json",
+		".ni/pressure.json",
 		".ni/readiness.rules.json",
 		".ni/readiness.profiles.json",
 	}
@@ -307,6 +308,152 @@ func TestFeedbackAddAndListJSON(t *testing.T) {
 	}
 	if payload[0]["source_target"] != "codex" || payload[1]["source_target"] != "human-team" {
 		t.Fatalf("expected codex and human-team feedback, got %#v", payload)
+	}
+}
+
+func TestPressureStatusEmptyState(t *testing.T) {
+	dir := t.TempDir()
+
+	var stdout bytes.Buffer
+	code := run([]string{"pressure", "status", "--dir", dir}, &stdout, &bytes.Buffer{})
+	if code != 0 {
+		t.Fatalf("expected exit code 0, got %d", code)
+	}
+	if !strings.Contains(stdout.String(), "no pressure recorded") {
+		t.Fatalf("expected empty pressure status, got %q", stdout.String())
+	}
+
+	stdout.Reset()
+	code = run([]string{"pressure", "status", "--dir", dir, "--json"}, &stdout, &bytes.Buffer{})
+	if code != 0 {
+		t.Fatalf("expected exit code 0, got %d", code)
+	}
+	var payload map[string]any
+	if err := json.Unmarshal(stdout.Bytes(), &payload); err != nil {
+		t.Fatalf("expected pressure JSON, got %v: %q", err, stdout.String())
+	}
+	if payload["schema"] != "ni.pressure.v0" {
+		t.Fatalf("expected pressure schema, got %#v", payload)
+	}
+	if items, ok := payload["items"].([]any); !ok || len(items) != 0 {
+		t.Fatalf("expected no pressure items, got %#v", payload["items"])
+	}
+}
+
+func TestFeedbackAddCreatesObservedPressure(t *testing.T) {
+	dir := t.TempDir()
+	if code := run([]string{"init", "--dir", dir}, &bytes.Buffer{}, &bytes.Buffer{}); code != 0 {
+		t.Fatalf("init expected exit code 0, got %d", code)
+	}
+
+	code := run([]string{"feedback", "add", "--dir", dir, "--file", filepath.Join("..", "..", "testdata", "feedback", "codex.json")}, &bytes.Buffer{}, &bytes.Buffer{})
+	if code != 0 {
+		t.Fatalf("expected exit code 0, got %d", code)
+	}
+
+	var stdout bytes.Buffer
+	code = run([]string{"pressure", "status", "--dir", dir, "--json"}, &stdout, &bytes.Buffer{})
+	if code != 0 {
+		t.Fatalf("expected exit code 0, got %d", code)
+	}
+	var ledger struct {
+		Schema string `json:"schema"`
+		Items  []struct {
+			ID                     string   `json:"id"`
+			Kind                   string   `json:"kind"`
+			Status                 string   `json:"status"`
+			EvidenceRefs           []string `json:"evidence_refs"`
+			RelatedCapabilities    []string `json:"related_capabilities"`
+			RelatedRisks           []string `json:"related_risks"`
+			ProposedAction         string   `json:"proposed_action"`
+			RequiresUserAcceptance bool     `json:"requires_user_acceptance"`
+		} `json:"items"`
+	}
+	if err := json.Unmarshal(stdout.Bytes(), &ledger); err != nil {
+		t.Fatalf("expected pressure ledger JSON, got %v: %q", err, stdout.String())
+	}
+	if ledger.Schema != "ni.pressure.v0" {
+		t.Fatalf("expected pressure schema, got %q", ledger.Schema)
+	}
+	if len(ledger.Items) != 4 {
+		t.Fatalf("expected four pressure items from fixture, got %#v", ledger.Items)
+	}
+	seenKinds := map[string]bool{}
+	for _, item := range ledger.Items {
+		if item.ID == "" || item.ProposedAction == "" {
+			t.Fatalf("expected pressure item fields to be set, got %#v", item)
+		}
+		if item.Status != "observed" {
+			t.Fatalf("expected feedback pressure to start observed, got %#v", item)
+		}
+		if !item.RequiresUserAcceptance {
+			t.Fatalf("expected pressure item to require user acceptance, got %#v", item)
+		}
+		if len(item.EvidenceRefs) != 1 || !strings.HasPrefix(item.EvidenceRefs[0], "feedback:codex:") {
+			t.Fatalf("expected feedback evidence ref, got %#v", item)
+		}
+		if len(item.RelatedCapabilities) != 1 || item.RelatedCapabilities[0] != "CAP-021" {
+			t.Fatalf("expected related capability from feedback, got %#v", item)
+		}
+		if item.RelatedRisks == nil {
+			t.Fatalf("expected related_risks field to be present, got %#v", item)
+		}
+		seenKinds[item.Kind] = true
+	}
+	for _, kind := range []string{"recurring_blocker", "validation_gap", "planning_gap"} {
+		if !seenKinds[kind] {
+			t.Fatalf("expected pressure kind %s in %#v", kind, ledger.Items)
+		}
+	}
+}
+
+func TestPressurePromoteRequiresExplicitCommand(t *testing.T) {
+	dir := t.TempDir()
+	if code := run([]string{"init", "--dir", dir}, &bytes.Buffer{}, &bytes.Buffer{}); code != 0 {
+		t.Fatalf("init expected exit code 0, got %d", code)
+	}
+	if code := run([]string{"feedback", "add", "--dir", dir, "--file", filepath.Join("..", "..", "testdata", "feedback", "codex.json")}, &bytes.Buffer{}, &bytes.Buffer{}); code != 0 {
+		t.Fatalf("feedback add expected exit code 0, got %d", code)
+	}
+
+	var stdout bytes.Buffer
+	code := run([]string{"pressure", "promote", "P-001", "--dir", dir}, &stdout, &bytes.Buffer{})
+	if code != 0 {
+		t.Fatalf("expected exit code 0, got %d", code)
+	}
+	if !strings.Contains(stdout.String(), "promoted P-001 to repeated") {
+		t.Fatalf("expected one-step promotion summary, got %q", stdout.String())
+	}
+
+	stdout.Reset()
+	code = run([]string{"pressure", "status", "--dir", dir, "--json"}, &stdout, &bytes.Buffer{})
+	if code != 0 {
+		t.Fatalf("expected exit code 0, got %d", code)
+	}
+	if !strings.Contains(stdout.String(), `"status": "repeated"`) {
+		t.Fatalf("expected promoted status in ledger, got %q", stdout.String())
+	}
+	if strings.Contains(stdout.String(), `"status": "accepted"`) {
+		t.Fatalf("pressure became accepted without enough explicit promotes: %q", stdout.String())
+	}
+}
+
+func TestPressureRetire(t *testing.T) {
+	dir := t.TempDir()
+	if code := run([]string{"init", "--dir", dir}, &bytes.Buffer{}, &bytes.Buffer{}); code != 0 {
+		t.Fatalf("init expected exit code 0, got %d", code)
+	}
+	if code := run([]string{"feedback", "add", "--dir", dir, "--file", filepath.Join("..", "..", "testdata", "feedback", "codex.json")}, &bytes.Buffer{}, &bytes.Buffer{}); code != 0 {
+		t.Fatalf("feedback add expected exit code 0, got %d", code)
+	}
+
+	var stdout bytes.Buffer
+	code := run([]string{"pressure", "retire", "P-001", "--dir", dir}, &stdout, &bytes.Buffer{})
+	if code != 0 {
+		t.Fatalf("expected exit code 0, got %d", code)
+	}
+	if !strings.Contains(stdout.String(), "retired P-001") {
+		t.Fatalf("expected retire summary, got %q", stdout.String())
 	}
 }
 

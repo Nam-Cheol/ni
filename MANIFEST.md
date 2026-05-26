@@ -24,6 +24,7 @@ docs/12_READINESS_PROFILES.md
 docs/plan/*.md
 .ni/project.json
 .ni/contract.json
+.ni/pressure.json
 .ni/readiness.rules.json
 .ni/readiness.profiles.json
 
