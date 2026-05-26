@@ -28,6 +28,7 @@ docs/18_EXAMPLES.md
 docs/19_RELEASE_NOTES_v0.1.md
 docs/20_NEXT_STEPS.md
 docs/21_ERROR_MODEL.md
+docs/24_TARGET_CONFORMANCE.md
 
 docs/plan/*.md
 .ni/project.json

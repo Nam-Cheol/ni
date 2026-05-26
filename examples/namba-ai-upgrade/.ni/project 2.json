@@ -1,0 +1,14 @@
+{
+  "schema": "ni.project.v0",
+  "id": "todo",
+  "name": "TODO",
+  "created_for": "ni planning workspace",
+  "kernel_phase": "planning",
+  "commands": [
+    "init",
+    "status",
+    "end",
+    "run"
+  ],
+  "prompt_max_chars": 4000
+}

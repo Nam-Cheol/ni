@@ -971,6 +971,115 @@ func TestExportOuroborosCreatesSeedNotesOnly(t *testing.T) {
 	})
 }
 
+func TestExportTargetConformanceBoundaries(t *testing.T) {
+	dir := t.TempDir()
+	if code := run([]string{"init", "--dir", dir}, &bytes.Buffer{}, &bytes.Buffer{}); code != 0 {
+		t.Fatalf("init expected exit code 0, got %d", code)
+	}
+	writeReadyContractForCLI(t, dir)
+	if code := run([]string{"end", "--dir", dir}, &bytes.Buffer{}, &bytes.Buffer{}); code != 0 {
+		t.Fatalf("end expected exit code 0, got %d", code)
+	}
+
+	cases := []struct {
+		target         string
+		seedFiles      []string
+		forbiddenPaths []string
+		assertContent  func(t *testing.T, out string)
+	}{
+		{
+			target:    "hyper-run",
+			seedFiles: []string{"plan.md", "ni-context.md", "readiness-expectations.md", "evidence-requirements.md", "first-run-focus.md"},
+			forbiddenPaths: []string{
+				filepath.Join(".hyper", "goals"),
+				filepath.Join(".hyper", "goals", "GOAL-0001"),
+				"tasks.md",
+				"evidence.md",
+				"review.md",
+				"next.md",
+			},
+		},
+		{
+			target:    "namba-ai",
+			seedFiles: []string{"planning.md", "ni-lock-summary.md", "capability-map.md", "evaluation-map.md", "risk-map.md", "suggested-spec-boundaries.md"},
+			forbiddenPaths: []string{
+				".namba",
+				filepath.Join(".namba", "specs"),
+				"SPEC-001.md",
+				"SPEC-002.md",
+				"SPEC_SEQUENCE.md",
+				"specs",
+				"tasks.md",
+				"run.md",
+				"sync.md",
+				"pr.md",
+				"land.md",
+			},
+			assertContent: func(t *testing.T, out string) {
+				t.Helper()
+				assertFileContains(t, filepath.Join(out, "suggested-spec-boundaries.md"), []string{
+					"proposal, not a required sequential SPEC chain",
+					"candidate graph boundaries",
+					"depends_on",
+					"Do not interpret this proposal as permission for NI to run namba",
+				})
+			},
+		},
+		{
+			target:    "ouroboros",
+			seedFiles: []string{"ouroboros-seed-notes.md"},
+			forbiddenPaths: []string{
+				".ouroboros",
+				filepath.Join(".ouroboros", "runtime"),
+				"execute",
+				"execute.md",
+				"evaluate",
+				"evaluate.md",
+				"evolve",
+				"evolve.md",
+				"runtime",
+			},
+		},
+		{
+			target:    "spec-kit",
+			seedFiles: []string{"spec-kit-seed-notes.md"},
+			forbiddenPaths: []string{
+				".specify",
+				filepath.Join(".specify", "specs"),
+				filepath.Join(".specify", "memory"),
+				filepath.Join(".github", "prompts"),
+				filepath.Join(".claude", "commands"),
+				filepath.Join(".codex", "commands"),
+				"slash-commands.md",
+				"commands",
+				"specify.md",
+				"plan.md",
+				"tasks.md",
+			},
+		},
+	}
+
+	for _, tc := range cases {
+		t.Run(tc.target, func(t *testing.T) {
+			out := filepath.Join(dir, "conformance", tc.target)
+			var stdout bytes.Buffer
+			code := run([]string{"export", "--dir", dir, "--target", tc.target, "--out", out}, &stdout, &bytes.Buffer{})
+			if code != 0 {
+				t.Fatalf("expected exit code 0, got %d", code)
+			}
+			if !strings.Contains(stdout.String(), "exported "+tc.target+" seed package") {
+				t.Fatalf("expected export summary, got %q", stdout.String())
+			}
+
+			assertExportFilesExactly(t, out, tc.seedFiles)
+			assertExportOmitsPaths(t, out, tc.forbiddenPaths)
+			if tc.assertContent != nil {
+				tc.assertContent(t, out)
+			}
+		})
+	}
+}
+
 func assertSeedNotesExport(t *testing.T, out string, wantFile string, wantContent []string) {
 	t.Helper()
 
@@ -1007,6 +1116,91 @@ func assertSeedNotesExport(t *testing.T, out string, wantFile string, wantConten
 	} {
 		if _, err := os.Stat(filepath.Join(out, forbidden)); !os.IsNotExist(err) {
 			t.Fatalf("expected no executable workflow file %s, stat err: %v", forbidden, err)
+		}
+	}
+}
+
+func assertExportFilesExactly(t *testing.T, out string, wantFiles []string) {
+	t.Helper()
+
+	entries, err := os.ReadDir(out)
+	if err != nil {
+		t.Fatalf("reading export directory: %v", err)
+	}
+	if len(entries) != len(wantFiles) {
+		t.Fatalf("expected %d seed files, got %d entries", len(wantFiles), len(entries))
+	}
+
+	want := map[string]struct{}{}
+	for _, name := range wantFiles {
+		want[name] = struct{}{}
+	}
+	for _, entry := range entries {
+		if entry.IsDir() {
+			t.Fatalf("expected seed file, got directory %s", entry.Name())
+		}
+		if _, ok := want[entry.Name()]; !ok {
+			t.Fatalf("unexpected export file %s", entry.Name())
+		}
+	}
+	for _, name := range wantFiles {
+		data, err := os.ReadFile(filepath.Join(out, name))
+		if err != nil {
+			t.Fatalf("reading expected seed file %s: %v", name, err)
+		}
+		if len(data) == 0 {
+			t.Fatalf("expected seed file %s to have content", name)
+		}
+	}
+}
+
+func assertExportOmitsPaths(t *testing.T, out string, forbiddenPaths []string) {
+	t.Helper()
+
+	forbidden := map[string]struct{}{}
+	for _, path := range forbiddenPaths {
+		forbidden[path] = struct{}{}
+	}
+	err := filepath.WalkDir(out, func(path string, d fs.DirEntry, err error) error {
+		if err != nil {
+			return err
+		}
+		rel, err := filepath.Rel(out, path)
+		if err != nil {
+			return err
+		}
+		if rel == "." {
+			return nil
+		}
+		for forbiddenPath := range forbidden {
+			if rel == forbiddenPath || strings.HasPrefix(rel, forbiddenPath+string(os.PathSeparator)) {
+				t.Fatalf("export created forbidden runtime state path %s", rel)
+			}
+		}
+		return nil
+	})
+	if err != nil {
+		t.Fatalf("walking export directory: %v", err)
+	}
+
+	for _, path := range forbiddenPaths {
+		if _, err := os.Stat(filepath.Join(out, path)); !os.IsNotExist(err) {
+			t.Fatalf("expected no forbidden export path %s, stat err: %v", path, err)
+		}
+	}
+}
+
+func assertFileContains(t *testing.T, path string, wants []string) {
+	t.Helper()
+
+	data, err := os.ReadFile(path)
+	if err != nil {
+		t.Fatalf("reading %s: %v", path, err)
+	}
+	text := string(data)
+	for _, want := range wants {
+		if !strings.Contains(text, want) {
+			t.Fatalf("expected %s to contain %q, got %q", path, want, text)
 		}
 	}
 }

@@ -210,6 +210,8 @@ done
 for export_target in hyper-run namba-ai ouroboros spec-kit; do
   run_cmd "ni export --target $export_target" "$NI_BIN" export --dir "$locked_ws" --target "$export_target" --out "$SMOKE_TMP/exports/$export_target"
   require_output "exported $export_target seed package"
+  run_cmd "target conformance ($export_target)" python3 "$ROOT/scripts/check-target-conformance.py" --target "$export_target" --dir "$SMOKE_TMP/exports/$export_target"
+  require_output "$export_target export conforms to seed-only boundary"
 done
 
 feedback_ws="$SMOKE_TMP/workspaces/feedback"
