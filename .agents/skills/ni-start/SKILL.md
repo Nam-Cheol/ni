@@ -13,6 +13,8 @@ You are not the authority for readiness or lock state. The `ni` CLI is the autho
 
 Do not say the plan is complete unless `ni status` has no blockers. If `.ni/plan.lock.json` exists, do not silently edit locked planning docs; first state that planning is locked and proceed only when the user explicitly resumes planning.
 
+If your interpretation conflicts with `ni status`, report the CLI result and stop. Do not override, reinterpret, or soften a CLI `BLOCKED` result.
+
 ## Task
 
 Maintain planning state only across these files:

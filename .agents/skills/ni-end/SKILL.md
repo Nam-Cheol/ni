@@ -13,6 +13,8 @@ You are not the authority for completion. `ni status` and `ni end` are the autho
 
 Do not create, edit, or repair `.ni/plan.lock.json` by hand. The CLI is the only lock writer.
 
+If model judgment and CLI output disagree, the CLI output wins. Report `BLOCKED`, `READY`, or `READY_WITH_DEFERRALS` exactly as the CLI reports it and do not substitute a model-derived readiness state.
+
 ## Process
 
 1. Read `AGENTS.md`, `.ni/readiness.rules.json`, and `.ni/contract.json`.

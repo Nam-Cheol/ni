@@ -13,6 +13,8 @@ Use this skill when the user says `ni-run` or asks to produce the NI execution p
 
 Do not reimplement prompt compilation in the skill. The CLI verifies lock hashes and enforces the prompt budget.
 
+If `ni run` reports a missing or stale lock, the skill must not produce a replacement prompt from memory. Report the CLI result as `BLOCKED` and stop.
+
 ## Process
 
 1. Read `AGENTS.md` and confirm `.ni/plan.lock.json` exists.
