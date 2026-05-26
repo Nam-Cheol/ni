@@ -1,0 +1,69 @@
+{
+  "schema": "ni.contract.v0",
+  "project": {
+    "id": "fixture",
+    "name": "Fixture",
+    "purpose": "Exercise readiness deferrals.",
+    "status": "draft"
+  },
+  "non_goals": [
+    {
+      "id": "NG-001",
+      "title": "Do not execute work."
+    }
+  ],
+  "capabilities": [
+    {
+      "id": "CAP-001",
+      "title": "Ready capability",
+      "status": "accepted",
+      "requirements": [
+        "REQ-001"
+      ],
+      "evaluations": [
+        "EVAL-001"
+      ],
+      "risks": [],
+      "artifacts": [
+        "ART-001"
+      ]
+    }
+  ],
+  "requirements": [
+    {
+      "id": "REQ-001",
+      "title": "Requirement",
+      "status": "accepted"
+    }
+  ],
+  "decisions": [
+    {
+      "id": "DEC-001",
+      "title": "Deferred decision",
+      "status": "deferred"
+    }
+  ],
+  "risks": [],
+  "evaluations": [
+    {
+      "id": "EVAL-001",
+      "title": "Evaluation",
+      "method": "fixture"
+    }
+  ],
+  "artifacts": [
+    {
+      "id": "ART-001",
+      "path": "docs/plan/",
+      "kind": "planning_docs"
+    }
+  ],
+  "open_questions": [
+    {
+      "id": "OQ-001",
+      "title": "Non-blocking question",
+      "blocker": false,
+      "status": "open"
+    }
+  ]
+}

@@ -1,0 +1,27 @@
+{
+  "schema": "ni.contract.v0",
+  "project": {
+    "id": "fixture",
+    "name": "Fixture",
+    "purpose": "Exercise readiness rules.",
+    "status": "draft"
+  },
+  "non_goals": [{"id": "NG-001", "title": "Non-goal"}],
+  "capabilities": [
+    {
+      "id": "CAP-001",
+      "title": "Capability",
+      "status": "accepted",
+      "requirements": [],
+      "evaluations": ["EVAL-001"],
+      "risks": [],
+      "artifacts": []
+    }
+  ],
+  "requirements": [],
+  "decisions": [{"id": "DEC-001", "title": "Decision", "status": "accepted"}],
+  "risks": [],
+  "evaluations": [{"id": "EVAL-001", "title": "Evaluation", "method": "fixture"}],
+  "artifacts": [],
+  "open_questions": []
+}
