@@ -27,8 +27,10 @@ ni-end
 
 ni-run
   Require an existing valid lockfile.
+  Infer or ask for a downstream target.
   Run or request ni run.
-  Do not implement directly before a generated harness/work packet is proposed.
+  Show the generated prompt or path.
+  State that ni did not execute implementation.
 ```
 
 ## Authority rule
@@ -37,3 +39,6 @@ Skills are interaction protocols. The CLI validates readiness, lock state, and p
 
 See [ni-end confirmation](35_NI_END_CONFIRMATION.md) for the required
 confirmation flow before lock creation.
+
+See [ni-run handoff](36_NI_RUN_HANDOFF.md) for the required prompt handoff
+flow after lock creation.

@@ -23,7 +23,8 @@ required_phrases = {
     'ni-run': [
         '`ni run` is a prompt compiler in v0',
         'Do not reimplement prompt compilation in the skill',
-        'ni run --dir . --max-chars 4000',
+        'ni run --dir . --target <target> --max-chars 4000',
+        'State clearly that `ni` compiled a prompt only and did not execute',
         'Do not execute Codex or shell commands as part of v0 `ni run`',
     ],
 }
