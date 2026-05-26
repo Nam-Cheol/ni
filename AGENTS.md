@@ -46,6 +46,30 @@ The kernel is authoritative. Generated harnesses are derived and mutable.
 6. A model may not silently edit locked planning docs.
 7. If a lock hash mismatch exists, stop and report `BLOCKED`.
 
+## Conversation authoring rules
+
+`ni init` creates the workspace. After initialization, the primary authoring UX
+is sustained model-user conversation through docs and skills, not user-entered
+contract editing commands.
+
+When authoring, models must:
+
+- extract purpose, actors, capabilities, requirements, decisions, risks,
+  evaluations, non-goals, constraints, artifacts, and open questions from the
+  conversation;
+- update `docs/plan/**` and `.ni/contract.json` together when a turn changes
+  planning state;
+- treat tentative, inferred, conflicting, or incomplete statements as draft
+  records, assumptions, or open questions instead of accepted decisions;
+- preserve stable contract IDs and trace capability links to requirements,
+  evaluations, risks, and artifacts;
+- use `ni status`, `ni end`, and `ni run` as authoritative gates and compilers;
+- never declare docs complete from model judgment alone.
+
+Do not add user-facing contract `add`, `list`, or `set` commands for early
+authoring. Users should not need to manually edit `.ni/contract.json`; models
+and skills maintain it from conversation while the CLI validates the result.
+
 ## Source-of-truth precedence
 
 After `.ni/plan.lock.json` exists, use this order:

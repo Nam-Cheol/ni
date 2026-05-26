@@ -12,6 +12,23 @@ The current product is `ni-kernel`, not an execution harness.
 conversation -> docs/plan + .ni/contract.json -> ni status -> ni end -> ni run
 ```
 
+## Authoring model
+
+`ni init` creates the planning workspace. After that, authoring happens through
+conversation with a planning model and NI skills. The model maintains
+`docs/plan/**` and `.ni/contract.json` from the ongoing conversation; users
+should not have to manually edit contract JSON.
+
+The CLI is still authoritative, but it is not the primary planning interface.
+Use `ni status` to validate readiness, `ni end` to lock a ready plan, and
+`ni run` to compile a bounded prompt from a valid lock.
+
+Authoring rules are documented in:
+
+- [Conversation authoring](docs/28_CONVERSATION_AUTHORING.md)
+- [Authoring protocol](docs/29_AUTHORING_PROTOCOL.md)
+- [Document update rules](docs/30_DOC_UPDATE_RULES.md)
+
 ## JSON schemas
 
 Versioned JSON Schemas for NI state files live in `schema/`:
@@ -91,8 +108,9 @@ go run ./cmd/ni status --dir "$tmp/plan"
 ```
 
 A new template workspace is expected to print `BLOCKED` because it still has
-TODO values and an open blocker question. Fill in `docs/plan/**` and
-`.ni/contract.json`, then check readiness again:
+TODO values and an open blocker question. Continue planning through
+conversation with a model or NI skill; the model should update `docs/plan/**`
+and `.ni/contract.json` together. Then check readiness again:
 
 ```bash
 go run ./cmd/ni status --dir "$tmp/plan"
@@ -152,7 +170,9 @@ Override `PREFIX` or `BINDIR` to choose another install location. See
 
 ### init
 
-`ni init` creates the planning docs and `.ni` skeleton.
+`ni init` creates the planning docs and `.ni` skeleton. It does not start a
+contract editing session; the intended authoring flow is model-assisted
+conversation after workspace creation.
 
 ```bash
 go run ./cmd/ni init --dir <path>
