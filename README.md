@@ -9,6 +9,8 @@ It turns ongoing planning conversations into a locked project contract, then der
 3. lock the accepted plan with hashes,
 4. compile a short execution goal prompt from the locked plan.
 
+Positioning: `ni` sits before execution runtimes. It is not a SPEC runner, multi-agent layer, task queue, or Hyper Run clone. It can produce downstream-compatible prompts or seed harness material after lock, but the kernel remains the authority for contract readiness, locking, and source-of-truth checks.
+
 ## Product boundary
 
 `ni` has two layers.

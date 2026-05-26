@@ -27,6 +27,15 @@ ni-generated-harness
 
 The kernel is authoritative. Generated harnesses are derived and mutable.
 
+## Explicit boundary rules
+
+- `ni` is not a project growth runtime.
+- `ni` is not a SPEC runner.
+- `ni` is not a multi-agent execution layer.
+- `ni` must not copy Hyper Run `run` or `complete` behavior into core.
+- `ni` may generate downstream-compatible seed material only after `.ni/plan.lock.json` exists and locked hashes are valid.
+- Downstream seed material may include prompts, harness proposals, or handoff packets. It must not become kernel-owned execution state.
+
 ## Authority rules
 
 1. Skills are UX; the CLI is authority.
