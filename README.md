@@ -12,6 +12,28 @@ The current product is `ni-kernel`, not an execution harness.
 conversation -> docs/plan + .ni/contract.json -> ni status -> ni end -> ni run
 ```
 
+## JSON schemas
+
+Versioned JSON Schemas for NI state files live in `schema/`:
+
+```text
+schema/ni.project.v0.json
+schema/ni.contract.v0.json
+schema/ni.lock.v0.json
+schema/ni.readiness-rules.v0.json
+schema/ni.readiness-profiles.v0.json
+schema/ni.feedback.v0.json
+schema/ni.pressure.v0.json
+schema/ni.amendment.v0.json
+schema/ni.harness-candidate.v0.json
+```
+
+Validate the published schemas and current `.ni` state files with:
+
+```bash
+python3 scripts/check-schema.py
+```
+
 ## What ni is
 
 `ni` is the authority for:

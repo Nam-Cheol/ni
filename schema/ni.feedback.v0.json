@@ -1,0 +1,74 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "ni.feedback.v0",
+  "title": "NI feedback entry v0",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "ingested_at",
+    "source_target",
+    "related_capabilities",
+    "observed_blockers",
+    "validation_gaps",
+    "recurring_failures",
+    "suggested_contract_changes",
+    "raw_summary"
+  ],
+  "properties": {
+    "schema": {
+      "const": "ni.feedback.v0"
+    },
+    "ingested_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "source_target": {
+      "type": "string",
+      "minLength": 1
+    },
+    "related_lock_hash": {
+      "type": "string",
+      "pattern": "^sha256:.+"
+    },
+    "related_capabilities": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "pattern": "^CAP-[0-9]{3}$"
+      }
+    },
+    "observed_blockers": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "validation_gaps": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "recurring_failures": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "suggested_contract_changes": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "raw_summary": {
+      "type": "string",
+      "minLength": 1
+    }
+  }
+}

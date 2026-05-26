@@ -1,0 +1,60 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "ni.readiness-rules.v0",
+  "title": "NI readiness rules v0",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "statuses",
+    "blocking_rules",
+    "required_docs"
+  ],
+  "properties": {
+    "schema": {
+      "const": "ni.readiness.rules.v0"
+    },
+    "statuses": {
+      "type": "array",
+      "minItems": 3,
+      "items": {
+        "type": "string",
+        "enum": [
+          "BLOCKED",
+          "READY_WITH_DEFERRALS",
+          "READY"
+        ]
+      }
+    },
+    "blocking_rules": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "title"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^R[0-9]{3}$"
+          },
+          "title": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      }
+    },
+    "required_docs": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string",
+        "pattern": "^docs/plan/.+[.]md$"
+      }
+    }
+  }
+}

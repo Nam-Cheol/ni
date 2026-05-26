@@ -1,0 +1,87 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "ni.pressure.v0",
+  "title": "NI pressure ledger v0",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "items"
+  ],
+  "properties": {
+    "schema": {
+      "const": "ni.pressure.v0"
+    },
+    "items": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "kind",
+          "status",
+          "evidence_refs",
+          "related_capabilities",
+          "related_risks",
+          "proposed_action",
+          "requires_user_acceptance"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^P-[0-9]{3}$"
+          },
+          "kind": {
+            "type": "string",
+            "enum": [
+              "planning_gap",
+              "validation_gap",
+              "recurring_blocker",
+              "reusable_pattern",
+              "harness_candidate"
+            ]
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "observed",
+              "repeated",
+              "promotable",
+              "accepted",
+              "retired"
+            ]
+          },
+          "evidence_refs": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "related_capabilities": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "pattern": "^CAP-[0-9]{3}$"
+            }
+          },
+          "related_risks": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "pattern": "^RISK-[0-9]{3}$"
+            }
+          },
+          "proposed_action": {
+            "type": "string",
+            "minLength": 1
+          },
+          "requires_user_acceptance": {
+            "type": "boolean"
+          }
+        }
+      }
+    }
+  }
+}

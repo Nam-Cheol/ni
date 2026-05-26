@@ -1,0 +1,54 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "ni.project.v0",
+  "title": "NI project metadata v0",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "id",
+    "name",
+    "created_for",
+    "kernel_phase",
+    "commands",
+    "prompt_max_chars"
+  ],
+  "properties": {
+    "schema": {
+      "const": "ni.project.v0"
+    },
+    "id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "name": {
+      "type": "string",
+      "minLength": 1
+    },
+    "created_for": {
+      "type": "string",
+      "minLength": 1
+    },
+    "kernel_phase": {
+      "type": "string",
+      "minLength": 1
+    },
+    "commands": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string",
+        "enum": [
+          "init",
+          "status",
+          "end",
+          "run"
+        ]
+      }
+    },
+    "prompt_max_chars": {
+      "type": "integer",
+      "const": 4000
+    }
+  }
+}

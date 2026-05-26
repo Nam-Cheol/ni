@@ -1,0 +1,113 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "ni.harness-candidate.v0",
+  "title": "NI harness candidate ledger v0",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "candidates"
+  ],
+  "properties": {
+    "schema": {
+      "const": "ni.harness_candidates.v0"
+    },
+    "active_rule_id": {
+      "type": "string",
+      "pattern": "^HC-[0-9]{3}$"
+    },
+    "candidates": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "status",
+          "target",
+          "intended_downstream_runtime",
+          "required_evidence",
+          "constraints",
+          "forbidden_behavior",
+          "related_lock_hash",
+          "related_pressure_ids",
+          "requires_user_acceptance",
+          "executes_inside_kernel"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^HC-[0-9]{3}$"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "proposed",
+              "candidate",
+              "validated_candidate",
+              "user_accepted",
+              "active_rule",
+              "retired"
+            ]
+          },
+          "target": {
+            "type": "string",
+            "minLength": 1
+          },
+          "intended_downstream_runtime": {
+            "type": "string",
+            "minLength": 1
+          },
+          "required_evidence": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "constraints": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "forbidden_behavior": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "related_lock_hash": {
+            "type": "string",
+            "pattern": "^sha256:[0-9a-f]{64}$"
+          },
+          "related_pressure_ids": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "type": "string",
+              "pattern": "^P-[0-9]{3}$"
+            }
+          },
+          "validation_evidence_path": {
+            "type": "string",
+            "minLength": 1
+          },
+          "requires_user_acceptance": {
+            "type": "boolean",
+            "const": true
+          },
+          "executes_inside_kernel": {
+            "type": "boolean",
+            "const": false
+          }
+        }
+      }
+    }
+  }
+}

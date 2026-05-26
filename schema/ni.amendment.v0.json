@@ -1,0 +1,98 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "ni.amendment.v0",
+  "title": "NI amendment v0",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "id",
+    "title",
+    "reason",
+    "affected_docs",
+    "affected_contract_ids",
+    "proposed_changes",
+    "risk_impact",
+    "readiness_impact",
+    "created_from_feedback_refs",
+    "created_from_pressure_refs",
+    "status",
+    "created_at"
+  ],
+  "properties": {
+    "schema": {
+      "const": "ni.amendment.v0"
+    },
+    "id": {
+      "type": "string",
+      "pattern": "^AMEND-[0-9]{3}$"
+    },
+    "title": {
+      "type": "string",
+      "minLength": 1
+    },
+    "reason": {
+      "type": "string"
+    },
+    "affected_docs": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "affected_contract_ids": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "pattern": "^(CAP|REQ|DEC|RISK|EVAL|ART|OQ|NG)-[0-9]{3}$"
+      }
+    },
+    "proposed_changes": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "risk_impact": {
+      "type": "string"
+    },
+    "readiness_impact": {
+      "type": "string"
+    },
+    "created_from_feedback_refs": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "created_from_pressure_refs": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "draft",
+        "applied"
+      ]
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "applied_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "source_lock_hash": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    }
+  }
+}

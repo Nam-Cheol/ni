@@ -2,6 +2,26 @@
 
 The machine-readable project contract lives at `.ni/contract.json`.
 
+The published JSON Schema for this file is
+`schema/ni.contract.v0.json`. Other NI state files have versioned schemas in
+`schema/`:
+
+```text
+schema/ni.project.v0.json
+schema/ni.contract.v0.json
+schema/ni.lock.v0.json
+schema/ni.readiness-rules.v0.json
+schema/ni.readiness-profiles.v0.json
+schema/ni.feedback.v0.json
+schema/ni.pressure.v0.json
+schema/ni.amendment.v0.json
+schema/ni.harness-candidate.v0.json
+```
+
+`schema/ni.harness-candidate.v0.json` validates the
+`.ni/harness.candidates.json` ledger whose in-file schema value is
+`ni.harness_candidates.v0`.
+
 ## Required top-level fields
 
 ```text
@@ -124,3 +144,14 @@ artifacts[]
 ```
 
 A work packet generated later should trace back to IDs from the locked contract.
+
+## Schema checks
+
+Run the schema check with:
+
+```bash
+python3 scripts/check-schema.py
+```
+
+The check validates the published schema files and the current `.ni` state
+files that are present in the repository.
