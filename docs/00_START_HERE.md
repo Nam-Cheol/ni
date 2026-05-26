@@ -5,10 +5,10 @@ This repository starts from a strict premise: `ni` should not begin as a generic
 The first implementation target is a planning kernel:
 
 ```text
-conversation -> docs graph -> readiness -> lock -> 4000-char goal prompt -> generated harness
+conversation -> docs contract -> readiness gate -> lockfile -> 4000-char goal prompt
 ```
 
-Execution comes later.
+Generated harnesses and execution come later.
 
 ## First development sequence
 

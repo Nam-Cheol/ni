@@ -9,7 +9,7 @@
   "non_goals": [
     {
       "id": "NG-001",
-      "title": "Do not implement a task runner before readiness, lockfile, and prompt compiler exist."
+      "title": "Do not implement a task runner before contract, readiness, lockfile, and prompt compiler exist."
     },
     {
       "id": "NG-002",

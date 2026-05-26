@@ -8,6 +8,8 @@ SPEC-000 reframe docs from lightweight harness to project intent compiler
 
 ## Phase 1: kernel CLI
 
+The first implementation target is the contract/readiness/lock/prompt kernel:
+
 ```text
 SPEC-001 bootstrap CLI
 SPEC-002 project docs template

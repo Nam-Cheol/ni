@@ -4,7 +4,7 @@
 
 It turns ongoing planning conversations into a locked project contract, then derives a project-specific harness from that contract. The first product target is not a generic task runner. The first target is a small planning kernel with four authoritative operations:
 
-1. build and maintain planning docs,
+1. maintain the planning contract,
 2. check readiness with deterministic rules,
 3. lock the accepted plan with hashes,
 4. compile a short execution goal prompt from the locked plan.
@@ -64,7 +64,7 @@ model inference
 
 If hashes in `.ni/plan.lock.json` do not match current files, `ni run` must stop.
 
-## Non-goals before v0 lock/prompt works
+## Non-goals before v0 contract/readiness/lock/prompt works
 
 Do not add these before the kernel is working:
 
