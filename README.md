@@ -73,7 +73,9 @@ do not become kernel-owned execution state.
 
 ## Quickstart
 
-The repository currently runs as a Go CLI:
+### Go run mode
+
+Use `go run` when trying the CLI directly from source:
 
 ```bash
 go run ./cmd/ni --help
@@ -110,6 +112,30 @@ To inspect this repository's already locked plan:
 go run ./cmd/ni status --dir .
 go run ./cmd/ni run --dir . --target generic --max-chars 4000
 ```
+
+### Built binary mode
+
+Build a local binary into `bin/ni`:
+
+```bash
+make build
+./bin/ni --help
+./bin/ni version
+```
+
+`make build` injects a git-derived version when git metadata is available.
+
+### Local install mode
+
+Install a local binary to `~/.local/bin/ni` by default:
+
+```bash
+make install-local
+~/.local/bin/ni version
+```
+
+Override `PREFIX` or `BINDIR` to choose another install location. See
+[docs/22_INSTALL.md](docs/22_INSTALL.md) for installation details.
 
 ## Core commands
 
@@ -335,11 +361,18 @@ must not execute them.
 When Go code exists, run:
 
 ```bash
-gofmt -w .
-go test ./...
-bash scripts/quality.sh
+make test
+make quality
+make smoke
+make build
 ```
 
-`scripts/quality.sh` already runs formatting, Go tests, JSON checks, Markdown
-fence checks, skill metadata checks, prompt budget checks, and core-boundary
-self-tests.
+`make quality` runs `scripts/quality.sh`, which already runs formatting, Go
+tests, JSON checks, Markdown fence checks, skill metadata checks, prompt budget
+checks, core-boundary self-tests, and smoke tests.
+
+## License
+
+TODO: choose an open-source license with the project owner, then add a root
+`LICENSE` file. Until then, this repository should not be treated as legally
+reusable open-source software.

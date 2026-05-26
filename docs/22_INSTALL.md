@@ -1,0 +1,81 @@
+# Install ni
+
+`ni` is currently distributed from source. Package publishing, Homebrew taps,
+GoReleaser, and automated release tooling are intentionally excluded at this
+stage.
+
+## Prerequisites
+
+- Go 1.22 or newer.
+- Git, if you want builds to include a git-derived version string.
+
+## Run from source
+
+Use this mode when developing `ni` or trying the CLI without creating a binary:
+
+```bash
+go run ./cmd/ni --help
+go run ./cmd/ni version
+go run ./cmd/ni status --dir .
+```
+
+Source runs use the default development version unless you pass linker flags
+manually.
+
+## Build a local binary
+
+Build into `bin/ni`:
+
+```bash
+make build
+./bin/ni --help
+./bin/ni version
+```
+
+`make build` injects the version from:
+
+```bash
+git describe --tags --always --dirty
+```
+
+If git metadata is unavailable, the build falls back to `0.0.0-dev`.
+
+## Install locally
+
+Install to `~/.local/bin/ni` by default:
+
+```bash
+make install-local
+~/.local/bin/ni version
+```
+
+To choose another install location, override `PREFIX` or `BINDIR`:
+
+```bash
+make install-local PREFIX=/usr/local
+make install-local BINDIR="$HOME/bin"
+```
+
+Ensure the chosen directory is on your `PATH` before running `ni` by name.
+
+## Validation
+
+The supported local validation commands are:
+
+```bash
+make test
+make quality
+make smoke
+make build
+```
+
+These map to the repository's existing Go tests, quality checks, smoke tests,
+and local binary build.
+
+## License
+
+TODO: choose an open-source license with the project owner, then add a root
+`LICENSE` file and update this section.
+
+Until a license is selected and committed, the repository should not be treated
+as legally reusable open-source software.
