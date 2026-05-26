@@ -9,6 +9,7 @@ import (
 
 	"ni/internal/core/contract"
 	"ni/internal/core/lock"
+	"ni/internal/core/target"
 )
 
 const DefaultMaxChars = 4000
@@ -17,6 +18,7 @@ type Options struct {
 	Dir      string
 	Out      string
 	MaxChars int
+	Target   string
 }
 
 type Result struct {
@@ -37,6 +39,11 @@ func Compile(opts Options) (Result, error) {
 		return Result{}, fmt.Errorf("max-chars must be greater than 0")
 	}
 
+	selectedTarget, err := target.Lookup(opts.Target)
+	if err != nil {
+		return Result{}, err
+	}
+
 	verification, err := lock.Verify(dir)
 	if err != nil {
 		return Result{}, err
@@ -50,7 +57,7 @@ func Compile(opts Options) (Result, error) {
 		return Result{}, err
 	}
 
-	text := buildPrompt(c, verification.Lockfile)
+	text := buildPrompt(c, verification.Lockfile, selectedTarget)
 	text = limitChars(text, maxChars)
 	if opts.Out != "" {
 		if err := os.MkdirAll(filepath.Dir(opts.Out), 0o755); err != nil {
@@ -63,17 +70,19 @@ func Compile(opts Options) (Result, error) {
 	return Result{Prompt: text, Out: opts.Out}, nil
 }
 
-func buildPrompt(c contract.Contract, l lock.Lockfile) string {
+func buildPrompt(c contract.Contract, l lock.Lockfile, t target.Target) string {
 	var b strings.Builder
 	fmt.Fprintf(&b, "Goal: continue work from locked NI plan %s.\n\n", l.LockedAt)
 	fmt.Fprintf(&b, "Project: %s - %s\n", c.Project.Name, c.Project.Purpose)
 	fmt.Fprintf(&b, "Readiness: %s\n", l.Readiness.Status)
+	fmt.Fprintf(&b, "Target: %s (%s)\n", t.Name, t.Artifact)
 	fmt.Fprintf(&b, "Source of truth: %s\n\n", strings.Join(l.SourceOfTruth, " > "))
 	b.WriteString("Rules:\n")
 	b.WriteString("- Treat .ni/plan.lock.json as authoritative.\n")
 	b.WriteString("- Verify locked file hashes before using planning docs.\n")
 	b.WriteString("- Do not weaken acceptance criteria.\n")
 	b.WriteString("- Do not execute shell, Codex, adapters, queues, or automations from ni run.\n\n")
+	writeTargetGuidance(&b, t)
 
 	writeCapabilities(&b, c.Capabilities)
 	writeRequirements(&b, c.Requirements)
@@ -82,6 +91,30 @@ func buildPrompt(c contract.Contract, l lock.Lockfile) string {
 
 	b.WriteString("Expected output: make the smallest implementation move that satisfies the locked contract, then report changed files and validation evidence.\n")
 	return b.String()
+}
+
+func writeTargetGuidance(b *strings.Builder, t target.Target) {
+	b.WriteString("Target guidance:\n")
+	switch t.Name {
+	case "codex":
+		b.WriteString("- Produce a Codex-ready implementation prompt only; do not invoke codex exec.\n")
+		b.WriteString("- Include scope, locked authority, and validation evidence expected from the worker.\n")
+	case "human-team":
+		b.WriteString("- Produce a human-team handoff with ownership-neutral next steps and validation checks.\n")
+		b.WriteString("- Keep execution responsibility outside ni; this artifact is planning seed material.\n")
+	case "hyper-run":
+		b.WriteString("- Produce Hyper Run-compatible seed guidance only; do not call hyper run.\n")
+		b.WriteString("- Do not generate .hyper/goals runtime packets from ni run.\n")
+	case "namba-ai":
+		b.WriteString("- Produce Namba AI seed guidance only; do not call downstream runtimes.\n")
+	case "ouroboros":
+		b.WriteString("- Produce Ouroboros seed guidance only; do not call downstream runtimes.\n")
+	case "spec-kit":
+		b.WriteString("- Produce Spec Kit export guidance only; do not execute specification tooling.\n")
+	default:
+		b.WriteString("- Produce a generic downstream prompt only; do not execute downstream runtimes.\n")
+	}
+	b.WriteString("\n")
 }
 
 func writeCapabilities(b *strings.Builder, items []contract.Capability) {

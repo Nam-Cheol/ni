@@ -219,6 +219,84 @@ func TestRunWritesPrompt(t *testing.T) {
 	}
 }
 
+func TestRunWithTarget(t *testing.T) {
+	dir := t.TempDir()
+	if code := run([]string{"init", "--dir", dir}, &bytes.Buffer{}, &bytes.Buffer{}); code != 0 {
+		t.Fatalf("init expected exit code 0, got %d", code)
+	}
+	writeReadyContractForCLI(t, dir)
+	if code := run([]string{"end", "--dir", dir}, &bytes.Buffer{}, &bytes.Buffer{}); code != 0 {
+		t.Fatalf("end expected exit code 0, got %d", code)
+	}
+
+	for _, targetName := range []string{"generic", "codex", "human-team"} {
+		t.Run(targetName, func(t *testing.T) {
+			var stdout bytes.Buffer
+			code := run([]string{"run", "--dir", dir, "--target", targetName}, &stdout, &bytes.Buffer{})
+			if code != 0 {
+				t.Fatalf("expected exit code 0, got %d", code)
+			}
+			if !strings.Contains(stdout.String(), "Target: "+targetName) {
+				t.Fatalf("expected target output, got %q", stdout.String())
+			}
+			if len([]rune(stdout.String())) > 4000 {
+				t.Fatalf("expected prompt <= 4000 chars, got %d", len([]rune(stdout.String())))
+			}
+		})
+	}
+}
+
+func TestRunRejectsUnsupportedTarget(t *testing.T) {
+	dir := t.TempDir()
+	if code := run([]string{"init", "--dir", dir}, &bytes.Buffer{}, &bytes.Buffer{}); code != 0 {
+		t.Fatalf("init expected exit code 0, got %d", code)
+	}
+	writeReadyContractForCLI(t, dir)
+	if code := run([]string{"end", "--dir", dir}, &bytes.Buffer{}, &bytes.Buffer{}); code != 0 {
+		t.Fatalf("end expected exit code 0, got %d", code)
+	}
+
+	var stderr bytes.Buffer
+	code := run([]string{"run", "--dir", dir, "--target", "shell"}, &bytes.Buffer{}, &stderr)
+	if code != 1 {
+		t.Fatalf("expected exit code 1, got %d", code)
+	}
+	if !strings.Contains(stderr.String(), `unsupported target "shell"`) {
+		t.Fatalf("expected unsupported target error, got %q", stderr.String())
+	}
+}
+
+func TestTargets(t *testing.T) {
+	var stdout bytes.Buffer
+	code := run([]string{"targets"}, &stdout, &bytes.Buffer{})
+	if code != 0 {
+		t.Fatalf("expected exit code 0, got %d", code)
+	}
+	for _, name := range []string{"generic", "codex", "human-team", "hyper-run", "namba-ai", "ouroboros", "spec-kit"} {
+		if !strings.Contains(stdout.String(), name) {
+			t.Fatalf("expected target %q in output, got %q", name, stdout.String())
+		}
+	}
+}
+
+func TestTargetsJSON(t *testing.T) {
+	var stdout bytes.Buffer
+	code := run([]string{"targets", "--json"}, &stdout, &bytes.Buffer{})
+	if code != 0 {
+		t.Fatalf("expected exit code 0, got %d", code)
+	}
+	var payload []map[string]string
+	if err := json.Unmarshal(stdout.Bytes(), &payload); err != nil {
+		t.Fatalf("expected valid JSON targets, got %v: %q", err, stdout.String())
+	}
+	if len(payload) != 7 {
+		t.Fatalf("expected 7 targets, got %d: %#v", len(payload), payload)
+	}
+	if payload[0]["name"] != "generic" {
+		t.Fatalf("expected built-in target order, got %#v", payload)
+	}
+}
+
 func TestGraph(t *testing.T) {
 	dir := t.TempDir()
 	if code := run([]string{"init", "--dir", dir}, &bytes.Buffer{}, &bytes.Buffer{}); code != 0 {

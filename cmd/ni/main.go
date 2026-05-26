@@ -16,6 +16,7 @@ import (
 	"ni/internal/core/profile"
 	"ni/internal/core/prompt"
 	"ni/internal/core/readiness"
+	"ni/internal/core/target"
 	"ni/internal/version"
 )
 
@@ -42,6 +43,8 @@ func run(args []string, stdout io.Writer, stderr io.Writer) int {
 		return runRun(args[1:], stdout, stderr)
 	case "status":
 		return runStatus(args[1:], stdout, stderr)
+	case "targets":
+		return runTargets(args[1:], stdout, stderr)
 	case "version":
 		fmt.Fprintln(stdout, version.Version)
 		return 0
@@ -256,6 +259,7 @@ func runRun(args []string, stdout io.Writer, stderr io.Writer) int {
 	dir := "."
 	out := ""
 	maxChars := prompt.DefaultMaxChars
+	targetName := target.Generic
 	for i := 0; i < len(args); i++ {
 		switch args[i] {
 		case "--dir":
@@ -284,13 +288,20 @@ func runRun(args []string, stdout io.Writer, stderr io.Writer) int {
 			}
 			maxChars = value
 			i++
+		case "--target":
+			if i+1 >= len(args) {
+				fmt.Fprintln(stderr, "missing value for --target")
+				return 1
+			}
+			targetName = args[i+1]
+			i++
 		default:
 			fmt.Fprintf(stderr, "unknown run option: %s\n", args[i])
 			return 1
 		}
 	}
 
-	result, err := prompt.Compile(prompt.Options{Dir: dir, Out: out, MaxChars: maxChars})
+	result, err := prompt.Compile(prompt.Options{Dir: dir, Out: out, MaxChars: maxChars, Target: targetName})
 	if err != nil {
 		fmt.Fprintf(stderr, "run failed: %v\n", err)
 		return 1
@@ -300,6 +311,34 @@ func runRun(args []string, stdout io.Writer, stderr io.Writer) int {
 		return 0
 	}
 	fmt.Fprint(stdout, result.Prompt)
+	return 0
+}
+
+func runTargets(args []string, stdout io.Writer, stderr io.Writer) int {
+	jsonOutput := false
+	for i := 0; i < len(args); i++ {
+		switch args[i] {
+		case "--json":
+			jsonOutput = true
+		default:
+			fmt.Fprintf(stderr, "unknown targets option: %s\n", args[i])
+			return 1
+		}
+	}
+
+	items := target.List()
+	if jsonOutput {
+		encoder := json.NewEncoder(stdout)
+		encoder.SetIndent("", "  ")
+		if err := encoder.Encode(items); err != nil {
+			fmt.Fprintf(stderr, "targets failed: %v\n", err)
+			return 1
+		}
+		return 0
+	}
+	for _, item := range items {
+		fmt.Fprintf(stdout, "%s\t%s\t%s\n", item.Name, item.Artifact, item.Description)
+	}
 	return 0
 }
 
@@ -363,8 +402,9 @@ Usage:
   ni graph --dir <path> [--json]
   ni harness plan --dir <path> [--json]
   ni init --dir <path> [--profile concept|prototype|mvp|beta|production] [--product-type <type>] [--surface <surface>] [--interaction-mode <mode>]
-  ni run --dir <path> [--out <path>] [--max-chars N]
+  ni run --dir <path> [--target <target>] [--out <path>] [--max-chars N]
   ni status --dir <path> [--json]
+  ni targets [--json]
   ni version
 
 Commands:
@@ -374,6 +414,7 @@ Commands:
   init     Create planning docs and .ni skeleton.
   run      Compile a goal prompt from the locked plan.
   status   Validate planning readiness.
+  targets  List downstream prompt/export targets.
   version  Print the ni version.
 `)
 }

@@ -78,6 +78,52 @@ func TestCompileWritesOutFile(t *testing.T) {
 	}
 }
 
+func TestCompileTargetsStayWithinPromptBudget(t *testing.T) {
+	dir := readyLockedProject(t)
+
+	for _, targetName := range []string{"codex", "human-team"} {
+		t.Run(targetName, func(t *testing.T) {
+			result, err := Compile(Options{Dir: dir, Target: targetName, MaxChars: DefaultMaxChars})
+			if err != nil {
+				t.Fatalf("Compile returned error: %v", err)
+			}
+			if utf8.RuneCountInString(result.Prompt) > DefaultMaxChars {
+				t.Fatalf("prompt exceeded budget: %d", utf8.RuneCountInString(result.Prompt))
+			}
+			if !strings.Contains(result.Prompt, "Target: "+targetName) {
+				t.Fatalf("expected target marker in prompt, got %q", result.Prompt)
+			}
+		})
+	}
+}
+
+func TestCompileRejectsUnsupportedTarget(t *testing.T) {
+	dir := readyLockedProject(t)
+
+	_, err := Compile(Options{Dir: dir, Target: "shell", MaxChars: DefaultMaxChars})
+	if err == nil {
+		t.Fatal("expected unsupported target error")
+	}
+	if !strings.Contains(err.Error(), `unsupported target "shell"`) {
+		t.Fatalf("expected unsupported target error, got %v", err)
+	}
+}
+
+func TestCompileValidatesTargetBeforeLockfile(t *testing.T) {
+	dir := t.TempDir()
+	if _, err := docstore.Init(dir); err != nil {
+		t.Fatalf("initializing project: %v", err)
+	}
+
+	_, err := Compile(Options{Dir: dir, Target: "shell", MaxChars: DefaultMaxChars})
+	if err == nil {
+		t.Fatal("expected unsupported target error")
+	}
+	if !strings.Contains(err.Error(), `unsupported target "shell"`) {
+		t.Fatalf("expected unsupported target error, got %v", err)
+	}
+}
+
 func readyLockedProject(t *testing.T) string {
 	t.Helper()
 
