@@ -1,0 +1,10 @@
+{
+  "source_target": "human-team",
+  "related_lock_hash": "sha256:human-team-fixture-lock",
+  "related_capabilities": ["CAP-021", "CAP-003"],
+  "observed_blockers": ["Reviewers could not see whether downstream implementation feedback had been captured."],
+  "validation_gaps": ["Human review feedback needs a listable JSON representation."],
+  "recurring_failures": ["Suggested contract changes were discussed but not recorded as planning input."],
+  "suggested_contract_changes": ["Clarify that feedback can inform future planning but does not mutate locked state."],
+  "raw_summary": "The human team wants implementation feedback preserved for the next planning cycle without changing readiness state automatically."
+}

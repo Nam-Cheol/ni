@@ -267,6 +267,99 @@ func TestRunRejectsUnsupportedTarget(t *testing.T) {
 	}
 }
 
+func TestFeedbackAddAndListJSON(t *testing.T) {
+	dir := t.TempDir()
+	if code := run([]string{"init", "--dir", dir}, &bytes.Buffer{}, &bytes.Buffer{}); code != 0 {
+		t.Fatalf("init expected exit code 0, got %d", code)
+	}
+
+	for _, fixture := range []string{"codex.json", "human-team.json"} {
+		var stdout bytes.Buffer
+		code := run([]string{"feedback", "add", "--dir", dir, "--file", filepath.Join("..", "..", "testdata", "feedback", fixture)}, &stdout, &bytes.Buffer{})
+		if code != 0 {
+			t.Fatalf("expected exit code 0 adding %s, got %d", fixture, code)
+		}
+		if !strings.Contains(stdout.String(), "recorded feedback from") {
+			t.Fatalf("expected feedback add summary, got %q", stdout.String())
+		}
+	}
+
+	var textOut bytes.Buffer
+	code := run([]string{"feedback", "list", "--dir", dir}, &textOut, &bytes.Buffer{})
+	if code != 0 {
+		t.Fatalf("expected exit code 0, got %d", code)
+	}
+	if !strings.Contains(textOut.String(), "codex") || !strings.Contains(textOut.String(), "human-team") {
+		t.Fatalf("expected text feedback list to include both fixtures, got %q", textOut.String())
+	}
+
+	var stdout bytes.Buffer
+	code = run([]string{"feedback", "list", "--dir", dir, "--json"}, &stdout, &bytes.Buffer{})
+	if code != 0 {
+		t.Fatalf("expected exit code 0, got %d", code)
+	}
+	var payload []map[string]any
+	if err := json.Unmarshal(stdout.Bytes(), &payload); err != nil {
+		t.Fatalf("expected valid feedback JSON, got %v: %q", err, stdout.String())
+	}
+	if len(payload) != 2 {
+		t.Fatalf("expected two feedback entries, got %#v", payload)
+	}
+	if payload[0]["source_target"] != "codex" || payload[1]["source_target"] != "human-team" {
+		t.Fatalf("expected codex and human-team feedback, got %#v", payload)
+	}
+}
+
+func TestFeedbackAddIsInert(t *testing.T) {
+	dir := t.TempDir()
+	if code := run([]string{"init", "--dir", dir}, &bytes.Buffer{}, &bytes.Buffer{}); code != 0 {
+		t.Fatalf("init expected exit code 0, got %d", code)
+	}
+	writeReadyContractForCLI(t, dir)
+	if code := run([]string{"end", "--dir", dir}, &bytes.Buffer{}, &bytes.Buffer{}); code != 0 {
+		t.Fatalf("end expected exit code 0, got %d", code)
+	}
+
+	contractPath := filepath.Join(dir, ".ni", "contract.json")
+	lockPath := filepath.Join(dir, ".ni", "plan.lock.json")
+	beforeContract := readFileForCLI(t, contractPath)
+	beforeLock := readFileForCLI(t, lockPath)
+
+	code := run([]string{"feedback", "add", "--dir", dir, "--file", filepath.Join("..", "..", "testdata", "feedback", "codex.json")}, &bytes.Buffer{}, &bytes.Buffer{})
+	if code != 0 {
+		t.Fatalf("expected exit code 0, got %d", code)
+	}
+	if got := readFileForCLI(t, contractPath); !bytes.Equal(got, beforeContract) {
+		t.Fatalf("feedback add changed contract.json")
+	}
+	if got := readFileForCLI(t, lockPath); !bytes.Equal(got, beforeLock) {
+		t.Fatalf("feedback add changed plan.lock.json")
+	}
+}
+
+func TestFeedbackAddBlocksOnLockMismatch(t *testing.T) {
+	dir := t.TempDir()
+	if code := run([]string{"init", "--dir", dir}, &bytes.Buffer{}, &bytes.Buffer{}); code != 0 {
+		t.Fatalf("init expected exit code 0, got %d", code)
+	}
+	writeReadyContractForCLI(t, dir)
+	if code := run([]string{"end", "--dir", dir}, &bytes.Buffer{}, &bytes.Buffer{}); code != 0 {
+		t.Fatalf("end expected exit code 0, got %d", code)
+	}
+	if err := os.WriteFile(filepath.Join(dir, "docs", "plan", "00_project_brief.md"), []byte("changed after lock\n"), 0o644); err != nil {
+		t.Fatalf("changing locked doc: %v", err)
+	}
+
+	var stderr bytes.Buffer
+	code := run([]string{"feedback", "add", "--dir", dir, "--file", filepath.Join("..", "..", "testdata", "feedback", "codex.json")}, &bytes.Buffer{}, &stderr)
+	if code != 1 {
+		t.Fatalf("expected exit code 1, got %d", code)
+	}
+	if !strings.Contains(stderr.String(), "BLOCKED: lock hash mismatch") {
+		t.Fatalf("expected lock mismatch block, got %q", stderr.String())
+	}
+}
+
 func TestExportHyperRunCreatesSeedDocsOnly(t *testing.T) {
 	dir := t.TempDir()
 	if code := run([]string{"init", "--dir", dir}, &bytes.Buffer{}, &bytes.Buffer{}); code != 0 {
@@ -611,4 +704,13 @@ func writeReadyContractForCLI(t *testing.T, dir string) {
 	if err := os.WriteFile(filepath.Join(dir, ".ni", "contract.json"), append(data, '\n'), 0o644); err != nil {
 		t.Fatalf("writing ready contract: %v", err)
 	}
+}
+
+func readFileForCLI(t *testing.T, path string) []byte {
+	t.Helper()
+	data, err := os.ReadFile(path)
+	if err != nil {
+		t.Fatalf("reading %s: %v", path, err)
+	}
+	return data
 }

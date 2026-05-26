@@ -11,6 +11,7 @@ import (
 	"ni/internal/core/contract"
 	"ni/internal/core/docstore"
 	"ni/internal/core/exporter"
+	"ni/internal/core/feedback"
 	"ni/internal/core/graph"
 	"ni/internal/core/harness"
 	"ni/internal/core/lock"
@@ -36,6 +37,8 @@ func run(args []string, stdout io.Writer, stderr io.Writer) int {
 		return runEnd(args[1:], stdout, stderr)
 	case "export":
 		return runExport(args[1:], stdout, stderr)
+	case "feedback":
+		return runFeedback(args[1:], stdout, stderr)
 	case "graph":
 		return runGraph(args[1:], stdout, stderr)
 	case "harness":
@@ -56,6 +59,99 @@ func run(args []string, stdout io.Writer, stderr io.Writer) int {
 		printHelp(stderr)
 		return 1
 	}
+}
+
+func runFeedback(args []string, stdout io.Writer, stderr io.Writer) int {
+	if len(args) == 0 {
+		fmt.Fprintln(stderr, "usage: ni feedback add --file <path> [--dir <path>]\n       ni feedback list [--dir <path>] [--json]")
+		return 1
+	}
+
+	switch args[0] {
+	case "add":
+		return runFeedbackAdd(args[1:], stdout, stderr)
+	case "list":
+		return runFeedbackList(args[1:], stdout, stderr)
+	default:
+		fmt.Fprintf(stderr, "unknown feedback command: %s\n", args[0])
+		return 1
+	}
+}
+
+func runFeedbackAdd(args []string, stdout io.Writer, stderr io.Writer) int {
+	dir := "."
+	file := ""
+	for i := 0; i < len(args); i++ {
+		switch args[i] {
+		case "--dir":
+			if i+1 >= len(args) {
+				fmt.Fprintln(stderr, "missing value for --dir")
+				return 1
+			}
+			dir = args[i+1]
+			i++
+		case "--file":
+			if i+1 >= len(args) {
+				fmt.Fprintln(stderr, "missing value for --file")
+				return 1
+			}
+			file = args[i+1]
+			i++
+		default:
+			fmt.Fprintf(stderr, "unknown feedback add option: %s\n", args[i])
+			return 1
+		}
+	}
+	if file == "" {
+		fmt.Fprintln(stderr, "missing --file")
+		return 1
+	}
+
+	entry, err := feedback.Add(feedback.AddOptions{Dir: dir, File: file})
+	if err != nil {
+		fmt.Fprintf(stderr, "feedback add failed: %v\n", err)
+		return 1
+	}
+	fmt.Fprintf(stdout, "recorded feedback from %s at %s\n", entry.SourceTarget, feedback.StorePath(dir))
+	return 0
+}
+
+func runFeedbackList(args []string, stdout io.Writer, stderr io.Writer) int {
+	dir := "."
+	jsonOutput := false
+	for i := 0; i < len(args); i++ {
+		switch args[i] {
+		case "--dir":
+			if i+1 >= len(args) {
+				fmt.Fprintln(stderr, "missing value for --dir")
+				return 1
+			}
+			dir = args[i+1]
+			i++
+		case "--json":
+			jsonOutput = true
+		default:
+			fmt.Fprintf(stderr, "unknown feedback list option: %s\n", args[i])
+			return 1
+		}
+	}
+
+	entries, err := feedback.List(dir)
+	if err != nil {
+		fmt.Fprintf(stderr, "feedback list failed: %v\n", err)
+		return 1
+	}
+	if jsonOutput {
+		encoder := json.NewEncoder(stdout)
+		encoder.SetIndent("", "  ")
+		if err := encoder.Encode(entries); err != nil {
+			fmt.Fprintf(stderr, "feedback list failed: %v\n", err)
+			return 1
+		}
+		return 0
+	}
+	fmt.Fprint(stdout, feedback.FormatText(entries))
+	return 0
 }
 
 func runExport(args []string, stdout io.Writer, stderr io.Writer) int {
@@ -452,6 +548,8 @@ Usage:
   ni --help
   ni end --dir <path>
   ni export --target hyper-run|namba-ai --out <dir> [--dir <path>]
+  ni feedback add --file <path> [--dir <path>]
+  ni feedback list [--dir <path>] [--json]
   ni graph --dir <path> [--json]
   ni harness plan --dir <path> [--json]
   ni init --dir <path> [--profile concept|prototype|mvp|beta|production] [--product-type <type>] [--surface <surface>] [--interaction-mode <mode>]
@@ -463,6 +561,7 @@ Usage:
 Commands:
   end      Lock the accepted planning contract.
   export   Write locked-plan seed artifacts for a downstream target.
+  feedback Record and list inert downstream feedback.
   graph    Propose a read-only work graph.
   harness  Propose a generated harness contract.
   init     Create planning docs and .ni skeleton.
