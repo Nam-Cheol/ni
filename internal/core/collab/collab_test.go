@@ -94,16 +94,12 @@ func TestConflictsDetectLockHashMismatch(t *testing.T) {
 	for _, doc := range []string{
 		"docs/plan/00_project_brief.md",
 		"docs/plan/01_actors_outcomes.md",
-		"docs/plan/02_capabilities.md",
 		"docs/plan/03_interaction_contract.md",
 		"docs/plan/04_domain_state.md",
 		"docs/plan/05_constraints.md",
-		"docs/plan/06_risks_security.md",
-		"docs/plan/07_evaluation_contract.md",
 		"docs/plan/08_delivery_operation.md",
 		"docs/plan/09_execution_strategy.md",
 		"docs/plan/10_open_questions.md",
-		"docs/plan/11_decision_log.md",
 	} {
 		path := filepath.Join(dir, doc)
 		if err := os.MkdirAll(filepath.Dir(path), 0o755); err != nil {
@@ -113,6 +109,10 @@ func TestConflictsDetectLockHashMismatch(t *testing.T) {
 			t.Fatalf("writing doc: %v", err)
 		}
 	}
+	writePlanDoc(t, dir, "docs/plan/02_capabilities.md", "# Capabilities\n\n## CAP-001: Prompt compiler\n\nCompile prompts.\n")
+	writePlanDoc(t, dir, "docs/plan/06_risks_security.md", "# Risks and security\n\n## RISK-001: Prompt may exceed budget\n\nSeverity: high\n\nMitigation: Enforce maximum prompt length.\n")
+	writePlanDoc(t, dir, "docs/plan/07_evaluation_contract.md", "# Evaluation contract\n\n## EVAL-001: Prompt budget check\n\nMethod: automated test\n")
+	writePlanDoc(t, dir, "docs/plan/11_decision_log.md", "# Decision log\n\n## DEC-001: Use prompt compiler only\n\nStatus: accepted\n")
 	if _, err := lock.CreateAt(dir, time.Date(2026, 5, 26, 0, 0, 0, 0, time.UTC)); err != nil {
 		t.Fatalf("creating lock: %v", err)
 	}
@@ -201,5 +201,16 @@ func copyFile(t *testing.T, from string, to string) {
 	}
 	if err := os.WriteFile(to, data, 0o644); err != nil {
 		t.Fatalf("writing %s: %v", to, err)
+	}
+}
+
+func writePlanDoc(t *testing.T, dir string, relPath string, content string) {
+	t.Helper()
+	path := filepath.Join(dir, relPath)
+	if err := os.MkdirAll(filepath.Dir(path), 0o755); err != nil {
+		t.Fatalf("creating doc dir: %v", err)
+	}
+	if err := os.WriteFile(path, []byte(content), 0o644); err != nil {
+		t.Fatalf("writing %s: %v", relPath, err)
 	}
 }

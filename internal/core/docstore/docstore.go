@@ -334,6 +334,10 @@ const readinessRulesJSON = `{
     {
       "id": "R011",
       "title": "readiness profile definitions are valid"
+    },
+    {
+      "id": "R012",
+      "title": "planning docs and contract are synchronized"
     }
   ],
   "required_docs": [
@@ -371,6 +375,7 @@ const readinessProfilesJSON = `{
         "R008": "blocker",
         "R009": "blocker",
         "R010": "deferral",
+        "R012": "blocker",
         "D001": "deferral",
         "D002": "deferral"
       }
@@ -389,6 +394,7 @@ const readinessProfilesJSON = `{
         "R008": "blocker",
         "R009": "blocker",
         "R010": "blocker",
+        "R012": "blocker",
         "D001": "deferral",
         "D002": "deferral"
       }
@@ -407,6 +413,7 @@ const readinessProfilesJSON = `{
         "R008": "blocker",
         "R009": "blocker",
         "R010": "blocker",
+        "R012": "blocker",
         "D001": "deferral",
         "D002": "deferral"
       }
@@ -425,6 +432,7 @@ const readinessProfilesJSON = `{
         "R008": "blocker",
         "R009": "blocker",
         "R010": "blocker",
+        "R012": "blocker",
         "D001": "deferral",
         "D002": "deferral"
       }
@@ -443,6 +451,7 @@ const readinessProfilesJSON = `{
         "R008": "blocker",
         "R009": "blocker",
         "R010": "blocker",
+        "R012": "blocker",
         "D001": "blocker",
         "D002": "blocker"
       }

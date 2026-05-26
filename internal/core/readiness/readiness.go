@@ -8,6 +8,7 @@ import (
 	"strings"
 
 	"ni/internal/core/contract"
+	"ni/internal/core/docsync"
 	readinessprofile "ni/internal/core/profile"
 )
 
@@ -82,6 +83,9 @@ func Evaluate(dir string) Result {
 	}
 
 	issues = append(issues, evaluateContract(c, rules)...)
+	for _, finding := range docsync.Check(root, c) {
+		issues = append(issues, issue(rules, activeProfile, "R012", finding.Message))
+	}
 	result := resultFromIssues(activeProfile, issues)
 	result.ProductType = c.ProductType
 	result.DeliverySurfaces = c.DeliverySurfaces
@@ -371,6 +375,7 @@ func defaultProfileRules() profileRules {
 				"R008": "blocker",
 				"R009": "blocker",
 				"R010": "deferral",
+				"R012": "blocker",
 				"D001": "deferral",
 				"D002": "deferral",
 			},
@@ -385,6 +390,7 @@ func defaultProfileRules() profileRules {
 				"R008": "blocker",
 				"R009": "blocker",
 				"R010": "blocker",
+				"R012": "blocker",
 				"D001": "deferral",
 				"D002": "deferral",
 			},
@@ -399,6 +405,7 @@ func defaultProfileRules() profileRules {
 				"R008": "blocker",
 				"R009": "blocker",
 				"R010": "blocker",
+				"R012": "blocker",
 				"D001": "deferral",
 				"D002": "deferral",
 			},
@@ -413,6 +420,7 @@ func defaultProfileRules() profileRules {
 				"R008": "blocker",
 				"R009": "blocker",
 				"R010": "blocker",
+				"R012": "blocker",
 				"D001": "deferral",
 				"D002": "deferral",
 			},
@@ -427,6 +435,7 @@ func defaultProfileRules() profileRules {
 				"R008": "blocker",
 				"R009": "blocker",
 				"R010": "blocker",
+				"R012": "blocker",
 				"D001": "blocker",
 				"D002": "blocker",
 			},

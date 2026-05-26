@@ -71,7 +71,19 @@ func graphProject(t *testing.T) string {
 	if err := os.WriteFile(filepath.Join(dir, ".ni", "contract.json"), []byte(graphContract), 0o644); err != nil {
 		t.Fatalf("writing graph contract: %v", err)
 	}
+	writeGraphDoc(t, dir, "02_capabilities.md", "# Capabilities\n\n## CAP-001: First capability\n\nFirst graph node.\n\n## CAP-002: Second capability\n\nSecond graph node.\n")
+	writeGraphDoc(t, dir, "06_risks_security.md", "# Risks and security\n\nNo accepted risks are listed in this fixture.\n")
+	writeGraphDoc(t, dir, "07_evaluation_contract.md", "# Evaluation contract\n\n## EVAL-001: Evaluation\n\nMethod: fixture\n")
+	writeGraphDoc(t, dir, "11_decision_log.md", "# Decision log\n\n## DEC-001: Decision\n\nStatus: accepted\n")
 	return dir
+}
+
+func writeGraphDoc(t *testing.T, dir string, name string, content string) {
+	t.Helper()
+	path := filepath.Join(dir, "docs", "plan", name)
+	if err := os.WriteFile(path, []byte(content), 0o644); err != nil {
+		t.Fatalf("writing graph doc %s: %v", name, err)
+	}
 }
 
 func requireNode(t *testing.T, proposal Proposal, id string, kind string) {

@@ -37,6 +37,7 @@ R008 decisions use accepted, deferred, rejected, or not_applicable
 R009 blocker open questions prevent lock
 R010 at least one non-goal exists
 R011 readiness profile definitions are valid
+R012 planning docs and contract are synchronized
 ```
 
 ## Planning profiles

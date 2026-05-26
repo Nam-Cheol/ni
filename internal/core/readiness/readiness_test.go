@@ -6,6 +6,7 @@ import (
 	"strings"
 	"testing"
 
+	"ni/internal/core/contract"
 	"ni/internal/core/docstore"
 )
 
@@ -158,6 +159,22 @@ func TestEvaluateBlocksMissingNonGoal(t *testing.T) {
 	requireIssue(t, result, StatusBlocked, "R010")
 }
 
+func TestEvaluateConsistentDocsContractSyncFixture(t *testing.T) {
+	dir := initSyncFixtureProject(t, "consistent")
+
+	result := Evaluate(dir)
+	if result.Status != StatusReady {
+		t.Fatalf("expected READY, got %#v", result)
+	}
+}
+
+func TestEvaluateBlocksDocsContractSyncFixture(t *testing.T) {
+	dir := initSyncFixtureProject(t, "decision_conflicts_contract")
+
+	result := Evaluate(dir)
+	requireIssue(t, result, StatusBlocked, "R012")
+}
+
 func initFixtureProject(t *testing.T, fixture string) string {
 	t.Helper()
 
@@ -170,7 +187,38 @@ func initFixtureProject(t *testing.T, fixture string) string {
 		t.Fatalf("reading fixture %s: %v", fixture, err)
 	}
 	writeContract(t, dir, data)
+	if c, err := contract.Load(data); err == nil {
+		writePlanDocsForContract(t, dir, c)
+	}
 	return dir
+}
+
+func initSyncFixtureProject(t *testing.T, fixture string) string {
+	t.Helper()
+
+	dir := t.TempDir()
+	if _, err := docstore.Init(dir); err != nil {
+		t.Fatalf("initializing sync fixture project: %v", err)
+	}
+	root := filepath.Join("..", "docsync", "testdata", fixture)
+	copyFixtureFile(t, root, dir, ".ni/contract.json")
+	copyFixtureFile(t, root, dir, "docs/plan/02_capabilities.md")
+	copyFixtureFile(t, root, dir, "docs/plan/06_risks_security.md")
+	copyFixtureFile(t, root, dir, "docs/plan/07_evaluation_contract.md")
+	copyFixtureFile(t, root, dir, "docs/plan/11_decision_log.md")
+	return dir
+}
+
+func copyFixtureFile(t *testing.T, fixtureRoot string, dir string, relPath string) {
+	t.Helper()
+
+	data, err := os.ReadFile(filepath.Join(fixtureRoot, relPath))
+	if err != nil {
+		t.Fatalf("reading fixture %s: %v", relPath, err)
+	}
+	if err := os.WriteFile(filepath.Join(dir, relPath), data, 0o644); err != nil {
+		t.Fatalf("writing fixture %s: %v", relPath, err)
+	}
 }
 
 func writeContract(t *testing.T, dir string, data []byte) {
@@ -179,6 +227,71 @@ func writeContract(t *testing.T, dir string, data []byte) {
 	path := filepath.Join(dir, ".ni", "contract.json")
 	if err := os.WriteFile(path, data, 0o644); err != nil {
 		t.Fatalf("writing contract fixture: %v", err)
+	}
+}
+
+func writePlanDocsForContract(t *testing.T, dir string, c contract.Contract) {
+	t.Helper()
+
+	var capabilities strings.Builder
+	capabilities.WriteString("# Capabilities\n\n")
+	for _, capability := range c.Capabilities {
+		capabilities.WriteString("## ")
+		capabilities.WriteString(capability.ID)
+		capabilities.WriteString(": ")
+		capabilities.WriteString(capability.Title)
+		capabilities.WriteString("\n\nDescribe the accepted capability.\n\n")
+	}
+	writePlanDoc(t, dir, "02_capabilities.md", capabilities.String())
+
+	var risks strings.Builder
+	risks.WriteString("# Risks and security\n\n")
+	for _, risk := range c.Risks {
+		risks.WriteString("## ")
+		risks.WriteString(risk.ID)
+		risks.WriteString(": ")
+		risks.WriteString(risk.Title)
+		risks.WriteString("\n\nSeverity: ")
+		risks.WriteString(risk.Severity)
+		risks.WriteString("\n\nMitigation: ")
+		risks.WriteString(risk.Mitigation)
+		risks.WriteString("\n\n")
+	}
+	writePlanDoc(t, dir, "06_risks_security.md", risks.String())
+
+	var evaluations strings.Builder
+	evaluations.WriteString("# Evaluation contract\n\n")
+	for _, evaluation := range c.Evaluations {
+		evaluations.WriteString("## ")
+		evaluations.WriteString(evaluation.ID)
+		evaluations.WriteString(": ")
+		evaluations.WriteString(evaluation.Title)
+		evaluations.WriteString("\n\nMethod: ")
+		evaluations.WriteString(evaluation.Method)
+		evaluations.WriteString("\n\n")
+	}
+	writePlanDoc(t, dir, "07_evaluation_contract.md", evaluations.String())
+
+	var decisions strings.Builder
+	decisions.WriteString("# Decision log\n\n")
+	for _, decision := range c.Decisions {
+		decisions.WriteString("## ")
+		decisions.WriteString(decision.ID)
+		decisions.WriteString(": ")
+		decisions.WriteString(decision.Title)
+		decisions.WriteString("\n\nStatus: ")
+		decisions.WriteString(decision.Status)
+		decisions.WriteString("\n\n")
+	}
+	writePlanDoc(t, dir, "11_decision_log.md", decisions.String())
+}
+
+func writePlanDoc(t *testing.T, dir string, name string, content string) {
+	t.Helper()
+
+	path := filepath.Join(dir, "docs", "plan", name)
+	if err := os.WriteFile(path, []byte(content), 0o644); err != nil {
+		t.Fatalf("writing plan doc %s: %v", name, err)
 	}
 }
 

@@ -49,6 +49,10 @@
     {
       "id": "R011",
       "title": "readiness profile definitions are valid"
+    },
+    {
+      "id": "R012",
+      "title": "planning docs and contract are synchronized"
     }
   ],
   "required_docs": [

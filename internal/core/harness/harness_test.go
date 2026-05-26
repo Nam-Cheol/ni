@@ -53,6 +53,7 @@ func TestPlanRequiresLockfile(t *testing.T) {
 	if err := os.WriteFile(filepath.Join(dir, ".ni", "contract.json"), []byte(harnessContract), 0o644); err != nil {
 		t.Fatalf("writing harness contract: %v", err)
 	}
+	writeHarnessDocs(t, dir)
 
 	_, err := Plan(dir)
 	if err == nil {
@@ -197,10 +198,27 @@ func lockedHarnessProject(t *testing.T) string {
 	if err := os.WriteFile(filepath.Join(dir, ".ni", "contract.json"), []byte(harnessContract), 0o644); err != nil {
 		t.Fatalf("writing harness contract: %v", err)
 	}
+	writeHarnessDocs(t, dir)
 	if _, err := lock.CreateAt(dir, time.Date(2026, 5, 26, 1, 2, 3, 0, time.UTC)); err != nil {
 		t.Fatalf("creating lock: %v", err)
 	}
 	return dir
+}
+
+func writeHarnessDocs(t *testing.T, dir string) {
+	t.Helper()
+	writeHarnessDoc(t, dir, "02_capabilities.md", "# Capabilities\n\n## CAP-001: First capability\n\nFirst harness capability.\n\n## CAP-002: Second capability\n\nSecond harness capability.\n")
+	writeHarnessDoc(t, dir, "06_risks_security.md", "# Risks and security\n\n## RISK-001: Risk\n\nSeverity: high\n\nMitigation: Keep generated harness read-only.\n")
+	writeHarnessDoc(t, dir, "07_evaluation_contract.md", "# Evaluation contract\n\n## EVAL-001: Evaluation one\n\nMethod: go test ./...\n\n## EVAL-002: Evaluation two\n\nMethod: bash scripts/quality.sh\n")
+	writeHarnessDoc(t, dir, "11_decision_log.md", "# Decision log\n\n## DEC-001: Decision\n\nStatus: accepted\n")
+}
+
+func writeHarnessDoc(t *testing.T, dir string, name string, content string) {
+	t.Helper()
+	path := filepath.Join(dir, "docs", "plan", name)
+	if err := os.WriteFile(path, []byte(content), 0o644); err != nil {
+		t.Fatalf("writing harness doc %s: %v", name, err)
+	}
 }
 
 func writeAcceptedHarnessPressure(t *testing.T, dir string) {

@@ -65,7 +65,7 @@ write_ready_contract() {
       "status": "accepted",
       "requirements": ["REQ-001"],
       "evaluations": ["EVAL-001"],
-      "risks": [],
+      "risks": ["RISK-001"],
       "artifacts": ["ART-001"]
     }
   ],
@@ -83,7 +83,15 @@ write_ready_contract() {
       "status": "accepted"
     }
   ],
-  "risks": [],
+  "risks": [
+    {
+      "id": "RISK-001",
+      "title": "Smoke fixture risk",
+      "severity": "high",
+      "status": "accepted",
+      "mitigation": "The fixture stays inside local ni commands."
+    }
+  ],
   "evaluations": [
     {
       "id": "EVAL-001",

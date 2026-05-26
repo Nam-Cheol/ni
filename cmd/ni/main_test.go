@@ -219,6 +219,32 @@ func TestEndBlocked(t *testing.T) {
 	}
 }
 
+func TestEndBlockedByDocsContractSync(t *testing.T) {
+	dir := t.TempDir()
+	if code := run([]string{"init", "--dir", dir}, &bytes.Buffer{}, &bytes.Buffer{}); code != 0 {
+		t.Fatalf("init expected exit code 0, got %d", code)
+	}
+	writeReadyContractForCLI(t, dir)
+	path := filepath.Join(dir, "docs", "plan", "02_capabilities.md")
+	data, err := os.ReadFile(path)
+	if err != nil {
+		t.Fatalf("reading capability doc: %v", err)
+	}
+	data = append(data, []byte("\n## CAP-999: Docs-only capability\n\nThis section is missing from the contract.\n")...)
+	if err := os.WriteFile(path, data, 0o644); err != nil {
+		t.Fatalf("writing capability doc: %v", err)
+	}
+
+	var stderr bytes.Buffer
+	code := run([]string{"end", "--dir", dir}, &bytes.Buffer{}, &stderr)
+	if code != exitReadinessBlocked {
+		t.Fatalf("expected exit code %d, got %d", exitReadinessBlocked, code)
+	}
+	if !strings.Contains(stderr.String(), "readiness is BLOCKED") {
+		t.Fatalf("expected blocked error, got %q", stderr.String())
+	}
+}
+
 func TestEndCreatesLockfile(t *testing.T) {
 	dir := t.TempDir()
 	if code := run([]string{"init", "--dir", dir}, &bytes.Buffer{}, &bytes.Buffer{}); code != 0 {
@@ -1525,6 +1551,9 @@ func writeReadyContractForCLI(t *testing.T, dir string) {
 	}
 	if err := os.WriteFile(filepath.Join(dir, ".ni", "contract.json"), append(data, '\n'), 0o644); err != nil {
 		t.Fatalf("writing ready contract: %v", err)
+	}
+	if err := os.WriteFile(filepath.Join(dir, "docs", "plan", "06_risks_security.md"), []byte("# Risks and security\n\nNo accepted risks are listed in this fixture.\n"), 0o644); err != nil {
+		t.Fatalf("writing ready risk doc: %v", err)
 	}
 }
 
