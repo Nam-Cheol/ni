@@ -18,10 +18,17 @@ const Schema = "ni.lock.v0"
 type Lockfile struct {
 	Schema        string           `json:"schema"`
 	LockedAt      string           `json:"locked_at"`
+	PreviousLock  *PreviousLock    `json:"previous_lock,omitempty"`
 	SourceOfTruth []string         `json:"source_of_truth"`
 	Readiness     ReadinessSummary `json:"readiness"`
 	Files         []FileHash       `json:"files"`
 	Path          string           `json:"-"`
+}
+
+type PreviousLock struct {
+	Path     string `json:"path"`
+	SHA256   string `json:"sha256"`
+	LockedAt string `json:"locked_at"`
 }
 
 type ReadinessSummary struct {
@@ -49,6 +56,10 @@ func Create(dir string) (Lockfile, error) {
 }
 
 func CreateAt(dir string, lockedAt time.Time) (Lockfile, error) {
+	return CreateAtWithPrevious(dir, lockedAt, nil)
+}
+
+func CreateAtWithPrevious(dir string, lockedAt time.Time, previous *PreviousLock) (Lockfile, error) {
 	root := filepath.Clean(dir)
 	status := readiness.Evaluate(root)
 	if status.Status == readiness.StatusBlocked {
@@ -61,8 +72,9 @@ func CreateAt(dir string, lockedAt time.Time) (Lockfile, error) {
 	}
 
 	lockfile := Lockfile{
-		Schema:   Schema,
-		LockedAt: lockedAt.UTC().Format(time.RFC3339),
+		Schema:       Schema,
+		LockedAt:     lockedAt.UTC().Format(time.RFC3339),
+		PreviousLock: previous,
 		SourceOfTruth: []string{
 			".ni/plan.lock.json",
 			".ni/contract.json",
@@ -87,6 +99,38 @@ func CreateAt(dir string, lockedAt time.Time) (Lockfile, error) {
 	}
 	lockfile.Path = lockPath
 	return lockfile, nil
+}
+
+func ArchiveCurrentAt(dir string, archivedAt time.Time) (PreviousLock, error) {
+	root := filepath.Clean(dir)
+	lockPath := filepath.Join(root, ".ni", "plan.lock.json")
+	current, err := LoadFile(lockPath)
+	if err != nil {
+		return PreviousLock{}, err
+	}
+	data, err := os.ReadFile(lockPath)
+	if err != nil {
+		return PreviousLock{}, err
+	}
+	sum := sha256.Sum256(data)
+	relPath := filepath.Join(".ni", "locks", archivedAt.UTC().Format("20060102T150405Z")+"-plan.lock.json")
+	archivePath := filepath.Join(root, relPath)
+	if err := os.MkdirAll(filepath.Dir(archivePath), 0o755); err != nil {
+		return PreviousLock{}, err
+	}
+	if err := os.WriteFile(archivePath, data, 0o644); err != nil {
+		return PreviousLock{}, err
+	}
+	return PreviousLock{
+		Path:     filepath.ToSlash(relPath),
+		SHA256:   hex.EncodeToString(sum[:]),
+		LockedAt: current.LockedAt,
+	}, nil
+}
+
+func CurrentLockHash(dir string) (string, error) {
+	root := filepath.Clean(dir)
+	return fileSHA256(filepath.Join(root, ".ni", "plan.lock.json"))
 }
 
 func LoadFile(path string) (Lockfile, error) {

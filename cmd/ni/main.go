@@ -5,9 +5,12 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"path/filepath"
 	"strconv"
 	"strings"
+	"time"
 
+	"ni/internal/core/amendment"
 	"ni/internal/core/contract"
 	"ni/internal/core/docstore"
 	"ni/internal/core/exporter"
@@ -34,6 +37,8 @@ func run(args []string, stdout io.Writer, stderr io.Writer) int {
 	}
 
 	switch args[0] {
+	case "amend":
+		return runAmend(args[1:], stdout, stderr)
 	case "end":
 		return runEnd(args[1:], stdout, stderr)
 	case "export":
@@ -50,6 +55,8 @@ func run(args []string, stdout io.Writer, stderr io.Writer) int {
 		return runPressure(args[1:], stdout, stderr)
 	case "run":
 		return runRun(args[1:], stdout, stderr)
+	case "relock":
+		return runRelock(args[1:], stdout, stderr)
 	case "status":
 		return runStatus(args[1:], stdout, stderr)
 	case "targets":
@@ -62,6 +69,119 @@ func run(args []string, stdout io.Writer, stderr io.Writer) int {
 		printHelp(stderr)
 		return 1
 	}
+}
+
+func runAmend(args []string, stdout io.Writer, stderr io.Writer) int {
+	if len(args) == 0 {
+		printAmendUsage(stderr)
+		return 1
+	}
+
+	switch args[0] {
+	case "create":
+		return runAmendCreate(args[1:], stdout, stderr)
+	case "list":
+		return runAmendList(args[1:], stdout, stderr)
+	case "show":
+		return runAmendShow(args[1:], stdout, stderr)
+	case "apply":
+		return runAmendApply(args[1:], stdout, stderr)
+	default:
+		fmt.Fprintf(stderr, "unknown amend command: %s\n", args[0])
+		return 1
+	}
+}
+
+func runAmendCreate(args []string, stdout io.Writer, stderr io.Writer) int {
+	dir := "."
+	title := ""
+	for i := 0; i < len(args); i++ {
+		switch args[i] {
+		case "--dir":
+			if i+1 >= len(args) {
+				fmt.Fprintln(stderr, "missing value for --dir")
+				return 1
+			}
+			dir = args[i+1]
+			i++
+		case "--title":
+			if i+1 >= len(args) {
+				fmt.Fprintln(stderr, "missing value for --title")
+				return 1
+			}
+			title = args[i+1]
+			i++
+		default:
+			fmt.Fprintf(stderr, "unknown amend create option: %s\n", args[i])
+			return 1
+		}
+	}
+
+	item, err := amendment.Create(amendment.CreateOptions{Dir: dir, Title: title})
+	if err != nil {
+		fmt.Fprintf(stderr, "amend create failed: %v\n", err)
+		return 1
+	}
+	fmt.Fprintf(stdout, "created amendment %s at %s\n", item.ID, amendment.Path(dir, item.ID))
+	return 0
+}
+
+func runAmendList(args []string, stdout io.Writer, stderr io.Writer) int {
+	dir := "."
+	for i := 0; i < len(args); i++ {
+		switch args[i] {
+		case "--dir":
+			if i+1 >= len(args) {
+				fmt.Fprintln(stderr, "missing value for --dir")
+				return 1
+			}
+			dir = args[i+1]
+			i++
+		default:
+			fmt.Fprintf(stderr, "unknown amend list option: %s\n", args[i])
+			return 1
+		}
+	}
+	items, err := amendment.List(dir)
+	if err != nil {
+		fmt.Fprintf(stderr, "amend list failed: %v\n", err)
+		return 1
+	}
+	fmt.Fprint(stdout, amendment.FormatList(items))
+	return 0
+}
+
+func runAmendShow(args []string, stdout io.Writer, stderr io.Writer) int {
+	id, dir, ok := parseIDAndDir(args, stderr, "amend show")
+	if !ok {
+		return 1
+	}
+	item, err := amendment.Load(dir, id)
+	if err != nil {
+		fmt.Fprintf(stderr, "amend show failed: %v\n", err)
+		return 1
+	}
+	encoder := json.NewEncoder(stdout)
+	encoder.SetIndent("", "  ")
+	if err := encoder.Encode(item); err != nil {
+		fmt.Fprintf(stderr, "amend show failed: %v\n", err)
+		return 1
+	}
+	return 0
+}
+
+func runAmendApply(args []string, stdout io.Writer, stderr io.Writer) int {
+	id, dir, ok := parseIDAndDir(args, stderr, "amend apply")
+	if !ok {
+		return 1
+	}
+	item, err := amendment.Apply(dir, id, time.Time{})
+	if err != nil {
+		fmt.Fprintf(stderr, "amend apply failed: %v\n", err)
+		return 1
+	}
+	fmt.Fprintf(stdout, "applied amendment %s\n", item.ID)
+	return 0
 }
 
 func runPressure(args []string, stdout io.Writer, stderr io.Writer) int {
@@ -175,6 +295,37 @@ func parsePressureIDAndDir(args []string, stderr io.Writer, command string) (str
 	}
 	if id == "" {
 		fmt.Fprintf(stderr, "missing pressure id for %s\n", command)
+		return "", "", false
+	}
+	return id, dir, true
+}
+
+func parseIDAndDir(args []string, stderr io.Writer, command string) (string, string, bool) {
+	dir := "."
+	id := ""
+	for i := 0; i < len(args); i++ {
+		switch args[i] {
+		case "--dir":
+			if i+1 >= len(args) {
+				fmt.Fprintln(stderr, "missing value for --dir")
+				return "", "", false
+			}
+			dir = args[i+1]
+			i++
+		default:
+			if strings.HasPrefix(args[i], "--") {
+				fmt.Fprintf(stderr, "unknown %s option: %s\n", command, args[i])
+				return "", "", false
+			}
+			if id != "" {
+				fmt.Fprintf(stderr, "unexpected %s argument: %s\n", command, args[i])
+				return "", "", false
+			}
+			id = args[i]
+		}
+	}
+	if id == "" {
+		fmt.Fprintf(stderr, "missing id for %s\n", command)
 		return "", "", false
 	}
 	return id, dir, true
@@ -738,6 +889,68 @@ func runEnd(args []string, stdout io.Writer, stderr io.Writer) int {
 	return 0
 }
 
+func runRelock(args []string, stdout io.Writer, stderr io.Writer) int {
+	dir := "."
+	for i := 0; i < len(args); i++ {
+		switch args[i] {
+		case "--dir":
+			if i+1 >= len(args) {
+				fmt.Fprintln(stderr, "missing value for --dir")
+				return 1
+			}
+			dir = args[i+1]
+			i++
+		default:
+			fmt.Fprintf(stderr, "unknown relock option: %s\n", args[i])
+			return 1
+		}
+	}
+
+	status := readiness.Evaluate(dir)
+	if status.Status == readiness.StatusBlocked {
+		fmt.Fprintln(stderr, "relock failed: readiness is BLOCKED; refusing to relock")
+		return 1
+	}
+
+	currentHash, err := lock.CurrentLockHash(dir)
+	if err != nil {
+		fmt.Fprintf(stderr, "relock failed: %v\n", err)
+		return 1
+	}
+	verification, err := lock.Verify(dir)
+	if err != nil {
+		fmt.Fprintf(stderr, "relock failed: %v\n", err)
+		return 1
+	}
+	if len(verification.Mismatches) > 0 {
+		ok, err := amendment.HasAppliedForLock(dir, currentHash)
+		if err != nil {
+			fmt.Fprintf(stderr, "relock failed: %v\n", err)
+			return 1
+		}
+		if !ok {
+			fmt.Fprintf(stderr, "relock failed: BLOCKED: lock hash mismatch for %s without an applied amendment\n", verification.Mismatches[0].Path)
+			return 1
+		}
+	}
+
+	now := time.Now().UTC()
+	previous, err := lock.ArchiveCurrentAt(dir, now)
+	if err != nil {
+		fmt.Fprintf(stderr, "relock failed: %v\n", err)
+		return 1
+	}
+	lockfile, err := lock.CreateAtWithPrevious(dir, now, &previous)
+	if err != nil {
+		fmt.Fprintf(stderr, "relock failed: %v\n", err)
+		return 1
+	}
+	fmt.Fprintf(stdout, "relocked plan at %s\n", lockfile.Path)
+	fmt.Fprintf(stdout, "previous lock archived at %s\n", filepath.Join(filepath.Clean(dir), previous.Path))
+	fmt.Fprintf(stdout, "status %s\n", lockfile.Readiness.Status)
+	return 0
+}
+
 func runRun(args []string, stdout io.Writer, stderr io.Writer) int {
 	dir := "."
 	out := ""
@@ -881,6 +1094,10 @@ func printHelp(w io.Writer) {
 
 Usage:
   ni --help
+  ni amend create --title <title> [--dir <path>]
+  ni amend list [--dir <path>]
+  ni amend show <id> [--dir <path>]
+  ni amend apply <id> [--dir <path>]
   ni end --dir <path>
   ni export --target hyper-run|namba-ai --out <dir> [--dir <path>]
   ni feedback add --file <path> [--dir <path>]
@@ -896,12 +1113,14 @@ Usage:
   ni pressure status [--dir <path>] [--json]
   ni pressure promote <id> [--dir <path>]
   ni pressure retire <id> [--dir <path>]
+  ni relock --dir <path>
   ni run --dir <path> [--target <target>] [--out <path>] [--max-chars N]
   ni status --dir <path> [--json]
   ni targets [--json]
   ni version
 
 Commands:
+  amend   Create, inspect, and apply explicit contract amendments.
   end      Lock the accepted planning contract.
   export   Write locked-plan seed artifacts for a downstream target.
   feedback Record and list inert downstream feedback.
@@ -909,9 +1128,14 @@ Commands:
   harness  Manage inert generated harness proposals.
   init     Create planning docs and .ni skeleton.
   pressure Track inert planning pressure without changing readiness rules.
+  relock   Create a new lock from an explicitly amended plan.
   run      Compile a goal prompt from the locked plan.
   status   Validate planning readiness.
   targets  List downstream prompt/export targets.
   version  Print the ni version.
 `)
+}
+
+func printAmendUsage(w io.Writer) {
+	fmt.Fprintln(w, "usage: ni amend create --title <title> [--dir <path>]\n       ni amend list [--dir <path>]\n       ni amend show <id> [--dir <path>]\n       ni amend apply <id> [--dir <path>]")
 }

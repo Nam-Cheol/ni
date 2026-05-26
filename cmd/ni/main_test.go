@@ -269,6 +269,138 @@ func TestRunRejectsUnsupportedTarget(t *testing.T) {
 	}
 }
 
+func TestAmendApplyAndRelockFlow(t *testing.T) {
+	dir := t.TempDir()
+	if code := run([]string{"init", "--dir", dir}, &bytes.Buffer{}, &bytes.Buffer{}); code != 0 {
+		t.Fatalf("init expected exit code 0, got %d", code)
+	}
+	writeReadyContractForCLI(t, dir)
+	if code := run([]string{"end", "--dir", dir}, &bytes.Buffer{}, &bytes.Buffer{}); code != 0 {
+		t.Fatalf("end expected exit code 0, got %d", code)
+	}
+
+	lockPath := filepath.Join(dir, ".ni", "plan.lock.json")
+	v1Lock := readFileForCLI(t, lockPath)
+
+	var stdout bytes.Buffer
+	code := run([]string{"amend", "create", "--dir", dir, "--title", "Clarify prompt compiler acceptance"}, &stdout, &bytes.Buffer{})
+	if code != 0 {
+		t.Fatalf("expected amend create exit code 0, got %d", code)
+	}
+	if !strings.Contains(stdout.String(), "created amendment AMEND-001") {
+		t.Fatalf("expected amendment create summary, got %q", stdout.String())
+	}
+	completeAmendmentForCLI(t, dir, "AMEND-001")
+
+	stdout.Reset()
+	code = run([]string{"amend", "list", "--dir", dir}, &stdout, &bytes.Buffer{})
+	if code != 0 {
+		t.Fatalf("expected amend list exit code 0, got %d", code)
+	}
+	if !strings.Contains(stdout.String(), "AMEND-001") || !strings.Contains(stdout.String(), "draft") {
+		t.Fatalf("expected draft amendment in list, got %q", stdout.String())
+	}
+
+	path := filepath.Join(dir, "docs", "plan", "02_capabilities.md")
+	if err := os.WriteFile(path, []byte("# Capabilities\n\n## CAP-001: Prompt compiler acceptance clarified\n\nDescribe the accepted prompt compiler behavior.\n"), 0o644); err != nil {
+		t.Fatalf("changing locked doc: %v", err)
+	}
+
+	var stderr bytes.Buffer
+	code = run([]string{"run", "--dir", dir}, &bytes.Buffer{}, &stderr)
+	if code != 1 {
+		t.Fatalf("expected stale run exit code 1, got %d", code)
+	}
+	if !strings.Contains(stderr.String(), "BLOCKED: lock hash mismatch") {
+		t.Fatalf("expected stale lock rejection before relock, got %q", stderr.String())
+	}
+
+	stderr.Reset()
+	code = run([]string{"relock", "--dir", dir}, &bytes.Buffer{}, &stderr)
+	if code != 1 {
+		t.Fatalf("expected relock without applied amendment exit code 1, got %d", code)
+	}
+	if !strings.Contains(stderr.String(), "without an applied amendment") {
+		t.Fatalf("expected explicit amendment rejection, got %q", stderr.String())
+	}
+
+	stdout.Reset()
+	code = run([]string{"amend", "apply", "--dir", dir, "AMEND-001"}, &stdout, &bytes.Buffer{})
+	if code != 0 {
+		t.Fatalf("expected amend apply exit code 0, got %d", code)
+	}
+	if !strings.Contains(stdout.String(), "applied amendment AMEND-001") {
+		t.Fatalf("expected apply summary, got %q", stdout.String())
+	}
+
+	stdout.Reset()
+	code = run([]string{"amend", "show", "--dir", dir, "AMEND-001"}, &stdout, &bytes.Buffer{})
+	if code != 0 {
+		t.Fatalf("expected amend show exit code 0, got %d", code)
+	}
+	if !strings.Contains(stdout.String(), `"status": "applied"`) {
+		t.Fatalf("expected applied amendment JSON, got %q", stdout.String())
+	}
+
+	stdout.Reset()
+	code = run([]string{"relock", "--dir", dir}, &stdout, &bytes.Buffer{})
+	if code != 0 {
+		t.Fatalf("expected relock exit code 0, got %d", code)
+	}
+	if !strings.Contains(stdout.String(), "previous lock archived") {
+		t.Fatalf("expected previous lock summary, got %q", stdout.String())
+	}
+
+	v2Lock := readFileForCLI(t, lockPath)
+	if bytes.Equal(v1Lock, v2Lock) {
+		t.Fatal("expected relock to write a new lock")
+	}
+	var lockPayload struct {
+		PreviousLock *struct {
+			Path     string `json:"path"`
+			SHA256   string `json:"sha256"`
+			LockedAt string `json:"locked_at"`
+		} `json:"previous_lock"`
+	}
+	if err := json.Unmarshal(v2Lock, &lockPayload); err != nil {
+		t.Fatalf("parsing v2 lock: %v", err)
+	}
+	if lockPayload.PreviousLock == nil || lockPayload.PreviousLock.Path == "" || lockPayload.PreviousLock.SHA256 == "" {
+		t.Fatalf("expected previous lock reference in v2 lock, got %#v", lockPayload.PreviousLock)
+	}
+	archived := readFileForCLI(t, filepath.Join(dir, lockPayload.PreviousLock.Path))
+	if !bytes.Equal(archived, v1Lock) {
+		t.Fatal("archived previous lock does not match v1 lock")
+	}
+
+	stdout.Reset()
+	code = run([]string{"run", "--dir", dir}, &stdout, &bytes.Buffer{})
+	if code != 0 {
+		t.Fatalf("expected run after relock exit code 0, got %d", code)
+	}
+}
+
+func TestRelockRefusesBlockedReadiness(t *testing.T) {
+	dir := t.TempDir()
+	if code := run([]string{"init", "--dir", dir}, &bytes.Buffer{}, &bytes.Buffer{}); code != 0 {
+		t.Fatalf("init expected exit code 0, got %d", code)
+	}
+	writeReadyContractForCLI(t, dir)
+	if code := run([]string{"end", "--dir", dir}, &bytes.Buffer{}, &bytes.Buffer{}); code != 0 {
+		t.Fatalf("end expected exit code 0, got %d", code)
+	}
+	writeBlockedQuestionForCLI(t, dir)
+
+	var stderr bytes.Buffer
+	code := run([]string{"relock", "--dir", dir}, &bytes.Buffer{}, &stderr)
+	if code != 1 {
+		t.Fatalf("expected relock exit code 1, got %d", code)
+	}
+	if !strings.Contains(stderr.String(), "readiness is BLOCKED") {
+		t.Fatalf("expected blocked readiness refusal, got %q", stderr.String())
+	}
+}
+
 func TestFeedbackAddAndListJSON(t *testing.T) {
 	dir := t.TempDir()
 	if code := run([]string{"init", "--dir", dir}, &bytes.Buffer{}, &bytes.Buffer{}); code != 0 {
@@ -942,6 +1074,59 @@ func writeReadyContractForCLI(t *testing.T, dir string) {
 	}
 	if err := os.WriteFile(filepath.Join(dir, ".ni", "contract.json"), append(data, '\n'), 0o644); err != nil {
 		t.Fatalf("writing ready contract: %v", err)
+	}
+}
+
+func completeAmendmentForCLI(t *testing.T, dir string, id string) {
+	t.Helper()
+
+	path := filepath.Join(dir, ".ni", "amendments", id+".json")
+	data := readFileForCLI(t, path)
+	var payload map[string]any
+	if err := json.Unmarshal(data, &payload); err != nil {
+		t.Fatalf("parsing amendment: %v", err)
+	}
+	payload["reason"] = "Locked prompt compiler acceptance needs explicit clarification."
+	payload["affected_docs"] = []string{"docs/plan/02_capabilities.md"}
+	payload["affected_contract_ids"] = []string{"CAP-001", "REQ-001"}
+	payload["proposed_changes"] = []string{"Clarify CAP-001 planning text without changing readiness rules."}
+	payload["risk_impact"] = "No new high-severity risk; existing pre-runtime boundary remains in force."
+	payload["readiness_impact"] = "Readiness remains READY after deterministic status evaluation."
+	payload["created_from_feedback_refs"] = []string{}
+	payload["created_from_pressure_refs"] = []string{}
+
+	updated, err := json.MarshalIndent(payload, "", "  ")
+	if err != nil {
+		t.Fatalf("marshaling amendment: %v", err)
+	}
+	if err := os.WriteFile(path, append(updated, '\n'), 0o644); err != nil {
+		t.Fatalf("writing completed amendment: %v", err)
+	}
+}
+
+func writeBlockedQuestionForCLI(t *testing.T, dir string) {
+	t.Helper()
+
+	path := filepath.Join(dir, ".ni", "contract.json")
+	data := readFileForCLI(t, path)
+	var payload map[string]any
+	if err := json.Unmarshal(data, &payload); err != nil {
+		t.Fatalf("parsing contract: %v", err)
+	}
+	payload["open_questions"] = []any{
+		map[string]any{
+			"id":      "OQ-001",
+			"title":   "Blocking relock question",
+			"blocker": true,
+			"status":  "open",
+		},
+	}
+	updated, err := json.MarshalIndent(payload, "", "  ")
+	if err != nil {
+		t.Fatalf("marshaling blocked contract: %v", err)
+	}
+	if err := os.WriteFile(path, append(updated, '\n'), 0o644); err != nil {
+		t.Fatalf("writing blocked contract: %v", err)
 	}
 }
 
