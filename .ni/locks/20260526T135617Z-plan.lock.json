@@ -1,17 +1,17 @@
 {
   "schema": "ni.lock.v0",
-  "locked_at": "2026-05-26T13:56:47Z",
+  "locked_at": "2026-05-26T13:55:05Z",
   "previous_lock": {
-    "path": ".ni/locks/20260526T135647Z-plan.lock.json",
-    "sha256": "1acb04cd6e4e28086637b913f8e9a14fbf825c43aba0b4219bf33382b3ebec3e",
-    "locked_at": "2026-05-26T13:56:17Z"
+    "path": ".ni/locks/20260526T135505Z-plan.lock.json",
+    "sha256": "bdcf3a8c40123b1a311a58a4ab42da982db5881d083a2e195ceb2614be3b7ecd",
+    "locked_at": "2026-05-26T13:53:54Z"
   },
   "source_of_truth": [
     ".ni/plan.lock.json",
     ".ni/contract.json",
     "docs/plan/**",
-    ".ni/session.json",
-    "chat history"
+    "chat transcript",
+    "model guess"
   ],
   "readiness": {
     "status": "READY"
@@ -39,11 +39,11 @@
     },
     {
       "path": "docs/plan/04_domain_state.md",
-      "sha256": "daee5ecb01c62b7988c92f165479754c0952bb074bf014861a4020cb69c03619"
+      "sha256": "d26ef2d8ce8a9e939b13d8b47a66b736aa52c6730c2d8630477cdbc8290523f8"
     },
     {
       "path": "docs/plan/05_constraints.md",
-      "sha256": "41769747a2c8492ccd48534a4d66332e7a5b6b065cf2c07ea01c6a8b39a23693"
+      "sha256": "41dc3e2e170e3e3566ac7016fa7ef1cf69161c8e486b81b17b3b6751f0290f68"
     },
     {
       "path": "docs/plan/06_risks_security.md",

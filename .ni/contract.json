@@ -9,7 +9,7 @@
   "project": {
     "id": "ni",
     "name": "ni",
-    "purpose": "Compile planning conversations into a locked v1 planning contract covering readiness profiles, product types, downstream targets, feedback pressure, harness candidates, amendment/relock, and collaboration checks before any execution harness runs.",
+    "purpose": "Compile v0.2 model-user planning conversations into synchronized docs/plan records and .ni/contract.json, then use deterministic CLI gates to report readiness, lock or relock the plan, and compile a bounded handoff prompt before any execution harness runs.",
     "status": "accepted"
   },
   "non_goals": [
@@ -28,12 +28,16 @@
     {
       "id": "NG-004",
       "title": "Do not let feedback, pressure, or harness candidates mutate locked planning state without amendment and relock."
+    },
+    {
+      "id": "NG-005",
+      "title": "Do not make user-facing contract add, list, or set commands the primary v0.2 authoring UX."
     }
   ],
   "capabilities": [
     {
       "id": "CAP-001",
-      "title": "Initialize planning workspace",
+      "title": "Initialize conversation planning workspace",
       "status": "accepted",
       "requirements": [
         "REQ-001"
@@ -49,7 +53,7 @@
     },
     {
       "id": "CAP-002",
-      "title": "Validate readiness",
+      "title": "Report deterministic readiness gaps",
       "status": "accepted",
       "requirements": [
         "REQ-002"
@@ -68,7 +72,7 @@
     },
     {
       "id": "CAP-003",
-      "title": "Lock accepted plan",
+      "title": "Confirm and lock accepted plan",
       "status": "accepted",
       "requirements": [
         "REQ-003"
@@ -85,7 +89,7 @@
     },
     {
       "id": "CAP-004",
-      "title": "Compile target prompt",
+      "title": "Compile bounded handoff prompt",
       "status": "accepted",
       "requirements": [
         "REQ-004"
@@ -103,7 +107,7 @@
     },
     {
       "id": "CAP-005",
-      "title": "Provide Codex planning skills",
+      "title": "Author planning state through model-user conversation",
       "status": "accepted",
       "requirements": [
         "REQ-005"
@@ -112,10 +116,12 @@
         "EVAL-006"
       ],
       "risks": [
-        "RISK-003"
+        "RISK-003",
+        "RISK-011"
       ],
       "artifacts": [
-        "ART-006"
+        "ART-006",
+        "ART-021"
       ]
     },
     {
@@ -310,27 +316,27 @@
   "requirements": [
     {
       "id": "REQ-001",
-      "title": "ni init creates docs/plan templates, .ni/contract.json, readiness config, and inert ledger files",
+      "title": "ni init creates the initial docs/plan structure, .ni/contract.json, readiness config, and bounded session state",
       "status": "accepted"
     },
     {
       "id": "REQ-002",
-      "title": "ni status returns BLOCKED, READY_WITH_DEFERRALS, or READY with active profile and product guidance",
+      "title": "ni status returns deterministic BLOCKED, READY_WITH_DEFERRALS, or READY readiness gaps without model judgment",
       "status": "accepted"
     },
     {
       "id": "REQ-003",
-      "title": "ni end creates .ni/plan.lock.json with hashes for the contract and required planning docs",
+      "title": "ni-end confirms the accepted plan and the CLI writes .ni/plan.lock.json with hashes for the contract and required planning docs",
       "status": "accepted"
     },
     {
       "id": "REQ-004",
-      "title": "ni run supports target, out, and max-chars options, outputs a 4000-character-or-less prompt, and does not execute in v1",
+      "title": "ni-run compiles a target handoff prompt through ni run --target <target> --max-chars 4000 and does not execute Codex or shell commands",
       "status": "accepted"
     },
     {
       "id": "REQ-005",
-      "title": "repository-local skills exist for ni-start, ni-end, and ni-run with CLI authority boundaries",
+      "title": "after ni init, ni-start maintains docs/plan and .ni/contract.json from model-user conversation while ni status, ni-end, and ni-run remain CLI-authoritative gates",
       "status": "accepted"
     },
     {
@@ -424,6 +430,11 @@
       "id": "DEC-008",
       "title": "Collaboration checks are deterministic",
       "status": "accepted"
+    },
+    {
+      "id": "DEC-009",
+      "title": "v0.2 primary authoring UX is model-user conversation, not contract editing commands",
+      "status": "accepted"
     }
   ],
   "risks": [
@@ -496,13 +507,20 @@
       "severity": "medium",
       "status": "accepted",
       "mitigation": "Diff and conflict checks are deterministic and contract-local."
+    },
+    {
+      "id": "RISK-011",
+      "title": "CLI contract editing displaces conversation authoring",
+      "severity": "high",
+      "status": "accepted",
+      "mitigation": "Keep v0.2 authoring in ni-start conversation updates to docs/plan and .ni/contract.json; do not add contract add, list, or set commands as primary UX."
     }
   ],
   "evaluations": [
     {
       "id": "EVAL-001",
-      "title": "ni init creates required files",
-      "method": "CLI integration test"
+      "title": "ni init creates conversation-authoring workspace files",
+      "method": "CLI integration test for docs/plan, .ni/contract.json, readiness config, and session state"
     },
     {
       "id": "EVAL-002",
@@ -521,13 +539,13 @@
     },
     {
       "id": "EVAL-005",
-      "title": "prompt output stays within 4000 characters",
-      "method": "unit and CLI integration test"
+      "title": "handoff prompt output stays within 4000 characters",
+      "method": "unit and CLI integration test for ni run --target codex --max-chars 4000"
     },
     {
       "id": "EVAL-006",
-      "title": "skills contain required metadata and authority boundary",
-      "method": "static quality check"
+      "title": "conversation authoring preserves CLI authority and excludes contract add/list/set primary UX",
+      "method": "static quality check for skills, conversation-authoring docs, and forbidden contract editing commands"
     },
     {
       "id": "EVAL-007",
@@ -608,7 +626,7 @@
     },
     {
       "id": "ART-005",
-      "path": ".ni/generated/goal.prompt.txt",
+      "path": ".ni/generated/v0.2-conversation-authoring.prompt.txt",
       "kind": "generated_prompt"
     },
     {
@@ -683,8 +701,13 @@
     },
     {
       "id": "ART-020",
-      "path": ".ni/generated/v1-codex.goal.prompt.txt",
+      "path": ".ni/generated/v0.2-conversation-authoring.prompt.txt",
       "kind": "generated_prompt"
+    },
+    {
+      "id": "ART-021",
+      "path": "docs/28_CONVERSATION_AUTHORING.md docs/29_AUTHORING_PROTOCOL.md docs/31_NI_START_BEHAVIOR.md docs/35_NI_END_CONFIRMATION.md docs/36_NI_RUN_HANDOFF.md .ni/session.json",
+      "kind": "authoring_protocol"
     }
   ],
   "open_questions": [

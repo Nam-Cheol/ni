@@ -1,24 +1,24 @@
 # Capabilities
 
-## CAP-001: initialize planning workspace
+## CAP-001: initialize conversation planning workspace
 
-Create planning docs, `.ni/contract.json`, readiness rules, readiness profiles, and inert ledger files for a new project.
+`ni init` creates the initial `docs/plan/**` structure, `.ni/contract.json`, readiness config, and bounded session state for conversation-driven authoring.
 
-## CAP-002: validate readiness
+## CAP-002: report deterministic readiness gaps
 
 Detect missing docs, invalid contract JSON, missing evaluations, unmitigated high risks, blocker questions, missing non-goals, and profile-specific deferrals.
 
-## CAP-003: lock accepted plan
+## CAP-003: confirm and lock accepted plan
 
-Create `.ni/plan.lock.json` with hashes for `.ni/contract.json` and required `docs/plan/**` files.
+`ni-end` confirms the accepted plan with the user, then the CLI creates `.ni/plan.lock.json` with hashes for `.ni/contract.json` and required `docs/plan/**` files.
 
-## CAP-004: compile target prompt
+## CAP-004: compile bounded handoff prompt
 
-Generate a 4000-character-or-less prompt from the locked plan for `generic`, `codex`, `human-team`, or seed-oriented downstream targets.
+`ni-run` compiles a 4000-character-or-less handoff prompt from the locked plan for `generic`, `codex`, `human-team`, or seed-oriented downstream targets. It does not execute Codex, shell commands, adapters, or downstream runtimes.
 
-## CAP-005: provide Codex planning skills
+## CAP-005: author planning state through model-user conversation
 
-Keep `ni-start`, `ni-end`, and `ni-run` as UX helpers while the CLI remains readiness and lock authority.
+After `ni init`, use sustained model-user conversation as the primary docs authoring interface. `ni-start` maintains `docs/plan/**`, `.ni/contract.json`, and bounded `.ni/session.json` continuity state together. `ni status` supplies deterministic readiness gaps, `ni-end` confirms and locks through CLI authority, and `ni-run` compiles a handoff prompt. User-facing contract `add`, `list`, or `set` commands are not part of the v0.2 primary UX.
 
 ## CAP-006: select readiness profile
 

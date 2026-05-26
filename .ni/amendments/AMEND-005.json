@@ -1,0 +1,40 @@
+{
+  "schema": "ni.amendment.v0",
+  "id": "AMEND-005",
+  "title": "Refresh lock with current CLI",
+  "reason": "After AMEND-004, ni run reported a stale lock for docs/plan/05_constraints.md. This amendment authorizes a CLI relock of the current READY planning files with the rebuilt ni binary; no accepted planning criteria are changed.",
+  "affected_docs": [
+    ".ni/contract.json",
+    "docs/plan/00_project_brief.md",
+    "docs/plan/01_actors_outcomes.md",
+    "docs/plan/02_capabilities.md",
+    "docs/plan/03_interaction_contract.md",
+    "docs/plan/04_domain_state.md",
+    "docs/plan/05_constraints.md",
+    "docs/plan/06_risks_security.md",
+    "docs/plan/07_evaluation_contract.md",
+    "docs/plan/08_delivery_operation.md",
+    "docs/plan/09_execution_strategy.md",
+    "docs/plan/10_open_questions.md",
+    "docs/plan/11_decision_log.md"
+  ],
+  "affected_contract_ids": [
+    "CAP-005",
+    "REQ-005",
+    "DEC-009",
+    "RISK-011",
+    "EVAL-006"
+  ],
+  "proposed_changes": [
+    "Refresh .ni/plan.lock.json through ni relock so locked hashes match the current v0.2 conversation-authoring planning files.",
+    "Keep all accepted capabilities, requirements, risks, evaluations, decisions, non-goals, and docs content unchanged from the current READY state."
+  ],
+  "risk_impact": "No criteria are weakened; this preserves the lock-hash authority rule by using the CLI relock path after a detected mismatch.",
+  "readiness_impact": "Expected to remain READY because the current planning state already passes ni status.",
+  "created_from_feedback_refs": [],
+  "created_from_pressure_refs": [],
+  "status": "applied",
+  "created_at": "2026-05-26T13:55:55Z",
+  "applied_at": "2026-05-26T13:56:15Z",
+  "source_lock_hash": "f57202843d1d3a5d6908864944f515fcb9842775ced3023d29981914e016c72e"
+}

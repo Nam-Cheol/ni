@@ -59,3 +59,9 @@ Mitigation: relock refuses to replace an existing lock unless an amendment tied 
 Severity: medium
 
 Mitigation: diff and conflict checks are deterministic and contract-local.
+
+## RISK-011: CLI contract editing displaces conversation authoring
+
+Severity: high
+
+Mitigation: keep v0.2 authoring in `ni-start` conversation updates to `docs/plan/**` and `.ni/contract.json`; do not add contract `add`, `list`, or `set` commands as primary UX.

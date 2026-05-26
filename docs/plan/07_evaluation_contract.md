@@ -1,8 +1,8 @@
 # Evaluation contract
 
-## EVAL-001: ni init creates required files
+## EVAL-001: ni init creates conversation-authoring workspace files
 
-Method: CLI integration test.
+Method: CLI integration test for `docs/plan/**`, `.ni/contract.json`, readiness config, and bounded session state.
 
 ## EVAL-002: capability without evaluation is blocked
 
@@ -16,13 +16,13 @@ Method: readiness fixture test.
 
 Method: lock and prompt fixture test.
 
-## EVAL-005: prompt budget is enforced
+## EVAL-005: handoff prompt budget is enforced
 
-Method: unit and CLI integration test for `ni run --max-chars 4000`.
+Method: unit and CLI integration test for `ni run --target codex --max-chars 4000`.
 
-## EVAL-006: skills contain required metadata and authority boundary
+## EVAL-006: conversation authoring preserves CLI authority and excludes contract add/list/set primary UX
 
-Method: static quality check.
+Method: static quality check for skills, conversation-authoring docs, and forbidden contract editing commands.
 
 ## EVAL-007: readiness profiles initialize correctly
 

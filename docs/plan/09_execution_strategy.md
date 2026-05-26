@@ -4,6 +4,8 @@
 
 `ni` does not execute implementation work. It compiles locked planning context into bounded prompts and seed artifacts.
 
+For v0.2, `ni run` compiles a handoff prompt only. It must not call Codex, shell commands, adapters, queues, PR automation, or downstream runtimes.
+
 ## Target strategy
 
 `ni run --target <target>` produces a prompt for a downstream actor. The built-in prompt targets are:
@@ -18,7 +20,7 @@ ouroboros
 spec-kit
 ```
 
-`ni export --target <target> --out <dir>` may write target-specific seed packages for downstream tools after lock verification.
+`ni export --target <target> --out <dir>` may write target-specific seed packages for downstream tools after lock verification in later seed workflows; it is not the primary v0.2 authoring path.
 
 ## Feedback strategy
 

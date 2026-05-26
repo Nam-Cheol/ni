@@ -10,6 +10,8 @@
 - Feedback, pressure, and harness candidates must not silently change locked planning docs.
 - Relock must require an explicit applied amendment when a prior lock exists.
 - Collaboration checks must be deterministic and contract-local.
+- After `ni init`, v0.2 authoring must flow through model-user conversation that updates docs and contract together.
+- User-facing contract `add`, `list`, or `set` commands must not become the v0.2 primary authoring UX.
 
 ## Kernel boundary
 
@@ -17,7 +19,7 @@
 
 `ni-generated-harness` owns project-specific work graphs, evaluation plans, evidence rules, adapters, and runtime decisions.
 
-## Forbidden v1 behavior
+## Forbidden v0.2 behavior
 
 - Do not add a shell adapter.
 - Do not add a Codex execution adapter.
@@ -27,3 +29,4 @@
 - Do not add release automation.
 - Do not add a plugin system.
 - Do not add a TUI or web UI.
+- Do not add primary contract editing commands that make users hand-maintain `.ni/contract.json`.

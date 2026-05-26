@@ -47,3 +47,9 @@ Rationale: Locked planning docs should change only through an explicit user-visi
 Status: accepted
 
 Rationale: Parallel planning changes need review without using model judgment as an authority.
+
+## DEC-009: v0.2 primary authoring UX is model-user conversation, not contract editing commands
+
+Status: accepted
+
+Rationale: `ni init` should create the workspace, while `ni-start` keeps docs and contract synchronized from conversation. The CLI should validate readiness, lock or relock, and compile prompts rather than ask users to hand-author contract records through `add`, `list`, or `set` commands.

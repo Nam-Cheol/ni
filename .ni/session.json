@@ -1,13 +1,39 @@
 {
   "schema": "ni.session.v0",
-  "active_planning_focus": "Add persistent planning session state for ni-start continuity.",
-  "last_planning_summary": "Session state is being added as a non-authoritative planning aid so future model sessions can resume from explicit state instead of hidden chat history.",
+  "active_planning_focus": "Lock v0.2 conversation-authoring plan.",
+  "last_planning_summary": "The v0.2 plan centers authoring on model-user conversation after ni init. ni-start maintains docs/plan and .ni/contract.json together; ni status reports deterministic readiness gaps; ni-end confirms and locks; ni-run compiles a bounded handoff prompt. User-facing contract add/list/set commands are not the primary authoring UX.",
   "pending_questions": [],
-  "recent_decisions": [],
-  "recent_risks": [],
-  "last_readiness_status": "UNKNOWN",
+  "recent_decisions": [
+    {
+      "id": "DEC-009",
+      "title": "v0.2 primary authoring UX is model-user conversation, not contract editing commands",
+      "status": "accepted"
+    }
+  ],
+  "recent_risks": [
+    {
+      "id": "RISK-011",
+      "title": "CLI contract editing displaces conversation authoring",
+      "severity": "high",
+      "status": "accepted"
+    }
+  ],
+  "last_readiness_status": "READY",
   "last_readiness_blockers": [],
-  "last_updated_docs": [],
+  "last_updated_docs": [
+    "docs/plan/00_project_brief.md",
+    "docs/plan/01_actors_outcomes.md",
+    "docs/plan/02_capabilities.md",
+    "docs/plan/03_interaction_contract.md",
+    "docs/plan/04_domain_state.md",
+    "docs/plan/05_constraints.md",
+    "docs/plan/06_risks_security.md",
+    "docs/plan/07_evaluation_contract.md",
+    "docs/plan/08_delivery_operation.md",
+    "docs/plan/09_execution_strategy.md",
+    "docs/plan/11_decision_log.md",
+    ".ni/contract.json"
+  ],
   "authority_order": [
     ".ni/plan.lock.json",
     ".ni/contract.json",
