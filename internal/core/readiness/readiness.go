@@ -20,9 +20,13 @@ const (
 )
 
 type Result struct {
-	Status  Status  `json:"status"`
-	Profile string  `json:"profile"`
-	Issues  []Issue `json:"issues"`
+	Status           Status   `json:"status"`
+	Profile          string   `json:"profile"`
+	ProductType      string   `json:"product_type,omitempty"`
+	DeliverySurfaces []string `json:"delivery_surfaces,omitempty"`
+	InteractionMode  string   `json:"interaction_mode,omitempty"`
+	Guidance         []string `json:"guidance,omitempty"`
+	Issues           []Issue  `json:"issues"`
 }
 
 type Issue struct {
@@ -78,7 +82,12 @@ func Evaluate(dir string) Result {
 	}
 
 	issues = append(issues, evaluateContract(c, rules)...)
-	return resultFromIssues(activeProfile, issues)
+	result := resultFromIssues(activeProfile, issues)
+	result.ProductType = c.ProductType
+	result.DeliverySurfaces = c.DeliverySurfaces
+	result.InteractionMode = c.InteractionMode
+	result.Guidance = guidanceFor(c)
+	return result
 }
 
 func evaluateContract(c contract.Contract, rules profileRules) []Issue {
@@ -179,6 +188,45 @@ func resultFromIssues(activeProfile string, issues []Issue) Result {
 		}
 	}
 	return Result{Status: status, Profile: activeProfile, Issues: issues}
+}
+
+func guidanceFor(c contract.Contract) []string {
+	guidance := []string{
+		fmt.Sprintf("product_type=%s changes planning guidance only; readiness authority remains the shared gate.", c.ProductType),
+	}
+	switch c.ProductType {
+	case "conversation_product":
+		guidance = append(guidance, "Cover conversation turns, failure handling, transcript evaluation, and human handoff.")
+	case "research_protocol":
+		guidance = append(guidance, "Cover hypothesis, data handling, method, analysis, ethics, and reproducibility evidence.")
+	case "operations_process":
+		guidance = append(guidance, "Cover roles, handoffs, triggers, exceptions, service levels, and operating evidence.")
+	case "education_program":
+		guidance = append(guidance, "Cover learners, outcomes, curriculum flow, assessment, and facilitator materials.")
+	case "document_product":
+		guidance = append(guidance, "Cover readers, document structure, review criteria, publishing format, and maintenance.")
+	case "physical_product":
+		guidance = append(guidance, "Cover materials, safety, production or service process, logistics, and physical validation.")
+	case "mixed":
+		guidance = append(guidance, "Cover each delivery surface explicitly and keep cross-surface acceptance criteria traceable.")
+	default:
+		guidance = append(guidance, "Cover interfaces, runtime boundaries, validation evidence, and operational constraints.")
+	}
+	for _, surface := range c.DeliverySurfaces {
+		switch surface {
+		case "conversation":
+			guidance = append(guidance, "conversation surface: specify turn boundaries, memory expectations, refusals, and escalation.")
+		case "document":
+			guidance = append(guidance, "document surface: specify audience, structure, review workflow, and publication format.")
+		case "workflow":
+			guidance = append(guidance, "workflow surface: specify roles, state transitions, handoffs, and exception handling.")
+		case "human_service":
+			guidance = append(guidance, "human_service surface: specify service roles, scripts or playbooks, and quality checks.")
+		case "physical":
+			guidance = append(guidance, "physical surface: specify physical constraints, safety checks, and validation evidence.")
+		}
+	}
+	return guidance
 }
 
 func block(ruleID string, message string) Issue {

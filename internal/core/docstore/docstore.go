@@ -5,7 +5,9 @@ import (
 	"os"
 	"path/filepath"
 	"sort"
+	"strings"
 
+	"ni/internal/core/contract"
 	"ni/internal/core/profile"
 )
 
@@ -20,16 +22,37 @@ type templateFile struct {
 	content string
 }
 
+type InitOptions struct {
+	ReadinessProfile string
+	ProductType      string
+	DeliverySurfaces []string
+	InteractionMode  string
+}
+
 func Init(dir string) (Result, error) {
 	return InitWithProfile(dir, profile.Default)
 }
 
 func InitWithProfile(dir string, readinessProfile string) (Result, error) {
-	if err := profile.Validate(readinessProfile); err != nil {
+	return InitWithOptions(dir, InitOptions{ReadinessProfile: readinessProfile})
+}
+
+func InitWithOptions(dir string, opts InitOptions) (Result, error) {
+	opts = withDefaults(opts)
+	if err := profile.Validate(opts.ReadinessProfile); err != nil {
+		return Result{}, err
+	}
+	if err := contract.ValidateProductType(opts.ProductType); err != nil {
+		return Result{}, err
+	}
+	if err := contract.ValidateDeliverySurfaces(opts.DeliverySurfaces); err != nil {
+		return Result{}, err
+	}
+	if err := contract.ValidateInteractionMode(opts.InteractionMode); err != nil {
 		return Result{}, err
 	}
 	root := filepath.Clean(dir)
-	files := templateFiles(readinessProfile)
+	files := templateFiles(opts)
 	result := Result{Root: root}
 
 	for _, file := range files {
@@ -53,8 +76,24 @@ func InitWithProfile(dir string, readinessProfile string) (Result, error) {
 	return result, nil
 }
 
+func withDefaults(opts InitOptions) InitOptions {
+	if opts.ReadinessProfile == "" {
+		opts.ReadinessProfile = profile.Default
+	}
+	if opts.ProductType == "" {
+		opts.ProductType = contract.DefaultProductType
+	}
+	if len(opts.DeliverySurfaces) == 0 {
+		opts.DeliverySurfaces = contract.DefaultDeliverySurfaces(opts.ProductType)
+	}
+	if opts.InteractionMode == "" {
+		opts.InteractionMode = contract.DefaultInteractionMode
+	}
+	return opts
+}
+
 func RequiredPaths() []string {
-	files := templateFiles(profile.Default)
+	files := templateFiles(withDefaults(InitOptions{}))
 	paths := make([]string, 0, len(files))
 	for _, file := range files {
 		paths = append(paths, file.path)
@@ -63,17 +102,17 @@ func RequiredPaths() []string {
 	return paths
 }
 
-func templateFiles(readinessProfile string) []templateFile {
+func templateFiles(opts InitOptions) []templateFile {
 	planDocs := []templateFile{
-		{"docs/plan/00_project_brief.md", "# Project brief\n\n## Purpose\n\nTODO\n\n## Problem\n\nTODO\n\n## Success definition\n\nTODO\n"},
+		{"docs/plan/00_project_brief.md", "# Project brief\n\n## Product type\n\nTODO\n\n## Delivery surfaces\n\n- TODO\n\n## Purpose\n\nTODO\n\n## Problem\n\nTODO\n\n## Success definition\n\nTODO\n"},
 		{"docs/plan/01_actors_outcomes.md", "# Actors and outcomes\n\n## Actors\n\n- User: TODO\n- Planning model: TODO\n- CLI: validates readiness and lock state.\n\n## Outcomes\n\n- TODO\n"},
 		{"docs/plan/02_capabilities.md", "# Capabilities\n\n## CAP-001: TODO\n\nDescribe the first accepted capability.\n"},
-		{"docs/plan/03_interaction_contract.md", "# Interaction contract\n\n## CLI interaction\n\n```text\nni init\nni status\nni end\nni run\n```\n\n## User control\n\nTODO\n"},
+		{"docs/plan/03_interaction_contract.md", "# Interaction contract\n\n## Interaction mode\n\nTODO\n\n## Product interaction\n\nTODO\n\n## User control\n\nTODO\n"},
 		{"docs/plan/04_domain_state.md", "# Domain and state model\n\n## Core entities\n\n```text\nproject\ncontract\ncapability\nrequirement\ndecision\nrisk\nevaluation\nartifact\nopen question\nlockfile\nprompt\n```\n"},
 		{"docs/plan/05_constraints.md", "# Constraints\n\n## Hard constraints\n\n- Readiness must be rule-based, not model-feeling-based.\n- Prompt output from `ni run` must be 4000 characters or less.\n"},
 		{"docs/plan/06_risks_security.md", "# Risks and security\n\n## RISK-001: TODO\n\nSeverity: high\n\nMitigation: TODO\n"},
 		{"docs/plan/07_evaluation_contract.md", "# Evaluation contract\n\n## EVAL-001: TODO\n\nMethod: TODO\n"},
-		{"docs/plan/08_delivery_operation.md", "# Delivery and operation\n\n## Initial delivery\n\nTODO\n\n## Operating model\n\n- Planning docs are committed to git.\n- Contract JSON is committed to git.\n"},
+		{"docs/plan/08_delivery_operation.md", "# Delivery and operation\n\n## Delivery surfaces\n\n- TODO\n\n## Initial delivery\n\nTODO\n\n## Operating model\n\n- Planning docs are committed to git.\n- Contract JSON is committed to git.\n"},
 		{"docs/plan/09_execution_strategy.md", "# Execution strategy\n\n## v0 execution strategy\n\nDo not execute implementation automatically. Use `ni run` to compile a short prompt after the plan is locked.\n"},
 		{"docs/plan/10_open_questions.md", "# Open questions\n\n## OQ-001: TODO\n\nBlocker: true\n\nInitial assumption: TODO\n"},
 		{"docs/plan/11_decision_log.md", "# Decision log\n\n## DEC-001: TODO\n\nStatus: accepted\n\nRationale: TODO\n"},
@@ -83,7 +122,7 @@ func templateFiles(readinessProfile string) []templateFile {
 	files = append(files, planDocs...)
 	files = append(files,
 		templateFile{".ni/project.json", projectJSON},
-		templateFile{".ni/contract.json", contractJSON(readinessProfile)},
+		templateFile{".ni/contract.json", contractJSON(opts)},
 		templateFile{".ni/readiness.rules.json", readinessRulesJSON},
 		templateFile{".ni/readiness.profiles.json", readinessProfilesJSON},
 	)
@@ -106,13 +145,24 @@ const projectJSON = `{
 }
 `
 
-func contractJSON(readinessProfile string) string {
-	return fmt.Sprintf(contractJSONTemplate, readinessProfile)
+func contractJSON(opts InitOptions) string {
+	return fmt.Sprintf(contractJSONTemplate, opts.ReadinessProfile, opts.ProductType, quoteStrings(opts.DeliverySurfaces), opts.InteractionMode)
+}
+
+func quoteStrings(values []string) string {
+	quoted := make([]string, 0, len(values))
+	for _, value := range values {
+		quoted = append(quoted, fmt.Sprintf("%q", value))
+	}
+	return strings.Join(quoted, ", ")
 }
 
 const contractJSONTemplate = `{
   "schema": "ni.contract.v0",
   "readiness_profile": %q,
+  "product_type": %q,
+  "delivery_surfaces": [%s],
+  "interaction_mode": %q,
   "project": {
     "id": "todo",
     "name": "TODO",

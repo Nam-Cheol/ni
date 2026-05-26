@@ -1,0 +1,68 @@
+{
+  "schema": "ni.contract.v0",
+  "readiness_profile": "prototype",
+  "product_type": "conversation_product",
+  "delivery_surfaces": [
+    "conversation"
+  ],
+  "interaction_mode": "human_to_human",
+  "project": {
+    "id": "conversation-fixture",
+    "name": "Conversation Fixture",
+    "purpose": "Exercise conversation product readiness guidance.",
+    "status": "draft"
+  },
+  "non_goals": [
+    {
+      "id": "NG-001",
+      "title": "Do not implement product-specific execution."
+    }
+  ],
+  "capabilities": [
+    {
+      "id": "CAP-001",
+      "title": "Define conversation outcome",
+      "status": "accepted",
+      "requirements": [
+        "REQ-001"
+      ],
+      "evaluations": [
+        "EVAL-001"
+      ],
+      "risks": [],
+      "artifacts": [
+        "ART-001"
+      ]
+    }
+  ],
+  "requirements": [
+    {
+      "id": "REQ-001",
+      "title": "Conversation flow has accepted success and failure criteria.",
+      "status": "accepted"
+    }
+  ],
+  "decisions": [
+    {
+      "id": "DEC-001",
+      "title": "Conversation is the delivery surface.",
+      "status": "accepted"
+    }
+  ],
+  "risks": [],
+  "evaluations": [
+    {
+      "id": "EVAL-001",
+      "title": "Transcript review",
+      "method": "fixture transcript review"
+    }
+  ],
+  "artifacts": [
+    {
+      "id": "ART-001",
+      "path": "docs/plan/",
+      "kind": "planning_docs"
+    }
+  ],
+  "open_questions": []
+}

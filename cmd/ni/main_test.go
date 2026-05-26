@@ -84,6 +84,33 @@ func TestInitWithProfile(t *testing.T) {
 	}
 }
 
+func TestInitWithProductTypeAndSurface(t *testing.T) {
+	dir := t.TempDir()
+	var stdout bytes.Buffer
+
+	code := run([]string{"init", "--dir", dir, "--product-type", "conversation_product", "--surface", "conversation", "--interaction-mode", "human_to_human"}, &stdout, &bytes.Buffer{})
+	if code != 0 {
+		t.Fatalf("expected exit code 0, got %d", code)
+	}
+
+	data, err := os.ReadFile(filepath.Join(dir, ".ni", "contract.json"))
+	if err != nil {
+		t.Fatalf("reading contract: %v", err)
+	}
+	if !strings.Contains(string(data), `"product_type": "conversation_product"`) {
+		t.Fatalf("expected conversation product type, got %q", string(data))
+	}
+	if !strings.Contains(string(data), `"delivery_surfaces": ["conversation"]`) {
+		t.Fatalf("expected conversation surface, got %q", string(data))
+	}
+	if !strings.Contains(stdout.String(), "product type: conversation_product") {
+		t.Fatalf("expected product type summary, got %q", stdout.String())
+	}
+	if !strings.Contains(stdout.String(), "delivery surfaces: conversation") {
+		t.Fatalf("expected surface summary, got %q", stdout.String())
+	}
+}
+
 func TestStatus(t *testing.T) {
 	dir := t.TempDir()
 	if code := run([]string{"init", "--dir", dir}, &bytes.Buffer{}, &bytes.Buffer{}); code != 0 {
@@ -100,6 +127,9 @@ func TestStatus(t *testing.T) {
 	}
 	if !strings.Contains(stdout.String(), "profile: prototype") {
 		t.Fatalf("expected active profile in status output, got %q", stdout.String())
+	}
+	if !strings.Contains(stdout.String(), "product type: software") {
+		t.Fatalf("expected product type in status output, got %q", stdout.String())
 	}
 }
 
@@ -119,6 +149,9 @@ func TestStatusJSON(t *testing.T) {
 	}
 	if !strings.Contains(stdout.String(), `"profile": "prototype"`) {
 		t.Fatalf("expected JSON profile, got %q", stdout.String())
+	}
+	if !strings.Contains(stdout.String(), `"product_type": "software"`) {
+		t.Fatalf("expected JSON product type, got %q", stdout.String())
 	}
 }
 
@@ -280,6 +313,9 @@ func writeReadyContractForCLI(t *testing.T, dir string) {
 	contract := map[string]any{
 		"schema":            "ni.contract.v0",
 		"readiness_profile": "prototype",
+		"product_type":      "software",
+		"delivery_surfaces": []string{"cli"},
+		"interaction_mode":  "human_to_system",
 		"project": map[string]any{
 			"id":      "cli-fixture",
 			"name":    "CLI Fixture",

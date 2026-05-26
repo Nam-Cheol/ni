@@ -1,0 +1,79 @@
+{
+  "schema": "ni.contract.v0",
+  "readiness_profile": "prototype",
+  "product_type": "research_protocol",
+  "delivery_surfaces": [
+    "document",
+    "workflow"
+  ],
+  "interaction_mode": "human_to_system",
+  "project": {
+    "id": "research-fixture",
+    "name": "Research Fixture",
+    "purpose": "Exercise research protocol readiness guidance.",
+    "status": "draft"
+  },
+  "non_goals": [
+    {
+      "id": "NG-001",
+      "title": "Do not add a product-specific evidence runner."
+    }
+  ],
+  "capabilities": [
+    {
+      "id": "CAP-001",
+      "title": "Define research method",
+      "status": "accepted",
+      "requirements": [
+        "REQ-001"
+      ],
+      "evaluations": [
+        "EVAL-001"
+      ],
+      "risks": [
+        "RISK-001"
+      ],
+      "artifacts": [
+        "ART-001"
+      ]
+    }
+  ],
+  "requirements": [
+    {
+      "id": "REQ-001",
+      "title": "Protocol has method, data handling, and reproducibility criteria.",
+      "status": "accepted"
+    }
+  ],
+  "decisions": [
+    {
+      "id": "DEC-001",
+      "title": "Protocol ships as a reviewed document and workflow.",
+      "status": "accepted"
+    }
+  ],
+  "risks": [
+    {
+      "id": "RISK-001",
+      "title": "Research method ambiguity",
+      "severity": "high",
+      "status": "accepted",
+      "mitigation": "Protocol must state method and review evidence before lock."
+    }
+  ],
+  "evaluations": [
+    {
+      "id": "EVAL-001",
+      "title": "Protocol review",
+      "method": "fixture protocol review"
+    }
+  ],
+  "artifacts": [
+    {
+      "id": "ART-001",
+      "path": "docs/plan/",
+      "kind": "planning_docs"
+    }
+  ],
+  "open_questions": []
+}

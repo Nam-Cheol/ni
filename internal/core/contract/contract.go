@@ -11,9 +11,40 @@ import (
 
 const Schema = "ni.contract.v0"
 
+const (
+	DefaultProductType     = "software"
+	DefaultDeliverySurface = "cli"
+	DefaultInteractionMode = "human_to_system"
+)
+
+var supportedProductTypes = map[string]struct{}{
+	"software":             {},
+	"conversation_product": {},
+	"research_protocol":    {},
+	"operations_process":   {},
+	"education_program":    {},
+	"document_product":     {},
+	"physical_product":     {},
+	"mixed":                {},
+}
+
+var supportedDeliverySurfaces = map[string]struct{}{
+	"web":           {},
+	"cli":           {},
+	"api":           {},
+	"conversation":  {},
+	"document":      {},
+	"workflow":      {},
+	"human_service": {},
+	"physical":      {},
+}
+
 type Contract struct {
 	Schema           string         `json:"schema"`
 	ReadinessProfile string         `json:"readiness_profile"`
+	ProductType      string         `json:"product_type"`
+	DeliverySurfaces []string       `json:"delivery_surfaces"`
+	InteractionMode  string         `json:"interaction_mode"`
 	Project          Project        `json:"project"`
 	NonGoals         []NonGoal      `json:"non_goals"`
 	Capabilities     []Capability   `json:"capabilities"`
@@ -100,6 +131,7 @@ func Load(data []byte) (Contract, error) {
 	if err := json.Unmarshal(data, &c); err != nil {
 		return Contract{}, fmt.Errorf("malformed contract JSON: %w", err)
 	}
+	c.applyProductDefaults()
 	if err := c.Validate(); err != nil {
 		return Contract{}, err
 	}
@@ -159,11 +191,124 @@ func (c Contract) Validate() error {
 	if err := profile.Validate(c.ReadinessProfile); err != nil {
 		return err
 	}
+	if err := ValidateProductType(c.ProductType); err != nil {
+		return err
+	}
+	if err := ValidateDeliverySurfaces(c.DeliverySurfaces); err != nil {
+		return err
+	}
+	if err := ValidateInteractionMode(c.InteractionMode); err != nil {
+		return err
+	}
 
 	if err := validateIDs(c); err != nil {
 		return err
 	}
 	return nil
+}
+
+func (c *Contract) applyProductDefaults() {
+	if strings.TrimSpace(c.ProductType) == "" {
+		c.ProductType = DefaultProductType
+	}
+	if len(c.DeliverySurfaces) == 0 {
+		c.DeliverySurfaces = DefaultDeliverySurfaces(c.ProductType)
+	}
+	if strings.TrimSpace(c.InteractionMode) == "" {
+		c.InteractionMode = DefaultInteractionMode
+	}
+}
+
+func DefaultDeliverySurfaces(productType string) []string {
+	switch productType {
+	case "conversation_product":
+		return []string{"conversation"}
+	case "research_protocol":
+		return []string{"document"}
+	case "operations_process":
+		return []string{"workflow"}
+	case "education_program":
+		return []string{"human_service"}
+	case "document_product":
+		return []string{"document"}
+	case "physical_product":
+		return []string{"physical"}
+	case "mixed":
+		return []string{"workflow"}
+	default:
+		return []string{DefaultDeliverySurface}
+	}
+}
+
+func ValidateProductType(value string) error {
+	if _, ok := supportedProductTypes[value]; !ok {
+		return fmt.Errorf("unsupported product_type %q (valid: %s)", value, strings.Join(ProductTypes(), ", "))
+	}
+	return nil
+}
+
+func ValidateDeliverySurfaces(values []string) error {
+	if len(values) == 0 {
+		return fmt.Errorf("delivery_surfaces must contain at least one surface")
+	}
+	for _, value := range values {
+		if _, ok := supportedDeliverySurfaces[value]; !ok {
+			return fmt.Errorf("unsupported delivery surface %q (valid: %s)", value, strings.Join(DeliverySurfaces(), ", "))
+		}
+	}
+	return nil
+}
+
+func ValidateInteractionMode(value string) error {
+	if !validIdentifier(value) {
+		return fmt.Errorf("interaction_mode must be a lowercase identifier")
+	}
+	return nil
+}
+
+func ProductTypes() []string {
+	return []string{
+		"software",
+		"conversation_product",
+		"research_protocol",
+		"operations_process",
+		"education_program",
+		"document_product",
+		"physical_product",
+		"mixed",
+	}
+}
+
+func DeliverySurfaces() []string {
+	return []string{
+		"web",
+		"cli",
+		"api",
+		"conversation",
+		"document",
+		"workflow",
+		"human_service",
+		"physical",
+	}
+}
+
+func validIdentifier(value string) bool {
+	if value == "" {
+		return false
+	}
+	for _, r := range value {
+		if r >= 'a' && r <= 'z' {
+			continue
+		}
+		if r >= '0' && r <= '9' {
+			continue
+		}
+		if r == '_' {
+			continue
+		}
+		return false
+	}
+	return true
 }
 
 func ValidateIDPrefix(id string, prefix string) error {

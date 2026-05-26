@@ -6,7 +6,9 @@ import (
 	"io"
 	"os"
 	"strconv"
+	"strings"
 
+	"ni/internal/core/contract"
 	"ni/internal/core/docstore"
 	"ni/internal/core/graph"
 	"ni/internal/core/harness"
@@ -133,6 +135,9 @@ func runHarness(args []string, stdout io.Writer, stderr io.Writer) int {
 func runInit(args []string, stdout io.Writer, stderr io.Writer) int {
 	dir := "."
 	readinessProfile := profile.Default
+	productType := contract.DefaultProductType
+	var surfaces []string
+	interactionMode := contract.DefaultInteractionMode
 	for i := 0; i < len(args); i++ {
 		switch args[i] {
 		case "--dir":
@@ -153,20 +158,64 @@ func runInit(args []string, stdout io.Writer, stderr io.Writer) int {
 				return 1
 			}
 			i++
+		case "--product-type":
+			if i+1 >= len(args) {
+				fmt.Fprintln(stderr, "missing value for --product-type")
+				return 1
+			}
+			productType = args[i+1]
+			if err := contract.ValidateProductType(productType); err != nil {
+				fmt.Fprintf(stderr, "invalid --product-type value: %v\n", err)
+				return 1
+			}
+			i++
+		case "--surface":
+			if i+1 >= len(args) {
+				fmt.Fprintln(stderr, "missing value for --surface")
+				return 1
+			}
+			surfaces = append(surfaces, args[i+1])
+			if err := contract.ValidateDeliverySurfaces(surfaces); err != nil {
+				fmt.Fprintf(stderr, "invalid --surface value: %v\n", err)
+				return 1
+			}
+			i++
+		case "--interaction-mode":
+			if i+1 >= len(args) {
+				fmt.Fprintln(stderr, "missing value for --interaction-mode")
+				return 1
+			}
+			interactionMode = args[i+1]
+			if err := contract.ValidateInteractionMode(interactionMode); err != nil {
+				fmt.Fprintf(stderr, "invalid --interaction-mode value: %v\n", err)
+				return 1
+			}
+			i++
 		default:
 			fmt.Fprintf(stderr, "unknown init option: %s\n", args[i])
 			return 1
 		}
 	}
 
-	result, err := docstore.InitWithProfile(dir, readinessProfile)
+	result, err := docstore.InitWithOptions(dir, docstore.InitOptions{
+		ReadinessProfile: readinessProfile,
+		ProductType:      productType,
+		DeliverySurfaces: surfaces,
+		InteractionMode:  interactionMode,
+	})
 	if err != nil {
 		fmt.Fprintf(stderr, "init failed: %v\n", err)
 		return 1
 	}
 
+	if len(surfaces) == 0 {
+		surfaces = contract.DefaultDeliverySurfaces(productType)
+	}
 	fmt.Fprintf(stdout, "initialized ni planning workspace at %s\n", result.Root)
 	fmt.Fprintf(stdout, "readiness profile: %s\n", readinessProfile)
+	fmt.Fprintf(stdout, "product type: %s\n", productType)
+	fmt.Fprintf(stdout, "delivery surfaces: %s\n", strings.Join(surfaces, ", "))
+	fmt.Fprintf(stdout, "interaction mode: %s\n", interactionMode)
 	for _, path := range result.Created {
 		fmt.Fprintf(stdout, "created %s\n", path)
 	}
@@ -287,6 +336,18 @@ func runStatus(args []string, stdout io.Writer, stderr io.Writer) int {
 
 	fmt.Fprintln(stdout, result.Status)
 	fmt.Fprintf(stdout, "profile: %s\n", result.Profile)
+	if result.ProductType != "" {
+		fmt.Fprintf(stdout, "product type: %s\n", result.ProductType)
+	}
+	if len(result.DeliverySurfaces) > 0 {
+		fmt.Fprintf(stdout, "delivery surfaces: %s\n", strings.Join(result.DeliverySurfaces, ", "))
+	}
+	if result.InteractionMode != "" {
+		fmt.Fprintf(stdout, "interaction mode: %s\n", result.InteractionMode)
+	}
+	for _, guidance := range result.Guidance {
+		fmt.Fprintf(stdout, "guidance: %s\n", guidance)
+	}
 	for _, issue := range result.Issues {
 		fmt.Fprintf(stdout, "%s %s: %s\n", issue.Severity, issue.RuleID, issue.Message)
 	}
@@ -301,7 +362,7 @@ Usage:
   ni end --dir <path>
   ni graph --dir <path> [--json]
   ni harness plan --dir <path> [--json]
-  ni init --dir <path> [--profile concept|prototype|mvp|beta|production]
+  ni init --dir <path> [--profile concept|prototype|mvp|beta|production] [--product-type <type>] [--surface <surface>] [--interaction-mode <mode>]
   ni run --dir <path> [--out <path>] [--max-chars N]
   ni status --dir <path> [--json]
   ni version

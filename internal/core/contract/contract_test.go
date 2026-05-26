@@ -21,6 +21,111 @@ func TestLoadFileValidContract(t *testing.T) {
 	if c.ReadinessProfile != "prototype" {
 		t.Fatalf("expected readiness profile prototype, got %q", c.ReadinessProfile)
 	}
+	if c.ProductType != DefaultProductType {
+		t.Fatalf("expected default product type %q, got %q", DefaultProductType, c.ProductType)
+	}
+	if len(c.DeliverySurfaces) != 1 || c.DeliverySurfaces[0] != DefaultDeliverySurface {
+		t.Fatalf("expected default delivery surface %q, got %#v", DefaultDeliverySurface, c.DeliverySurfaces)
+	}
+}
+
+func TestLoadProductFields(t *testing.T) {
+	c, err := Load([]byte(`{
+	  "schema": "ni.contract.v0",
+	  "readiness_profile": "prototype",
+	  "product_type": "conversation_product",
+	  "delivery_surfaces": ["conversation"],
+	  "interaction_mode": "human_to_human",
+	  "project": {
+	    "id": "p",
+	    "name": "P",
+	    "purpose": "test",
+	    "status": "draft"
+	  },
+	  "non_goals": [],
+	  "capabilities": [],
+	  "requirements": [],
+	  "decisions": [],
+	  "risks": [],
+	  "evaluations": [],
+	  "artifacts": [],
+	  "open_questions": []
+	}`))
+	if err != nil {
+		t.Fatalf("Load returned error: %v", err)
+	}
+	if c.ProductType != "conversation_product" {
+		t.Fatalf("expected conversation product, got %q", c.ProductType)
+	}
+	if len(c.DeliverySurfaces) != 1 || c.DeliverySurfaces[0] != "conversation" {
+		t.Fatalf("expected conversation surface, got %#v", c.DeliverySurfaces)
+	}
+	if c.InteractionMode != "human_to_human" {
+		t.Fatalf("expected interaction mode, got %q", c.InteractionMode)
+	}
+}
+
+func TestLoadDefaultsProductFieldsWhenNoValueSupplied(t *testing.T) {
+	c, err := Load([]byte(`{
+	  "schema": "ni.contract.v0",
+	  "readiness_profile": "prototype",
+	  "project": {
+	    "id": "p",
+	    "name": "P",
+	    "purpose": "test",
+	    "status": "draft"
+	  },
+	  "non_goals": [],
+	  "capabilities": [],
+	  "requirements": [],
+	  "decisions": [],
+	  "risks": [],
+	  "evaluations": [],
+	  "artifacts": [],
+	  "open_questions": []
+	}`))
+	if err != nil {
+		t.Fatalf("Load returned error: %v", err)
+	}
+	if c.ProductType != "software" {
+		t.Fatalf("expected default software product type, got %q", c.ProductType)
+	}
+	if len(c.DeliverySurfaces) != 1 || c.DeliverySurfaces[0] != "cli" {
+		t.Fatalf("expected default cli surface, got %#v", c.DeliverySurfaces)
+	}
+	if c.InteractionMode != "human_to_system" {
+		t.Fatalf("expected default interaction mode, got %q", c.InteractionMode)
+	}
+}
+
+func TestLoadRejectsUnsupportedProductType(t *testing.T) {
+	_, err := Load([]byte(`{
+	  "schema": "ni.contract.v0",
+	  "readiness_profile": "prototype",
+	  "product_type": "website_only",
+	  "delivery_surfaces": ["web"],
+	  "interaction_mode": "human_to_system",
+	  "project": {
+	    "id": "p",
+	    "name": "P",
+	    "purpose": "test",
+	    "status": "draft"
+	  },
+	  "non_goals": [],
+	  "capabilities": [],
+	  "requirements": [],
+	  "decisions": [],
+	  "risks": [],
+	  "evaluations": [],
+	  "artifacts": [],
+	  "open_questions": []
+	}`))
+	if err == nil {
+		t.Fatal("expected unsupported product type error")
+	}
+	if !strings.Contains(err.Error(), "unsupported product_type") {
+		t.Fatalf("expected product type error, got %v", err)
+	}
 }
 
 func TestLoadMalformedJSON(t *testing.T) {

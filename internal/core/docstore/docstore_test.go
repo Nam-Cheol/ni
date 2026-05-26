@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"os"
 	"path/filepath"
+	"strings"
 	"testing"
 )
 
@@ -49,6 +50,48 @@ func TestInitWithProfileWritesSelectedReadinessProfile(t *testing.T) {
 
 	if _, err := os.Stat(filepath.Join(dir, ".ni", "readiness.profiles.json")); err != nil {
 		t.Fatalf("expected readiness profiles file: %v", err)
+	}
+}
+
+func TestInitWithOptionsWritesProductDimensions(t *testing.T) {
+	dir := t.TempDir()
+
+	if _, err := InitWithOptions(dir, InitOptions{
+		ReadinessProfile: "prototype",
+		ProductType:      "conversation_product",
+		DeliverySurfaces: []string{"conversation"},
+		InteractionMode:  "human_to_human",
+	}); err != nil {
+		t.Fatalf("InitWithOptions returned error: %v", err)
+	}
+
+	data, err := os.ReadFile(filepath.Join(dir, ".ni", "contract.json"))
+	if err != nil {
+		t.Fatalf("reading contract: %v", err)
+	}
+	var contract struct {
+		ProductType      string   `json:"product_type"`
+		DeliverySurfaces []string `json:"delivery_surfaces"`
+		InteractionMode  string   `json:"interaction_mode"`
+	}
+	if err := json.Unmarshal(data, &contract); err != nil {
+		t.Fatalf("unmarshaling contract: %v", err)
+	}
+	if contract.ProductType != "conversation_product" {
+		t.Fatalf("expected conversation product, got %q", contract.ProductType)
+	}
+	if len(contract.DeliverySurfaces) != 1 || contract.DeliverySurfaces[0] != "conversation" {
+		t.Fatalf("expected conversation surface, got %#v", contract.DeliverySurfaces)
+	}
+	if contract.InteractionMode != "human_to_human" {
+		t.Fatalf("expected interaction mode, got %q", contract.InteractionMode)
+	}
+	brief, err := os.ReadFile(filepath.Join(dir, "docs", "plan", "00_project_brief.md"))
+	if err != nil {
+		t.Fatalf("reading project brief: %v", err)
+	}
+	if !strings.Contains(string(brief), "## Product type") {
+		t.Fatalf("expected product type section in project brief, got %q", string(brief))
 	}
 }
 

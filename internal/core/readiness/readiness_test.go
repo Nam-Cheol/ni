@@ -21,6 +21,37 @@ func TestEvaluateReadyFixture(t *testing.T) {
 	}
 }
 
+func TestEvaluateUniversalProductFixtures(t *testing.T) {
+	for _, tt := range []struct {
+		fixture     string
+		productType string
+		surface     string
+		guidance    string
+	}{
+		{"conversation_product.json", "conversation_product", "conversation", "conversation turns"},
+		{"research_protocol.json", "research_protocol", "document", "hypothesis"},
+		{"software_cli.json", "software", "cli", "readiness authority remains"},
+	} {
+		t.Run(tt.fixture, func(t *testing.T) {
+			dir := initFixtureProject(t, tt.fixture)
+
+			result := Evaluate(dir)
+			if result.Status != StatusReady {
+				t.Fatalf("expected READY, got %#v", result)
+			}
+			if result.ProductType != tt.productType {
+				t.Fatalf("expected product type %s, got %#v", tt.productType, result)
+			}
+			if !containsString(result.DeliverySurfaces, tt.surface) {
+				t.Fatalf("expected surface %s, got %#v", tt.surface, result.DeliverySurfaces)
+			}
+			if !guidanceContains(result.Guidance, tt.guidance) {
+				t.Fatalf("expected guidance containing %q, got %#v", tt.guidance, result.Guidance)
+			}
+		})
+	}
+}
+
 func TestEvaluateReadyWithDeferralsFixture(t *testing.T) {
 	dir := initFixtureProject(t, "ready_with_deferrals.json")
 
@@ -194,4 +225,22 @@ func requireIssueSeverity(t *testing.T, result Result, ruleID string, severity s
 		}
 	}
 	t.Fatalf("expected issue %s, got %#v", ruleID, result.Issues)
+}
+
+func containsString(values []string, want string) bool {
+	for _, value := range values {
+		if value == want {
+			return true
+		}
+	}
+	return false
+}
+
+func guidanceContains(values []string, want string) bool {
+	for _, value := range values {
+		if strings.Contains(value, want) {
+			return true
+		}
+	}
+	return false
 }

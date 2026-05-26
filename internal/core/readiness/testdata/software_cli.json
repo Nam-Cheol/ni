@@ -1,0 +1,68 @@
+{
+  "schema": "ni.contract.v0",
+  "readiness_profile": "prototype",
+  "product_type": "software",
+  "delivery_surfaces": [
+    "cli"
+  ],
+  "interaction_mode": "human_to_system",
+  "project": {
+    "id": "software-cli-fixture",
+    "name": "Software CLI Fixture",
+    "purpose": "Exercise software CLI readiness guidance.",
+    "status": "draft"
+  },
+  "non_goals": [
+    {
+      "id": "NG-001",
+      "title": "Do not implement execution adapters."
+    }
+  ],
+  "capabilities": [
+    {
+      "id": "CAP-001",
+      "title": "Expose CLI planning command",
+      "status": "accepted",
+      "requirements": [
+        "REQ-001"
+      ],
+      "evaluations": [
+        "EVAL-001"
+      ],
+      "risks": [],
+      "artifacts": [
+        "ART-001"
+      ]
+    }
+  ],
+  "requirements": [
+    {
+      "id": "REQ-001",
+      "title": "CLI behavior has accepted input and output criteria.",
+      "status": "accepted"
+    }
+  ],
+  "decisions": [
+    {
+      "id": "DEC-001",
+      "title": "CLI is the initial software surface.",
+      "status": "accepted"
+    }
+  ],
+  "risks": [],
+  "evaluations": [
+    {
+      "id": "EVAL-001",
+      "title": "CLI fixture check",
+      "method": "fixture CLI review"
+    }
+  ],
+  "artifacts": [
+    {
+      "id": "ART-001",
+      "path": "docs/plan/",
+      "kind": "planning_docs"
+    }
+  ],
+  "open_questions": []
+}

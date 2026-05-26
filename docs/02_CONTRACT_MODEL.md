@@ -7,6 +7,9 @@ The machine-readable project contract lives at `.ni/contract.json`.
 ```text
 schema
 readiness_profile
+product_type
+delivery_surfaces
+interaction_mode
 project
 non_goals
 capabilities
@@ -29,6 +32,61 @@ production
 ```
 
 The default profile created by `ni init` is `prototype`.
+
+## Product shape
+
+`product_type`, `delivery_surfaces`, and `interaction_mode` keep the contract usable for products that are not web or software systems.
+
+`product_type` uses one of these values:
+
+```text
+software
+conversation_product
+research_protocol
+operations_process
+education_program
+document_product
+physical_product
+mixed
+```
+
+`delivery_surfaces` is a non-empty array using one or more of these values:
+
+```text
+web
+cli
+api
+conversation
+document
+workflow
+human_service
+physical
+```
+
+`interaction_mode` is a lowercase identifier such as:
+
+```text
+human_to_system
+human_to_human
+system_to_system
+hybrid
+```
+
+If an older contract has no product shape fields, the CLI treats that as no value supplied and defaults to:
+
+```text
+product_type: software
+delivery_surfaces: [cli]
+interaction_mode: human_to_system
+```
+
+`ni init` can set these fields explicitly:
+
+```bash
+ni init --product-type conversation_product --surface conversation
+```
+
+Product shape affects scaffold text and `ni status` guidance only. Because these fields live in the contract, their values are included in normal lock hashing, but they must not add product-specific readiness authority or `ni run` execution behavior.
 
 ## ID prefixes
 
