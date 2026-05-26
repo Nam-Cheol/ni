@@ -1,0 +1,185 @@
+{
+  "schema": "ni.contract.v0",
+  "readiness_profile": "prototype",
+  "product_type": "conversation_product",
+  "delivery_surfaces": ["conversation"],
+  "interaction_mode": "human_to_system",
+  "project": {
+    "id": "conversation-product",
+    "name": "Travel Concierge Triage",
+    "purpose": "Plan a human-operated travel intake conversation that clarifies trip intent, catches unsupported requests, and hands a concise brief to a human concierge.",
+    "status": "locked_example"
+  },
+  "non_goals": [
+    {
+      "id": "NG-001",
+      "title": "Do not book travel, charge payment methods, or contact vendors."
+    },
+    {
+      "id": "NG-002",
+      "title": "Do not provide medical, legal, immigration, or safety-critical advice."
+    },
+    {
+      "id": "NG-003",
+      "title": "Do not add a web UI, queue, agent runtime, or live support integration."
+    }
+  ],
+  "capabilities": [
+    {
+      "id": "CAP-001",
+      "title": "Collect trip goals, constraints, and traveler preferences through a bounded intake conversation.",
+      "status": "accepted",
+      "requirements": [
+        "REQ-001",
+        "REQ-002"
+      ],
+      "evaluations": [
+        "EVAL-001"
+      ],
+      "risks": [
+        "RISK-001"
+      ],
+      "artifacts": [
+        "ART-001"
+      ]
+    },
+    {
+      "id": "CAP-002",
+      "title": "Detect unsupported, sensitive, or unsafe requests and move to human handoff language.",
+      "status": "accepted",
+      "requirements": [
+        "REQ-003",
+        "REQ-004"
+      ],
+      "evaluations": [
+        "EVAL-002"
+      ],
+      "risks": [
+        "RISK-001",
+        "RISK-002"
+      ],
+      "artifacts": [
+        "ART-002"
+      ]
+    },
+    {
+      "id": "CAP-003",
+      "title": "Produce a concise human concierge handoff brief from the completed conversation.",
+      "status": "accepted",
+      "requirements": [
+        "REQ-005"
+      ],
+      "evaluations": [
+        "EVAL-003"
+      ],
+      "risks": [
+        "RISK-003"
+      ],
+      "artifacts": [
+        "ART-003"
+      ]
+    }
+  ],
+  "requirements": [
+    {
+      "id": "REQ-001",
+      "title": "The conversation must ask for destination, travel dates or flexibility, budget range, traveler count, accessibility needs, and trip purpose before handoff.",
+      "status": "accepted"
+    },
+    {
+      "id": "REQ-002",
+      "title": "The conversation must keep optional preferences separate from hard constraints in the handoff brief.",
+      "status": "accepted"
+    },
+    {
+      "id": "REQ-003",
+      "title": "The conversation must explicitly decline to make bookings, guarantees, or regulated advice claims.",
+      "status": "accepted"
+    },
+    {
+      "id": "REQ-004",
+      "title": "Unsupported requests must result in handoff language that preserves the user's goal without inventing policy or availability.",
+      "status": "accepted"
+    },
+    {
+      "id": "REQ-005",
+      "title": "The handoff brief must include known facts, unresolved questions, risks, and next human action.",
+      "status": "accepted"
+    }
+  ],
+  "decisions": [
+    {
+      "id": "DEC-001",
+      "title": "Treat the product as a conversation protocol and handoff artifact, not software implementation.",
+      "status": "accepted"
+    },
+    {
+      "id": "DEC-002",
+      "title": "Use transcript review as the first evaluation method.",
+      "status": "accepted"
+    },
+    {
+      "id": "DEC-003",
+      "title": "Generate both human-team and Codex-compatible prompts as downstream seed material after lock.",
+      "status": "accepted"
+    }
+  ],
+  "risks": [
+    {
+      "id": "RISK-001",
+      "title": "The conversation may imply travel readiness or availability that a human has not verified.",
+      "severity": "high",
+      "status": "accepted",
+      "mitigation": "Use explicit provisional language, require human verification before booking, and evaluate transcripts for unsupported certainty."
+    },
+    {
+      "id": "RISK-002",
+      "title": "Users may disclose sensitive personal data during travel planning.",
+      "severity": "medium",
+      "status": "accepted",
+      "mitigation": "Collect only information needed for triage, avoid regulated advice, and include privacy reminders in handoff guidance."
+    },
+    {
+      "id": "RISK-003",
+      "title": "A vague handoff brief could waste human concierge time.",
+      "severity": "medium",
+      "status": "accepted",
+      "mitigation": "Require separate fields for facts, constraints, open questions, and next action; evaluate against a handoff rubric."
+    }
+  ],
+  "evaluations": [
+    {
+      "id": "EVAL-001",
+      "title": "Transcript fixture review for complete intake coverage.",
+      "method": "Review at least three scripted transcripts and check that each required intake field is asked or marked unresolved."
+    },
+    {
+      "id": "EVAL-002",
+      "title": "Unsupported request escalation review.",
+      "method": "Run a table of unsupported booking, safety, legal, and medical travel prompts through the conversation script and verify handoff wording."
+    },
+    {
+      "id": "EVAL-003",
+      "title": "Human concierge handoff rubric.",
+      "method": "A reviewer scores sample briefs for facts, constraints, open questions, risk notes, and next action."
+    }
+  ],
+  "artifacts": [
+    {
+      "id": "ART-001",
+      "path": "docs/plan/02_capabilities.md",
+      "kind": "capability_plan"
+    },
+    {
+      "id": "ART-002",
+      "path": "docs/plan/03_interaction_contract.md",
+      "kind": "conversation_contract"
+    },
+    {
+      "id": "ART-003",
+      "path": "generated/human-team.prompt.txt",
+      "kind": "generated_handoff_prompt"
+    }
+  ],
+  "open_questions": []
+}

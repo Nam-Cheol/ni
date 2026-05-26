@@ -1,0 +1,68 @@
+{
+  "schema": "ni.lock.v0",
+  "locked_at": "2026-05-26T12:00:07Z",
+  "source_of_truth": [
+    ".ni/plan.lock.json",
+    ".ni/contract.json",
+    "docs/plan/**",
+    "chat transcript",
+    "model guess"
+  ],
+  "readiness": {
+    "status": "READY"
+  },
+  "files": [
+    {
+      "path": ".ni/contract.json",
+      "sha256": "455fb7766a1a3443148982bba191c1c24293b20d742879159e5a395e4a0a48a3"
+    },
+    {
+      "path": "docs/plan/00_project_brief.md",
+      "sha256": "bd98c2fc7d5a29b0d119af720246af30f08fd2b555e64dcba4046716582d4125"
+    },
+    {
+      "path": "docs/plan/01_actors_outcomes.md",
+      "sha256": "f268b1e06d234ea1d20c42e297f1b6a0a6b3d12706572bcc963699669854baae"
+    },
+    {
+      "path": "docs/plan/02_capabilities.md",
+      "sha256": "cd60b503cfd85285271b9d28bb10062a99a89542a6e13a375fc906bd4ac5db77"
+    },
+    {
+      "path": "docs/plan/03_interaction_contract.md",
+      "sha256": "5cf408fea3413d2785489efcdd6c26392313e4331e2c7fa2ce028ada8b0190d8"
+    },
+    {
+      "path": "docs/plan/04_domain_state.md",
+      "sha256": "002e638cf342e9feeafcd16136b32b3c82c4ca7c3ba5bf5c12be1492127f9386"
+    },
+    {
+      "path": "docs/plan/05_constraints.md",
+      "sha256": "b39a21ab8aea4c664dc9de5c3436df0c4b65d7473e1824defe0fcbb0c81474d4"
+    },
+    {
+      "path": "docs/plan/06_risks_security.md",
+      "sha256": "25ce902eb48286246858469dcff8f68fc0ae30357b9bf3cf0506f6b2da85e4b5"
+    },
+    {
+      "path": "docs/plan/07_evaluation_contract.md",
+      "sha256": "a00303aff3bd135906d3e69c92436855f1a1cb6e5be424cfe4be03ea10b1688e"
+    },
+    {
+      "path": "docs/plan/08_delivery_operation.md",
+      "sha256": "bdcc8f6dba8920f971a5dc1511d80fa8825729eacf9e05b02cc40f459ba36051"
+    },
+    {
+      "path": "docs/plan/09_execution_strategy.md",
+      "sha256": "b58eaa041112fc284bac208802f247280e195484a4fc2573f19f347443e30f53"
+    },
+    {
+      "path": "docs/plan/10_open_questions.md",
+      "sha256": "0d4a3babca98aa0168f2a5425dd26ed34b8dd23d7225a77d7a9831bc03eea15e"
+    },
+    {
+      "path": "docs/plan/11_decision_log.md",
+      "sha256": "fec0d8d406cc74649ddb13e7c8a016a3987eb9ebd6378a10327388861508cb52"
+    }
+  ]
+}

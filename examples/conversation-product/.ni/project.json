@@ -1,0 +1,14 @@
+{
+  "schema": "ni.project.v0",
+  "id": "conversation-product",
+  "name": "Travel Concierge Triage",
+  "created_for": "non-software conversation product planning example",
+  "kernel_phase": "planning",
+  "commands": [
+    "init",
+    "status",
+    "end",
+    "run"
+  ],
+  "prompt_max_chars": 4000
+}

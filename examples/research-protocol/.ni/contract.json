@@ -1,0 +1,184 @@
+{
+  "schema": "ni.contract.v0",
+  "readiness_profile": "prototype",
+  "product_type": "research_protocol",
+  "delivery_surfaces": ["document"],
+  "interaction_mode": "human_to_human",
+  "project": {
+    "id": "research-protocol",
+    "name": "Neighborhood Cooling Study Protocol",
+    "purpose": "Plan a documented field research protocol for comparing street-level cooling interventions before any study execution begins.",
+    "status": "locked_example"
+  },
+  "non_goals": [
+    {
+      "id": "NG-001",
+      "title": "Do not collect participant data, deploy sensors, or run fieldwork from ni."
+    },
+    {
+      "id": "NG-002",
+      "title": "Do not treat ni readiness as scientific peer review or ethics approval."
+    },
+    {
+      "id": "NG-003",
+      "title": "Do not add a dashboard, web UI, queue, or analysis runtime."
+    }
+  ],
+  "capabilities": [
+    {
+      "id": "CAP-001",
+      "title": "Define the study question, hypothesis, sampling frame, and inclusion criteria.",
+      "status": "accepted",
+      "requirements": [
+        "REQ-001",
+        "REQ-002"
+      ],
+      "evaluations": [
+        "EVAL-001"
+      ],
+      "risks": [
+        "RISK-001"
+      ],
+      "artifacts": [
+        "ART-001"
+      ]
+    },
+    {
+      "id": "CAP-002",
+      "title": "Specify data handling, ethics, and participant-contact boundaries.",
+      "status": "accepted",
+      "requirements": [
+        "REQ-003",
+        "REQ-004"
+      ],
+      "evaluations": [
+        "EVAL-002"
+      ],
+      "risks": [
+        "RISK-002"
+      ],
+      "artifacts": [
+        "ART-002"
+      ]
+    },
+    {
+      "id": "CAP-003",
+      "title": "Define reproducible analysis and evidence requirements for the protocol.",
+      "status": "accepted",
+      "requirements": [
+        "REQ-005"
+      ],
+      "evaluations": [
+        "EVAL-003"
+      ],
+      "risks": [
+        "RISK-003"
+      ],
+      "artifacts": [
+        "ART-003"
+      ]
+    }
+  ],
+  "requirements": [
+    {
+      "id": "REQ-001",
+      "title": "The protocol must state the research question and hypothesis in falsifiable terms.",
+      "status": "accepted"
+    },
+    {
+      "id": "REQ-002",
+      "title": "The sampling frame must define eligible street segments, observation windows, and exclusion criteria.",
+      "status": "accepted"
+    },
+    {
+      "id": "REQ-003",
+      "title": "The protocol must separate public environmental observations from any human-subject interaction.",
+      "status": "accepted"
+    },
+    {
+      "id": "REQ-004",
+      "title": "The protocol must require ethics review before any participant contact or personally identifying data collection.",
+      "status": "accepted"
+    },
+    {
+      "id": "REQ-005",
+      "title": "The analysis plan must name variables, comparison method, reproducibility evidence, and reviewer acceptance criteria.",
+      "status": "accepted"
+    }
+  ],
+  "decisions": [
+    {
+      "id": "DEC-001",
+      "title": "Treat the output as a document protocol, not a data collection or analysis runtime.",
+      "status": "accepted"
+    },
+    {
+      "id": "DEC-002",
+      "title": "Use independent protocol review as readiness evidence.",
+      "status": "accepted"
+    },
+    {
+      "id": "DEC-003",
+      "title": "Generate human-team and generic prompts after lock for research team handoff.",
+      "status": "accepted"
+    }
+  ],
+  "risks": [
+    {
+      "id": "RISK-001",
+      "title": "Ambiguous sampling criteria could bias the study.",
+      "severity": "high",
+      "status": "accepted",
+      "mitigation": "Require explicit inclusion and exclusion criteria plus an independent reviewer reproduction check before fieldwork."
+    },
+    {
+      "id": "RISK-002",
+      "title": "Participant privacy or ethics boundaries may be crossed accidentally.",
+      "severity": "high",
+      "status": "accepted",
+      "mitigation": "Separate environmental observation from participant contact and require ethics review before collecting personal data."
+    },
+    {
+      "id": "RISK-003",
+      "title": "Analysis decisions may drift after observations are collected.",
+      "severity": "medium",
+      "status": "accepted",
+      "mitigation": "Lock variables, comparison method, exclusion criteria, and reproducibility evidence in the protocol before execution."
+    }
+  ],
+  "evaluations": [
+    {
+      "id": "EVAL-001",
+      "title": "Sampling reproducibility review.",
+      "method": "An independent reviewer uses the protocol to select eligible street segments from a supplied map and records mismatches."
+    },
+    {
+      "id": "EVAL-002",
+      "title": "Ethics boundary review.",
+      "method": "A reviewer checks whether each planned data item is public environmental observation, participant contact, or personally identifying data."
+    },
+    {
+      "id": "EVAL-003",
+      "title": "Analysis plan reproducibility review.",
+      "method": "A reviewer confirms that variables, comparison method, exclusion criteria, and evidence package are sufficient to rerun the analysis."
+    }
+  ],
+  "artifacts": [
+    {
+      "id": "ART-001",
+      "path": "docs/plan/02_capabilities.md",
+      "kind": "protocol_capabilities"
+    },
+    {
+      "id": "ART-002",
+      "path": "docs/plan/06_risks_security.md",
+      "kind": "ethics_risk_plan"
+    },
+    {
+      "id": "ART-003",
+      "path": "generated/human-team.prompt.txt",
+      "kind": "generated_research_handoff"
+    }
+  ],
+  "open_questions": []
+}

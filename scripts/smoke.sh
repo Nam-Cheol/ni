@@ -199,6 +199,14 @@ run_cmd "ni targets" "$NI_BIN" targets
 require_output "generic"
 require_output "spec-kit"
 
+for example_dir in "$ROOT/examples/conversation-product" "$ROOT/examples/research-protocol"; do
+  example_name="$(basename "$example_dir")"
+  run_cmd "example status ($example_name)" "$NI_BIN" status --dir "$example_dir"
+  require_output "READY"
+  run_cmd "example human-team prompt ($example_name)" "$NI_BIN" run --dir "$example_dir" --target human-team
+  require_output "Target: human-team"
+done
+
 for export_target in hyper-run namba-ai ouroboros spec-kit; do
   run_cmd "ni export --target $export_target" "$NI_BIN" export --dir "$locked_ws" --target "$export_target" --out "$SMOKE_TMP/exports/$export_target"
   require_output "exported $export_target seed package"

@@ -113,6 +113,17 @@ go run ./cmd/ni status --dir .
 go run ./cmd/ni run --dir . --target generic --max-chars 4000
 ```
 
+## Examples
+
+Complete locked example workspaces live in `examples/`:
+
+- [Travel Concierge Triage](examples/conversation-product/): a non-software conversation product with human-team and Codex prompt artifacts.
+- [Neighborhood Cooling Study Protocol](examples/research-protocol/): a non-software research protocol with human-team and generic prompt artifacts.
+- [Namba AI Upgrade](examples/namba-ai-upgrade/): a software product planning example.
+
+The non-software examples demonstrate that ni compiles product planning
+contracts before implementation, not only software specs.
+
 ### Built binary mode
 
 Build a local binary into `bin/ni`:

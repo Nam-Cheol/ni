@@ -1,0 +1,14 @@
+{
+  "schema": "ni.project.v0",
+  "id": "research-protocol",
+  "name": "Neighborhood Cooling Study Protocol",
+  "created_for": "non-software research protocol planning example",
+  "kernel_phase": "planning",
+  "commands": [
+    "init",
+    "status",
+    "end",
+    "run"
+  ],
+  "prompt_max_chars": 4000
+}

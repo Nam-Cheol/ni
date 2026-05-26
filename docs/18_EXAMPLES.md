@@ -19,11 +19,14 @@ Use this for an assistant, interview flow, support workflow, or other product
 whose main delivery surface is a conversation.
 
 ```bash
-go run ./cmd/ni init --dir ./examples/conversation-assistant \
+go run ./cmd/ni init --dir ./examples/conversation-product \
   --product-type conversation_product \
   --surface conversation \
   --interaction-mode human_to_system
 ```
+
+See the complete locked example at
+[`examples/conversation-product/`](../examples/conversation-product/).
 
 Planning focus:
 
@@ -46,9 +49,9 @@ NG-001 Do not connect live support queues before the plan is locked
 Readiness and lock:
 
 ```bash
-go run ./cmd/ni status --dir ./examples/conversation-assistant
-go run ./cmd/ni end --dir ./examples/conversation-assistant
-go run ./cmd/ni run --dir ./examples/conversation-assistant --target codex
+go run ./cmd/ni status --dir ./examples/conversation-product
+go run ./cmd/ni end --dir ./examples/conversation-product
+go run ./cmd/ni run --dir ./examples/conversation-product --target human-team
 ```
 
 The compiled prompt is seed material for implementation. It does not start a
@@ -102,6 +105,9 @@ go run ./cmd/ni init --dir ./examples/research-protocol \
   --surface document \
   --interaction-mode human_to_human
 ```
+
+See the complete locked example at
+[`examples/research-protocol/`](../examples/research-protocol/).
 
 Planning focus:
 
