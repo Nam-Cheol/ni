@@ -1,0 +1,96 @@
+stdout:
+exported spec-kit seed package at <WORKDIR>/export/spec-kit
+created spec-kit-seed-notes.md
+
+files:
+--- spec-kit-seed-notes.md ---
+# Spec Kit Seed Notes
+
+These notes are seed material for downstream spec-first tools. They are derived from a locked NI contract and are not an executable workflow.
+
+Boundary rules:
+
+- NI exports seed notes only.
+- NI does not call Spec Kit or own Spec Kit state.
+- Downstream state must remain outside NI and derived from the lock.
+
+## Locked Contract Summary
+
+- project_id: cli-fixture
+- project_name: CLI Fixture
+- purpose: Exercise ni end.
+- product_type: software
+- delivery_surfaces: cli
+- interaction_mode: human_to_system
+- readiness_profile: prototype
+- locked_readiness_status: READY
+- locked_at: <TIMESTAMP>
+- source_lock_hash: sha256:<SHA256>
+
+## Capabilities
+
+### CAP-001: Capability
+
+- depends_on: none
+- requirements: REQ-001 (Requirement)
+- evaluations: EVAL-001 (Evaluation)
+- risks: none
+- artifacts: ART-001 (planning_docs at docs/plan/)
+
+## Constraints
+
+- Verify `.ni/plan.lock.json` exists and locked hashes match before using these notes.
+- Preserve accepted requirements, risk mitigations, and blocker handling.
+- Keep downstream state derived and outside NI core.
+- Do not weaken acceptance criteria to make downstream work appear ready.
+
+Accepted requirements:
+
+- REQ-001: Requirement
+
+## Risks
+
+No risks are listed in the locked contract.
+
+## Evaluation Contract
+
+### EVAL-001: Evaluation
+
+- method: fixture
+- linked_capabilities: CAP-001
+
+Evidence references:
+
+- ART-001: planning_docs at docs/plan/
+
+## Non-goals
+
+- NG-001: Do not execute work.
+
+## Target Non-goals
+
+- Do not implement slash commands in NI.
+- Do not create coding task lists as NI core state.
+- Do not turn NI into a spec-first coding operating system.
+
+## Source-of-Truth References
+
+Source-of-truth order: .ni/plan.lock.json > .ni/contract.json > docs/plan/** > chat transcript > model guess
+
+Locked files:
+
+- .ni/contract.json sha256:<SHA256>
+- docs/plan/00_project_brief.md sha256:<SHA256>
+- docs/plan/01_actors_outcomes.md sha256:<SHA256>
+- docs/plan/02_capabilities.md sha256:<SHA256>
+- docs/plan/03_interaction_contract.md sha256:<SHA256>
+- docs/plan/04_domain_state.md sha256:<SHA256>
+- docs/plan/05_constraints.md sha256:<SHA256>
+- docs/plan/06_risks_security.md sha256:<SHA256>
+- docs/plan/07_evaluation_contract.md sha256:<SHA256>
+- docs/plan/08_delivery_operation.md sha256:<SHA256>
+- docs/plan/09_execution_strategy.md sha256:<SHA256>
+- docs/plan/10_open_questions.md sha256:<SHA256>
+- docs/plan/11_decision_log.md sha256:<SHA256>
+
+Stop with `BLOCKED` if any locked hash mismatches before downstream work uses these notes.

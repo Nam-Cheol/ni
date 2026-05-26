@@ -1,0 +1,128 @@
+stdout:
+exported namba-ai seed package at <WORKDIR>/export/namba-ai
+created planning.md
+created ni-lock-summary.md
+created capability-map.md
+created evaluation-map.md
+created risk-map.md
+created suggested-spec-boundaries.md
+
+files:
+--- capability-map.md ---
+# Capability Map
+
+Capabilities are graph nodes. `depends_on` edges describe prerequisites without requiring a total execution order.
+
+## CAP-001: Capability
+
+- status: accepted
+- depends_on: none
+- requirements: REQ-001 (Requirement)
+- evaluations: EVAL-001 (Evaluation)
+- risks: none
+- artifacts: ART-001 (planning_docs at docs/plan/)
+
+--- evaluation-map.md ---
+# Evaluation Map
+
+Evaluations are validation expectations for downstream planning. NI exports this map but does not run evaluations.
+
+## EVAL-001: Evaluation
+
+- method: fixture
+- linked_capabilities: CAP-001
+
+Evidence locations:
+
+- ART-001: planning_docs at docs/plan/
+
+--- ni-lock-summary.md ---
+# NI Lock Summary
+
+Project ID: cli-fixture
+
+Readiness profile: prototype
+
+Locked readiness status: READY
+
+Locked at: <TIMESTAMP>
+
+Source lock hash: sha256:<SHA256>
+
+Source of truth: .ni/plan.lock.json > .ni/contract.json > docs/plan/** > chat transcript > model guess
+
+Locked files:
+
+- .ni/contract.json sha256:<SHA256>
+- docs/plan/00_project_brief.md sha256:<SHA256>
+- docs/plan/01_actors_outcomes.md sha256:<SHA256>
+- docs/plan/02_capabilities.md sha256:<SHA256>
+- docs/plan/03_interaction_contract.md sha256:<SHA256>
+- docs/plan/04_domain_state.md sha256:<SHA256>
+- docs/plan/05_constraints.md sha256:<SHA256>
+- docs/plan/06_risks_security.md sha256:<SHA256>
+- docs/plan/07_evaluation_contract.md sha256:<SHA256>
+- docs/plan/08_delivery_operation.md sha256:<SHA256>
+- docs/plan/09_execution_strategy.md sha256:<SHA256>
+- docs/plan/10_open_questions.md sha256:<SHA256>
+- docs/plan/11_decision_log.md sha256:<SHA256>
+
+Stop with `BLOCKED` if any locked hash mismatches before downstream work uses this seed.
+--- planning.md ---
+# Planning Seed
+
+Project: CLI Fixture
+
+Purpose: Exercise ni end.
+
+Product type: software
+
+Delivery surfaces: cli
+
+This is namba-ai-oriented planning seed material derived from a locked NI contract.
+
+Boundary rules:
+
+- NI exports markdown seed documents only.
+- NI does not call namba or implement namba run, sync, pr, or land behavior.
+- NI does not add Codex-only assumptions to this target.
+- Downstream planning and execution state must remain outside NI and derived from the lock.
+
+## Accepted capabilities
+
+- CAP-001: Capability
+
+## Accepted requirements
+
+- REQ-001: Requirement
+
+## Non-goals
+
+- NG-001: Do not execute work.
+
+--- risk-map.md ---
+# Risk Map
+
+Risks remain contract constraints for downstream planning; mitigations must not be weakened to make work appear ready.
+
+## Non-goals
+
+- NG-001: Do not execute work.
+
+--- suggested-spec-boundaries.md ---
+# Suggested Spec Boundaries
+
+This file is a proposal, not a required sequential SPEC chain.
+
+Use these as candidate graph boundaries for downstream planning. A downstream tool may split, merge, or reorder boundaries when dependency edges and locked acceptance criteria are preserved.
+
+## Boundary candidate: CAP-001
+
+- intent: Capability
+- depends_on: none
+- acceptance_refs: REQ-001
+- validation_refs: EVAL-001
+- risk_refs: none
+- artifact_refs: ART-001
+
+Do not interpret this proposal as permission for NI to run namba, create mandatory execution order, or own downstream runtime state.

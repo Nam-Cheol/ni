@@ -1,0 +1,33 @@
+{
+  "schema": "ni.collaboration.conflicts.v0",
+  "base": {
+    "input": "../../internal/core/collab/testdata/base.json",
+    "root": "../../internal/core/collab/testdata",
+    "contract_path": "../../internal/core/collab/testdata/base.json"
+  },
+  "head": {
+    "input": "../../internal/core/collab/testdata/conflicting_decision_head.json",
+    "root": "../../internal/core/collab/testdata",
+    "contract_path": "../../internal/core/collab/testdata/conflicting_decision_head.json"
+  },
+  "conflicts": [
+    {
+      "code": "contradictory_decision",
+      "severity": "BLOCKED",
+      "entity_type": "decision",
+      "id": "DEC-002",
+      "message": "DEC-002 contradicts accepted decision DEC-001",
+      "base_value": "Use prompt compiler only",
+      "head_value": "Do not use prompt compiler only"
+    },
+    {
+      "code": "same_id_changed",
+      "severity": "BLOCKED",
+      "entity_type": "decision",
+      "id": "DEC-001",
+      "message": "same decision ID changed between base and head",
+      "base_value": "{\"id\":\"DEC-001\",\"title\":\"Use prompt compiler only\",\"status\":\"accepted\"}",
+      "head_value": "{\"id\":\"DEC-001\",\"title\":\"Use shell execution in ni run\",\"status\":\"accepted\"}"
+    }
+  ]
+}

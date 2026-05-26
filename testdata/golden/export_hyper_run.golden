@@ -1,0 +1,82 @@
+stdout:
+exported hyper-run seed package at <WORKDIR>/export/hyper-run
+created plan.md
+created ni-context.md
+created readiness-expectations.md
+created evidence-requirements.md
+created first-run-focus.md
+
+files:
+--- evidence-requirements.md ---
+# Evidence Requirements
+
+## Evaluations
+
+- EVAL-001: fixture
+
+## Artifacts
+
+- ART-001: planning_docs at docs/plan/
+
+--- first-run-focus.md ---
+# First Run Focus
+
+Start with CAP-001: Capability
+
+Requirements: REQ-001
+
+Evaluations: EVAL-001
+
+Artifacts: ART-001
+
+Treat this as suggested downstream focus, not NI-owned runtime state.
+--- ni-context.md ---
+# NI Context
+
+This is Hyper Run-compatible seed material derived from a locked NI plan.
+
+Project ID: cli-fixture
+
+Readiness profile: prototype
+
+Locked at: <TIMESTAMP>
+
+Source lock hash: sha256:<SHA256>
+
+Source of truth: .ni/plan.lock.json > .ni/contract.json > docs/plan/** > chat transcript > model guess
+
+Boundary rules:
+
+- NI exports seed documents only.
+- NI does not run Hyper Run or write Hyper Run goal runtime packets.
+- Downstream runtime state must stay outside NI and remain derived from the lock.
+--- plan.md ---
+# Plan
+
+Project: CLI Fixture
+
+Purpose: Exercise ni end.
+
+## Accepted capabilities
+
+- CAP-001: Capability
+
+## Accepted requirements
+
+- REQ-001: Requirement
+
+## Non-goals
+
+- NG-001: Do not execute work.
+
+--- readiness-expectations.md ---
+# Readiness Expectations
+
+Locked readiness status: READY
+
+Before downstream work starts:
+
+- Verify `.ni/plan.lock.json` exists in the NI project.
+- Verify locked hashes still match `.ni/contract.json` and `docs/plan/**`.
+- Stop with `BLOCKED` on any lock mismatch or conflicting accepted requirement.
+- Keep acceptance criteria, risk mitigations, and blocker handling unchanged.

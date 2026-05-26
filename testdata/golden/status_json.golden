@@ -1,0 +1,20 @@
+{
+  "status": "BLOCKED",
+  "profile": "prototype",
+  "product_type": "software",
+  "delivery_surfaces": [
+    "cli"
+  ],
+  "interaction_mode": "human_to_system",
+  "guidance": [
+    "product_type=software changes planning guidance only; readiness authority remains the shared gate.",
+    "Cover interfaces, runtime boundaries, validation evidence, and operational constraints."
+  ],
+  "issues": [
+    {
+      "rule_id": "R009",
+      "severity": "blocker",
+      "message": "OQ-001 is a blocker open question"
+    }
+  ]
+}

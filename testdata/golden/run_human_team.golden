@@ -1,0 +1,42 @@
+Human-team handoff
+
+Goal: Hand this locked NI plan to a PM/dev/design/research team for coordinated implementation planning.
+
+Project: CLI Fixture - Exercise ni end.
+Readiness: READY
+Target: human-team (handoff)
+Locked at: <TIMESTAMP>
+
+Authoritative sources:
+- .ni/plan.lock.json is authoritative for lock state, hashes, and source-of-truth order.
+- .ni/contract.json carries accepted CAP/REQ/EVAL/RISK IDs and acceptance criteria.
+- docs/plan/ contains locked planning context; use only when hashes match.
+Source of truth: .ni/plan.lock.json > .ni/contract.json > docs/plan/** > chat transcript > model guess
+
+Rules:
+- Treat .ni/plan.lock.json as authoritative over .ni/contract.json, docs/plan, chat, and guesses.
+- Verify locked file hashes before using planning docs; on lock mismatch report BLOCKED and stop.
+- If there are conflicting requirements, report BLOCKED with conflicting sources or IDs and stop.
+- Do not weaken acceptance criteria, risk mitigations, or blocker handling to proceed.
+- Every work item must trace to CAP/REQ/EVAL/RISK IDs.
+- Keep ni at the pre-runtime boundary; this prompt is seed material, not kernel-owned execution state.
+- Do not make ni run execute shell, Codex, adapters, queues, PR automation, or agent teams.
+
+Target instructions:
+- PM: maintain scope against accepted capabilities, non-goals, and open blocker questions.
+- Dev: identify implementation packets and validation mapped to CAP/REQ/EVAL/RISK IDs.
+- Design/research: confirm user-facing assumptions, evidence needs, and unresolved risks without changing acceptance criteria.
+- Execution responsibility stays outside ni; this is a handoff artifact, not orchestration.
+
+Process:
+1. Review .ni/plan.lock.json first, then .ni/contract.json and docs/plan.
+2. Assign next ownership only after confirming no lock mismatch or conflicting requirements.
+3. Record validation evidence and blockers for the team before implementation proceeds.
+
+Accepted capabilities:
+- CAP-001: Capability
+
+Accepted requirements:
+- REQ-001: Requirement
+
+Expected output: team handoff with owners, next packets, validation evidence, risks, decisions needed, and BLOCKED if the lock or requirements conflict.
