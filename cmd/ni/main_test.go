@@ -155,13 +155,50 @@ func TestRunWritesPrompt(t *testing.T) {
 	}
 }
 
+func TestGraph(t *testing.T) {
+	dir := t.TempDir()
+	if code := run([]string{"init", "--dir", dir}, &bytes.Buffer{}, &bytes.Buffer{}); code != 0 {
+		t.Fatalf("init expected exit code 0, got %d", code)
+	}
+	writeReadyContractForCLI(t, dir)
+
+	var stdout bytes.Buffer
+	code := run([]string{"graph", "--dir", dir}, &stdout, &bytes.Buffer{})
+	if code != 0 {
+		t.Fatalf("expected exit code 0, got %d", code)
+	}
+	if !strings.Contains(stdout.String(), "work graph proposal") {
+		t.Fatalf("expected graph output, got %q", stdout.String())
+	}
+	if !strings.Contains(stdout.String(), "CAP-001") {
+		t.Fatalf("expected capability node, got %q", stdout.String())
+	}
+}
+
+func TestGraphJSON(t *testing.T) {
+	dir := t.TempDir()
+	if code := run([]string{"init", "--dir", dir}, &bytes.Buffer{}, &bytes.Buffer{}); code != 0 {
+		t.Fatalf("init expected exit code 0, got %d", code)
+	}
+	writeReadyContractForCLI(t, dir)
+
+	var stdout bytes.Buffer
+	code := run([]string{"graph", "--dir", dir, "--json"}, &stdout, &bytes.Buffer{})
+	if code != 0 {
+		t.Fatalf("expected exit code 0, got %d", code)
+	}
+	if !strings.Contains(stdout.String(), `"nodes"`) {
+		t.Fatalf("expected JSON graph output, got %q", stdout.String())
+	}
+}
+
 func TestUnknownCommand(t *testing.T) {
 	var stderr bytes.Buffer
-	code := run([]string{"graph"}, &bytes.Buffer{}, &stderr)
+	code := run([]string{"harness"}, &bytes.Buffer{}, &stderr)
 	if code != 1 {
 		t.Fatalf("expected exit code 1, got %d", code)
 	}
-	if !strings.Contains(stderr.String(), "unknown command: graph") {
+	if !strings.Contains(stderr.String(), "unknown command: harness") {
 		t.Fatalf("expected unknown command error, got %q", stderr.String())
 	}
 }

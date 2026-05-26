@@ -8,6 +8,7 @@ import (
 	"strconv"
 
 	"ni/internal/core/docstore"
+	"ni/internal/core/graph"
 	"ni/internal/core/lock"
 	"ni/internal/core/prompt"
 	"ni/internal/core/readiness"
@@ -27,6 +28,8 @@ func run(args []string, stdout io.Writer, stderr io.Writer) int {
 	switch args[0] {
 	case "end":
 		return runEnd(args[1:], stdout, stderr)
+	case "graph":
+		return runGraph(args[1:], stdout, stderr)
 	case "init":
 		return runInit(args[1:], stdout, stderr)
 	case "run":
@@ -41,6 +44,44 @@ func run(args []string, stdout io.Writer, stderr io.Writer) int {
 		printHelp(stderr)
 		return 1
 	}
+}
+
+func runGraph(args []string, stdout io.Writer, stderr io.Writer) int {
+	dir := "."
+	jsonOutput := false
+	for i := 0; i < len(args); i++ {
+		switch args[i] {
+		case "--dir":
+			if i+1 >= len(args) {
+				fmt.Fprintln(stderr, "missing value for --dir")
+				return 1
+			}
+			dir = args[i+1]
+			i++
+		case "--json":
+			jsonOutput = true
+		default:
+			fmt.Fprintf(stderr, "unknown graph option: %s\n", args[i])
+			return 1
+		}
+	}
+
+	proposal, err := graph.Propose(dir)
+	if err != nil {
+		fmt.Fprintf(stderr, "graph failed: %v\n", err)
+		return 1
+	}
+	if jsonOutput {
+		encoder := json.NewEncoder(stdout)
+		encoder.SetIndent("", "  ")
+		if err := encoder.Encode(proposal); err != nil {
+			fmt.Fprintf(stderr, "graph failed: %v\n", err)
+			return 1
+		}
+		return 0
+	}
+	fmt.Fprint(stdout, graph.FormatText(proposal))
+	return 0
 }
 
 func runInit(args []string, stdout io.Writer, stderr io.Writer) int {
@@ -198,6 +239,7 @@ func printHelp(w io.Writer) {
 Usage:
   ni --help
   ni end --dir <path>
+  ni graph --dir <path> [--json]
   ni init --dir <path>
   ni run --dir <path> [--out <path>] [--max-chars N]
   ni status --dir <path> [--json]
@@ -205,6 +247,7 @@ Usage:
 
 Commands:
   end      Lock the accepted planning contract.
+  graph    Propose a read-only work graph.
   init     Create planning docs and .ni skeleton.
   run      Compile a goal prompt from the locked plan.
   status   Validate planning readiness.

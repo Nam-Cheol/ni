@@ -38,6 +38,7 @@ type Capability struct {
 	ID           string   `json:"id"`
 	Title        string   `json:"title"`
 	Status       string   `json:"status"`
+	Dependencies []string `json:"dependencies,omitempty"`
 	Requirements []string `json:"requirements"`
 	Evaluations  []string `json:"evaluations"`
 	Risks        []string `json:"risks"`
@@ -175,6 +176,11 @@ func validateIDs(c Contract) error {
 	for _, item := range c.Capabilities {
 		if err := ValidateIDPrefix(item.ID, "CAP"); err != nil {
 			return err
+		}
+		for _, id := range item.Dependencies {
+			if err := ValidateIDPrefix(id, "CAP"); err != nil {
+				return err
+			}
 		}
 		for _, id := range item.Requirements {
 			if err := ValidateIDPrefix(id, "REQ"); err != nil {
