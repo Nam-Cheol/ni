@@ -5,6 +5,10 @@
 ```text
 project
 contract
+readiness profile
+product type
+delivery surface
+interaction mode
 capability
 requirement
 decision
@@ -12,14 +16,35 @@ risk
 evaluation
 artifact
 open question
+target
+feedback
+pressure item
+harness candidate
+amendment
+collaboration diff
+collaboration conflict
 lockfile
 prompt
+export seed
 ```
 
 ## State transition
 
 ```text
 DRAFT -> READY_WITH_DEFERRALS -> READY -> LOCKED -> PROMPT_COMPILED
+LOCKED -> AMENDMENT_DRAFT -> AMENDMENT_APPLIED -> RELOCKED
 ```
 
 `BLOCKED` is a validation result, not a stable project state.
+
+## Source-of-truth state
+
+After `.ni/plan.lock.json` exists, source-of-truth precedence is:
+
+```text
+.ni/plan.lock.json > .ni/contract.json > docs/plan/** > chat transcript > model guess
+```
+
+## Derived state
+
+Feedback, pressure, harness candidates, prompts, and target exports are derived or inert. They may point to evidence and pressure, but they do not become accepted planning state until an explicit amendment is applied and the plan is relocked.

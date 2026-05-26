@@ -4,10 +4,14 @@
 
 Blocker: false
 
-Initial assumption: use `cmd/ni` and `internal/core/*`.
+Status: resolved
+
+Resolution: use `cmd/ni` for the CLI and `internal/core/*` for deterministic kernel packages.
 
 ## OQ-002: JSON schema library
 
 Blocker: false
 
-Initial assumption: implement minimal validation manually first.
+Status: resolved
+
+Resolution: use minimal Go validation first; add schema tooling only if deterministic validation outgrows the current model.

@@ -2,13 +2,28 @@
 
 ## Hard constraints
 
-- `ni run` prompt output must be 4000 characters or less.
+- `ni run` prompt output must be 4000 characters or less when `--max-chars 4000` is used.
 - Readiness must be rule-based, not model-feeling-based.
-- Lockfile hash mismatch must block prompt compilation.
-- Codex is an adapter/UX target, not the kernel.
+- Lockfile hash mismatch must block prompt compilation and target export.
+- Codex is an adapter or UX target, not the kernel.
+- Target exports must be seed material only.
+- Feedback, pressure, and harness candidates must not silently change locked planning docs.
+- Relock must require an explicit applied amendment when a prior lock exists.
+- Collaboration checks must be deterministic and contract-local.
 
-## Initial technical constraints
+## Kernel boundary
 
-- Prefer a small Go CLI.
-- Avoid shell execution until after prompt compilation works.
-- Keep JSON contract validation deterministic.
+`ni-kernel` owns docs contract, readiness gate, lockfile, prompt compiler, target registry, inert feedback and pressure ledgers, amendment/relock, and collaboration conflict checks.
+
+`ni-generated-harness` owns project-specific work graphs, evaluation plans, evidence rules, adapters, and runtime decisions.
+
+## Forbidden v1 behavior
+
+- Do not add a shell adapter.
+- Do not add a Codex execution adapter.
+- Do not add an evidence runner.
+- Do not add a queue.
+- Do not add PR automation.
+- Do not add release automation.
+- Do not add a plugin system.
+- Do not add a TUI or web UI.

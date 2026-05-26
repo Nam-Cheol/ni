@@ -1,0 +1,24 @@
+{
+  "schema": "ni.amendment.v0",
+  "id": "AMEND-002",
+  "title": "Use default software delivery surface",
+  "reason": "The v1 contract should keep the software product default delivery surface so repository contract tests continue to validate the root planning contract as the canonical default fixture.",
+  "affected_docs": [
+    ".ni/contract.json"
+  ],
+  "affected_contract_ids": [
+    "REQ-008"
+  ],
+  "proposed_changes": [
+    "Change delivery_surfaces from cli plus document to the default software surface cli.",
+    "Keep product-type and delivery-surface planning guidance covered by REQ-008 and docs/plan without widening the root contract fixture."
+  ],
+  "risk_impact": "No scope reduction; this preserves deterministic product-type guidance while avoiding a fixture-specific surface mismatch.",
+  "readiness_impact": "Expected to remain READY because all accepted capabilities, requirements, evaluations, and mitigations are unchanged.",
+  "created_from_feedback_refs": [],
+  "created_from_pressure_refs": [],
+  "status": "applied",
+  "created_at": "2026-05-26T09:50:29Z",
+  "applied_at": "2026-05-26T09:50:52Z",
+  "source_lock_hash": "9ff1fe25b2ffa48664b81d20f82089e8022c27e70e4a157698cf168dac472407"
+}

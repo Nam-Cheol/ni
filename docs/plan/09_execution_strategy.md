@@ -1,11 +1,37 @@
 # Execution strategy
 
-## v0 execution strategy
+## Kernel strategy
 
-Do not execute implementation automatically.
+`ni` does not execute implementation work. It compiles locked planning context into bounded prompts and seed artifacts.
 
-Use `ni run` to compile a short prompt that tells an execution agent how to read the locked contract and derive the smallest safe work packet.
+## Target strategy
 
-## Later strategy
+`ni run --target <target>` produces a prompt for a downstream actor. The built-in prompt targets are:
 
-After v0 is stable, add a generated harness contract and a Codex exec experiment.
+```text
+generic
+codex
+human-team
+hyper-run
+namba-ai
+ouroboros
+spec-kit
+```
+
+`ni export --target <target> --out <dir>` may write target-specific seed packages for downstream tools after lock verification.
+
+## Feedback strategy
+
+Downstream runs may produce observations, requested changes, or harness ideas. `ni feedback add` records those observations without changing accepted planning state.
+
+## Pressure strategy
+
+Pressure items summarize repeated or important planning pressure. A pressure item is not accepted scope until the user promotes it and an amendment changes the contract.
+
+## Harness strategy
+
+Generated harness candidates are proposals for downstream work. They must remain derived, require validation evidence, and never execute from inside `ni-kernel`.
+
+## Amendment strategy
+
+Locked docs are changed through explicit amendment and relock. If a lock hash mismatch exists, prompt compilation and exports stop with `BLOCKED`.

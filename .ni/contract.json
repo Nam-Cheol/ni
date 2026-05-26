@@ -1,11 +1,16 @@
 {
   "schema": "ni.contract.v0",
   "readiness_profile": "prototype",
+  "product_type": "software",
+  "delivery_surfaces": [
+    "cli"
+  ],
+  "interaction_mode": "human_to_system",
   "project": {
     "id": "ni",
     "name": "ni",
-    "purpose": "Compile planning conversations into a locked project contract before execution harness generation.",
-    "status": "draft"
+    "purpose": "Compile planning conversations into a locked v1 planning contract covering readiness profiles, product types, downstream targets, feedback pressure, harness candidates, amendment/relock, and collaboration checks before any execution harness runs.",
+    "status": "accepted"
   },
   "non_goals": [
     {
@@ -15,6 +20,14 @@
     {
       "id": "NG-002",
       "title": "Do not make Codex-specific behavior part of the kernel."
+    },
+    {
+      "id": "NG-003",
+      "title": "Do not let target exports create downstream runtime packets or call external tools."
+    },
+    {
+      "id": "NG-004",
+      "title": "Do not let feedback, pressure, or harness candidates mutate locked planning state without amendment and relock."
     }
   ],
   "capabilities": [
@@ -43,7 +56,8 @@
       ],
       "evaluations": [
         "EVAL-002",
-        "EVAL-003"
+        "EVAL-003",
+        "EVAL-008"
       ],
       "risks": [
         "RISK-001"
@@ -71,7 +85,7 @@
     },
     {
       "id": "CAP-004",
-      "title": "Compile locked goal prompt",
+      "title": "Compile target prompt",
       "status": "accepted",
       "requirements": [
         "REQ-004"
@@ -79,9 +93,12 @@
       "evaluations": [
         "EVAL-005"
       ],
-      "risks": [],
+      "risks": [
+        "RISK-003"
+      ],
       "artifacts": [
-        "ART-005"
+        "ART-005",
+        "ART-020"
       ]
     },
     {
@@ -110,48 +127,260 @@
       ],
       "evaluations": [
         "EVAL-007",
-        "EVAL-008",
-        "EVAL-009"
+        "EVAL-008"
       ],
       "risks": [
         "RISK-004"
       ],
       "artifacts": [
-        "ART-007",
         "ART-008",
         "ART-009"
+      ]
+    },
+    {
+      "id": "CAP-007",
+      "title": "Preserve related-work boundary",
+      "status": "accepted",
+      "requirements": [
+        "REQ-007"
+      ],
+      "evaluations": [
+        "EVAL-009"
+      ],
+      "risks": [
+        "RISK-003",
+        "RISK-005"
+      ],
+      "artifacts": [
+        "ART-007"
+      ]
+    },
+    {
+      "id": "CAP-008",
+      "title": "Model product types and surfaces",
+      "status": "accepted",
+      "requirements": [
+        "REQ-008"
+      ],
+      "evaluations": [
+        "EVAL-010"
+      ],
+      "risks": [
+        "RISK-004"
+      ],
+      "artifacts": [
+        "ART-010"
+      ]
+    },
+    {
+      "id": "CAP-009",
+      "title": "Register downstream targets",
+      "status": "accepted",
+      "requirements": [
+        "REQ-009"
+      ],
+      "evaluations": [
+        "EVAL-011"
+      ],
+      "risks": [
+        "RISK-003"
+      ],
+      "artifacts": [
+        "ART-011"
+      ]
+    },
+    {
+      "id": "CAP-010",
+      "title": "Export target seed packages",
+      "status": "accepted",
+      "dependencies": [
+        "CAP-003",
+        "CAP-009"
+      ],
+      "requirements": [
+        "REQ-010"
+      ],
+      "evaluations": [
+        "EVAL-012"
+      ],
+      "risks": [
+        "RISK-005"
+      ],
+      "artifacts": [
+        "ART-012",
+        "ART-013"
+      ]
+    },
+    {
+      "id": "CAP-011",
+      "title": "Ingest downstream feedback",
+      "status": "accepted",
+      "requirements": [
+        "REQ-011"
+      ],
+      "evaluations": [
+        "EVAL-013"
+      ],
+      "risks": [
+        "RISK-006"
+      ],
+      "artifacts": [
+        "ART-014"
+      ]
+    },
+    {
+      "id": "CAP-012",
+      "title": "Maintain pressure ledger",
+      "status": "accepted",
+      "dependencies": [
+        "CAP-011"
+      ],
+      "requirements": [
+        "REQ-012"
+      ],
+      "evaluations": [
+        "EVAL-014"
+      ],
+      "risks": [
+        "RISK-007"
+      ],
+      "artifacts": [
+        "ART-015"
+      ]
+    },
+    {
+      "id": "CAP-013",
+      "title": "Manage harness candidate lifecycle",
+      "status": "accepted",
+      "dependencies": [
+        "CAP-012"
+      ],
+      "requirements": [
+        "REQ-013"
+      ],
+      "evaluations": [
+        "EVAL-015"
+      ],
+      "risks": [
+        "RISK-008"
+      ],
+      "artifacts": [
+        "ART-016"
+      ]
+    },
+    {
+      "id": "CAP-014",
+      "title": "Amend and relock locked plans",
+      "status": "accepted",
+      "dependencies": [
+        "CAP-003"
+      ],
+      "requirements": [
+        "REQ-014"
+      ],
+      "evaluations": [
+        "EVAL-016"
+      ],
+      "risks": [
+        "RISK-009"
+      ],
+      "artifacts": [
+        "ART-017"
+      ]
+    },
+    {
+      "id": "CAP-015",
+      "title": "Detect collaboration conflicts",
+      "status": "accepted",
+      "requirements": [
+        "REQ-015"
+      ],
+      "evaluations": [
+        "EVAL-017"
+      ],
+      "risks": [
+        "RISK-010"
+      ],
+      "artifacts": [
+        "ART-018",
+        "ART-019"
       ]
     }
   ],
   "requirements": [
     {
       "id": "REQ-001",
-      "title": "ni init creates docs/plan templates and .ni/contract.json",
+      "title": "ni init creates docs/plan templates, .ni/contract.json, readiness config, and inert ledger files",
       "status": "accepted"
     },
     {
       "id": "REQ-002",
-      "title": "ni status returns BLOCKED, READY_WITH_DEFERRALS, or READY",
+      "title": "ni status returns BLOCKED, READY_WITH_DEFERRALS, or READY with active profile and product guidance",
       "status": "accepted"
     },
     {
       "id": "REQ-003",
-      "title": "ni end creates .ni/plan.lock.json with file hashes",
+      "title": "ni end creates .ni/plan.lock.json with hashes for the contract and required planning docs",
       "status": "accepted"
     },
     {
       "id": "REQ-004",
-      "title": "ni run outputs a 4000-character-or-less prompt and does not execute in v0",
+      "title": "ni run supports target, out, and max-chars options, outputs a 4000-character-or-less prompt, and does not execute in v1",
       "status": "accepted"
     },
     {
       "id": "REQ-005",
-      "title": "repository-local skills exist for ni-start, ni-end, and ni-run",
+      "title": "repository-local skills exist for ni-start, ni-end, and ni-run with CLI authority boundaries",
       "status": "accepted"
     },
     {
       "id": "REQ-006",
       "title": "ni init accepts concept, prototype, mvp, beta, and production planning readiness profiles",
+      "status": "accepted"
+    },
+    {
+      "id": "REQ-007",
+      "title": "related-work docs define ni as pre-runtime planning kernel, not a host enhancer, SPEC runner, evidence loop, or harness runtime",
+      "status": "accepted"
+    },
+    {
+      "id": "REQ-008",
+      "title": "contract supports product_type, delivery_surfaces, and interaction_mode as planning guidance fields",
+      "status": "accepted"
+    },
+    {
+      "id": "REQ-009",
+      "title": "target registry lists supported prompt and export targets deterministically",
+      "status": "accepted"
+    },
+    {
+      "id": "REQ-010",
+      "title": "target exports require a valid lock, verify hashes, and write only downstream seed or handoff material",
+      "status": "accepted"
+    },
+    {
+      "id": "REQ-011",
+      "title": "feedback ingest records downstream observations without modifying the contract or lock",
+      "status": "accepted"
+    },
+    {
+      "id": "REQ-012",
+      "title": "pressure ledger makes planning pressure visible and requires explicit promotion before acceptance",
+      "status": "accepted"
+    },
+    {
+      "id": "REQ-013",
+      "title": "harness candidates have propose, validate, accept, and retire states and must not execute inside ni core",
+      "status": "accepted"
+    },
+    {
+      "id": "REQ-014",
+      "title": "relock requires an applied amendment tied to the current lock and archives the previous lock",
+      "status": "accepted"
+    },
+    {
+      "id": "REQ-015",
+      "title": "diff and conflicts compare planning states and report deterministic contract conflicts",
       "status": "accepted"
     }
   ],
@@ -163,12 +392,37 @@
     },
     {
       "id": "DEC-002",
-      "title": "ni run compiles a prompt in v0",
+      "title": "ni run compiles a prompt in v0 and v1",
       "status": "accepted"
     },
     {
       "id": "DEC-003",
       "title": "Codex skills are UX, CLI is authority",
+      "status": "accepted"
+    },
+    {
+      "id": "DEC-004",
+      "title": "Downstream targets are registry entries, not runtime adapters",
+      "status": "accepted"
+    },
+    {
+      "id": "DEC-005",
+      "title": "Feedback and pressure are inert until amended",
+      "status": "accepted"
+    },
+    {
+      "id": "DEC-006",
+      "title": "Harness candidates are derived proposals",
+      "status": "accepted"
+    },
+    {
+      "id": "DEC-007",
+      "title": "Relock requires an applied amendment",
+      "status": "accepted"
+    },
+    {
+      "id": "DEC-008",
+      "title": "Collaboration checks are deterministic",
       "status": "accepted"
     }
   ],
@@ -185,14 +439,14 @@
       "title": "Criteria weakening after lock",
       "severity": "high",
       "status": "accepted",
-      "mitigation": "ni run verifies lock hashes and refuses stale docs."
+      "mitigation": "ni run and exports verify lock hashes; relock requires an applied amendment."
     },
     {
       "id": "RISK-003",
-      "title": "Codex lock-in",
+      "title": "Host or runtime lock-in",
       "severity": "medium",
       "status": "accepted",
-      "mitigation": "Keep Codex skills outside kernel and avoid Codex-specific schema fields."
+      "mitigation": "Keep hosts and downstream runtimes as targets or UX surfaces, not kernel concepts."
     },
     {
       "id": "RISK-004",
@@ -200,53 +454,135 @@
       "severity": "high",
       "status": "accepted",
       "mitigation": "Document and validate profiles as planning readiness profiles only, with no runtime packets or agent execution semantics."
+    },
+    {
+      "id": "RISK-005",
+      "title": "Target exports become execution state",
+      "severity": "high",
+      "status": "accepted",
+      "mitigation": "Exports require valid locks, avoid external binaries, and write only seed or handoff files."
+    },
+    {
+      "id": "RISK-006",
+      "title": "Feedback mutates accepted truth",
+      "severity": "high",
+      "status": "accepted",
+      "mitigation": "Feedback ingest must not modify .ni/contract.json or .ni/plan.lock.json."
+    },
+    {
+      "id": "RISK-007",
+      "title": "Pressure ledger becomes acceptance shortcut",
+      "severity": "high",
+      "status": "accepted",
+      "mitigation": "Pressure promotion is explicit and still requires amendment plus relock before accepted criteria change."
+    },
+    {
+      "id": "RISK-008",
+      "title": "Harness candidates become kernel runtime",
+      "severity": "high",
+      "status": "accepted",
+      "mitigation": "Harness candidates must require user acceptance, validation evidence, and non-execution inside ni core."
+    },
+    {
+      "id": "RISK-009",
+      "title": "Relock bypass",
+      "severity": "high",
+      "status": "accepted",
+      "mitigation": "Relock refuses to replace an existing lock unless an applied amendment belongs to the current source lock."
+    },
+    {
+      "id": "RISK-010",
+      "title": "Collaboration checks rely on model judgment",
+      "severity": "medium",
+      "status": "accepted",
+      "mitigation": "Diff and conflict checks are deterministic and contract-local."
     }
   ],
   "evaluations": [
     {
       "id": "EVAL-001",
       "title": "ni init creates required files",
-      "method": "integration fixture"
+      "method": "CLI integration test"
     },
     {
       "id": "EVAL-002",
       "title": "capability without evaluation is blocked",
-      "method": "fixture"
+      "method": "readiness fixture test"
     },
     {
       "id": "EVAL-003",
       "title": "high risk without mitigation is blocked",
-      "method": "fixture"
+      "method": "readiness fixture test"
     },
     {
       "id": "EVAL-004",
       "title": "stale lock blocks ni run",
-      "method": "fixture"
+      "method": "lock and prompt fixture test"
     },
     {
       "id": "EVAL-005",
       "title": "prompt output stays within 4000 characters",
-      "method": "unit test"
+      "method": "unit and CLI integration test"
     },
     {
       "id": "EVAL-006",
       "title": "skills contain required metadata and authority boundary",
-      "method": "static check"
+      "method": "static quality check"
     },
     {
       "id": "EVAL-007",
-      "title": "ni init --profile concept creates a concept contract",
-      "method": "CLI integration check"
+      "title": "ni init creates selected readiness profiles",
+      "method": "CLI integration test"
     },
     {
       "id": "EVAL-008",
-      "title": "ni init --profile production creates a production contract",
-      "method": "CLI integration check"
+      "title": "ni status prints active readiness profile and product guidance",
+      "method": "CLI integration test"
     },
     {
       "id": "EVAL-009",
-      "title": "ni status prints the active readiness profile",
-      "method": "CLI integration check"
+      "title": "related-work boundary excludes execution runtimes from kernel core",
+      "method": "static core-boundary quality check"
+    },
+    {
+      "id": "EVAL-010",
+      "title": "product type and surface guidance is deterministic",
+      "method": "contract and readiness fixture tests"
+    },
+    {
+      "id": "EVAL-011",
+      "title": "target registry lists supported targets",
+      "method": "target unit test and CLI integration test"
+    },
+    {
+      "id": "EVAL-012",
+      "title": "target exports verify lock and avoid forbidden runtime output",
+      "method": "CLI integration test"
+    },
+    {
+      "id": "EVAL-013",
+      "title": "feedback ingest does not change contract or lock",
+      "method": "CLI integration test"
+    },
+    {
+      "id": "EVAL-014",
+      "title": "pressure ledger requires explicit promotion",
+      "method": "pressure unit and CLI tests"
+    },
+    {
+      "id": "EVAL-015",
+      "title": "harness candidate lifecycle remains non-executing",
+      "method": "harness unit and CLI tests"
+    },
+    {
+      "id": "EVAL-016",
+      "title": "amendment and relock require explicit approval",
+      "method": "CLI integration test"
+    },
+    {
+      "id": "EVAL-017",
+      "title": "collaboration conflicts are deterministic",
+      "method": "collaboration unit tests"
     }
   ],
   "artifacts": [
@@ -282,18 +618,73 @@
     },
     {
       "id": "ART-007",
-      "path": "docs/12_READINESS_PROFILES.md",
+      "path": "docs/11_RELATED_WORK.md",
       "kind": "planning_doc"
     },
     {
       "id": "ART-008",
+      "path": "docs/12_READINESS_PROFILES.md",
+      "kind": "planning_doc"
+    },
+    {
+      "id": "ART-009",
       "path": ".ni/readiness.profiles.json",
       "kind": "readiness_config"
     },
     {
-      "id": "ART-009",
-      "path": "internal/core/profile",
+      "id": "ART-010",
+      "path": "internal/core/contract",
       "kind": "code"
+    },
+    {
+      "id": "ART-011",
+      "path": "internal/core/target",
+      "kind": "code"
+    },
+    {
+      "id": "ART-012",
+      "path": "docs/13_TARGET_HYPER_RUN.md docs/14_TARGET_NAMBA_AI.md docs/16_TARGET_SPEC_KIT.md docs/17_TARGET_OUROBOROS.md",
+      "kind": "target_docs"
+    },
+    {
+      "id": "ART-013",
+      "path": "internal/core/exporter",
+      "kind": "code"
+    },
+    {
+      "id": "ART-014",
+      "path": "internal/core/feedback .ni/feedback.jsonl",
+      "kind": "inert_ledger"
+    },
+    {
+      "id": "ART-015",
+      "path": "internal/core/pressure .ni/pressure.json",
+      "kind": "inert_ledger"
+    },
+    {
+      "id": "ART-016",
+      "path": "internal/core/harness .ni/harness.candidates.json",
+      "kind": "derived_harness"
+    },
+    {
+      "id": "ART-017",
+      "path": "internal/core/amendment .ni/amendments/ .ni/locks/",
+      "kind": "amendment_flow"
+    },
+    {
+      "id": "ART-018",
+      "path": "internal/core/collab",
+      "kind": "code"
+    },
+    {
+      "id": "ART-019",
+      "path": "docs/15_COLLABORATION.md",
+      "kind": "planning_doc"
+    },
+    {
+      "id": "ART-020",
+      "path": ".ni/generated/v1-codex.goal.prompt.txt",
+      "kind": "generated_prompt"
     }
   ],
   "open_questions": [
@@ -301,13 +692,13 @@
       "id": "OQ-001",
       "title": "Exact Go package layout",
       "blocker": false,
-      "status": "open"
+      "status": "resolved"
     },
     {
       "id": "OQ-002",
       "title": "Whether to use a JSON schema library later",
       "blocker": false,
-      "status": "open"
+      "status": "resolved"
     }
   ]
 }
