@@ -124,6 +124,7 @@ func templateFiles(opts InitOptions) []templateFile {
 		templateFile{".ni/project.json", projectJSON},
 		templateFile{".ni/contract.json", contractJSON(opts)},
 		templateFile{".ni/pressure.json", pressureJSON},
+		templateFile{".ni/harness.candidates.json", harnessCandidatesJSON},
 		templateFile{".ni/readiness.rules.json", readinessRulesJSON},
 		templateFile{".ni/readiness.profiles.json", readinessProfilesJSON},
 	)
@@ -149,6 +150,12 @@ const projectJSON = `{
 const pressureJSON = `{
   "schema": "ni.pressure.v0",
   "items": []
+}
+`
+
+const harnessCandidatesJSON = `{
+  "schema": "ni.harness_candidates.v0",
+  "candidates": []
 }
 `
 

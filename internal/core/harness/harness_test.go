@@ -9,6 +9,7 @@ import (
 
 	"ni/internal/core/docstore"
 	"ni/internal/core/lock"
+	"ni/internal/core/pressure"
 )
 
 func TestPlanBuildsGeneratedHarnessProposal(t *testing.T) {
@@ -93,6 +94,99 @@ func TestFormatText(t *testing.T) {
 	}
 }
 
+func TestCandidateLifecycleRequiresValidationBeforeUserAcceptance(t *testing.T) {
+	dir := lockedHarnessProject(t)
+	writeAcceptedHarnessPressure(t, dir)
+
+	candidate, err := ProposeFromPressure(dir, "P-001")
+	if err != nil {
+		t.Fatalf("ProposeFromPressure returned error: %v", err)
+	}
+	if candidate.Status != StatusProposed {
+		t.Fatalf("expected proposed status, got %q", candidate.Status)
+	}
+	if candidate.ExecutesInsideKernel {
+		t.Fatalf("candidate must not execute inside ni core")
+	}
+
+	if _, err := AcceptCandidate(dir, candidate.ID); err == nil {
+		t.Fatal("expected accepting an unvalidated candidate to fail")
+	}
+
+	evidencePath := filepath.Join(dir, "evidence.txt")
+	if err := os.WriteFile(evidencePath, []byte("validated by test\n"), 0o644); err != nil {
+		t.Fatalf("writing evidence: %v", err)
+	}
+	candidate, err = ValidateCandidate(dir, candidate.ID, "evidence.txt")
+	if err != nil {
+		t.Fatalf("ValidateCandidate returned error: %v", err)
+	}
+	if candidate.Status != StatusValidatedCandidate {
+		t.Fatalf("expected validated candidate status, got %q", candidate.Status)
+	}
+	if candidate.ValidationEvidencePath != "evidence.txt" {
+		t.Fatalf("expected evidence path, got %q", candidate.ValidationEvidencePath)
+	}
+
+	candidate, err = AcceptCandidate(dir, candidate.ID)
+	if err != nil {
+		t.Fatalf("AcceptCandidate returned error: %v", err)
+	}
+	if candidate.Status != StatusUserAccepted {
+		t.Fatalf("expected user accepted status, got %q", candidate.Status)
+	}
+
+	ledger, err := Candidates(dir)
+	if err != nil {
+		t.Fatalf("Candidates returned error: %v", err)
+	}
+	if ledger.ActiveRuleID != candidate.ID {
+		t.Fatalf("expected active rule id %q, got %q", candidate.ID, ledger.ActiveRuleID)
+	}
+}
+
+func TestCandidateCannotSkipUserAcceptance(t *testing.T) {
+	dir := lockedHarnessProject(t)
+	writeAcceptedHarnessPressure(t, dir)
+
+	candidate, err := ProposeFromPressure(dir, "P-001")
+	if err != nil {
+		t.Fatalf("ProposeFromPressure returned error: %v", err)
+	}
+	evidencePath := filepath.Join(dir, "evidence.txt")
+	if err := os.WriteFile(evidencePath, []byte("validated by test\n"), 0o644); err != nil {
+		t.Fatalf("writing evidence: %v", err)
+	}
+	candidate, err = ValidateCandidate(dir, candidate.ID, "evidence.txt")
+	if err != nil {
+		t.Fatalf("ValidateCandidate returned error: %v", err)
+	}
+
+	ledger := CandidateLedger{
+		Schema:       CandidateLedgerSchema,
+		ActiveRuleID: candidate.ID,
+		Candidates: []Candidate{
+			{
+				ID:                        candidate.ID,
+				Status:                    StatusValidatedCandidate,
+				Target:                    candidate.Target,
+				IntendedDownstreamRuntime: candidate.IntendedDownstreamRuntime,
+				RequiredEvidence:          candidate.RequiredEvidence,
+				Constraints:               candidate.Constraints,
+				ForbiddenBehavior:         candidate.ForbiddenBehavior,
+				RelatedLockHash:           candidate.RelatedLockHash,
+				RelatedPressureIDs:        candidate.RelatedPressureIDs,
+				ValidationEvidencePath:    candidate.ValidationEvidencePath,
+				RequiresUserAcceptance:    true,
+				ExecutesInsideKernel:      false,
+			},
+		},
+	}
+	if err := ledger.Validate(); err == nil {
+		t.Fatal("expected active rule without user acceptance to fail validation")
+	}
+}
+
 func lockedHarnessProject(t *testing.T) string {
 	t.Helper()
 
@@ -107,6 +201,29 @@ func lockedHarnessProject(t *testing.T) string {
 		t.Fatalf("creating lock: %v", err)
 	}
 	return dir
+}
+
+func writeAcceptedHarnessPressure(t *testing.T, dir string) {
+	t.Helper()
+
+	ledger := pressure.Ledger{
+		Schema: pressure.Schema,
+		Items: []pressure.Item{
+			{
+				ID:                     "P-001",
+				Kind:                   pressure.KindHarnessCandidate,
+				Status:                 pressure.StatusAccepted,
+				EvidenceRefs:           []string{"test:evidence"},
+				RelatedCapabilities:    []string{"CAP-001"},
+				RelatedRisks:           []string{"RISK-001"},
+				ProposedAction:         "Create an inert downstream harness proposal for CAP-001.",
+				RequiresUserAcceptance: true,
+			},
+		},
+	}
+	if err := pressure.Save(dir, ledger); err != nil {
+		t.Fatalf("writing accepted harness pressure: %v", err)
+	}
 }
 
 const harnessContract = `{

@@ -49,6 +49,7 @@ func TestInit(t *testing.T) {
 		".ni/project.json",
 		".ni/contract.json",
 		".ni/pressure.json",
+		".ni/harness.candidates.json",
 		".ni/readiness.rules.json",
 		".ni/readiness.profiles.json",
 	}
@@ -797,6 +798,73 @@ func TestHarnessPlanJSON(t *testing.T) {
 	}
 }
 
+func TestHarnessCandidateCommands(t *testing.T) {
+	dir := t.TempDir()
+	if code := run([]string{"init", "--dir", dir}, &bytes.Buffer{}, &bytes.Buffer{}); code != 0 {
+		t.Fatalf("init expected exit code 0, got %d", code)
+	}
+	writeReadyContractForCLI(t, dir)
+	if code := run([]string{"end", "--dir", dir}, &bytes.Buffer{}, &bytes.Buffer{}); code != 0 {
+		t.Fatalf("end expected exit code 0, got %d", code)
+	}
+	writeAcceptedHarnessPressureForCLI(t, dir)
+
+	var stdout bytes.Buffer
+	code := run([]string{"harness", "propose", "--dir", dir, "--from-pressure", "P-001"}, &stdout, &bytes.Buffer{})
+	if code != 0 {
+		t.Fatalf("expected propose exit code 0, got %d", code)
+	}
+	if !strings.Contains(stdout.String(), "proposed harness candidate HC-001") {
+		t.Fatalf("expected propose summary, got %q", stdout.String())
+	}
+
+	stdout.Reset()
+	code = run([]string{"harness", "accept", "--dir", dir, "HC-001"}, &stdout, &bytes.Buffer{})
+	if code == 0 {
+		t.Fatal("expected accept before validation to fail")
+	}
+
+	evidencePath := filepath.Join(dir, "harness-evidence.txt")
+	if err := os.WriteFile(evidencePath, []byte("validated by CLI test\n"), 0o644); err != nil {
+		t.Fatalf("writing evidence: %v", err)
+	}
+	stdout.Reset()
+	code = run([]string{"harness", "validate", "--dir", dir, "HC-001", "--evidence", "harness-evidence.txt"}, &stdout, &bytes.Buffer{})
+	if code != 0 {
+		t.Fatalf("expected validate exit code 0, got %d", code)
+	}
+	if !strings.Contains(stdout.String(), "validated harness candidate HC-001 to validated_candidate") {
+		t.Fatalf("expected validate summary, got %q", stdout.String())
+	}
+
+	stdout.Reset()
+	code = run([]string{"harness", "accept", "--dir", dir, "HC-001"}, &stdout, &bytes.Buffer{})
+	if code != 0 {
+		t.Fatalf("expected accept exit code 0, got %d", code)
+	}
+	if !strings.Contains(stdout.String(), "accepted harness candidate HC-001 as user_accepted") {
+		t.Fatalf("expected accept summary, got %q", stdout.String())
+	}
+
+	stdout.Reset()
+	code = run([]string{"harness", "candidates", "--dir", dir, "--json"}, &stdout, &bytes.Buffer{})
+	if code != 0 {
+		t.Fatalf("expected candidates exit code 0, got %d", code)
+	}
+	if !strings.Contains(stdout.String(), `"active_rule_id": "HC-001"`) {
+		t.Fatalf("expected active rule id in candidates JSON, got %q", stdout.String())
+	}
+
+	stdout.Reset()
+	code = run([]string{"harness", "retire", "--dir", dir, "HC-001"}, &stdout, &bytes.Buffer{})
+	if code != 0 {
+		t.Fatalf("expected retire exit code 0, got %d", code)
+	}
+	if !strings.Contains(stdout.String(), "retired harness candidate HC-001") {
+		t.Fatalf("expected retire summary, got %q", stdout.String())
+	}
+}
+
 func TestUnknownCommand(t *testing.T) {
 	var stderr bytes.Buffer
 	code := run([]string{"serve"}, &bytes.Buffer{}, &stderr)
@@ -805,6 +873,30 @@ func TestUnknownCommand(t *testing.T) {
 	}
 	if !strings.Contains(stderr.String(), "unknown command: serve") {
 		t.Fatalf("expected unknown command error, got %q", stderr.String())
+	}
+}
+
+func writeAcceptedHarnessPressureForCLI(t *testing.T, dir string) {
+	t.Helper()
+
+	data := []byte(`{
+  "schema": "ni.pressure.v0",
+  "items": [
+    {
+      "id": "P-001",
+      "kind": "harness_candidate",
+      "status": "accepted",
+      "evidence_refs": ["cli:test"],
+      "related_capabilities": ["CAP-001"],
+      "related_risks": ["RISK-001"],
+      "proposed_action": "Create an inert downstream harness proposal for CLI tests.",
+      "requires_user_acceptance": true
+    }
+  ]
+}
+`)
+	if err := os.WriteFile(filepath.Join(dir, ".ni", "pressure.json"), data, 0o644); err != nil {
+		t.Fatalf("writing pressure ledger: %v", err)
 	}
 }
 

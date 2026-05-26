@@ -361,13 +361,33 @@ func runGraph(args []string, stdout io.Writer, stderr io.Writer) int {
 }
 
 func runHarness(args []string, stdout io.Writer, stderr io.Writer) int {
-	if len(args) == 0 || args[0] != "plan" {
-		fmt.Fprintln(stderr, "usage: ni harness plan --dir <path> [--json]")
+	if len(args) == 0 {
+		printHarnessUsage(stderr)
 		return 1
 	}
+	switch args[0] {
+	case "plan":
+		return runHarnessPlan(args[1:], stdout, stderr)
+	case "candidates":
+		return runHarnessCandidates(args[1:], stdout, stderr)
+	case "propose":
+		return runHarnessPropose(args[1:], stdout, stderr)
+	case "validate":
+		return runHarnessValidate(args[1:], stdout, stderr)
+	case "accept":
+		return runHarnessAccept(args[1:], stdout, stderr)
+	case "retire":
+		return runHarnessRetire(args[1:], stdout, stderr)
+	default:
+		fmt.Fprintf(stderr, "unknown harness command: %s\n", args[0])
+		return 1
+	}
+}
+
+func runHarnessPlan(args []string, stdout io.Writer, stderr io.Writer) int {
 	dir := "."
 	jsonOutput := false
-	for i := 1; i < len(args); i++ {
+	for i := 0; i < len(args); i++ {
 		switch args[i] {
 		case "--dir":
 			if i+1 >= len(args) {
@@ -400,6 +420,202 @@ func runHarness(args []string, stdout io.Writer, stderr io.Writer) int {
 	}
 	fmt.Fprint(stdout, harness.FormatText(proposal))
 	return 0
+}
+
+func runHarnessCandidates(args []string, stdout io.Writer, stderr io.Writer) int {
+	dir := "."
+	jsonOutput := false
+	for i := 0; i < len(args); i++ {
+		switch args[i] {
+		case "--dir":
+			if i+1 >= len(args) {
+				fmt.Fprintln(stderr, "missing value for --dir")
+				return 1
+			}
+			dir = args[i+1]
+			i++
+		case "--json":
+			jsonOutput = true
+		default:
+			fmt.Fprintf(stderr, "unknown harness candidates option: %s\n", args[i])
+			return 1
+		}
+	}
+
+	ledger, err := harness.Candidates(dir)
+	if err != nil {
+		fmt.Fprintf(stderr, "harness candidates failed: %v\n", err)
+		return 1
+	}
+	if jsonOutput {
+		encoder := json.NewEncoder(stdout)
+		encoder.SetIndent("", "  ")
+		if err := encoder.Encode(ledger); err != nil {
+			fmt.Fprintf(stderr, "harness candidates failed: %v\n", err)
+			return 1
+		}
+		return 0
+	}
+	fmt.Fprint(stdout, harness.FormatCandidates(ledger))
+	return 0
+}
+
+func runHarnessPropose(args []string, stdout io.Writer, stderr io.Writer) int {
+	dir := "."
+	pressureID := ""
+	for i := 0; i < len(args); i++ {
+		switch args[i] {
+		case "--dir":
+			if i+1 >= len(args) {
+				fmt.Fprintln(stderr, "missing value for --dir")
+				return 1
+			}
+			dir = args[i+1]
+			i++
+		case "--from-pressure":
+			if i+1 >= len(args) {
+				fmt.Fprintln(stderr, "missing value for --from-pressure")
+				return 1
+			}
+			pressureID = args[i+1]
+			i++
+		default:
+			fmt.Fprintf(stderr, "unknown harness propose option: %s\n", args[i])
+			return 1
+		}
+	}
+	if pressureID == "" {
+		fmt.Fprintln(stderr, "missing --from-pressure")
+		return 1
+	}
+
+	candidate, err := harness.ProposeFromPressure(dir, pressureID)
+	if err != nil {
+		fmt.Fprintf(stderr, "harness propose failed: %v\n", err)
+		return 1
+	}
+	fmt.Fprintf(stdout, "proposed harness candidate %s from pressure %s\n", candidate.ID, pressureID)
+	return 0
+}
+
+func runHarnessValidate(args []string, stdout io.Writer, stderr io.Writer) int {
+	id, dir, evidence, ok := parseHarnessCandidateIDDirEvidence(args, stderr)
+	if !ok {
+		return 1
+	}
+	candidate, err := harness.ValidateCandidate(dir, id, evidence)
+	if err != nil {
+		fmt.Fprintf(stderr, "harness validate failed: %v\n", err)
+		return 1
+	}
+	fmt.Fprintf(stdout, "validated harness candidate %s to %s\n", candidate.ID, candidate.Status)
+	return 0
+}
+
+func runHarnessAccept(args []string, stdout io.Writer, stderr io.Writer) int {
+	id, dir, ok := parseHarnessCandidateIDAndDir(args, stderr, "accept")
+	if !ok {
+		return 1
+	}
+	candidate, err := harness.AcceptCandidate(dir, id)
+	if err != nil {
+		fmt.Fprintf(stderr, "harness accept failed: %v\n", err)
+		return 1
+	}
+	fmt.Fprintf(stdout, "accepted harness candidate %s as %s\n", candidate.ID, candidate.Status)
+	return 0
+}
+
+func runHarnessRetire(args []string, stdout io.Writer, stderr io.Writer) int {
+	id, dir, ok := parseHarnessCandidateIDAndDir(args, stderr, "retire")
+	if !ok {
+		return 1
+	}
+	candidate, err := harness.RetireCandidate(dir, id)
+	if err != nil {
+		fmt.Fprintf(stderr, "harness retire failed: %v\n", err)
+		return 1
+	}
+	fmt.Fprintf(stdout, "retired harness candidate %s\n", candidate.ID)
+	return 0
+}
+
+func parseHarnessCandidateIDDirEvidence(args []string, stderr io.Writer) (string, string, string, bool) {
+	dir := "."
+	evidence := ""
+	id := ""
+	for i := 0; i < len(args); i++ {
+		switch args[i] {
+		case "--dir":
+			if i+1 >= len(args) {
+				fmt.Fprintln(stderr, "missing value for --dir")
+				return "", "", "", false
+			}
+			dir = args[i+1]
+			i++
+		case "--evidence":
+			if i+1 >= len(args) {
+				fmt.Fprintln(stderr, "missing value for --evidence")
+				return "", "", "", false
+			}
+			evidence = args[i+1]
+			i++
+		default:
+			if strings.HasPrefix(args[i], "--") {
+				fmt.Fprintf(stderr, "unknown harness validate option: %s\n", args[i])
+				return "", "", "", false
+			}
+			if id != "" {
+				fmt.Fprintf(stderr, "unexpected harness validate argument: %s\n", args[i])
+				return "", "", "", false
+			}
+			id = args[i]
+		}
+	}
+	if id == "" {
+		fmt.Fprintln(stderr, "missing candidate id for validate")
+		return "", "", "", false
+	}
+	if evidence == "" {
+		fmt.Fprintln(stderr, "missing --evidence")
+		return "", "", "", false
+	}
+	return id, dir, evidence, true
+}
+
+func parseHarnessCandidateIDAndDir(args []string, stderr io.Writer, command string) (string, string, bool) {
+	dir := "."
+	id := ""
+	for i := 0; i < len(args); i++ {
+		switch args[i] {
+		case "--dir":
+			if i+1 >= len(args) {
+				fmt.Fprintln(stderr, "missing value for --dir")
+				return "", "", false
+			}
+			dir = args[i+1]
+			i++
+		default:
+			if strings.HasPrefix(args[i], "--") {
+				fmt.Fprintf(stderr, "unknown harness %s option: %s\n", command, args[i])
+				return "", "", false
+			}
+			if id != "" {
+				fmt.Fprintf(stderr, "unexpected harness %s argument: %s\n", command, args[i])
+				return "", "", false
+			}
+			id = args[i]
+		}
+	}
+	if id == "" {
+		fmt.Fprintf(stderr, "missing candidate id for %s\n", command)
+		return "", "", false
+	}
+	return id, dir, true
+}
+
+func printHarnessUsage(w io.Writer) {
+	fmt.Fprintln(w, "usage: ni harness plan --dir <path> [--json]\n       ni harness candidates [--dir <path>] [--json]\n       ni harness propose --from-pressure <id> [--dir <path>]\n       ni harness validate <candidate-id> --evidence <path> [--dir <path>]\n       ni harness accept <candidate-id> [--dir <path>]\n       ni harness retire <candidate-id> [--dir <path>]")
 }
 
 func runInit(args []string, stdout io.Writer, stderr io.Writer) int {
@@ -671,6 +887,11 @@ Usage:
   ni feedback list [--dir <path>] [--json]
   ni graph --dir <path> [--json]
   ni harness plan --dir <path> [--json]
+  ni harness candidates [--dir <path>] [--json]
+  ni harness propose --from-pressure <id> [--dir <path>]
+  ni harness validate <candidate-id> --evidence <path> [--dir <path>]
+  ni harness accept <candidate-id> [--dir <path>]
+  ni harness retire <candidate-id> [--dir <path>]
   ni init --dir <path> [--profile concept|prototype|mvp|beta|production] [--product-type <type>] [--surface <surface>] [--interaction-mode <mode>]
   ni pressure status [--dir <path>] [--json]
   ni pressure promote <id> [--dir <path>]
@@ -685,7 +906,7 @@ Commands:
   export   Write locked-plan seed artifacts for a downstream target.
   feedback Record and list inert downstream feedback.
   graph    Propose a read-only work graph.
-  harness  Propose a generated harness contract.
+  harness  Manage inert generated harness proposals.
   init     Create planning docs and .ni skeleton.
   pressure Track inert planning pressure without changing readiness rules.
   run      Compile a goal prompt from the locked plan.
