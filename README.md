@@ -28,6 +28,7 @@ Authoring rules are documented in:
 - [Conversation authoring](docs/28_CONVERSATION_AUTHORING.md)
 - [Authoring protocol](docs/29_AUTHORING_PROTOCOL.md)
 - [Document update rules](docs/30_DOC_UPDATE_RULES.md)
+- [ni-start behavior](docs/31_NI_START_BEHAVIOR.md)
 
 ## JSON schemas
 
@@ -108,9 +109,19 @@ go run ./cmd/ni status --dir "$tmp/plan"
 ```
 
 A new template workspace is expected to print `BLOCKED` because it still has
-TODO values and an open blocker question. Continue planning through
-conversation with a model or NI skill; the model should update `docs/plan/**`
-and `.ni/contract.json` together. Then check readiness again:
+TODO values and an open blocker question.
+
+Continue planning with `ni-start` in Codex or another model environment:
+
+```text
+User: Invoke ni-start for $tmp/plan. Help me finish the plan.
+Model: Reads docs/plan/** and .ni/contract.json, summarizes state, asks focused questions.
+User: Answers the focused questions.
+Model: Updates docs/plan/** and .ni/contract.json together, then runs or requests ni status.
+```
+
+Keep the conversation going until the model has persisted the answers into the
+planning docs and contract. Then check readiness again:
 
 ```bash
 go run ./cmd/ni status --dir "$tmp/plan"
