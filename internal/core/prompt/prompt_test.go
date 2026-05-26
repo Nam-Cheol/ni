@@ -73,7 +73,7 @@ func TestCompileWritesOutFile(t *testing.T) {
 	if err != nil {
 		t.Fatalf("reading prompt output: %v", err)
 	}
-	if !strings.Contains(string(data), "Goal: continue work from locked NI plan") {
+	if !strings.Contains(string(data), "Generic target prompt") {
 		t.Fatalf("unexpected prompt output: %q", string(data))
 	}
 }
@@ -81,7 +81,7 @@ func TestCompileWritesOutFile(t *testing.T) {
 func TestCompileTargetsStayWithinPromptBudget(t *testing.T) {
 	dir := readyLockedProject(t)
 
-	for _, targetName := range []string{"codex", "human-team"} {
+	for _, targetName := range []string{"generic", "codex", "human-team"} {
 		t.Run(targetName, func(t *testing.T) {
 			result, err := Compile(Options{Dir: dir, Target: targetName, MaxChars: DefaultMaxChars})
 			if err != nil {
@@ -95,6 +95,58 @@ func TestCompileTargetsStayWithinPromptBudget(t *testing.T) {
 			}
 		})
 	}
+}
+
+func TestCompileTargetTemplatesContainRequiredAuthorityRules(t *testing.T) {
+	dir := readyLockedProject(t)
+
+	for _, targetName := range []string{"generic", "codex", "human-team"} {
+		t.Run(targetName, func(t *testing.T) {
+			result, err := Compile(Options{Dir: dir, Target: targetName, MaxChars: DefaultMaxChars})
+			if err != nil {
+				t.Fatalf("Compile returned error: %v", err)
+			}
+			assertPromptContains(t, result.Prompt,
+				".ni/plan.lock.json is authoritative",
+				".ni/contract.json",
+				"docs/plan",
+				"Do not weaken acceptance criteria",
+				"on lock mismatch report BLOCKED",
+				"If there are conflicting requirements, report BLOCKED",
+				"pre-runtime boundary",
+			)
+		})
+	}
+}
+
+func TestCompileCodexTemplateIsPasteReadyWithoutAutoInvocation(t *testing.T) {
+	dir := readyLockedProject(t)
+
+	result, err := Compile(Options{Dir: dir, Target: "codex", MaxChars: DefaultMaxChars})
+	if err != nil {
+		t.Fatalf("Compile returned error: %v", err)
+	}
+	assertPromptContains(t, result.Prompt,
+		"Paste this prompt into Codex",
+		"Do not ask ni to invoke Codex automatically",
+		"ni run only compiled this prompt",
+	)
+}
+
+func TestCompileHumanTeamTemplateNamesHandoffRoles(t *testing.T) {
+	dir := readyLockedProject(t)
+
+	result, err := Compile(Options{Dir: dir, Target: "human-team", MaxChars: DefaultMaxChars})
+	if err != nil {
+		t.Fatalf("Compile returned error: %v", err)
+	}
+	assertPromptContains(t, result.Prompt,
+		"PM/dev/design/research team",
+		"PM:",
+		"Dev:",
+		"Design/research:",
+		"team handoff",
+	)
 }
 
 func TestCompileRejectsUnsupportedTarget(t *testing.T) {
@@ -142,4 +194,13 @@ func readyLockedProject(t *testing.T) string {
 		t.Fatalf("creating lock: %v", err)
 	}
 	return dir
+}
+
+func assertPromptContains(t *testing.T, prompt string, want ...string) {
+	t.Helper()
+	for _, item := range want {
+		if !strings.Contains(prompt, item) {
+			t.Fatalf("expected prompt to contain %q, got %q", item, prompt)
+		}
+	}
 }

@@ -71,48 +71,133 @@ func Compile(opts Options) (Result, error) {
 }
 
 func buildPrompt(c contract.Contract, l lock.Lockfile, t target.Target) string {
+	tmpl := templateFor(t.Name)
 	var b strings.Builder
-	fmt.Fprintf(&b, "Goal: continue work from locked NI plan %s.\n\n", l.LockedAt)
+	fmt.Fprintf(&b, "%s\n\n", tmpl.Title)
+	fmt.Fprintf(&b, "Goal: %s\n\n", tmpl.Goal)
 	fmt.Fprintf(&b, "Project: %s - %s\n", c.Project.Name, c.Project.Purpose)
 	fmt.Fprintf(&b, "Readiness: %s\n", l.Readiness.Status)
 	fmt.Fprintf(&b, "Target: %s (%s)\n", t.Name, t.Artifact)
+	fmt.Fprintf(&b, "Locked at: %s\n\n", l.LockedAt)
+	b.WriteString("Authoritative sources:\n")
+	b.WriteString("- .ni/plan.lock.json is authoritative for lock state, hashes, and source-of-truth order.\n")
+	b.WriteString("- .ni/contract.json carries accepted CAP/REQ/EVAL/RISK IDs and acceptance criteria.\n")
+	b.WriteString("- docs/plan/ contains locked planning context; use only when hashes match.\n")
 	fmt.Fprintf(&b, "Source of truth: %s\n\n", strings.Join(l.SourceOfTruth, " > "))
 	b.WriteString("Rules:\n")
-	b.WriteString("- Treat .ni/plan.lock.json as authoritative.\n")
-	b.WriteString("- Verify locked file hashes before using planning docs.\n")
-	b.WriteString("- Do not weaken acceptance criteria.\n")
-	b.WriteString("- Do not execute shell, Codex, adapters, queues, or automations from ni run.\n\n")
-	writeTargetGuidance(&b, t)
+	b.WriteString("- Treat .ni/plan.lock.json as authoritative over .ni/contract.json, docs/plan, chat, and guesses.\n")
+	b.WriteString("- Verify locked file hashes before using planning docs; on lock mismatch report BLOCKED and stop.\n")
+	b.WriteString("- If there are conflicting requirements, report BLOCKED with conflicting sources or IDs and stop.\n")
+	b.WriteString("- Do not weaken acceptance criteria, risk mitigations, or blocker handling to proceed.\n")
+	b.WriteString("- Every work item must trace to CAP/REQ/EVAL/RISK IDs.\n")
+	b.WriteString("- Keep ni at the pre-runtime boundary; this prompt is seed material, not kernel-owned execution state.\n")
+	b.WriteString("- Do not make ni run execute shell, Codex, adapters, queues, PR automation, or agent teams.\n\n")
+	writeTemplateSection(&b, tmpl)
 
 	writeCapabilities(&b, c.Capabilities)
 	writeRequirements(&b, c.Requirements)
 	writeRisks(&b, c.Risks)
 	writeOpenQuestions(&b, c.OpenQuestions)
 
-	b.WriteString("Expected output: make the smallest implementation move that satisfies the locked contract, then report changed files and validation evidence.\n")
+	fmt.Fprintf(&b, "Expected output: %s\n", tmpl.ExpectedOutput)
 	return b.String()
 }
 
-func writeTargetGuidance(b *strings.Builder, t target.Target) {
-	b.WriteString("Target guidance:\n")
-	switch t.Name {
+type template struct {
+	Title          string
+	Goal           string
+	Instructions   []string
+	Process        []string
+	ExpectedOutput string
+}
+
+func templateFor(name string) template {
+	switch name {
 	case "codex":
-		b.WriteString("- Produce a Codex-ready implementation prompt only; do not invoke codex exec.\n")
-		b.WriteString("- Include scope, locked authority, and validation evidence expected from the worker.\n")
+		return template{
+			Title: "Codex target prompt",
+			Goal:  "Paste this prompt into Codex to make the smallest implementation move allowed by the locked NI plan.",
+			Instructions: []string{
+				"Use the current worktree as evidence; preserve user changes and stay within the locked contract.",
+				"Define validation before editing, then implement only the selected work packet.",
+				"Do not ask ni to invoke Codex automatically; ni run only compiled this prompt.",
+			},
+			Process: []string{
+				"Read .ni/plan.lock.json, .ni/contract.json, and relevant docs/plan files.",
+				"Choose the smallest coherent packet traced to CAP/REQ/EVAL/RISK IDs.",
+				"Edit code or docs only as needed, run validation, and report evidence.",
+			},
+			ExpectedOutput: "changed files, validation commands/results, remaining risks, and BLOCKED if the lock or requirements conflict.",
+		}
 	case "human-team":
-		b.WriteString("- Produce a human-team handoff with ownership-neutral next steps and validation checks.\n")
-		b.WriteString("- Keep execution responsibility outside ni; this artifact is planning seed material.\n")
+		return template{
+			Title: "Human-team handoff",
+			Goal:  "Hand this locked NI plan to a PM/dev/design/research team for coordinated implementation planning.",
+			Instructions: []string{
+				"PM: maintain scope against accepted capabilities, non-goals, and open blocker questions.",
+				"Dev: identify implementation packets and validation mapped to CAP/REQ/EVAL/RISK IDs.",
+				"Design/research: confirm user-facing assumptions, evidence needs, and unresolved risks without changing acceptance criteria.",
+				"Execution responsibility stays outside ni; this is a handoff artifact, not orchestration.",
+			},
+			Process: []string{
+				"Review .ni/plan.lock.json first, then .ni/contract.json and docs/plan.",
+				"Assign next ownership only after confirming no lock mismatch or conflicting requirements.",
+				"Record validation evidence and blockers for the team before implementation proceeds.",
+			},
+			ExpectedOutput: "team handoff with owners, next packets, validation evidence, risks, decisions needed, and BLOCKED if the lock or requirements conflict.",
+		}
 	case "hyper-run":
-		b.WriteString("- Produce Hyper Run-compatible seed guidance only; do not call hyper run.\n")
-		b.WriteString("- Do not generate .hyper/goals runtime packets from ni run.\n")
+		return seedTemplate("Hyper Run", "do not call hyper run or generate .hyper/goals runtime packets from ni run")
 	case "namba-ai":
-		b.WriteString("- Produce Namba AI seed guidance only; do not call downstream runtimes.\n")
+		return seedTemplate("Namba AI", "do not call downstream runtimes")
 	case "ouroboros":
-		b.WriteString("- Produce Ouroboros seed guidance only; do not call downstream runtimes.\n")
+		return seedTemplate("Ouroboros", "do not call downstream runtimes")
 	case "spec-kit":
-		b.WriteString("- Produce Spec Kit export guidance only; do not execute specification tooling.\n")
+		return seedTemplate("Spec Kit", "do not execute specification tooling")
 	default:
-		b.WriteString("- Produce a generic downstream prompt only; do not execute downstream runtimes.\n")
+		return template{
+			Title: "Generic target prompt",
+			Goal:  "Give any downstream actor the smallest safe implementation move from the locked NI plan.",
+			Instructions: []string{
+				"Use this as a generic prompt for a downstream worker, not as automatic execution.",
+				"Define validation before implementation and keep work within the locked contract.",
+				"Prefer the smallest coherent packet that satisfies accepted requirements.",
+			},
+			Process: []string{
+				"Read .ni/plan.lock.json, .ni/contract.json, and relevant docs/plan files.",
+				"Trace each selected task to CAP/REQ/EVAL/RISK IDs.",
+				"Run validation appropriate to the packet and report evidence.",
+			},
+			ExpectedOutput: "selected work packet, changed files or handoff notes, validation evidence, and BLOCKED if the lock or requirements conflict.",
+		}
+	}
+}
+
+func seedTemplate(name string, boundary string) template {
+	return template{
+		Title: name + " seed prompt",
+		Goal:  "Prepare downstream-compatible seed guidance from the locked NI plan.",
+		Instructions: []string{
+			"Produce seed guidance only; " + boundary + ".",
+			"Keep runtime state outside ni and derived from the locked contract.",
+		},
+		Process: []string{
+			"Read .ni/plan.lock.json, .ni/contract.json, and relevant docs/plan files.",
+			"Trace proposed work to CAP/REQ/EVAL/RISK IDs.",
+			"Report validation expectations without executing downstream tooling.",
+		},
+		ExpectedOutput: "seed guidance, validation expectations, and BLOCKED if the lock or requirements conflict.",
+	}
+}
+
+func writeTemplateSection(b *strings.Builder, tmpl template) {
+	b.WriteString("Target instructions:\n")
+	for _, line := range tmpl.Instructions {
+		fmt.Fprintf(b, "- %s\n", line)
+	}
+	b.WriteString("\nProcess:\n")
+	for i, line := range tmpl.Process {
+		fmt.Fprintf(b, "%d. %s\n", i+1, line)
 	}
 	b.WriteString("\n")
 }
