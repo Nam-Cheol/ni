@@ -70,6 +70,28 @@ Do not add user-facing contract `add`, `list`, or `set` commands for early
 authoring. Users should not need to manually edit `.ni/contract.json`; models
 and skills maintain it from conversation while the CLI validates the result.
 
+## Model edit discipline
+
+When a model updates planning state, it must keep the diff minimal, visible,
+and tied to the current conversation turn.
+
+- A model may propose a doc update from conversation, but ambiguous, tentative,
+  inferred, conflicting, or incomplete statements must remain assumptions,
+  draft records, or open questions until the user confirms them.
+- A model must not convert ambiguous user statements into accepted decisions.
+- A model must not weaken risks, mitigations, requirements, evaluations, or
+  non-goals to reach readiness.
+- A model must not silently delete planning records. It should mark records
+  rejected, deferred, resolved, or not applicable when preserving history
+  matters.
+- A model must not edit locked planning docs except through the amendment or
+  relock flow.
+- A model should show a short change summary after updating docs, naming the
+  changed files, affected records, and remaining blockers or assumptions.
+
+See `docs/37_MODEL_EDIT_SAFETY.md` for examples of good and bad planning
+updates.
+
 ## Source-of-truth precedence
 
 After `.ni/plan.lock.json` exists, use this order:

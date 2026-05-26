@@ -15,9 +15,36 @@ and `.ni/contract.json`.
 
 You are not the authority for readiness or lock state. The `ni` CLI is the authority.
 
-Do not say the plan is complete unless `ni status` has no blockers. If `.ni/plan.lock.json` exists, do not silently edit locked planning docs; first state that planning is locked and proceed only when the user explicitly resumes planning.
+Do not say the plan is complete unless `ni status` has no blockers. If `.ni/plan.lock.json` exists, do not silently edit locked planning docs; first state that planning is locked and proceed only through the amendment or relock flow when the user explicitly resumes planning.
 
 If your interpretation conflicts with `ni status`, report the CLI result and stop. Do not override, reinterpret, or soften a CLI `BLOCKED` result.
+
+## Edit discipline
+
+Keep planning edits narrow, visible, and grounded in the user's confirmed
+intent.
+
+- Minimal diff rule: change only the files, records, and sections needed for
+  the current planning turn. Do not rewrite unrelated prose, reorder stable
+  records, or renumber IDs for style.
+- Assumption vs decision rule: tentative, inferred, conflicting, or incomplete
+  statements stay visible as assumptions, draft records, or open questions.
+  They do not become accepted decisions.
+- User-confirmed decision rule: accepted decisions require explicit user
+  confirmation or already-established accepted planning state. You may propose
+  decision wording, but your proposed wording is not acceptance by itself.
+- No silent deletion rule: do not remove planning records without making the
+  change visible. Prefer marking records rejected, deferred, resolved, or not
+  applicable when history matters.
+- Lock safety rule: after `.ni/plan.lock.json` exists, do not edit locked
+  `docs/plan/**` content or matching `.ni/contract.json` records except through
+  the amendment or relock flow. If a lock hash mismatch exists, stop and report
+  `BLOCKED`.
+- Risk and evaluation integrity rule: do not weaken risks, mitigations,
+  requirements, evaluations, or non-goals to reach readiness.
+- Change summary rule: after updating docs, show a short summary naming changed
+  files, affected IDs, and any remaining assumptions, blockers, or readiness
+  gaps.
 
 ## Task
 
@@ -91,9 +118,12 @@ After the user answers:
    evaluations, risks, and artifacts when those records exist.
 9. Record decisions, assumptions, risks, non-goals, and open questions in both
    the relevant plan docs and contract fields when they affect readiness.
-10. Run or report `ni status --dir . --next-questions` at the end when available.
-11. Show readiness gaps and next questions from the CLI result.
-12. Reflect the CLI readiness status and blockers back into `.ni/session.json`
+10. Preserve existing risks, mitigations, requirements, evaluations, and
+    non-goals unless the user explicitly changes them.
+11. Run or report `ni status --dir . --next-questions` at the end when available.
+12. Show a short change summary with changed files and affected IDs.
+13. Show readiness gaps and next questions from the CLI result.
+14. Reflect the CLI readiness status and blockers back into `.ni/session.json`
     without treating the session file as readiness authority.
 
 Continue this loop until `ni status` reports no blocking issues. Suggest
@@ -107,6 +137,8 @@ When responding during planning:
 - Lead with the current planning summary or what changed.
 - Name the files changed when an answer updates planning state, including
   `.ni/session.json` when refreshed.
+- Name affected IDs and whether they are accepted, draft, assumption, rejected,
+  deferred, resolved, or blockers.
 - Ask only the next focused questions needed to unblock readiness.
 - Prefer deterministic next questions from `ni status --next-questions`.
 - If `ni status` reports `BLOCKED`, state the blockers plainly and keep
@@ -139,6 +171,9 @@ ni status --dir . --next-questions
 - Do not write generated harness files.
 - Do not hide blocker questions.
 - Do not weaken evaluations to make the plan appear ready.
+- Do not convert ambiguous user statements into accepted decisions.
+- Do not silently delete planning records.
+- Do not edit locked planning docs except through the amendment or relock flow.
 - Do not edit files outside `docs/plan/**`, `.ni/contract.json`, and
   `.ni/session.json` unless the user explicitly asks for a different NI
   maintenance task.

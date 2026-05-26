@@ -29,6 +29,7 @@ Authoring rules are documented in:
 - [Authoring protocol](docs/29_AUTHORING_PROTOCOL.md)
 - [Document update rules](docs/30_DOC_UPDATE_RULES.md)
 - [ni-start behavior](docs/31_NI_START_BEHAVIOR.md)
+- [Model edit safety](docs/37_MODEL_EDIT_SAFETY.md)
 
 ## JSON schemas
 
