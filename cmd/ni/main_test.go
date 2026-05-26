@@ -853,6 +853,73 @@ func TestTargetsJSON(t *testing.T) {
 	}
 }
 
+func TestDiffCommandJSON(t *testing.T) {
+	var stdout bytes.Buffer
+	code := run([]string{
+		"diff",
+		"--base", collabFixtureForCLI("base.json"),
+		"--head", collabFixtureForCLI("non_conflicting_parallel_head.json"),
+		"--json",
+	}, &stdout, &bytes.Buffer{})
+	if code != 0 {
+		t.Fatalf("expected diff exit code 0, got %d", code)
+	}
+	var payload struct {
+		Schema  string `json:"schema"`
+		Changes []struct {
+			Kind       string `json:"kind"`
+			EntityType string `json:"entity_type"`
+			ID         string `json:"id"`
+		} `json:"changes"`
+	}
+	if err := json.Unmarshal(stdout.Bytes(), &payload); err != nil {
+		t.Fatalf("expected valid diff JSON, got %v: %q", err, stdout.String())
+	}
+	if payload.Schema != "ni.collaboration.diff.v0" {
+		t.Fatalf("expected diff schema, got %#v", payload)
+	}
+	found := false
+	for _, change := range payload.Changes {
+		if change.Kind == "added" && change.EntityType == "capability" && change.ID == "CAP-002" {
+			found = true
+		}
+	}
+	if !found {
+		t.Fatalf("expected CAP-002 added change, got %#v", payload.Changes)
+	}
+}
+
+func TestConflictsCommandExitsNonzeroOnConflict(t *testing.T) {
+	var stdout bytes.Buffer
+	code := run([]string{
+		"conflicts",
+		"--base", collabFixtureForCLI("base.json"),
+		"--head", collabFixtureForCLI("conflicting_decision_head.json"),
+	}, &stdout, &bytes.Buffer{})
+	if code != 1 {
+		t.Fatalf("expected conflicts exit code 1, got %d", code)
+	}
+	if !strings.Contains(stdout.String(), "collaboration conflicts") || !strings.Contains(stdout.String(), "DEC-001") {
+		t.Fatalf("expected conflict text, got %q", stdout.String())
+	}
+}
+
+func TestConflictsCommandJSONNoConflicts(t *testing.T) {
+	var stdout bytes.Buffer
+	code := run([]string{
+		"conflicts",
+		"--base", collabFixtureForCLI("base.json"),
+		"--head", collabFixtureForCLI("non_conflicting_parallel_head.json"),
+		"--json",
+	}, &stdout, &bytes.Buffer{})
+	if code != 0 {
+		t.Fatalf("expected conflicts exit code 0, got %d", code)
+	}
+	if !strings.Contains(stdout.String(), `"conflicts": []`) {
+		t.Fatalf("expected empty conflicts JSON, got %q", stdout.String())
+	}
+}
+
 func TestGraph(t *testing.T) {
 	dir := t.TempDir()
 	if code := run([]string{"init", "--dir", dir}, &bytes.Buffer{}, &bytes.Buffer{}); code != 0 {
@@ -1137,4 +1204,8 @@ func readFileForCLI(t *testing.T, path string) []byte {
 		t.Fatalf("reading %s: %v", path, err)
 	}
 	return data
+}
+
+func collabFixtureForCLI(name string) string {
+	return filepath.Join("..", "..", "internal", "core", "collab", "testdata", name)
 }

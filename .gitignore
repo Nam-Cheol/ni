@@ -9,6 +9,7 @@
 /dist/
 /tmp/
 /coverage/
+/.cache/
 *.test
 *.out
 

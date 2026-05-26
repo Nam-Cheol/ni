@@ -1,0 +1,44 @@
+{
+  "schema": "ni.contract.v0",
+  "readiness_profile": "prototype",
+  "product_type": "software",
+  "delivery_surfaces": ["cli"],
+  "interaction_mode": "human_to_system",
+  "project": {
+    "id": "collab-fixture",
+    "name": "Collaboration Fixture",
+    "purpose": "Exercise collaboration conflict detection.",
+    "status": "draft"
+  },
+  "non_goals": [
+    {"id": "NG-001", "title": "Do not execute downstream work."}
+  ],
+  "capabilities": [
+    {
+      "id": "CAP-001",
+      "title": "Prompt compiler",
+      "status": "accepted",
+      "requirements": ["REQ-001"],
+      "evaluations": ["EVAL-001"],
+      "risks": ["RISK-001"],
+      "artifacts": ["ART-001"]
+    }
+  ],
+  "requirements": [
+    {"id": "REQ-001", "title": "Prompt output must stay within 4000 characters", "status": "accepted"}
+  ],
+  "decisions": [
+    {"id": "DEC-001", "title": "Use shell execution in ni run", "status": "accepted"},
+    {"id": "DEC-002", "title": "Do not use prompt compiler only", "status": "accepted"}
+  ],
+  "risks": [
+    {"id": "RISK-001", "title": "Prompt may exceed budget", "severity": "high", "status": "accepted", "mitigation": "Enforce maximum prompt length."}
+  ],
+  "evaluations": [
+    {"id": "EVAL-001", "title": "Prompt budget check", "method": "automated test"}
+  ],
+  "artifacts": [
+    {"id": "ART-001", "path": ".ni/generated/goal.prompt.txt", "kind": "prompt"}
+  ],
+  "open_questions": []
+}

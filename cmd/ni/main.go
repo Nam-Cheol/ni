@@ -11,6 +11,7 @@ import (
 	"time"
 
 	"ni/internal/core/amendment"
+	"ni/internal/core/collab"
 	"ni/internal/core/contract"
 	"ni/internal/core/docstore"
 	"ni/internal/core/exporter"
@@ -39,6 +40,10 @@ func run(args []string, stdout io.Writer, stderr io.Writer) int {
 	switch args[0] {
 	case "amend":
 		return runAmend(args[1:], stdout, stderr)
+	case "conflicts":
+		return runConflicts(args[1:], stdout, stderr)
+	case "diff":
+		return runDiff(args[1:], stdout, stderr)
 	case "end":
 		return runEnd(args[1:], stdout, stderr)
 	case "export":
@@ -69,6 +74,93 @@ func run(args []string, stdout io.Writer, stderr io.Writer) int {
 		printHelp(stderr)
 		return 1
 	}
+}
+
+func runDiff(args []string, stdout io.Writer, stderr io.Writer) int {
+	base, head, jsonOutput, ok := parseCollabArgs(args, stderr, "diff")
+	if !ok {
+		return 1
+	}
+	result, err := collab.Diff(base, head)
+	if err != nil {
+		fmt.Fprintf(stderr, "diff failed: %v\n", err)
+		return 1
+	}
+	if jsonOutput {
+		encoder := json.NewEncoder(stdout)
+		encoder.SetIndent("", "  ")
+		if err := encoder.Encode(result); err != nil {
+			fmt.Fprintf(stderr, "diff failed: %v\n", err)
+			return 1
+		}
+		return 0
+	}
+	fmt.Fprint(stdout, collab.FormatDiff(result))
+	return 0
+}
+
+func runConflicts(args []string, stdout io.Writer, stderr io.Writer) int {
+	base, head, jsonOutput, ok := parseCollabArgs(args, stderr, "conflicts")
+	if !ok {
+		return 1
+	}
+	result, err := collab.Conflicts(base, head)
+	if err != nil {
+		fmt.Fprintf(stderr, "conflicts failed: %v\n", err)
+		return 1
+	}
+	if jsonOutput {
+		encoder := json.NewEncoder(stdout)
+		encoder.SetIndent("", "  ")
+		if err := encoder.Encode(result); err != nil {
+			fmt.Fprintf(stderr, "conflicts failed: %v\n", err)
+			return 1
+		}
+	} else {
+		fmt.Fprint(stdout, collab.FormatConflicts(result))
+	}
+	if len(result.Conflicts) > 0 {
+		return 1
+	}
+	return 0
+}
+
+func parseCollabArgs(args []string, stderr io.Writer, command string) (string, string, bool, bool) {
+	base := ""
+	head := ""
+	jsonOutput := false
+	for i := 0; i < len(args); i++ {
+		switch args[i] {
+		case "--base":
+			if i+1 >= len(args) {
+				fmt.Fprintln(stderr, "missing value for --base")
+				return "", "", false, false
+			}
+			base = args[i+1]
+			i++
+		case "--head":
+			if i+1 >= len(args) {
+				fmt.Fprintln(stderr, "missing value for --head")
+				return "", "", false, false
+			}
+			head = args[i+1]
+			i++
+		case "--json":
+			jsonOutput = true
+		default:
+			fmt.Fprintf(stderr, "unknown %s option: %s\n", command, args[i])
+			return "", "", false, false
+		}
+	}
+	if base == "" {
+		fmt.Fprintln(stderr, "missing --base")
+		return "", "", false, false
+	}
+	if head == "" {
+		fmt.Fprintln(stderr, "missing --head")
+		return "", "", false, false
+	}
+	return base, head, jsonOutput, true
 }
 
 func runAmend(args []string, stdout io.Writer, stderr io.Writer) int {
@@ -1098,6 +1190,8 @@ Usage:
   ni amend list [--dir <path>]
   ni amend show <id> [--dir <path>]
   ni amend apply <id> [--dir <path>]
+  ni conflicts --base <path-or-lock> --head <path-or-lock> [--json]
+  ni diff --base <path-or-lock> --head <path-or-lock> [--json]
   ni end --dir <path>
   ni export --target hyper-run|namba-ai --out <dir> [--dir <path>]
   ni feedback add --file <path> [--dir <path>]
@@ -1121,6 +1215,8 @@ Usage:
 
 Commands:
   amend   Create, inspect, and apply explicit contract amendments.
+  conflicts Detect semantic planning conflicts between two contracts or locked plans.
+  diff     Show contract-level changes between two contracts or locked plans.
   end      Lock the accepted planning contract.
   export   Write locked-plan seed artifacts for a downstream target.
   feedback Record and list inert downstream feedback.
