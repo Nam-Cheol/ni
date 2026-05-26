@@ -822,6 +822,114 @@ func TestExportNambaAICreatesSeedDocsOnly(t *testing.T) {
 	}
 }
 
+func TestExportSpecKitCreatesSeedNotesOnly(t *testing.T) {
+	dir := t.TempDir()
+	if code := run([]string{"init", "--dir", dir}, &bytes.Buffer{}, &bytes.Buffer{}); code != 0 {
+		t.Fatalf("init expected exit code 0, got %d", code)
+	}
+	writeReadyContractForCLI(t, dir)
+	if code := run([]string{"end", "--dir", dir}, &bytes.Buffer{}, &bytes.Buffer{}); code != 0 {
+		t.Fatalf("end expected exit code 0, got %d", code)
+	}
+
+	out := filepath.Join(dir, "spec-kit-seed")
+	var stdout bytes.Buffer
+	code := run([]string{"export", "--dir", dir, "--target", "spec-kit", "--out", out}, &stdout, &bytes.Buffer{})
+	if code != 0 {
+		t.Fatalf("expected exit code 0, got %d", code)
+	}
+	if !strings.Contains(stdout.String(), "exported spec-kit seed package") {
+		t.Fatalf("expected export summary, got %q", stdout.String())
+	}
+
+	assertSeedNotesExport(t, out, "spec-kit-seed-notes.md", []string{
+		"# Spec Kit Seed Notes",
+		"## Locked Contract Summary",
+		"## Capabilities",
+		"## Constraints",
+		"## Risks",
+		"## Evaluation Contract",
+		"## Non-goals",
+		"## Source-of-Truth References",
+		"Do not implement slash commands",
+		"Do not create coding task lists as NI core state",
+	})
+}
+
+func TestExportOuroborosCreatesSeedNotesOnly(t *testing.T) {
+	dir := t.TempDir()
+	if code := run([]string{"init", "--dir", dir}, &bytes.Buffer{}, &bytes.Buffer{}); code != 0 {
+		t.Fatalf("init expected exit code 0, got %d", code)
+	}
+	writeReadyContractForCLI(t, dir)
+	if code := run([]string{"end", "--dir", dir}, &bytes.Buffer{}, &bytes.Buffer{}); code != 0 {
+		t.Fatalf("end expected exit code 0, got %d", code)
+	}
+
+	out := filepath.Join(dir, "ouroboros-seed")
+	var stdout bytes.Buffer
+	code := run([]string{"export", "--dir", dir, "--target", "ouroboros", "--out", out}, &stdout, &bytes.Buffer{})
+	if code != 0 {
+		t.Fatalf("expected exit code 0, got %d", code)
+	}
+	if !strings.Contains(stdout.String(), "exported ouroboros seed package") {
+		t.Fatalf("expected export summary, got %q", stdout.String())
+	}
+
+	assertSeedNotesExport(t, out, "ouroboros-seed-notes.md", []string{
+		"# Ouroboros Seed Notes",
+		"## Locked Contract Summary",
+		"## Capabilities",
+		"## Constraints",
+		"## Risks",
+		"## Evaluation Contract",
+		"## Non-goals",
+		"## Source-of-Truth References",
+		"Do not implement interview, crystallize, execute, evaluate, or evolve inside NI",
+		"Do not execute downstream agents",
+	})
+}
+
+func assertSeedNotesExport(t *testing.T, out string, wantFile string, wantContent []string) {
+	t.Helper()
+
+	entries, err := os.ReadDir(out)
+	if err != nil {
+		t.Fatalf("reading export directory: %v", err)
+	}
+	if len(entries) != 1 || entries[0].Name() != wantFile {
+		t.Fatalf("expected only %s, got %#v", wantFile, entries)
+	}
+	if entries[0].IsDir() {
+		t.Fatalf("expected %s to be a file", wantFile)
+	}
+
+	data, err := os.ReadFile(filepath.Join(out, wantFile))
+	if err != nil {
+		t.Fatalf("reading %s: %v", wantFile, err)
+	}
+	text := string(data)
+	for _, want := range wantContent {
+		if !strings.Contains(text, want) {
+			t.Fatalf("expected %s to contain %q, got %q", wantFile, want, text)
+		}
+	}
+
+	for _, forbidden := range []string{
+		"tasks.md",
+		"execute.md",
+		"evaluate.md",
+		"evolve.md",
+		"interview.md",
+		"crystallize.md",
+		"slash-commands.md",
+	} {
+		if _, err := os.Stat(filepath.Join(out, forbidden)); !os.IsNotExist(err) {
+			t.Fatalf("expected no executable workflow file %s, stat err: %v", forbidden, err)
+		}
+	}
+}
+
 func TestTargets(t *testing.T) {
 	var stdout bytes.Buffer
 	code := run([]string{"targets"}, &stdout, &bytes.Buffer{})

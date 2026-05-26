@@ -16,7 +16,9 @@ import (
 const (
 	HyperRunTarget  = "hyper-run"
 	NambaAITarget   = "namba-ai"
-	validExportText = HyperRunTarget + ", " + NambaAITarget
+	OuroborosTarget = "ouroboros"
+	SpecKitTarget   = "spec-kit"
+	validExportText = HyperRunTarget + ", " + NambaAITarget + ", " + OuroborosTarget + ", " + SpecKitTarget
 )
 
 type Options struct {
@@ -64,6 +66,10 @@ func Export(opts Options) (Result, error) {
 		docs = hyperRunDocs(c, verification.Lockfile, "sha256:"+lockHash)
 	case NambaAITarget:
 		docs = nambaAIDocs(c, verification.Lockfile, "sha256:"+lockHash)
+	case OuroborosTarget:
+		docs = ouroborosDocs(c, verification.Lockfile, "sha256:"+lockHash)
+	case SpecKitTarget:
+		docs = specKitDocs(c, verification.Lockfile, "sha256:"+lockHash)
 	default:
 		return Result{}, fmt.Errorf("unsupported export target %q (valid: %s)", selectedTarget.Name, validExportText)
 	}
@@ -137,6 +143,36 @@ func nambaAIDocs(c contract.Contract, l lock.Lockfile, sourceLockHash string) []
 	}
 }
 
+func ouroborosDocs(c contract.Contract, l lock.Lockfile, sourceLockHash string) []exportDoc {
+	return []exportDoc{
+		{name: "ouroboros-seed-notes.md", content: renderTargetSeedNotes(c, l, sourceLockHash, targetSeedOptions{
+			title:       "Ouroboros Seed Notes",
+			targetName:  "Ouroboros",
+			description: "downstream recursive planning tools",
+			targetNonGoals: []string{
+				"Do not implement interview, crystallize, execute, evaluate, or evolve inside NI.",
+				"Do not create an Ouroboros lifecycle, queue, or owned runtime state.",
+				"Do not execute downstream agents.",
+			},
+		})},
+	}
+}
+
+func specKitDocs(c contract.Contract, l lock.Lockfile, sourceLockHash string) []exportDoc {
+	return []exportDoc{
+		{name: "spec-kit-seed-notes.md", content: renderTargetSeedNotes(c, l, sourceLockHash, targetSeedOptions{
+			title:       "Spec Kit Seed Notes",
+			targetName:  "Spec Kit",
+			description: "downstream spec-first tools",
+			targetNonGoals: []string{
+				"Do not implement slash commands in NI.",
+				"Do not create coding task lists as NI core state.",
+				"Do not turn NI into a spec-first coding operating system.",
+			},
+		})},
+	}
+}
+
 func renderPlan(c contract.Contract) string {
 	var b strings.Builder
 	fmt.Fprintf(&b, "# Plan\n\n")
@@ -165,6 +201,156 @@ func renderNambaPlanning(c contract.Contract) string {
 	writeIDList(&b, "Accepted requirements", acceptedRequirements(c.Requirements))
 	writeIDList(&b, "Non-goals", nonGoals(c.NonGoals))
 	return b.String()
+}
+
+type targetSeedOptions struct {
+	title          string
+	targetName     string
+	description    string
+	targetNonGoals []string
+}
+
+func renderTargetSeedNotes(c contract.Contract, l lock.Lockfile, sourceLockHash string, opts targetSeedOptions) string {
+	var b strings.Builder
+	fmt.Fprintf(&b, "# %s\n\n", opts.title)
+	fmt.Fprintf(&b, "These notes are seed material for %s. They are derived from a locked NI contract and are not an executable workflow.\n\n", opts.description)
+	b.WriteString("Boundary rules:\n\n")
+	b.WriteString("- NI exports seed notes only.\n")
+	fmt.Fprintf(&b, "- NI does not call %s or own %s state.\n", opts.targetName, opts.targetName)
+	b.WriteString("- Downstream state must remain outside NI and derived from the lock.\n\n")
+
+	renderLockedContractSummary(&b, c, l, sourceLockHash)
+	renderSeedCapabilities(&b, c)
+	renderSeedConstraints(&b, c)
+	renderSeedRisks(&b, c)
+	renderSeedEvaluations(&b, c)
+	renderSeedNonGoals(&b, c, opts.targetNonGoals)
+	renderSourceTruthReferences(&b, l)
+	return b.String()
+}
+
+func renderLockedContractSummary(b *strings.Builder, c contract.Contract, l lock.Lockfile, sourceLockHash string) {
+	b.WriteString("## Locked Contract Summary\n\n")
+	fmt.Fprintf(b, "- project_id: %s\n", c.Project.ID)
+	fmt.Fprintf(b, "- project_name: %s\n", c.Project.Name)
+	fmt.Fprintf(b, "- purpose: %s\n", c.Project.Purpose)
+	fmt.Fprintf(b, "- product_type: %s\n", c.ProductType)
+	fmt.Fprintf(b, "- delivery_surfaces: %s\n", strings.Join(c.DeliverySurfaces, ", "))
+	fmt.Fprintf(b, "- interaction_mode: %s\n", c.InteractionMode)
+	fmt.Fprintf(b, "- readiness_profile: %s\n", c.ReadinessProfile)
+	fmt.Fprintf(b, "- locked_readiness_status: %s\n", l.Readiness.Status)
+	fmt.Fprintf(b, "- locked_at: %s\n", l.LockedAt)
+	fmt.Fprintf(b, "- source_lock_hash: %s\n\n", sourceLockHash)
+}
+
+func renderSeedCapabilities(b *strings.Builder, c contract.Contract) {
+	b.WriteString("## Capabilities\n\n")
+	requirements := requirementTitles(c.Requirements)
+	evaluations := evaluationTitles(c.Evaluations)
+	risks := riskTitles(c.Risks)
+	artifacts := artifactTitles(c.Artifacts)
+	wrote := false
+	for _, capability := range c.Capabilities {
+		if capability.Status != "accepted" {
+			continue
+		}
+		wrote = true
+		fmt.Fprintf(b, "### %s: %s\n\n", capability.ID, capability.Title)
+		fmt.Fprintf(b, "- depends_on: %s\n", joinOrNone(capability.Dependencies))
+		fmt.Fprintf(b, "- requirements: %s\n", listWithTitles(capability.Requirements, requirements))
+		fmt.Fprintf(b, "- evaluations: %s\n", listWithTitles(capability.Evaluations, evaluations))
+		fmt.Fprintf(b, "- risks: %s\n", listWithTitles(capability.Risks, risks))
+		fmt.Fprintf(b, "- artifacts: %s\n\n", listWithTitles(capability.Artifacts, artifacts))
+	}
+	if !wrote {
+		b.WriteString("No accepted capabilities are present in the locked contract.\n\n")
+	}
+}
+
+func renderSeedConstraints(b *strings.Builder, c contract.Contract) {
+	b.WriteString("## Constraints\n\n")
+	b.WriteString("- Verify `.ni/plan.lock.json` exists and locked hashes match before using these notes.\n")
+	b.WriteString("- Preserve accepted requirements, risk mitigations, and blocker handling.\n")
+	b.WriteString("- Keep downstream state derived and outside NI core.\n")
+	b.WriteString("- Do not weaken acceptance criteria to make downstream work appear ready.\n")
+	b.WriteString("\nAccepted requirements:\n\n")
+	items := acceptedRequirements(c.Requirements)
+	if len(items) == 0 {
+		b.WriteString("- none\n\n")
+		return
+	}
+	for _, item := range items {
+		fmt.Fprintf(b, "- %s: %s\n", item.id, item.title)
+	}
+	b.WriteString("\n")
+}
+
+func renderSeedRisks(b *strings.Builder, c contract.Contract) {
+	b.WriteString("## Risks\n\n")
+	if len(c.Risks) == 0 {
+		b.WriteString("No risks are listed in the locked contract.\n\n")
+		return
+	}
+	linkedCapabilities := linkedCapabilitiesByRisk(c.Capabilities)
+	for _, risk := range c.Risks {
+		fmt.Fprintf(b, "### %s: %s\n\n", risk.ID, risk.Title)
+		fmt.Fprintf(b, "- severity: %s\n", risk.Severity)
+		fmt.Fprintf(b, "- status: %s\n", risk.Status)
+		fmt.Fprintf(b, "- mitigation: %s\n", risk.Mitigation)
+		fmt.Fprintf(b, "- linked_capabilities: %s\n\n", joinOrNone(linkedCapabilities[risk.ID]))
+	}
+}
+
+func renderSeedEvaluations(b *strings.Builder, c contract.Contract) {
+	b.WriteString("## Evaluation Contract\n\n")
+	if len(c.Evaluations) == 0 {
+		b.WriteString("No evaluations are listed in the locked contract.\n\n")
+		return
+	}
+	linkedCapabilities := linkedCapabilitiesByEvaluation(c.Capabilities)
+	for _, evaluation := range c.Evaluations {
+		fmt.Fprintf(b, "### %s: %s\n\n", evaluation.ID, evaluation.Title)
+		fmt.Fprintf(b, "- method: %s\n", evaluation.Method)
+		fmt.Fprintf(b, "- linked_capabilities: %s\n\n", joinOrNone(linkedCapabilities[evaluation.ID]))
+	}
+	if len(c.Artifacts) > 0 {
+		b.WriteString("Evidence references:\n\n")
+		for _, artifact := range c.Artifacts {
+			fmt.Fprintf(b, "- %s: %s at %s\n", artifact.ID, artifact.Kind, artifact.Path)
+		}
+		b.WriteString("\n")
+	}
+}
+
+func renderSeedNonGoals(b *strings.Builder, c contract.Contract, targetNonGoals []string) {
+	b.WriteString("## Non-goals\n\n")
+	items := nonGoals(c.NonGoals)
+	if len(items) == 0 {
+		b.WriteString("- none\n\n")
+	} else {
+		for _, item := range items {
+			fmt.Fprintf(b, "- %s: %s\n", item.id, item.title)
+		}
+		b.WriteString("\n")
+	}
+	if len(targetNonGoals) == 0 {
+		return
+	}
+	b.WriteString("## Target Non-goals\n\n")
+	for _, item := range targetNonGoals {
+		fmt.Fprintf(b, "- %s\n", item)
+	}
+	b.WriteString("\n")
+}
+
+func renderSourceTruthReferences(b *strings.Builder, l lock.Lockfile) {
+	b.WriteString("## Source-of-Truth References\n\n")
+	fmt.Fprintf(b, "Source-of-truth order: %s\n\n", strings.Join(l.SourceOfTruth, " > "))
+	b.WriteString("Locked files:\n\n")
+	for _, file := range l.Files {
+		fmt.Fprintf(b, "- %s sha256:%s\n", file.Path, file.SHA256)
+	}
+	b.WriteString("\nStop with `BLOCKED` if any locked hash mismatches before downstream work uses these notes.\n")
 }
 
 func renderNambaLockSummary(c contract.Contract, l lock.Lockfile, sourceLockHash string) string {

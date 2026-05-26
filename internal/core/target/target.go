@@ -41,13 +41,13 @@ var builtins = []Target{
 	},
 	{
 		Name:        "ouroboros",
-		Description: "Ouroboros seed prompt for downstream planning handoff.",
+		Description: "Ouroboros seed notes for downstream recursive planning handoff.",
 		Artifact:    "seed",
 	},
 	{
 		Name:        "spec-kit",
-		Description: "Spec Kit export prompt for downstream specification work.",
-		Artifact:    "export",
+		Description: "Spec Kit seed notes for downstream specification work.",
+		Artifact:    "seed",
 	},
 }
 

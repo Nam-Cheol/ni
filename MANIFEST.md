@@ -20,6 +20,10 @@ docs/06_CODEX_SKILLS.md
 docs/07_GENERATED_HARNESS.md
 docs/08_ROADMAP.md
 docs/12_READINESS_PROFILES.md
+docs/13_TARGET_HYPER_RUN.md
+docs/14_TARGET_NAMBA_AI.md
+docs/16_TARGET_SPEC_KIT.md
+docs/17_TARGET_OUROBOROS.md
 
 docs/plan/*.md
 .ni/project.json

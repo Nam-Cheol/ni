@@ -1193,7 +1193,7 @@ Usage:
   ni conflicts --base <path-or-lock> --head <path-or-lock> [--json]
   ni diff --base <path-or-lock> --head <path-or-lock> [--json]
   ni end --dir <path>
-  ni export --target hyper-run|namba-ai --out <dir> [--dir <path>]
+  ni export --target hyper-run|namba-ai|ouroboros|spec-kit --out <dir> [--dir <path>]
   ni feedback add --file <path> [--dir <path>]
   ni feedback list [--dir <path>] [--json]
   ni graph --dir <path> [--json]
