@@ -12,8 +12,13 @@ ni init --dir ./examples/refund-triage-plan \
   --interaction-mode human_to_system
 ```
 
-The new workspace contains template `docs/plan/**` files and
-`.ni/contract.json` with TODO planning records.
+The new workspace contains template `docs/plan/**` files, `.ni/contract.json`,
+and bounded `.ni/session.json` state. The user does not type contract
+authoring commands; the model maintains those files from conversation.
+
+The completed planning state produced by this transcript is checked in at
+`examples/conversation-authoring/docs/plan/**` and
+`examples/conversation-authoring/.ni/contract.json`.
 
 ## Turn 1
 
@@ -82,8 +87,7 @@ Example contract records after the turn:
     {
       "id": "REQ-001",
       "title": "Recommendations only",
-      "status": "accepted",
-      "acceptance": "The assistant drafts refund recommendations for support agents and never issues refunds or contacts customers."
+      "status": "accepted"
     }
   ],
   "evaluations": [
@@ -102,7 +106,7 @@ Example contract records after the turn:
   "open_questions": [
     {
       "id": "OQ-001",
-      "question": "Which policy source is authoritative for refund eligibility?",
+      "title": "Which policy source is authoritative for refund eligibility?",
       "status": "open",
       "blocker": true
     }
@@ -151,15 +155,109 @@ with the ticket text, escalate.
 
 **Model using ni-start**
 
-I will resolve `OQ-001`, add a decision that the internal refund policy page is
-authoritative, add a risk for stale policy references, and update the transcript
-evaluation to include conflict escalation. Then I will run `ni status --dir .`
-again.
+I will resolve `OQ-001`, add `DEC-001` that the internal refund policy page is
+authoritative, add `RISK-003` for stale policy references, update the transcript
+evaluation to include conflict escalation, and refresh `.ni/session.json` as
+bounded continuity state. Then I will run `ni status --dir .` again.
+
+Changed files:
+
+- `docs/plan/00_project_brief.md`
+- `docs/plan/02_capabilities.md`
+- `docs/plan/03_interaction_contract.md`
+- `docs/plan/04_domain_state.md`
+- `docs/plan/06_risks_security.md`
+- `docs/plan/07_evaluation_contract.md`
+- `docs/plan/10_open_questions.md`
+- `docs/plan/11_decision_log.md`
+- `.ni/contract.json`
+- `.ni/session.json`
 
 Example result:
 
 ```text
-READY
+READY_WITH_DEFERRALS
+- DEC-004: Final production owner for maintaining the refund policy page.
+- OQ-002: Which support dashboard will eventually display the recommendation draft?
 ```
 
-`ni status` reports `READY`, so the planning gate can move to `ni-end`.
+`ni status` reports `READY_WITH_DEFERRALS`, so the planning gate can move to
+`ni-end` only after the deferrals are summarized and the user explicitly
+confirms the lock. The deferrals remain visible; the model does not silently
+resolve them to make the plan look cleaner.
+
+At no point did the user type contract `add`, `list`, or `set` commands. The
+model maintained the docs and contract from conversation, while the CLI reported
+gaps and readiness.
+
+## Turn 3
+
+**User**
+
+Invoke `ni-end`.
+
+**Model using ni-end**
+
+I will check the gate through the CLI before asking for lock confirmation.
+
+```bash
+ni status --dir .
+```
+
+CLI result:
+
+```text
+READY_WITH_DEFERRALS
+- DEC-004 is deferred.
+- OQ-002 remains open and non-blocking.
+```
+
+The CLI says the prototype plan can lock with visible deferrals. The lock will
+hash `.ni/contract.json` and `docs/plan/**`.
+
+Confirm that I should run `ni end --dir .` and let the CLI write
+`.ni/plan.lock.json`?
+
+**User**
+
+Confirmed. Run ni end.
+
+**Model using ni-end**
+
+```bash
+ni end --dir .
+```
+
+CLI result:
+
+```text
+locked plan at .ni/plan.lock.json
+status READY_WITH_DEFERRALS
+```
+
+The CLI wrote `.ni/plan.lock.json`. The model did not create or edit the lock
+by hand.
+
+## Turn 4
+
+**User**
+
+Invoke `ni-run` for the human team.
+
+**Model using ni-run**
+
+I will let the CLI verify the lock hashes and compile the target prompt.
+
+```bash
+ni run --dir . --target human-team --max-chars 4000 --out generated/human-team.prompt.txt
+```
+
+CLI result:
+
+```text
+compiled prompt at generated/human-team.prompt.txt
+```
+
+The prompt is 4000 characters or less. `ni` compiled this prompt only. It did
+not execute implementation, Codex, shell commands, adapters, queues, PR
+automation, or downstream runtime work.

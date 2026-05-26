@@ -57,6 +57,27 @@ go run ./cmd/ni run --dir ./examples/conversation-product --target human-team
 The compiled prompt is seed material for implementation. It does not start a
 chat agent.
 
+## Conversation authoring fixture
+
+Use this to inspect how planning docs and `.ni/contract.json` are produced from
+model-user conversation after `ni init`.
+
+See the complete fixture at
+[`examples/conversation-authoring/`](../examples/conversation-authoring/).
+
+The transcript emphasizes:
+
+- the user gives product intent in normal conversation,
+- `ni-start` asks focused questions and maintains docs plus contract records,
+- the user does not type contract `add`, `list`, or `set` commands,
+- `ni status` reports gaps and readiness,
+- `ni-end` confirms before the CLI writes the lock,
+- `ni-run` compiles a prompt only and does not execute downstream work.
+
+The checked-in example includes generated `docs/plan/**`, `.ni/contract.json`,
+bounded `.ni/session.json` state, the CLI-written lockfile, and the
+`human-team` prompt for the refund triage assistant plan.
+
 ## Software CLI
 
 Use this for a command-line tool, library, API, or normal software project.

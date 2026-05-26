@@ -30,19 +30,22 @@ you confirm the contract summary below.
 
 Pre-lock summary:
 
-- Project: Refund triage assistant.
+- Project: Refund Triage Assistant Plan.
 - Purpose: draft refund recommendations for support agents without issuing
   refunds or contacting customers.
 - Readiness profile: prototype.
 - Product type: conversation_product.
-- Delivery surface: conversation.
+- Delivery surfaces: conversation, document.
 - Interaction mode: human_to_system.
-- Accepted capability: `CAP-001 Draft refund recommendations`.
+- Accepted capabilities: `CAP-001 Draft refund recommendations`, `CAP-002
+  Escalate ambiguous or conflicting cases`, `CAP-003 Maintain docs and contract
+  from conversation`.
 - Linked requirement: `REQ-001 Recommendations only`.
 - Linked evaluation: `EVAL-001 Refund triage transcript fixtures`.
 - Linked artifact: `ART-001 docs/plan/`.
-- High-severity risks: none.
-- Deferred decisions: `DEC-001 Final production policy owner`.
+- High-severity risks: `RISK-001 Refund authority may be implied`, `RISK-003
+  Policy source may be stale or unclear`.
+- Deferred decisions: `DEC-004 Final production policy owner`.
 - Open non-blocking questions: `OQ-002 Which dashboard will display the
   recommendation draft?`
 - Source files to lock: `.ni/contract.json` and `docs/plan/**`.
@@ -56,7 +59,7 @@ What happens to the deferred production policy owner decision?
 
 **Model using ni-end**
 
-It remains visible as `DEC-001` with `status=deferred` in the planning contract
+It remains visible as `DEC-004` with `status=deferred` in the planning contract
 and is included in the lock context. The CLI has classified it as non-blocking
 under the current readiness profile, so it does not prevent locking, but it is
 not resolved by the lock.

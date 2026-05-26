@@ -151,6 +151,7 @@ go run ./cmd/ni run --dir . --target generic --max-chars 4000
 Complete locked example workspaces live in `examples/`:
 
 - [Travel Concierge Triage](examples/conversation-product/): a non-software conversation product with human-team and Codex prompt artifacts.
+- [Conversation Authoring Fixture](examples/conversation-authoring/): an end-to-end transcript showing model-maintained docs and contract records after `ni init`, with CLI validation, lock, and prompt compilation.
 - [Neighborhood Cooling Study Protocol](examples/research-protocol/): a non-software research protocol with human-team and generic prompt artifacts.
 - [Namba AI Upgrade](examples/namba-ai-upgrade/): a software product planning example.
 

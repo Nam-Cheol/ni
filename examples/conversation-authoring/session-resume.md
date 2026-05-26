@@ -91,7 +91,7 @@ Example persisted contract records after the first session:
   "open_questions": [
     {
       "id": "OQ-001",
-      "question": "Which source documents are authoritative for onboarding checklist content?",
+      "title": "Which source documents are authoritative for onboarding checklist content?",
       "status": "open",
       "blocker": true
     }
@@ -200,4 +200,3 @@ Session conflict: .ni/session.json says OQ-001 was resolved, but
 .ni/contract.json marks OQ-001 open and blocking. The contract wins, so I will
 treat OQ-001 as pending and ask it again.
 ```
-

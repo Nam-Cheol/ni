@@ -1,0 +1,214 @@
+{
+  "schema": "ni.contract.v0",
+  "readiness_profile": "prototype",
+  "product_type": "conversation_product",
+  "delivery_surfaces": [
+    "conversation",
+    "document"
+  ],
+  "interaction_mode": "human_to_system",
+  "project": {
+    "id": "refund-triage-authoring",
+    "name": "Refund Triage Assistant Plan",
+    "purpose": "Plan a support-agent assistant that drafts refund recommendations from tickets and the internal policy page, escalates ambiguity, and excludes refund approval, customer contact, and runtimes.",
+    "status": "authored_example"
+  },
+  "non_goals": [
+    {
+      "id": "NG-001",
+      "title": "Do not issue refunds, approve refunds, or contact customers."
+    },
+    {
+      "id": "NG-002",
+      "title": "Do not replace supervisor judgment when policy is ambiguous or ticket facts conflict with policy."
+    },
+    {
+      "id": "NG-003",
+      "title": "Do not add an execution runtime, shell adapter, Codex adapter, task queue, or live support integration."
+    }
+  ],
+  "capabilities": [
+    {
+      "id": "CAP-001",
+      "title": "Draft refund recommendations for support agents.",
+      "status": "accepted",
+      "requirements": [
+        "REQ-001",
+        "REQ-002"
+      ],
+      "evaluations": [
+        "EVAL-001"
+      ],
+      "risks": [
+        "RISK-001",
+        "RISK-002"
+      ],
+      "artifacts": [
+        "ART-001"
+      ]
+    },
+    {
+      "id": "CAP-002",
+      "title": "Escalate ambiguous or conflicting refund policy cases.",
+      "status": "accepted",
+      "requirements": [
+        "REQ-003",
+        "REQ-004"
+      ],
+      "evaluations": [
+        "EVAL-002"
+      ],
+      "risks": [
+        "RISK-001",
+        "RISK-003"
+      ],
+      "artifacts": [
+        "ART-002"
+      ]
+    },
+    {
+      "id": "CAP-003",
+      "title": "Maintain synchronized human docs and machine contract records from conversation.",
+      "status": "accepted",
+      "requirements": [
+        "REQ-005",
+        "REQ-006"
+      ],
+      "evaluations": [
+        "EVAL-003"
+      ],
+      "risks": [
+        "RISK-004"
+      ],
+      "artifacts": [
+        "ART-003"
+      ]
+    }
+  ],
+  "requirements": [
+    {
+      "id": "REQ-001",
+      "title": "Draft recommendations only; never approve, issue, or initiate refunds.",
+      "status": "accepted"
+    },
+    {
+      "id": "REQ-002",
+      "title": "Cite ticket facts and the internal refund policy section used.",
+      "status": "accepted"
+    },
+    {
+      "id": "REQ-003",
+      "title": "Escalate policy ambiguity or ticket-policy conflict to a supervisor.",
+      "status": "accepted"
+    },
+    {
+      "id": "REQ-004",
+      "title": "Escalation language must not invent policy or customer commitments.",
+      "status": "accepted"
+    },
+    {
+      "id": "REQ-005",
+      "title": "Model-authored planning turns must update docs/plan/** and .ni/contract.json together.",
+      "status": "accepted"
+    },
+    {
+      "id": "REQ-006",
+      "title": "Readiness, lock, and prompt compilation must be delegated to ni status, ni end, and ni run rather than model judgment.",
+      "status": "accepted"
+    }
+  ],
+  "decisions": [
+    {
+      "id": "DEC-001",
+      "title": "Treat the internal refund policy page as the authoritative eligibility source.",
+      "status": "accepted"
+    },
+    {
+      "id": "DEC-002",
+      "title": "Use transcript fixtures as the first evaluation method for refund recommendation behavior.",
+      "status": "accepted"
+    },
+    {
+      "id": "DEC-003",
+      "title": "Use human-team as the first downstream prompt target after lock.",
+      "status": "accepted"
+    },
+    {
+      "id": "DEC-004",
+      "title": "Final production owner for maintaining the refund policy page.",
+      "status": "deferred"
+    }
+  ],
+  "risks": [
+    {
+      "id": "RISK-001",
+      "title": "The assistant may imply refund approval authority that belongs to humans or payment systems.",
+      "severity": "high",
+      "status": "accepted",
+      "mitigation": "Require recommendation language, agent review, and transcript checks for approval or customer-contact wording."
+    },
+    {
+      "id": "RISK-002",
+      "title": "Ticket context may contain private customer data.",
+      "severity": "medium",
+      "status": "accepted",
+      "mitigation": "Use only ticket facts needed for triage and keep generated handoffs inside the support-agent workflow."
+    },
+    {
+      "id": "RISK-003",
+      "title": "A stale or unclear policy page could create incorrect refund recommendations.",
+      "severity": "high",
+      "status": "accepted",
+      "mitigation": "Cite policy, escalate conflicts or unclear sections, and keep policy ownership visibly deferred."
+    },
+    {
+      "id": "RISK-004",
+      "title": "Docs and contract records may drift if the model updates only one source.",
+      "severity": "medium",
+      "status": "accepted",
+      "mitigation": "Name changed docs and affected IDs each authoring turn, then run ni status."
+    }
+  ],
+  "evaluations": [
+    {
+      "id": "EVAL-001",
+      "title": "Refund recommendation transcript fixtures.",
+      "method": "Review eligible and ineligible refund transcript fixtures for correct recommendation, cited facts, cited policy source, and absence of refund issuance or customer-contact language."
+    },
+    {
+      "id": "EVAL-002",
+      "title": "Ambiguous policy escalation transcript fixture.",
+      "method": "Review a policy ambiguity or ticket-policy conflict fixture and verify supervisor escalation with no invented policy and a clear next action for the support agent."
+    },
+    {
+      "id": "EVAL-003",
+      "title": "Conversation authoring audit fixture.",
+      "method": "Check the transcript, docs/plan sections, and .ni/contract.json for matching CAP, REQ, EVAL, RISK, ART, NG, DEC, and OQ records after the model-authored turn."
+    }
+  ],
+  "artifacts": [
+    {
+      "id": "ART-001",
+      "path": "docs/plan/02_capabilities.md",
+      "kind": "capability_plan"
+    },
+    {
+      "id": "ART-002",
+      "path": "docs/plan/03_interaction_contract.md",
+      "kind": "conversation_contract"
+    },
+    {
+      "id": "ART-003",
+      "path": "generated/human-team.prompt.txt",
+      "kind": "compiled_prompt"
+    }
+  ],
+  "open_questions": [
+    {
+      "id": "OQ-002",
+      "title": "Which support dashboard will eventually display the recommendation draft?",
+      "status": "open",
+      "blocker": false
+    }
+  ]
+}
