@@ -238,6 +238,8 @@ stages or execution behavior.
 ```bash
 go run ./cmd/ni status --dir <path>
 go run ./cmd/ni status --dir <path> --json
+go run ./cmd/ni status --dir <path> --next-questions
+go run ./cmd/ni status --dir <path> --json --next-questions
 ```
 
 Status values:
@@ -249,6 +251,9 @@ READY
 ```
 
 A model may explain the status, but it may not override it.
+When `--next-questions` is present, `ni status` derives concise planning
+questions from readiness rule failures so `ni-start` can ask about the next
+specific gap.
 
 ### end
 

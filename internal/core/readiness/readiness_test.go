@@ -159,6 +159,61 @@ func TestEvaluateBlocksMissingNonGoal(t *testing.T) {
 	requireIssue(t, result, StatusBlocked, "R010")
 }
 
+func TestNextQuestionsFromRuleFailures(t *testing.T) {
+	for _, tt := range []struct {
+		name      string
+		fixture   string
+		ruleID    string
+		reference string
+		want      string
+	}{
+		{
+			name:      "missing capability evaluation",
+			fixture:   "capability_without_evaluation.json",
+			ruleID:    "R004",
+			reference: "CAP-001",
+			want:      "what evidence proves this capability works",
+		},
+		{
+			name:      "high risk mitigation",
+			fixture:   "high_risk_without_mitigation.json",
+			ruleID:    "R006",
+			reference: "RISK-001",
+			want:      "what mitigation, owner, or explicit accepted-risk decision is required",
+		},
+		{
+			name:      "blocker open question",
+			fixture:   "blocker_open_question.json",
+			ruleID:    "R009",
+			reference: "OQ-001",
+			want:      "what decision resolves this blocker",
+		},
+		{
+			name:      "missing non-goal",
+			fixture:   "missing_non_goal.json",
+			ruleID:    "R010",
+			reference: "",
+			want:      "what must this project explicitly avoid",
+		},
+	} {
+		t.Run(tt.name, func(t *testing.T) {
+			dir := initFixtureProject(t, tt.fixture)
+
+			questions := NextQuestions(Evaluate(dir))
+			question := requireQuestion(t, questions, tt.ruleID)
+			if tt.reference != "" && !containsString(question.References, tt.reference) {
+				t.Fatalf("expected reference %s, got %#v", tt.reference, question)
+			}
+			if !strings.Contains(question.Question, tt.want) {
+				t.Fatalf("expected question containing %q, got %#v", tt.want, question)
+			}
+			if strings.Contains(question.Question, "implement") {
+				t.Fatalf("question should not imply implementation, got %#v", question)
+			}
+		})
+	}
+}
+
 func TestEvaluateConsistentDocsContractSyncFixture(t *testing.T) {
 	dir := initSyncFixtureProject(t, "consistent")
 
@@ -338,6 +393,18 @@ func requireIssueSeverity(t *testing.T, result Result, ruleID string, severity s
 		}
 	}
 	t.Fatalf("expected issue %s, got %#v", ruleID, result.Issues)
+}
+
+func requireQuestion(t *testing.T, questions []NextQuestion, ruleID string) NextQuestion {
+	t.Helper()
+
+	for _, question := range questions {
+		if question.RuleID == ruleID {
+			return question
+		}
+	}
+	t.Fatalf("expected question %s, got %#v", ruleID, questions)
+	return NextQuestion{}
 }
 
 func containsString(values []string, want string) bool {

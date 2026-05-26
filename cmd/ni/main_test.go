@@ -157,6 +157,82 @@ func TestStatusJSON(t *testing.T) {
 	if !strings.Contains(stdout.String(), `"product_type": "software"`) {
 		t.Fatalf("expected JSON product type, got %q", stdout.String())
 	}
+	if strings.Contains(stdout.String(), `"next_questions"`) {
+		t.Fatalf("did not expect next questions without flag, got %q", stdout.String())
+	}
+}
+
+func TestStatusNextQuestionsText(t *testing.T) {
+	dir := t.TempDir()
+	if code := run([]string{"init", "--dir", dir}, &bytes.Buffer{}, &bytes.Buffer{}); code != 0 {
+		t.Fatalf("init expected exit code 0, got %d", code)
+	}
+
+	var stdout bytes.Buffer
+	code := run([]string{"status", "--dir", dir, "--next-questions"}, &stdout, &bytes.Buffer{})
+	if code != 0 {
+		t.Fatalf("expected exit code 0, got %d", code)
+	}
+	if !strings.Contains(stdout.String(), "question R009 OQ-001:") {
+		t.Fatalf("expected blocker open question prompt, got %q", stdout.String())
+	}
+	if !strings.Contains(stdout.String(), "what decision resolves this blocker") {
+		t.Fatalf("expected deterministic next question, got %q", stdout.String())
+	}
+}
+
+func TestStatusNextQuestionsJSON(t *testing.T) {
+	dir := t.TempDir()
+	if code := run([]string{"init", "--dir", dir}, &bytes.Buffer{}, &bytes.Buffer{}); code != 0 {
+		t.Fatalf("init expected exit code 0, got %d", code)
+	}
+
+	var stdout bytes.Buffer
+	code := run([]string{"status", "--dir", dir, "--json", "--next-questions"}, &stdout, &bytes.Buffer{})
+	if code != 0 {
+		t.Fatalf("expected exit code 0, got %d", code)
+	}
+	var payload struct {
+		NextQuestions []struct {
+			RuleID     string   `json:"rule_id"`
+			References []string `json:"references"`
+			Question   string   `json:"question"`
+		} `json:"next_questions"`
+	}
+	if err := json.Unmarshal(stdout.Bytes(), &payload); err != nil {
+		t.Fatalf("decoding status JSON: %v\n%s", err, stdout.String())
+	}
+	if len(payload.NextQuestions) == 0 {
+		t.Fatalf("expected next questions, got %q", stdout.String())
+	}
+	if payload.NextQuestions[0].RuleID != "R009" || !contains(payload.NextQuestions[0].References, "OQ-001") {
+		t.Fatalf("expected R009 question for OQ-001, got %#v", payload.NextQuestions[0])
+	}
+}
+
+func TestStatusNextQuestionsJSONIncludesEmptyWhenReady(t *testing.T) {
+	dir := t.TempDir()
+	if code := run([]string{"init", "--dir", dir}, &bytes.Buffer{}, &bytes.Buffer{}); code != 0 {
+		t.Fatalf("init expected exit code 0, got %d", code)
+	}
+	writeReadyContractForCLI(t, dir)
+
+	var stdout bytes.Buffer
+	code := run([]string{"status", "--dir", dir, "--json", "--next-questions"}, &stdout, &bytes.Buffer{})
+	if code != 0 {
+		t.Fatalf("expected exit code 0, got %d", code)
+	}
+	var payload map[string]json.RawMessage
+	if err := json.Unmarshal(stdout.Bytes(), &payload); err != nil {
+		t.Fatalf("decoding status JSON: %v\n%s", err, stdout.String())
+	}
+	raw, ok := payload["next_questions"]
+	if !ok {
+		t.Fatalf("expected next_questions when requested, got %q", stdout.String())
+	}
+	if string(raw) != "[]" {
+		t.Fatalf("expected empty next_questions array, got %s in %q", raw, stdout.String())
+	}
 }
 
 func TestStatusJSONInvalidContractStructuredError(t *testing.T) {
@@ -1629,6 +1705,15 @@ func decodeErrorEnvelope(t *testing.T, data []byte) errorEnvelope {
 		t.Fatalf("expected populated error envelope, got %#v", envelope)
 	}
 	return envelope
+}
+
+func contains(values []string, want string) bool {
+	for _, value := range values {
+		if value == want {
+			return true
+		}
+	}
+	return false
 }
 
 func collabFixtureForCLI(name string) string {

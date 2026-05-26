@@ -30,7 +30,8 @@ docs, and `ni status`.
 ## Gap detection
 
 `ni-start` should identify missing required planning areas from the current
-contract and docs, not from model intuition alone. Common gaps include:
+contract and docs, with `ni status --next-questions` as the first source for
+readiness-blocking interview prompts. Common gaps include:
 
 - purpose, actors, outcomes, or delivery surface still marked TODO,
 - capabilities without requirements or evaluations,
@@ -40,13 +41,17 @@ contract and docs, not from model intuition alone. Common gaps include:
 - constraints or non-goals that conflict with requested behavior,
 - docs and `.ni/contract.json` disagreeing about the same record.
 
-Questions should be focused on the gaps that block readiness. Instead of
-asking "What else should the plan include?", ask a concrete question such as:
+Questions should be focused on the gaps that block readiness. Prefer questions
+returned by the CLI. Instead of asking "What else should the plan include?",
+ask a concrete question such as:
 
 ```text
-CAP-002 has no evaluation. Should readiness be proven by a transcript fixture,
-a CLI smoke test, or a manual reviewer checklist?
+For CAP-002, what evidence proves this capability works, or should that evidence be deferred?
 ```
+
+Questions must preserve the relevant IDs, avoid implying implementation work,
+avoid pressuring acceptance, and allow `deferred` or `not_applicable` where
+those are appropriate planning outcomes.
 
 ## Persistence Rules
 
@@ -75,12 +80,14 @@ when preserving history matters.
 After meaningful updates, `ni-start` runs or requests:
 
 ```bash
-ni status --dir .
+ni status --dir . --next-questions
 ```
 
 The status result is authoritative. If it reports `BLOCKED`, `ni-start` keeps
-planning open and shows the blocker questions or validation gaps. If it reports
-`READY` or `READY_WITH_DEFERRALS`, `ni-start` may suggest moving to `ni-end`.
+planning open and asks the highest-impact one to three questions from
+`next_questions`. If the CLI returns no next questions, show the readiness
+issues directly. If it reports `READY` or `READY_WITH_DEFERRALS`, `ni-start` may
+suggest moving to `ni-end`.
 
 `ni-start` must never declare completion by model judgment alone.
 

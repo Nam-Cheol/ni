@@ -40,6 +40,21 @@ R011 readiness profile definitions are valid
 R012 planning docs and contract are synchronized
 ```
 
+## Next questions
+
+`ni status --next-questions` derives focused planning questions from the same
+rule failures that produce readiness issues. The questions are deterministic:
+they do not call an LLM, do not resolve gaps, and do not add execution behavior.
+
+Use JSON when another tool needs the questions:
+
+```bash
+ni status --dir . --json --next-questions
+```
+
+`next_questions` is included in JSON only when requested. See
+`docs/34_READINESS_INTERVIEW.md` for the interview contract.
+
 ## Planning profiles
 
 `ni status` evaluates issues under the selected `readiness_profile` in `.ni/contract.json`.

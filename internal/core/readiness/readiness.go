@@ -21,19 +21,27 @@ const (
 )
 
 type Result struct {
-	Status           Status   `json:"status"`
-	Profile          string   `json:"profile"`
-	ProductType      string   `json:"product_type,omitempty"`
-	DeliverySurfaces []string `json:"delivery_surfaces,omitempty"`
-	InteractionMode  string   `json:"interaction_mode,omitempty"`
-	Guidance         []string `json:"guidance,omitempty"`
-	Issues           []Issue  `json:"issues"`
+	Status           Status          `json:"status"`
+	Profile          string          `json:"profile"`
+	ProductType      string          `json:"product_type,omitempty"`
+	DeliverySurfaces []string        `json:"delivery_surfaces,omitempty"`
+	InteractionMode  string          `json:"interaction_mode,omitempty"`
+	Guidance         []string        `json:"guidance,omitempty"`
+	Issues           []Issue         `json:"issues"`
+	NextQuestions    *[]NextQuestion `json:"next_questions,omitempty"`
 }
 
 type Issue struct {
 	RuleID   string `json:"rule_id"`
 	Severity string `json:"severity"`
 	Message  string `json:"message"`
+}
+
+type NextQuestion struct {
+	RuleID     string   `json:"rule_id"`
+	Severity   string   `json:"severity"`
+	References []string `json:"references,omitempty"`
+	Question   string   `json:"question"`
 }
 
 type rulesFile struct {

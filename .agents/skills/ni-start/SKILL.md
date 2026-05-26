@@ -57,9 +57,11 @@ chat logs by default.
    - accepted capabilities without linked requirements or evaluations,
    - high-severity risks without mitigation,
    - blocker questions that still affect acceptance criteria or scope.
-4. Ask focused questions about the highest-impact gaps. Do not ask broad
-   generic questions such as "What else should we add?" Prefer one to three
-   specific questions tied to IDs, blockers, or missing plan areas.
+4. Run or request `ni status --dir . --next-questions` when available.
+5. Ask focused questions about the highest-impact gaps. Prefer one to three
+   questions from the CLI `next_questions` result. You may lightly rephrase for
+   clarity, but preserve the referenced IDs, readiness gap, and allowed outcomes.
+   Do not ask broad generic questions such as "What else should we add?"
 
 ## Authoring loop
 
@@ -89,8 +91,8 @@ After the user answers:
    evaluations, risks, and artifacts when those records exist.
 9. Record decisions, assumptions, risks, non-goals, and open questions in both
    the relevant plan docs and contract fields when they affect readiness.
-10. Run or report `ni status --dir .` at the end when available.
-11. Show readiness gaps and blocker questions from the CLI result.
+10. Run or report `ni status --dir . --next-questions` at the end when available.
+11. Show readiness gaps and next questions from the CLI result.
 12. Reflect the CLI readiness status and blockers back into `.ni/session.json`
     without treating the session file as readiness authority.
 
@@ -106,6 +108,7 @@ When responding during planning:
 - Name the files changed when an answer updates planning state, including
   `.ni/session.json` when refreshed.
 - Ask only the next focused questions needed to unblock readiness.
+- Prefer deterministic next questions from `ni status --next-questions`.
 - If `ni status` reports `BLOCKED`, state the blockers plainly and keep
   planning open.
 - If a lock hash mismatch exists, stop and report `BLOCKED`.
@@ -121,10 +124,11 @@ Current state:
 Focused questions:
 1. For CAP-002, should acceptance be measured by a transcript fixture or a CLI
    smoke test?
-2. Who owns the blocker decision in OQ-003?
+2. For OQ-003, what decision resolves this blocker, should it be deferred, or
+   why must it remain blocking?
 
 After you answer, I will update docs/plan/** and .ni/contract.json, then run
-ni status --dir .
+ni status --dir . --next-questions
 ```
 
 ## Do not

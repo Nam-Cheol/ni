@@ -1084,6 +1084,7 @@ func runTargets(args []string, stdout io.Writer, stderr io.Writer) int {
 func runStatus(args []string, stdout io.Writer, stderr io.Writer) int {
 	dir := "."
 	jsonOutput := jsonRequested(args)
+	nextQuestions := false
 	for i := 0; i < len(args); i++ {
 		switch args[i] {
 		case "--dir":
@@ -1094,6 +1095,8 @@ func runStatus(args []string, stdout io.Writer, stderr io.Writer) int {
 			i++
 		case "--json":
 			jsonOutput = true
+		case "--next-questions":
+			nextQuestions = true
 		default:
 			return failStructured(stdout, stderr, usageErrorf("unknown status option: %s", args[i]), jsonOutput)
 		}
@@ -1102,6 +1105,10 @@ func runStatus(args []string, stdout io.Writer, stderr io.Writer) int {
 	result := readiness.Evaluate(dir)
 	if err := invalidContractFromStatus(result); err != nil {
 		return failCommand(stdout, stderr, "status", err, jsonOutput)
+	}
+	if nextQuestions {
+		questions := readiness.NextQuestions(result)
+		result.NextQuestions = &questions
 	}
 	if jsonOutput {
 		encoder := json.NewEncoder(stdout)
@@ -1128,6 +1135,15 @@ func runStatus(args []string, stdout io.Writer, stderr io.Writer) int {
 	}
 	for _, issue := range result.Issues {
 		fmt.Fprintf(stdout, "%s %s: %s\n", issue.Severity, issue.RuleID, issue.Message)
+	}
+	if nextQuestions {
+		for _, question := range *result.NextQuestions {
+			label := question.RuleID
+			if len(question.References) > 0 {
+				label += " " + strings.Join(question.References, ",")
+			}
+			fmt.Fprintf(stdout, "question %s: %s\n", label, question.Question)
+		}
 	}
 	return exitOK
 }
@@ -1169,7 +1185,7 @@ Usage:
   ni pressure retire <id> [--dir <path>]
   ni relock --dir <path>
   ni run --dir <path> [--target <target>] [--out <path>] [--max-chars N]
-  ni status --dir <path> [--json]
+  ni status --dir <path> [--json] [--next-questions]
   ni targets [--json]
   ni version
 
