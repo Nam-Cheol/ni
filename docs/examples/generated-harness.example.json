@@ -1,6 +1,6 @@
 {
   "schema": "ni.generated_harness.v0",
-  "source_lock_hash": "sha256:example",
+  "source_lock_hash": "sha256:0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef",
   "selected_capabilities": [
     "CAP-001"
   ],
@@ -11,27 +11,52 @@
       "capabilities": [
         "CAP-001"
       ],
-      "evaluations": [
-        "EVAL-001"
-      ],
+      "depends_on": [],
       "artifacts": [
         "ART-001"
       ],
-      "depends_on": [],
-      "validation": [
-        "go test ./..."
+      "validations": [
+        "EVAL-001"
       ],
-      "evidence": [
-        "changed files",
-        "command output",
-        "remaining risks"
+      "evidence_locations": [
+        "EVID-001",
+        "EVID-002"
+      ],
+      "known_risks": [
+        "RISK-001"
       ]
     }
   ],
-  "non_goals": [
-    "Do not modify locked planning docs"
+  "validations": [
+    {
+      "id": "EVAL-001",
+      "method": "go test ./...",
+      "required": true
+    }
+  ],
+  "evidence_locations": [
+    {
+      "id": "EVID-001",
+      "kind": "artifact",
+      "path": "ART-001"
+    },
+    {
+      "id": "EVID-002",
+      "kind": "command_output",
+      "path": "go test ./..."
+    }
   ],
   "known_risks": [
-    "RISK-001"
+    {
+      "id": "RISK-001",
+      "severity": "high",
+      "mitigation": "Keep readiness and lock checks authoritative."
+    }
+  ],
+  "non_goals": [
+    {
+      "id": "NG-001",
+      "title": "Do not modify locked planning docs."
+    }
   ]
 }

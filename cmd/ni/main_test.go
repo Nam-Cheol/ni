@@ -192,13 +192,53 @@ func TestGraphJSON(t *testing.T) {
 	}
 }
 
+func TestHarnessPlan(t *testing.T) {
+	dir := t.TempDir()
+	if code := run([]string{"init", "--dir", dir}, &bytes.Buffer{}, &bytes.Buffer{}); code != 0 {
+		t.Fatalf("init expected exit code 0, got %d", code)
+	}
+	writeReadyContractForCLI(t, dir)
+	if code := run([]string{"end", "--dir", dir}, &bytes.Buffer{}, &bytes.Buffer{}); code != 0 {
+		t.Fatalf("end expected exit code 0, got %d", code)
+	}
+
+	var stdout bytes.Buffer
+	code := run([]string{"harness", "plan", "--dir", dir}, &stdout, &bytes.Buffer{})
+	if code != 0 {
+		t.Fatalf("expected exit code 0, got %d", code)
+	}
+	if !strings.Contains(stdout.String(), "generated harness proposal") {
+		t.Fatalf("expected harness output, got %q", stdout.String())
+	}
+}
+
+func TestHarnessPlanJSON(t *testing.T) {
+	dir := t.TempDir()
+	if code := run([]string{"init", "--dir", dir}, &bytes.Buffer{}, &bytes.Buffer{}); code != 0 {
+		t.Fatalf("init expected exit code 0, got %d", code)
+	}
+	writeReadyContractForCLI(t, dir)
+	if code := run([]string{"end", "--dir", dir}, &bytes.Buffer{}, &bytes.Buffer{}); code != 0 {
+		t.Fatalf("end expected exit code 0, got %d", code)
+	}
+
+	var stdout bytes.Buffer
+	code := run([]string{"harness", "plan", "--dir", dir, "--json"}, &stdout, &bytes.Buffer{})
+	if code != 0 {
+		t.Fatalf("expected exit code 0, got %d", code)
+	}
+	if !strings.Contains(stdout.String(), `"source_lock_hash"`) {
+		t.Fatalf("expected JSON harness output, got %q", stdout.String())
+	}
+}
+
 func TestUnknownCommand(t *testing.T) {
 	var stderr bytes.Buffer
-	code := run([]string{"harness"}, &bytes.Buffer{}, &stderr)
+	code := run([]string{"serve"}, &bytes.Buffer{}, &stderr)
 	if code != 1 {
 		t.Fatalf("expected exit code 1, got %d", code)
 	}
-	if !strings.Contains(stderr.String(), "unknown command: harness") {
+	if !strings.Contains(stderr.String(), "unknown command: serve") {
 		t.Fatalf("expected unknown command error, got %q", stderr.String())
 	}
 }

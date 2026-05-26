@@ -9,6 +9,7 @@ import (
 
 	"ni/internal/core/docstore"
 	"ni/internal/core/graph"
+	"ni/internal/core/harness"
 	"ni/internal/core/lock"
 	"ni/internal/core/prompt"
 	"ni/internal/core/readiness"
@@ -30,6 +31,8 @@ func run(args []string, stdout io.Writer, stderr io.Writer) int {
 		return runEnd(args[1:], stdout, stderr)
 	case "graph":
 		return runGraph(args[1:], stdout, stderr)
+	case "harness":
+		return runHarness(args[1:], stdout, stderr)
 	case "init":
 		return runInit(args[1:], stdout, stderr)
 	case "run":
@@ -81,6 +84,48 @@ func runGraph(args []string, stdout io.Writer, stderr io.Writer) int {
 		return 0
 	}
 	fmt.Fprint(stdout, graph.FormatText(proposal))
+	return 0
+}
+
+func runHarness(args []string, stdout io.Writer, stderr io.Writer) int {
+	if len(args) == 0 || args[0] != "plan" {
+		fmt.Fprintln(stderr, "usage: ni harness plan --dir <path> [--json]")
+		return 1
+	}
+	dir := "."
+	jsonOutput := false
+	for i := 1; i < len(args); i++ {
+		switch args[i] {
+		case "--dir":
+			if i+1 >= len(args) {
+				fmt.Fprintln(stderr, "missing value for --dir")
+				return 1
+			}
+			dir = args[i+1]
+			i++
+		case "--json":
+			jsonOutput = true
+		default:
+			fmt.Fprintf(stderr, "unknown harness option: %s\n", args[i])
+			return 1
+		}
+	}
+
+	proposal, err := harness.Plan(dir)
+	if err != nil {
+		fmt.Fprintf(stderr, "harness failed: %v\n", err)
+		return 1
+	}
+	if jsonOutput {
+		encoder := json.NewEncoder(stdout)
+		encoder.SetIndent("", "  ")
+		if err := encoder.Encode(proposal); err != nil {
+			fmt.Fprintf(stderr, "harness failed: %v\n", err)
+			return 1
+		}
+		return 0
+	}
+	fmt.Fprint(stdout, harness.FormatText(proposal))
 	return 0
 }
 
@@ -240,6 +285,7 @@ Usage:
   ni --help
   ni end --dir <path>
   ni graph --dir <path> [--json]
+  ni harness plan --dir <path> [--json]
   ni init --dir <path>
   ni run --dir <path> [--out <path>] [--max-chars N]
   ni status --dir <path> [--json]
@@ -248,6 +294,7 @@ Usage:
 Commands:
   end      Lock the accepted planning contract.
   graph    Propose a read-only work graph.
+  harness  Propose a generated harness contract.
   init     Create planning docs and .ni skeleton.
   run      Compile a goal prompt from the locked plan.
   status   Validate planning readiness.
