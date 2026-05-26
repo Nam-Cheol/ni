@@ -10,6 +10,7 @@ import (
 
 	"ni/internal/core/contract"
 	"ni/internal/core/docstore"
+	"ni/internal/core/exporter"
 	"ni/internal/core/graph"
 	"ni/internal/core/harness"
 	"ni/internal/core/lock"
@@ -33,6 +34,8 @@ func run(args []string, stdout io.Writer, stderr io.Writer) int {
 	switch args[0] {
 	case "end":
 		return runEnd(args[1:], stdout, stderr)
+	case "export":
+		return runExport(args[1:], stdout, stderr)
 	case "graph":
 		return runGraph(args[1:], stdout, stderr)
 	case "harness":
@@ -53,6 +56,55 @@ func run(args []string, stdout io.Writer, stderr io.Writer) int {
 		printHelp(stderr)
 		return 1
 	}
+}
+
+func runExport(args []string, stdout io.Writer, stderr io.Writer) int {
+	dir := "."
+	out := ""
+	targetName := ""
+	for i := 0; i < len(args); i++ {
+		switch args[i] {
+		case "--dir":
+			if i+1 >= len(args) {
+				fmt.Fprintln(stderr, "missing value for --dir")
+				return 1
+			}
+			dir = args[i+1]
+			i++
+		case "--out":
+			if i+1 >= len(args) {
+				fmt.Fprintln(stderr, "missing value for --out")
+				return 1
+			}
+			out = args[i+1]
+			i++
+		case "--target":
+			if i+1 >= len(args) {
+				fmt.Fprintln(stderr, "missing value for --target")
+				return 1
+			}
+			targetName = args[i+1]
+			i++
+		default:
+			fmt.Fprintf(stderr, "unknown export option: %s\n", args[i])
+			return 1
+		}
+	}
+	if targetName == "" {
+		fmt.Fprintln(stderr, "missing --target")
+		return 1
+	}
+
+	result, err := exporter.Export(exporter.Options{Dir: dir, OutDir: out, Target: targetName})
+	if err != nil {
+		fmt.Fprintf(stderr, "export failed: %v\n", err)
+		return 1
+	}
+	fmt.Fprintf(stdout, "exported %s seed package at %s\n", targetName, result.OutDir)
+	for _, file := range result.Files {
+		fmt.Fprintf(stdout, "created %s\n", file)
+	}
+	return 0
 }
 
 func runGraph(args []string, stdout io.Writer, stderr io.Writer) int {
@@ -399,6 +451,7 @@ func printHelp(w io.Writer) {
 Usage:
   ni --help
   ni end --dir <path>
+  ni export --target hyper-run --out <dir> [--dir <path>]
   ni graph --dir <path> [--json]
   ni harness plan --dir <path> [--json]
   ni init --dir <path> [--profile concept|prototype|mvp|beta|production] [--product-type <type>] [--surface <surface>] [--interaction-mode <mode>]
@@ -409,6 +462,7 @@ Usage:
 
 Commands:
   end      Lock the accepted planning contract.
+  export   Write locked-plan seed artifacts for a downstream target.
   graph    Propose a read-only work graph.
   harness  Propose a generated harness contract.
   init     Create planning docs and .ni skeleton.

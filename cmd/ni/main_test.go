@@ -3,6 +3,7 @@ package main
 import (
 	"bytes"
 	"encoding/json"
+	"io/fs"
 	"os"
 	"path/filepath"
 	"strings"
@@ -263,6 +264,107 @@ func TestRunRejectsUnsupportedTarget(t *testing.T) {
 	}
 	if !strings.Contains(stderr.String(), `unsupported target "shell"`) {
 		t.Fatalf("expected unsupported target error, got %q", stderr.String())
+	}
+}
+
+func TestExportHyperRunCreatesSeedDocsOnly(t *testing.T) {
+	dir := t.TempDir()
+	if code := run([]string{"init", "--dir", dir}, &bytes.Buffer{}, &bytes.Buffer{}); code != 0 {
+		t.Fatalf("init expected exit code 0, got %d", code)
+	}
+	writeReadyContractForCLI(t, dir)
+	if code := run([]string{"end", "--dir", dir}, &bytes.Buffer{}, &bytes.Buffer{}); code != 0 {
+		t.Fatalf("end expected exit code 0, got %d", code)
+	}
+
+	out := filepath.Join(dir, "hyper-seed")
+	var stdout bytes.Buffer
+	code := run([]string{"export", "--dir", dir, "--target", "hyper-run", "--out", out}, &stdout, &bytes.Buffer{})
+	if code != 0 {
+		t.Fatalf("expected exit code 0, got %d", code)
+	}
+	if !strings.Contains(stdout.String(), "exported hyper-run seed package") {
+		t.Fatalf("expected export summary, got %q", stdout.String())
+	}
+
+	wantFiles := []string{
+		"plan.md",
+		"ni-context.md",
+		"readiness-expectations.md",
+		"evidence-requirements.md",
+		"first-run-focus.md",
+	}
+	for _, name := range wantFiles {
+		data, err := os.ReadFile(filepath.Join(out, name))
+		if err != nil {
+			t.Fatalf("expected seed doc %s: %v", name, err)
+		}
+		if len(data) == 0 {
+			t.Fatalf("expected seed doc %s to have content", name)
+		}
+	}
+
+	entries, err := os.ReadDir(out)
+	if err != nil {
+		t.Fatalf("reading export directory: %v", err)
+	}
+	if len(entries) != len(wantFiles) {
+		t.Fatalf("expected seed docs only, got %d entries", len(entries))
+	}
+
+	forbidden := map[string]struct{}{
+		filepath.Join(".hyper", "goals", "GOAL-0001"): {},
+		"tasks.md":    {},
+		"evidence.md": {},
+		"review.md":   {},
+		"next.md":     {},
+	}
+	err = filepath.WalkDir(out, func(path string, d fs.DirEntry, err error) error {
+		if err != nil {
+			return err
+		}
+		rel, err := filepath.Rel(out, path)
+		if err != nil {
+			return err
+		}
+		if rel == "." {
+			return nil
+		}
+		if _, ok := forbidden[rel]; ok {
+			t.Fatalf("export created forbidden runtime packet path %s", rel)
+		}
+		return nil
+	})
+	if err != nil {
+		t.Fatalf("walking export directory: %v", err)
+	}
+	if _, err := os.Stat(filepath.Join(out, ".hyper", "goals")); !os.IsNotExist(err) {
+		t.Fatalf("expected no .hyper/goals directory, stat err: %v", err)
+	}
+}
+
+func TestExportHyperRunRejectsExistingRuntimePacketDirectory(t *testing.T) {
+	dir := t.TempDir()
+	if code := run([]string{"init", "--dir", dir}, &bytes.Buffer{}, &bytes.Buffer{}); code != 0 {
+		t.Fatalf("init expected exit code 0, got %d", code)
+	}
+	writeReadyContractForCLI(t, dir)
+	if code := run([]string{"end", "--dir", dir}, &bytes.Buffer{}, &bytes.Buffer{}); code != 0 {
+		t.Fatalf("end expected exit code 0, got %d", code)
+	}
+
+	out := filepath.Join(dir, "hyper-seed")
+	if err := os.MkdirAll(filepath.Join(out, ".hyper", "goals", "GOAL-0001"), 0o755); err != nil {
+		t.Fatalf("creating stale runtime directory: %v", err)
+	}
+
+	var stderr bytes.Buffer
+	code := run([]string{"export", "--dir", dir, "--target", "hyper-run", "--out", out}, &bytes.Buffer{}, &stderr)
+	if code != 1 {
+		t.Fatalf("expected exit code 1, got %d", code)
+	}
+	if !strings.Contains(stderr.String(), "non-seed entry") {
+		t.Fatalf("expected non-seed rejection, got %q", stderr.String())
 	}
 }
 
