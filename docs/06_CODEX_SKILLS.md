@@ -21,7 +21,8 @@ ni-start
 ni-end
   Run or request ni status.
   If blocked, explain blockers.
-  If ready, run or request ni end.
+  If ready, summarize the contract and ask for explicit confirmation.
+  After confirmation, run or request ni end.
   Do not personally declare completion.
 
 ni-run
@@ -33,3 +34,6 @@ ni-run
 ## Authority rule
 
 Skills are interaction protocols. The CLI validates readiness, lock state, and prompt constraints.
+
+See [ni-end confirmation](35_NI_END_CONFIRMATION.md) for the required
+confirmation flow before lock creation.
