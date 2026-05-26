@@ -13,7 +13,11 @@ import (
 	"ni/internal/core/target"
 )
 
-const HyperRunTarget = "hyper-run"
+const (
+	HyperRunTarget  = "hyper-run"
+	NambaAITarget   = "namba-ai"
+	validExportText = HyperRunTarget + ", " + NambaAITarget
+)
 
 type Options struct {
 	Dir    string
@@ -37,10 +41,6 @@ func Export(opts Options) (Result, error) {
 	if err != nil {
 		return Result{}, err
 	}
-	if selectedTarget.Name != HyperRunTarget {
-		return Result{}, fmt.Errorf("unsupported export target %q (valid: %s)", selectedTarget.Name, HyperRunTarget)
-	}
-
 	verification, err := lock.Verify(root)
 	if err != nil {
 		return Result{}, err
@@ -58,7 +58,16 @@ func Export(opts Options) (Result, error) {
 		return Result{}, err
 	}
 
-	docs := hyperRunDocs(c, verification.Lockfile, "sha256:"+lockHash)
+	var docs []exportDoc
+	switch selectedTarget.Name {
+	case HyperRunTarget:
+		docs = hyperRunDocs(c, verification.Lockfile, "sha256:"+lockHash)
+	case NambaAITarget:
+		docs = nambaAIDocs(c, verification.Lockfile, "sha256:"+lockHash)
+	default:
+		return Result{}, fmt.Errorf("unsupported export target %q (valid: %s)", selectedTarget.Name, validExportText)
+	}
+
 	allowed := allowedDocNames(docs)
 	if err := prepareOutDir(outDir, allowed); err != nil {
 		return Result{}, err
@@ -117,6 +126,17 @@ func hyperRunDocs(c contract.Contract, l lock.Lockfile, sourceLockHash string) [
 	}
 }
 
+func nambaAIDocs(c contract.Contract, l lock.Lockfile, sourceLockHash string) []exportDoc {
+	return []exportDoc{
+		{name: "planning.md", content: renderNambaPlanning(c)},
+		{name: "ni-lock-summary.md", content: renderNambaLockSummary(c, l, sourceLockHash)},
+		{name: "capability-map.md", content: renderNambaCapabilityMap(c)},
+		{name: "evaluation-map.md", content: renderNambaEvaluationMap(c)},
+		{name: "risk-map.md", content: renderNambaRiskMap(c)},
+		{name: "suggested-spec-boundaries.md", content: renderNambaSpecBoundaries(c)},
+	}
+}
+
 func renderPlan(c contract.Contract) string {
 	var b strings.Builder
 	fmt.Fprintf(&b, "# Plan\n\n")
@@ -125,6 +145,122 @@ func renderPlan(c contract.Contract) string {
 	writeIDList(&b, "Accepted capabilities", acceptedCapabilities(c.Capabilities))
 	writeIDList(&b, "Accepted requirements", acceptedRequirements(c.Requirements))
 	writeIDList(&b, "Non-goals", nonGoals(c.NonGoals))
+	return b.String()
+}
+
+func renderNambaPlanning(c contract.Contract) string {
+	var b strings.Builder
+	fmt.Fprintf(&b, "# Planning Seed\n\n")
+	fmt.Fprintf(&b, "Project: %s\n\n", c.Project.Name)
+	fmt.Fprintf(&b, "Purpose: %s\n\n", c.Project.Purpose)
+	fmt.Fprintf(&b, "Product type: %s\n\n", c.ProductType)
+	fmt.Fprintf(&b, "Delivery surfaces: %s\n\n", strings.Join(c.DeliverySurfaces, ", "))
+	b.WriteString("This is namba-ai-oriented planning seed material derived from a locked NI contract.\n\n")
+	b.WriteString("Boundary rules:\n\n")
+	b.WriteString("- NI exports markdown seed documents only.\n")
+	b.WriteString("- NI does not call namba or implement namba run, sync, pr, or land behavior.\n")
+	b.WriteString("- NI does not add Codex-only assumptions to this target.\n")
+	b.WriteString("- Downstream planning and execution state must remain outside NI and derived from the lock.\n\n")
+	writeIDList(&b, "Accepted capabilities", acceptedCapabilities(c.Capabilities))
+	writeIDList(&b, "Accepted requirements", acceptedRequirements(c.Requirements))
+	writeIDList(&b, "Non-goals", nonGoals(c.NonGoals))
+	return b.String()
+}
+
+func renderNambaLockSummary(c contract.Contract, l lock.Lockfile, sourceLockHash string) string {
+	var b strings.Builder
+	fmt.Fprintf(&b, "# NI Lock Summary\n\n")
+	fmt.Fprintf(&b, "Project ID: %s\n\n", c.Project.ID)
+	fmt.Fprintf(&b, "Readiness profile: %s\n\n", c.ReadinessProfile)
+	fmt.Fprintf(&b, "Locked readiness status: %s\n\n", l.Readiness.Status)
+	fmt.Fprintf(&b, "Locked at: %s\n\n", l.LockedAt)
+	fmt.Fprintf(&b, "Source lock hash: %s\n\n", sourceLockHash)
+	fmt.Fprintf(&b, "Source of truth: %s\n\n", strings.Join(l.SourceOfTruth, " > "))
+	b.WriteString("Locked files:\n\n")
+	for _, file := range l.Files {
+		fmt.Fprintf(&b, "- %s sha256:%s\n", file.Path, file.SHA256)
+	}
+	b.WriteString("\nStop with `BLOCKED` if any locked hash mismatches before downstream work uses this seed.\n")
+	return b.String()
+}
+
+func renderNambaCapabilityMap(c contract.Contract) string {
+	var b strings.Builder
+	fmt.Fprintf(&b, "# Capability Map\n\n")
+	b.WriteString("Capabilities are graph nodes. `depends_on` edges describe prerequisites without requiring a total execution order.\n\n")
+	requirements := requirementTitles(c.Requirements)
+	evaluations := evaluationTitles(c.Evaluations)
+	risks := riskTitles(c.Risks)
+	artifacts := artifactTitles(c.Artifacts)
+	for _, capability := range c.Capabilities {
+		if capability.Status != "accepted" {
+			continue
+		}
+		fmt.Fprintf(&b, "## %s: %s\n\n", capability.ID, capability.Title)
+		fmt.Fprintf(&b, "- status: %s\n", capability.Status)
+		fmt.Fprintf(&b, "- depends_on: %s\n", joinOrNone(capability.Dependencies))
+		fmt.Fprintf(&b, "- requirements: %s\n", listWithTitles(capability.Requirements, requirements))
+		fmt.Fprintf(&b, "- evaluations: %s\n", listWithTitles(capability.Evaluations, evaluations))
+		fmt.Fprintf(&b, "- risks: %s\n", listWithTitles(capability.Risks, risks))
+		fmt.Fprintf(&b, "- artifacts: %s\n\n", listWithTitles(capability.Artifacts, artifacts))
+	}
+	return b.String()
+}
+
+func renderNambaEvaluationMap(c contract.Contract) string {
+	var b strings.Builder
+	fmt.Fprintf(&b, "# Evaluation Map\n\n")
+	b.WriteString("Evaluations are validation expectations for downstream planning. NI exports this map but does not run evaluations.\n\n")
+	linkedCapabilities := linkedCapabilitiesByEvaluation(c.Capabilities)
+	for _, evaluation := range c.Evaluations {
+		fmt.Fprintf(&b, "## %s: %s\n\n", evaluation.ID, evaluation.Title)
+		fmt.Fprintf(&b, "- method: %s\n", evaluation.Method)
+		fmt.Fprintf(&b, "- linked_capabilities: %s\n\n", joinOrNone(linkedCapabilities[evaluation.ID]))
+	}
+	if len(c.Artifacts) > 0 {
+		b.WriteString("Evidence locations:\n\n")
+		for _, artifact := range c.Artifacts {
+			fmt.Fprintf(&b, "- %s: %s at %s\n", artifact.ID, artifact.Kind, artifact.Path)
+		}
+		b.WriteString("\n")
+	}
+	return b.String()
+}
+
+func renderNambaRiskMap(c contract.Contract) string {
+	var b strings.Builder
+	fmt.Fprintf(&b, "# Risk Map\n\n")
+	b.WriteString("Risks remain contract constraints for downstream planning; mitigations must not be weakened to make work appear ready.\n\n")
+	linkedCapabilities := linkedCapabilitiesByRisk(c.Capabilities)
+	for _, risk := range c.Risks {
+		fmt.Fprintf(&b, "## %s: %s\n\n", risk.ID, risk.Title)
+		fmt.Fprintf(&b, "- severity: %s\n", risk.Severity)
+		fmt.Fprintf(&b, "- status: %s\n", risk.Status)
+		fmt.Fprintf(&b, "- mitigation: %s\n", risk.Mitigation)
+		fmt.Fprintf(&b, "- linked_capabilities: %s\n\n", joinOrNone(linkedCapabilities[risk.ID]))
+	}
+	writeIDList(&b, "Non-goals", nonGoals(c.NonGoals))
+	return b.String()
+}
+
+func renderNambaSpecBoundaries(c contract.Contract) string {
+	var b strings.Builder
+	fmt.Fprintf(&b, "# Suggested Spec Boundaries\n\n")
+	b.WriteString("This file is a proposal, not a required sequential SPEC chain.\n\n")
+	b.WriteString("Use these as candidate graph boundaries for downstream planning. A downstream tool may split, merge, or reorder boundaries when dependency edges and locked acceptance criteria are preserved.\n\n")
+	for _, capability := range c.Capabilities {
+		if capability.Status != "accepted" {
+			continue
+		}
+		fmt.Fprintf(&b, "## Boundary candidate: %s\n\n", capability.ID)
+		fmt.Fprintf(&b, "- intent: %s\n", capability.Title)
+		fmt.Fprintf(&b, "- depends_on: %s\n", joinOrNone(capability.Dependencies))
+		fmt.Fprintf(&b, "- acceptance_refs: %s\n", joinOrNone(capability.Requirements))
+		fmt.Fprintf(&b, "- validation_refs: %s\n", joinOrNone(capability.Evaluations))
+		fmt.Fprintf(&b, "- risk_refs: %s\n", joinOrNone(capability.Risks))
+		fmt.Fprintf(&b, "- artifact_refs: %s\n\n", joinOrNone(capability.Artifacts))
+	}
+	b.WriteString("Do not interpret this proposal as permission for NI to run namba, create mandatory execution order, or own downstream runtime state.\n")
 	return b.String()
 }
 
@@ -262,6 +398,86 @@ func firstAcceptedCapability(items []contract.Capability) contract.Capability {
 		}
 	}
 	return contract.Capability{}
+}
+
+func requirementTitles(items []contract.Requirement) map[string]string {
+	result := make(map[string]string, len(items))
+	for _, item := range items {
+		result[item.ID] = item.Title
+	}
+	return result
+}
+
+func evaluationTitles(items []contract.Evaluation) map[string]string {
+	result := make(map[string]string, len(items))
+	for _, item := range items {
+		result[item.ID] = item.Title
+	}
+	return result
+}
+
+func riskTitles(items []contract.Risk) map[string]string {
+	result := make(map[string]string, len(items))
+	for _, item := range items {
+		result[item.ID] = item.Title
+	}
+	return result
+}
+
+func artifactTitles(items []contract.Artifact) map[string]string {
+	result := make(map[string]string, len(items))
+	for _, item := range items {
+		result[item.ID] = item.Kind + " at " + item.Path
+	}
+	return result
+}
+
+func linkedCapabilitiesByEvaluation(items []contract.Capability) map[string][]string {
+	result := make(map[string][]string)
+	for _, capability := range items {
+		if capability.Status != "accepted" {
+			continue
+		}
+		for _, evaluation := range capability.Evaluations {
+			result[evaluation] = append(result[evaluation], capability.ID)
+		}
+	}
+	return result
+}
+
+func linkedCapabilitiesByRisk(items []contract.Capability) map[string][]string {
+	result := make(map[string][]string)
+	for _, capability := range items {
+		if capability.Status != "accepted" {
+			continue
+		}
+		for _, risk := range capability.Risks {
+			result[risk] = append(result[risk], capability.ID)
+		}
+	}
+	return result
+}
+
+func listWithTitles(ids []string, titles map[string]string) string {
+	if len(ids) == 0 {
+		return "none"
+	}
+	parts := make([]string, 0, len(ids))
+	for _, id := range ids {
+		if title := titles[id]; title != "" {
+			parts = append(parts, id+" ("+title+")")
+			continue
+		}
+		parts = append(parts, id)
+	}
+	return strings.Join(parts, ", ")
+}
+
+func joinOrNone(items []string) string {
+	if len(items) == 0 {
+		return "none"
+	}
+	return strings.Join(items, ", ")
 }
 
 func defaultString(value string, fallback string) string {

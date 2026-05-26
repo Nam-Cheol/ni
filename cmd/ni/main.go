@@ -451,7 +451,7 @@ func printHelp(w io.Writer) {
 Usage:
   ni --help
   ni end --dir <path>
-  ni export --target hyper-run --out <dir> [--dir <path>]
+  ni export --target hyper-run|namba-ai --out <dir> [--dir <path>]
   ni graph --dir <path> [--json]
   ni harness plan --dir <path> [--json]
   ni init --dir <path> [--profile concept|prototype|mvp|beta|production] [--product-type <type>] [--surface <surface>] [--interaction-mode <mode>]

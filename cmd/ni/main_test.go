@@ -368,6 +368,87 @@ func TestExportHyperRunRejectsExistingRuntimePacketDirectory(t *testing.T) {
 	}
 }
 
+func TestExportNambaAICreatesSeedDocsOnly(t *testing.T) {
+	dir := t.TempDir()
+	if code := run([]string{"init", "--dir", dir}, &bytes.Buffer{}, &bytes.Buffer{}); code != 0 {
+		t.Fatalf("init expected exit code 0, got %d", code)
+	}
+	writeReadyContractForCLI(t, dir)
+	if code := run([]string{"end", "--dir", dir}, &bytes.Buffer{}, &bytes.Buffer{}); code != 0 {
+		t.Fatalf("end expected exit code 0, got %d", code)
+	}
+
+	out := filepath.Join(dir, "namba-seed")
+	var stdout bytes.Buffer
+	code := run([]string{"export", "--dir", dir, "--target", "namba-ai", "--out", out}, &stdout, &bytes.Buffer{})
+	if code != 0 {
+		t.Fatalf("expected exit code 0, got %d", code)
+	}
+	if !strings.Contains(stdout.String(), "exported namba-ai seed package") {
+		t.Fatalf("expected export summary, got %q", stdout.String())
+	}
+
+	wantFiles := []string{
+		"planning.md",
+		"ni-lock-summary.md",
+		"capability-map.md",
+		"evaluation-map.md",
+		"risk-map.md",
+		"suggested-spec-boundaries.md",
+	}
+	for _, name := range wantFiles {
+		data, err := os.ReadFile(filepath.Join(out, name))
+		if err != nil {
+			t.Fatalf("expected seed doc %s: %v", name, err)
+		}
+		if len(data) == 0 {
+			t.Fatalf("expected seed doc %s to have content", name)
+		}
+	}
+
+	planning, err := os.ReadFile(filepath.Join(out, "planning.md"))
+	if err != nil {
+		t.Fatalf("reading planning seed: %v", err)
+	}
+	for _, want := range []string{
+		"namba-ai-oriented planning seed material",
+		"NI does not call namba",
+		"run, sync, pr, or land behavior",
+		"does not add Codex-only assumptions",
+	} {
+		if !strings.Contains(string(planning), want) {
+			t.Fatalf("expected planning.md to contain %q, got %q", want, string(planning))
+		}
+	}
+
+	boundaries, err := os.ReadFile(filepath.Join(out, "suggested-spec-boundaries.md"))
+	if err != nil {
+		t.Fatalf("reading suggested boundaries: %v", err)
+	}
+	for _, want := range []string{
+		"proposal, not a required sequential SPEC chain",
+		"candidate graph boundaries",
+		"depends_on",
+	} {
+		if !strings.Contains(string(boundaries), want) {
+			t.Fatalf("expected suggested boundaries to contain %q, got %q", want, string(boundaries))
+		}
+	}
+
+	entries, err := os.ReadDir(out)
+	if err != nil {
+		t.Fatalf("reading export directory: %v", err)
+	}
+	if len(entries) != len(wantFiles) {
+		t.Fatalf("expected seed docs only, got %d entries", len(entries))
+	}
+	for _, forbidden := range []string{"run.md", "sync.md", "pr.md", "land.md"} {
+		if _, err := os.Stat(filepath.Join(out, forbidden)); !os.IsNotExist(err) {
+			t.Fatalf("expected no namba execution file %s, stat err: %v", forbidden, err)
+		}
+	}
+}
+
 func TestTargets(t *testing.T) {
 	var stdout bytes.Buffer
 	code := run([]string{"targets"}, &stdout, &bytes.Buffer{})
