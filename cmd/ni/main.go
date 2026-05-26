@@ -72,57 +72,53 @@ func run(args []string, stdout io.Writer, stderr io.Writer) int {
 	default:
 		fmt.Fprintf(stderr, "unknown command: %s\n\n", args[0])
 		printHelp(stderr)
-		return 1
+		return exitUsageError
 	}
 }
 
 func runDiff(args []string, stdout io.Writer, stderr io.Writer) int {
 	base, head, jsonOutput, ok := parseCollabArgs(args, stderr, "diff")
 	if !ok {
-		return 1
+		return exitUsageError
 	}
 	result, err := collab.Diff(base, head)
 	if err != nil {
-		fmt.Fprintf(stderr, "diff failed: %v\n", err)
-		return 1
+		return failCommand(stdout, stderr, "diff", err, jsonOutput)
 	}
 	if jsonOutput {
 		encoder := json.NewEncoder(stdout)
 		encoder.SetIndent("", "  ")
 		if err := encoder.Encode(result); err != nil {
-			fmt.Fprintf(stderr, "diff failed: %v\n", err)
-			return 1
+			return failCommand(stdout, stderr, "diff", err, jsonOutput)
 		}
-		return 0
+		return exitOK
 	}
 	fmt.Fprint(stdout, collab.FormatDiff(result))
-	return 0
+	return exitOK
 }
 
 func runConflicts(args []string, stdout io.Writer, stderr io.Writer) int {
 	base, head, jsonOutput, ok := parseCollabArgs(args, stderr, "conflicts")
 	if !ok {
-		return 1
+		return exitUsageError
 	}
 	result, err := collab.Conflicts(base, head)
 	if err != nil {
-		fmt.Fprintf(stderr, "conflicts failed: %v\n", err)
-		return 1
+		return failCommand(stdout, stderr, "conflicts", err, jsonOutput)
 	}
 	if jsonOutput {
 		encoder := json.NewEncoder(stdout)
 		encoder.SetIndent("", "  ")
 		if err := encoder.Encode(result); err != nil {
-			fmt.Fprintf(stderr, "conflicts failed: %v\n", err)
-			return 1
+			return failCommand(stdout, stderr, "conflicts", err, jsonOutput)
 		}
 	} else {
 		fmt.Fprint(stdout, collab.FormatConflicts(result))
 	}
 	if len(result.Conflicts) > 0 {
-		return 1
+		return exitSemanticConflict
 	}
-	return 0
+	return exitOK
 }
 
 func parseCollabArgs(args []string, stderr io.Writer, command string) (string, string, bool, bool) {
@@ -166,7 +162,7 @@ func parseCollabArgs(args []string, stderr io.Writer, command string) (string, s
 func runAmend(args []string, stdout io.Writer, stderr io.Writer) int {
 	if len(args) == 0 {
 		printAmendUsage(stderr)
-		return 1
+		return exitUsageError
 	}
 
 	switch args[0] {
@@ -180,7 +176,7 @@ func runAmend(args []string, stdout io.Writer, stderr io.Writer) int {
 		return runAmendApply(args[1:], stdout, stderr)
 	default:
 		fmt.Fprintf(stderr, "unknown amend command: %s\n", args[0])
-		return 1
+		return exitUsageError
 	}
 }
 
@@ -192,30 +188,29 @@ func runAmendCreate(args []string, stdout io.Writer, stderr io.Writer) int {
 		case "--dir":
 			if i+1 >= len(args) {
 				fmt.Fprintln(stderr, "missing value for --dir")
-				return 1
+				return exitUsageError
 			}
 			dir = args[i+1]
 			i++
 		case "--title":
 			if i+1 >= len(args) {
 				fmt.Fprintln(stderr, "missing value for --title")
-				return 1
+				return exitUsageError
 			}
 			title = args[i+1]
 			i++
 		default:
 			fmt.Fprintf(stderr, "unknown amend create option: %s\n", args[i])
-			return 1
+			return exitUsageError
 		}
 	}
 
 	item, err := amendment.Create(amendment.CreateOptions{Dir: dir, Title: title})
 	if err != nil {
-		fmt.Fprintf(stderr, "amend create failed: %v\n", err)
-		return 1
+		return failCommand(stdout, stderr, "amend create", err, false)
 	}
 	fmt.Fprintf(stdout, "created amendment %s at %s\n", item.ID, amendment.Path(dir, item.ID))
-	return 0
+	return exitOK
 }
 
 func runAmendList(args []string, stdout io.Writer, stderr io.Writer) int {
@@ -225,61 +220,57 @@ func runAmendList(args []string, stdout io.Writer, stderr io.Writer) int {
 		case "--dir":
 			if i+1 >= len(args) {
 				fmt.Fprintln(stderr, "missing value for --dir")
-				return 1
+				return exitUsageError
 			}
 			dir = args[i+1]
 			i++
 		default:
 			fmt.Fprintf(stderr, "unknown amend list option: %s\n", args[i])
-			return 1
+			return exitUsageError
 		}
 	}
 	items, err := amendment.List(dir)
 	if err != nil {
-		fmt.Fprintf(stderr, "amend list failed: %v\n", err)
-		return 1
+		return failCommand(stdout, stderr, "amend list", err, false)
 	}
 	fmt.Fprint(stdout, amendment.FormatList(items))
-	return 0
+	return exitOK
 }
 
 func runAmendShow(args []string, stdout io.Writer, stderr io.Writer) int {
 	id, dir, ok := parseIDAndDir(args, stderr, "amend show")
 	if !ok {
-		return 1
+		return exitUsageError
 	}
 	item, err := amendment.Load(dir, id)
 	if err != nil {
-		fmt.Fprintf(stderr, "amend show failed: %v\n", err)
-		return 1
+		return failCommand(stdout, stderr, "amend show", err, false)
 	}
 	encoder := json.NewEncoder(stdout)
 	encoder.SetIndent("", "  ")
 	if err := encoder.Encode(item); err != nil {
-		fmt.Fprintf(stderr, "amend show failed: %v\n", err)
-		return 1
+		return failCommand(stdout, stderr, "amend show", err, false)
 	}
-	return 0
+	return exitOK
 }
 
 func runAmendApply(args []string, stdout io.Writer, stderr io.Writer) int {
 	id, dir, ok := parseIDAndDir(args, stderr, "amend apply")
 	if !ok {
-		return 1
+		return exitUsageError
 	}
 	item, err := amendment.Apply(dir, id, time.Time{})
 	if err != nil {
-		fmt.Fprintf(stderr, "amend apply failed: %v\n", err)
-		return 1
+		return failCommand(stdout, stderr, "amend apply", err, false)
 	}
 	fmt.Fprintf(stdout, "applied amendment %s\n", item.ID)
-	return 0
+	return exitOK
 }
 
 func runPressure(args []string, stdout io.Writer, stderr io.Writer) int {
 	if len(args) == 0 {
 		fmt.Fprintln(stderr, "usage: ni pressure status [--dir <path>] [--json]\n       ni pressure promote <id> [--dir <path>]\n       ni pressure retire <id> [--dir <path>]")
-		return 1
+		return exitUsageError
 	}
 
 	switch args[0] {
@@ -291,74 +282,68 @@ func runPressure(args []string, stdout io.Writer, stderr io.Writer) int {
 		return runPressureRetire(args[1:], stdout, stderr)
 	default:
 		fmt.Fprintf(stderr, "unknown pressure command: %s\n", args[0])
-		return 1
+		return exitUsageError
 	}
 }
 
 func runPressureStatus(args []string, stdout io.Writer, stderr io.Writer) int {
 	dir := "."
-	jsonOutput := false
+	jsonOutput := jsonRequested(args)
 	for i := 0; i < len(args); i++ {
 		switch args[i] {
 		case "--dir":
 			if i+1 >= len(args) {
-				fmt.Fprintln(stderr, "missing value for --dir")
-				return 1
+				return failStructured(stdout, stderr, usageErrorf("missing value for --dir"), jsonOutput)
 			}
 			dir = args[i+1]
 			i++
 		case "--json":
 			jsonOutput = true
 		default:
-			fmt.Fprintf(stderr, "unknown pressure status option: %s\n", args[i])
-			return 1
+			return failStructured(stdout, stderr, usageErrorf("unknown pressure status option: %s", args[i]), jsonOutput)
 		}
 	}
 
 	ledger, err := pressure.Load(dir)
 	if err != nil {
-		fmt.Fprintf(stderr, "pressure status failed: %v\n", err)
-		return 1
+		return failCommand(stdout, stderr, "pressure status", err, jsonOutput)
 	}
 	if jsonOutput {
 		encoder := json.NewEncoder(stdout)
 		encoder.SetIndent("", "  ")
 		if err := encoder.Encode(ledger); err != nil {
-			fmt.Fprintf(stderr, "pressure status failed: %v\n", err)
-			return 1
+			return failCommand(stdout, stderr, "pressure status", err, jsonOutput)
 		}
-		return 0
+		return exitOK
 	}
 	fmt.Fprint(stdout, pressure.FormatText(ledger))
-	return 0
+	return exitOK
 }
 
 func runPressurePromote(args []string, stdout io.Writer, stderr io.Writer) int {
 	id, dir, ok := parsePressureIDAndDir(args, stderr, "promote")
 	if !ok {
-		return 1
+		return exitUsageError
 	}
 	item, err := pressure.Promote(dir, id)
 	if err != nil {
-		fmt.Fprintf(stderr, "pressure promote failed: %v\n", err)
-		return 1
+		return failCommand(stdout, stderr, "pressure promote", err, false)
 	}
 	fmt.Fprintf(stdout, "promoted %s to %s\n", item.ID, item.Status)
-	return 0
+	return exitOK
 }
 
 func runPressureRetire(args []string, stdout io.Writer, stderr io.Writer) int {
 	id, dir, ok := parsePressureIDAndDir(args, stderr, "retire")
 	if !ok {
-		return 1
+		return exitUsageError
 	}
 	item, err := pressure.Retire(dir, id)
 	if err != nil {
-		fmt.Fprintf(stderr, "pressure retire failed: %v\n", err)
-		return 1
+		return failCommand(stdout, stderr, "pressure retire", err, false)
 	}
 	fmt.Fprintf(stdout, "retired %s\n", item.ID)
-	return 0
+	return exitOK
 }
 
 func parsePressureIDAndDir(args []string, stderr io.Writer, command string) (string, string, bool) {
@@ -426,7 +411,7 @@ func parseIDAndDir(args []string, stderr io.Writer, command string) (string, str
 func runFeedback(args []string, stdout io.Writer, stderr io.Writer) int {
 	if len(args) == 0 {
 		fmt.Fprintln(stderr, "usage: ni feedback add --file <path> [--dir <path>]\n       ni feedback list [--dir <path>] [--json]")
-		return 1
+		return exitUsageError
 	}
 
 	switch args[0] {
@@ -436,7 +421,7 @@ func runFeedback(args []string, stdout io.Writer, stderr io.Writer) int {
 		return runFeedbackList(args[1:], stdout, stderr)
 	default:
 		fmt.Fprintf(stderr, "unknown feedback command: %s\n", args[0])
-		return 1
+		return exitUsageError
 	}
 }
 
@@ -448,72 +433,67 @@ func runFeedbackAdd(args []string, stdout io.Writer, stderr io.Writer) int {
 		case "--dir":
 			if i+1 >= len(args) {
 				fmt.Fprintln(stderr, "missing value for --dir")
-				return 1
+				return exitUsageError
 			}
 			dir = args[i+1]
 			i++
 		case "--file":
 			if i+1 >= len(args) {
 				fmt.Fprintln(stderr, "missing value for --file")
-				return 1
+				return exitUsageError
 			}
 			file = args[i+1]
 			i++
 		default:
 			fmt.Fprintf(stderr, "unknown feedback add option: %s\n", args[i])
-			return 1
+			return exitUsageError
 		}
 	}
 	if file == "" {
 		fmt.Fprintln(stderr, "missing --file")
-		return 1
+		return exitUsageError
 	}
 
 	entry, err := feedback.Add(feedback.AddOptions{Dir: dir, File: file})
 	if err != nil {
-		fmt.Fprintf(stderr, "feedback add failed: %v\n", err)
-		return 1
+		return failCommand(stdout, stderr, "feedback add", err, false)
 	}
 	fmt.Fprintf(stdout, "recorded feedback from %s at %s\n", entry.SourceTarget, feedback.StorePath(dir))
-	return 0
+	return exitOK
 }
 
 func runFeedbackList(args []string, stdout io.Writer, stderr io.Writer) int {
 	dir := "."
-	jsonOutput := false
+	jsonOutput := jsonRequested(args)
 	for i := 0; i < len(args); i++ {
 		switch args[i] {
 		case "--dir":
 			if i+1 >= len(args) {
-				fmt.Fprintln(stderr, "missing value for --dir")
-				return 1
+				return failStructured(stdout, stderr, usageErrorf("missing value for --dir"), jsonOutput)
 			}
 			dir = args[i+1]
 			i++
 		case "--json":
 			jsonOutput = true
 		default:
-			fmt.Fprintf(stderr, "unknown feedback list option: %s\n", args[i])
-			return 1
+			return failStructured(stdout, stderr, usageErrorf("unknown feedback list option: %s", args[i]), jsonOutput)
 		}
 	}
 
 	entries, err := feedback.List(dir)
 	if err != nil {
-		fmt.Fprintf(stderr, "feedback list failed: %v\n", err)
-		return 1
+		return failCommand(stdout, stderr, "feedback list", err, jsonOutput)
 	}
 	if jsonOutput {
 		encoder := json.NewEncoder(stdout)
 		encoder.SetIndent("", "  ")
 		if err := encoder.Encode(entries); err != nil {
-			fmt.Fprintf(stderr, "feedback list failed: %v\n", err)
-			return 1
+			return failCommand(stdout, stderr, "feedback list", err, jsonOutput)
 		}
-		return 0
+		return exitOK
 	}
 	fmt.Fprint(stdout, feedback.FormatText(entries))
-	return 0
+	return exitOK
 }
 
 func runExport(args []string, stdout io.Writer, stderr io.Writer) int {
@@ -525,88 +505,83 @@ func runExport(args []string, stdout io.Writer, stderr io.Writer) int {
 		case "--dir":
 			if i+1 >= len(args) {
 				fmt.Fprintln(stderr, "missing value for --dir")
-				return 1
+				return exitUsageError
 			}
 			dir = args[i+1]
 			i++
 		case "--out":
 			if i+1 >= len(args) {
 				fmt.Fprintln(stderr, "missing value for --out")
-				return 1
+				return exitUsageError
 			}
 			out = args[i+1]
 			i++
 		case "--target":
 			if i+1 >= len(args) {
 				fmt.Fprintln(stderr, "missing value for --target")
-				return 1
+				return exitUsageError
 			}
 			targetName = args[i+1]
 			i++
 		default:
 			fmt.Fprintf(stderr, "unknown export option: %s\n", args[i])
-			return 1
+			return exitUsageError
 		}
 	}
 	if targetName == "" {
 		fmt.Fprintln(stderr, "missing --target")
-		return 1
+		return exitUsageError
 	}
 
 	result, err := exporter.Export(exporter.Options{Dir: dir, OutDir: out, Target: targetName})
 	if err != nil {
-		fmt.Fprintf(stderr, "export failed: %v\n", err)
-		return 1
+		return failCommand(stdout, stderr, "export", err, false)
 	}
 	fmt.Fprintf(stdout, "exported %s seed package at %s\n", targetName, result.OutDir)
 	for _, file := range result.Files {
 		fmt.Fprintf(stdout, "created %s\n", file)
 	}
-	return 0
+	return exitOK
 }
 
 func runGraph(args []string, stdout io.Writer, stderr io.Writer) int {
 	dir := "."
-	jsonOutput := false
+	jsonOutput := jsonRequested(args)
 	for i := 0; i < len(args); i++ {
 		switch args[i] {
 		case "--dir":
 			if i+1 >= len(args) {
-				fmt.Fprintln(stderr, "missing value for --dir")
-				return 1
+				return failStructured(stdout, stderr, usageErrorf("missing value for --dir"), jsonOutput)
 			}
 			dir = args[i+1]
 			i++
 		case "--json":
 			jsonOutput = true
 		default:
-			fmt.Fprintf(stderr, "unknown graph option: %s\n", args[i])
-			return 1
+			return failStructured(stdout, stderr, usageErrorf("unknown graph option: %s", args[i]), jsonOutput)
 		}
 	}
 
 	proposal, err := graph.Propose(dir)
 	if err != nil {
-		fmt.Fprintf(stderr, "graph failed: %v\n", err)
-		return 1
+		return failCommand(stdout, stderr, "graph", err, jsonOutput)
 	}
 	if jsonOutput {
 		encoder := json.NewEncoder(stdout)
 		encoder.SetIndent("", "  ")
 		if err := encoder.Encode(proposal); err != nil {
-			fmt.Fprintf(stderr, "graph failed: %v\n", err)
-			return 1
+			return failCommand(stdout, stderr, "graph", err, jsonOutput)
 		}
-		return 0
+		return exitOK
 	}
 	fmt.Fprint(stdout, graph.FormatText(proposal))
-	return 0
+	return exitOK
 }
 
 func runHarness(args []string, stdout io.Writer, stderr io.Writer) int {
 	if len(args) == 0 {
 		printHarnessUsage(stderr)
-		return 1
+		return exitUsageError
 	}
 	switch args[0] {
 	case "plan":
@@ -623,84 +598,76 @@ func runHarness(args []string, stdout io.Writer, stderr io.Writer) int {
 		return runHarnessRetire(args[1:], stdout, stderr)
 	default:
 		fmt.Fprintf(stderr, "unknown harness command: %s\n", args[0])
-		return 1
+		return exitUsageError
 	}
 }
 
 func runHarnessPlan(args []string, stdout io.Writer, stderr io.Writer) int {
 	dir := "."
-	jsonOutput := false
+	jsonOutput := jsonRequested(args)
 	for i := 0; i < len(args); i++ {
 		switch args[i] {
 		case "--dir":
 			if i+1 >= len(args) {
-				fmt.Fprintln(stderr, "missing value for --dir")
-				return 1
+				return failStructured(stdout, stderr, usageErrorf("missing value for --dir"), jsonOutput)
 			}
 			dir = args[i+1]
 			i++
 		case "--json":
 			jsonOutput = true
 		default:
-			fmt.Fprintf(stderr, "unknown harness option: %s\n", args[i])
-			return 1
+			return failStructured(stdout, stderr, usageErrorf("unknown harness option: %s", args[i]), jsonOutput)
 		}
 	}
 
 	proposal, err := harness.Plan(dir)
 	if err != nil {
-		fmt.Fprintf(stderr, "harness failed: %v\n", err)
-		return 1
+		return failCommand(stdout, stderr, "harness", err, jsonOutput)
 	}
 	if jsonOutput {
 		encoder := json.NewEncoder(stdout)
 		encoder.SetIndent("", "  ")
 		if err := encoder.Encode(proposal); err != nil {
-			fmt.Fprintf(stderr, "harness failed: %v\n", err)
-			return 1
+			return failCommand(stdout, stderr, "harness", err, jsonOutput)
 		}
-		return 0
+		return exitOK
 	}
 	fmt.Fprint(stdout, harness.FormatText(proposal))
-	return 0
+	return exitOK
 }
 
 func runHarnessCandidates(args []string, stdout io.Writer, stderr io.Writer) int {
 	dir := "."
-	jsonOutput := false
+	jsonOutput := jsonRequested(args)
 	for i := 0; i < len(args); i++ {
 		switch args[i] {
 		case "--dir":
 			if i+1 >= len(args) {
-				fmt.Fprintln(stderr, "missing value for --dir")
-				return 1
+				return failStructured(stdout, stderr, usageErrorf("missing value for --dir"), jsonOutput)
 			}
 			dir = args[i+1]
 			i++
 		case "--json":
 			jsonOutput = true
 		default:
-			fmt.Fprintf(stderr, "unknown harness candidates option: %s\n", args[i])
-			return 1
+			return failStructured(stdout, stderr, usageErrorf("unknown harness candidates option: %s", args[i]), jsonOutput)
 		}
 	}
 
 	ledger, err := harness.Candidates(dir)
 	if err != nil {
-		fmt.Fprintf(stderr, "harness candidates failed: %v\n", err)
-		return 1
+		return failCommand(stdout, stderr, "harness candidates", err, jsonOutput)
 	}
 	if jsonOutput {
 		encoder := json.NewEncoder(stdout)
 		encoder.SetIndent("", "  ")
 		if err := encoder.Encode(ledger); err != nil {
-			fmt.Fprintf(stderr, "harness candidates failed: %v\n", err)
-			return 1
+			return failCommand(stdout, stderr, "harness candidates", err, jsonOutput)
 		}
-		return 0
+		return exitOK
 	}
 	fmt.Fprint(stdout, harness.FormatCandidates(ledger))
-	return 0
+	return exitOK
 }
 
 func runHarnessPropose(args []string, stdout io.Writer, stderr io.Writer) int {
@@ -711,76 +678,72 @@ func runHarnessPropose(args []string, stdout io.Writer, stderr io.Writer) int {
 		case "--dir":
 			if i+1 >= len(args) {
 				fmt.Fprintln(stderr, "missing value for --dir")
-				return 1
+				return exitUsageError
 			}
 			dir = args[i+1]
 			i++
 		case "--from-pressure":
 			if i+1 >= len(args) {
 				fmt.Fprintln(stderr, "missing value for --from-pressure")
-				return 1
+				return exitUsageError
 			}
 			pressureID = args[i+1]
 			i++
 		default:
 			fmt.Fprintf(stderr, "unknown harness propose option: %s\n", args[i])
-			return 1
+			return exitUsageError
 		}
 	}
 	if pressureID == "" {
 		fmt.Fprintln(stderr, "missing --from-pressure")
-		return 1
+		return exitUsageError
 	}
 
 	candidate, err := harness.ProposeFromPressure(dir, pressureID)
 	if err != nil {
-		fmt.Fprintf(stderr, "harness propose failed: %v\n", err)
-		return 1
+		return failCommand(stdout, stderr, "harness propose", err, false)
 	}
 	fmt.Fprintf(stdout, "proposed harness candidate %s from pressure %s\n", candidate.ID, pressureID)
-	return 0
+	return exitOK
 }
 
 func runHarnessValidate(args []string, stdout io.Writer, stderr io.Writer) int {
 	id, dir, evidence, ok := parseHarnessCandidateIDDirEvidence(args, stderr)
 	if !ok {
-		return 1
+		return exitUsageError
 	}
 	candidate, err := harness.ValidateCandidate(dir, id, evidence)
 	if err != nil {
-		fmt.Fprintf(stderr, "harness validate failed: %v\n", err)
-		return 1
+		return failCommand(stdout, stderr, "harness validate", err, false)
 	}
 	fmt.Fprintf(stdout, "validated harness candidate %s to %s\n", candidate.ID, candidate.Status)
-	return 0
+	return exitOK
 }
 
 func runHarnessAccept(args []string, stdout io.Writer, stderr io.Writer) int {
 	id, dir, ok := parseHarnessCandidateIDAndDir(args, stderr, "accept")
 	if !ok {
-		return 1
+		return exitUsageError
 	}
 	candidate, err := harness.AcceptCandidate(dir, id)
 	if err != nil {
-		fmt.Fprintf(stderr, "harness accept failed: %v\n", err)
-		return 1
+		return failCommand(stdout, stderr, "harness accept", err, false)
 	}
 	fmt.Fprintf(stdout, "accepted harness candidate %s as %s\n", candidate.ID, candidate.Status)
-	return 0
+	return exitOK
 }
 
 func runHarnessRetire(args []string, stdout io.Writer, stderr io.Writer) int {
 	id, dir, ok := parseHarnessCandidateIDAndDir(args, stderr, "retire")
 	if !ok {
-		return 1
+		return exitUsageError
 	}
 	candidate, err := harness.RetireCandidate(dir, id)
 	if err != nil {
-		fmt.Fprintf(stderr, "harness retire failed: %v\n", err)
-		return 1
+		return failCommand(stdout, stderr, "harness retire", err, false)
 	}
 	fmt.Fprintf(stdout, "retired harness candidate %s\n", candidate.ID)
-	return 0
+	return exitOK
 }
 
 func parseHarnessCandidateIDDirEvidence(args []string, stderr io.Writer) (string, string, string, bool) {
@@ -872,57 +835,57 @@ func runInit(args []string, stdout io.Writer, stderr io.Writer) int {
 		case "--dir":
 			if i+1 >= len(args) {
 				fmt.Fprintln(stderr, "missing value for --dir")
-				return 1
+				return exitUsageError
 			}
 			dir = args[i+1]
 			i++
 		case "--profile":
 			if i+1 >= len(args) {
 				fmt.Fprintln(stderr, "missing value for --profile")
-				return 1
+				return exitUsageError
 			}
 			readinessProfile = args[i+1]
 			if err := profile.Validate(readinessProfile); err != nil {
 				fmt.Fprintf(stderr, "invalid --profile value: %s (valid: %s)\n", readinessProfile, profile.NamesText())
-				return 1
+				return exitUsageError
 			}
 			i++
 		case "--product-type":
 			if i+1 >= len(args) {
 				fmt.Fprintln(stderr, "missing value for --product-type")
-				return 1
+				return exitUsageError
 			}
 			productType = args[i+1]
 			if err := contract.ValidateProductType(productType); err != nil {
 				fmt.Fprintf(stderr, "invalid --product-type value: %v\n", err)
-				return 1
+				return exitUsageError
 			}
 			i++
 		case "--surface":
 			if i+1 >= len(args) {
 				fmt.Fprintln(stderr, "missing value for --surface")
-				return 1
+				return exitUsageError
 			}
 			surfaces = append(surfaces, args[i+1])
 			if err := contract.ValidateDeliverySurfaces(surfaces); err != nil {
 				fmt.Fprintf(stderr, "invalid --surface value: %v\n", err)
-				return 1
+				return exitUsageError
 			}
 			i++
 		case "--interaction-mode":
 			if i+1 >= len(args) {
 				fmt.Fprintln(stderr, "missing value for --interaction-mode")
-				return 1
+				return exitUsageError
 			}
 			interactionMode = args[i+1]
 			if err := contract.ValidateInteractionMode(interactionMode); err != nil {
 				fmt.Fprintf(stderr, "invalid --interaction-mode value: %v\n", err)
-				return 1
+				return exitUsageError
 			}
 			i++
 		default:
 			fmt.Fprintf(stderr, "unknown init option: %s\n", args[i])
-			return 1
+			return exitUsageError
 		}
 	}
 
@@ -933,8 +896,7 @@ func runInit(args []string, stdout io.Writer, stderr io.Writer) int {
 		InteractionMode:  interactionMode,
 	})
 	if err != nil {
-		fmt.Fprintf(stderr, "init failed: %v\n", err)
-		return 1
+		return failCommand(stdout, stderr, "init", err, false)
 	}
 
 	if len(surfaces) == 0 {
@@ -961,24 +923,23 @@ func runEnd(args []string, stdout io.Writer, stderr io.Writer) int {
 		case "--dir":
 			if i+1 >= len(args) {
 				fmt.Fprintln(stderr, "missing value for --dir")
-				return 1
+				return exitUsageError
 			}
 			dir = args[i+1]
 			i++
 		default:
 			fmt.Fprintf(stderr, "unknown end option: %s\n", args[i])
-			return 1
+			return exitUsageError
 		}
 	}
 
 	lockfile, err := lock.Create(dir)
 	if err != nil {
-		fmt.Fprintf(stderr, "end failed: %v\n", err)
-		return 1
+		return failCommand(stdout, stderr, "end", err, false)
 	}
 	fmt.Fprintf(stdout, "locked plan at %s\n", lockfile.Path)
 	fmt.Fprintf(stdout, "status %s\n", lockfile.Readiness.Status)
-	return 0
+	return exitOK
 }
 
 func runRelock(args []string, stdout io.Writer, stderr io.Writer) int {
@@ -988,59 +949,52 @@ func runRelock(args []string, stdout io.Writer, stderr io.Writer) int {
 		case "--dir":
 			if i+1 >= len(args) {
 				fmt.Fprintln(stderr, "missing value for --dir")
-				return 1
+				return exitUsageError
 			}
 			dir = args[i+1]
 			i++
 		default:
 			fmt.Fprintf(stderr, "unknown relock option: %s\n", args[i])
-			return 1
+			return exitUsageError
 		}
 	}
 
 	status := readiness.Evaluate(dir)
 	if status.Status == readiness.StatusBlocked {
-		fmt.Fprintln(stderr, "relock failed: readiness is BLOCKED; refusing to relock")
-		return 1
+		return failCommand(stdout, stderr, "relock", fmt.Errorf("readiness is BLOCKED; refusing to relock"), false)
 	}
 
 	currentHash, err := lock.CurrentLockHash(dir)
 	if err != nil {
-		fmt.Fprintf(stderr, "relock failed: %v\n", err)
-		return 1
+		return failCommand(stdout, stderr, "relock", err, false)
 	}
 	verification, err := lock.Verify(dir)
 	if err != nil {
-		fmt.Fprintf(stderr, "relock failed: %v\n", err)
-		return 1
+		return failCommand(stdout, stderr, "relock", err, false)
 	}
 	if len(verification.Mismatches) > 0 {
 		ok, err := amendment.HasAppliedForLock(dir, currentHash)
 		if err != nil {
-			fmt.Fprintf(stderr, "relock failed: %v\n", err)
-			return 1
+			return failCommand(stdout, stderr, "relock", err, false)
 		}
 		if !ok {
-			fmt.Fprintf(stderr, "relock failed: BLOCKED: lock hash mismatch for %s without an applied amendment\n", verification.Mismatches[0].Path)
-			return 1
+			return failCommand(stdout, stderr, "relock", fmt.Errorf("BLOCKED: lock hash mismatch for %s without an applied amendment", verification.Mismatches[0].Path), false)
 		}
 	}
 
 	now := time.Now().UTC()
 	previous, err := lock.ArchiveCurrentAt(dir, now)
 	if err != nil {
-		fmt.Fprintf(stderr, "relock failed: %v\n", err)
-		return 1
+		return failCommand(stdout, stderr, "relock", err, false)
 	}
 	lockfile, err := lock.CreateAtWithPrevious(dir, now, &previous)
 	if err != nil {
-		fmt.Fprintf(stderr, "relock failed: %v\n", err)
-		return 1
+		return failCommand(stdout, stderr, "relock", err, false)
 	}
 	fmt.Fprintf(stdout, "relocked plan at %s\n", lockfile.Path)
 	fmt.Fprintf(stdout, "previous lock archived at %s\n", filepath.Join(filepath.Clean(dir), previous.Path))
 	fmt.Fprintf(stdout, "status %s\n", lockfile.Readiness.Status)
-	return 0
+	return exitOK
 }
 
 func runRun(args []string, stdout io.Writer, stderr io.Writer) int {
@@ -1053,64 +1007,62 @@ func runRun(args []string, stdout io.Writer, stderr io.Writer) int {
 		case "--dir":
 			if i+1 >= len(args) {
 				fmt.Fprintln(stderr, "missing value for --dir")
-				return 1
+				return exitUsageError
 			}
 			dir = args[i+1]
 			i++
 		case "--out":
 			if i+1 >= len(args) {
 				fmt.Fprintln(stderr, "missing value for --out")
-				return 1
+				return exitUsageError
 			}
 			out = args[i+1]
 			i++
 		case "--max-chars":
 			if i+1 >= len(args) {
 				fmt.Fprintln(stderr, "missing value for --max-chars")
-				return 1
+				return exitUsageError
 			}
 			value, err := strconv.Atoi(args[i+1])
 			if err != nil {
 				fmt.Fprintf(stderr, "invalid --max-chars value: %s\n", args[i+1])
-				return 1
+				return exitUsageError
 			}
 			maxChars = value
 			i++
 		case "--target":
 			if i+1 >= len(args) {
 				fmt.Fprintln(stderr, "missing value for --target")
-				return 1
+				return exitUsageError
 			}
 			targetName = args[i+1]
 			i++
 		default:
 			fmt.Fprintf(stderr, "unknown run option: %s\n", args[i])
-			return 1
+			return exitUsageError
 		}
 	}
 
 	result, err := prompt.Compile(prompt.Options{Dir: dir, Out: out, MaxChars: maxChars, Target: targetName})
 	if err != nil {
-		fmt.Fprintf(stderr, "run failed: %v\n", err)
-		return 1
+		return failCommand(stdout, stderr, "run", err, false)
 	}
 	if out != "" {
 		fmt.Fprintf(stdout, "compiled prompt at %s\n", result.Out)
-		return 0
+		return exitOK
 	}
 	fmt.Fprint(stdout, result.Prompt)
-	return 0
+	return exitOK
 }
 
 func runTargets(args []string, stdout io.Writer, stderr io.Writer) int {
-	jsonOutput := false
+	jsonOutput := jsonRequested(args)
 	for i := 0; i < len(args); i++ {
 		switch args[i] {
 		case "--json":
 			jsonOutput = true
 		default:
-			fmt.Fprintf(stderr, "unknown targets option: %s\n", args[i])
-			return 1
+			return failStructured(stdout, stderr, usageErrorf("unknown targets option: %s", args[i]), jsonOutput)
 		}
 	}
 
@@ -1119,46 +1071,45 @@ func runTargets(args []string, stdout io.Writer, stderr io.Writer) int {
 		encoder := json.NewEncoder(stdout)
 		encoder.SetIndent("", "  ")
 		if err := encoder.Encode(items); err != nil {
-			fmt.Fprintf(stderr, "targets failed: %v\n", err)
-			return 1
+			return failCommand(stdout, stderr, "targets", err, jsonOutput)
 		}
-		return 0
+		return exitOK
 	}
 	for _, item := range items {
 		fmt.Fprintf(stdout, "%s\t%s\t%s\n", item.Name, item.Artifact, item.Description)
 	}
-	return 0
+	return exitOK
 }
 
 func runStatus(args []string, stdout io.Writer, stderr io.Writer) int {
 	dir := "."
-	jsonOutput := false
+	jsonOutput := jsonRequested(args)
 	for i := 0; i < len(args); i++ {
 		switch args[i] {
 		case "--dir":
 			if i+1 >= len(args) {
-				fmt.Fprintln(stderr, "missing value for --dir")
-				return 1
+				return failStructured(stdout, stderr, usageErrorf("missing value for --dir"), jsonOutput)
 			}
 			dir = args[i+1]
 			i++
 		case "--json":
 			jsonOutput = true
 		default:
-			fmt.Fprintf(stderr, "unknown status option: %s\n", args[i])
-			return 1
+			return failStructured(stdout, stderr, usageErrorf("unknown status option: %s", args[i]), jsonOutput)
 		}
 	}
 
 	result := readiness.Evaluate(dir)
+	if err := invalidContractFromStatus(result); err != nil {
+		return failCommand(stdout, stderr, "status", err, jsonOutput)
+	}
 	if jsonOutput {
 		encoder := json.NewEncoder(stdout)
 		encoder.SetIndent("", "  ")
 		if err := encoder.Encode(result); err != nil {
-			fmt.Fprintf(stderr, "status failed: %v\n", err)
-			return 1
+			return failCommand(stdout, stderr, "status", err, jsonOutput)
 		}
-		return 0
+		return exitOK
 	}
 
 	fmt.Fprintln(stdout, result.Status)
@@ -1178,7 +1129,16 @@ func runStatus(args []string, stdout io.Writer, stderr io.Writer) int {
 	for _, issue := range result.Issues {
 		fmt.Fprintf(stdout, "%s %s: %s\n", issue.Severity, issue.RuleID, issue.Message)
 	}
-	return 0
+	return exitOK
+}
+
+func invalidContractFromStatus(result readiness.Result) error {
+	for _, issue := range result.Issues {
+		if issue.RuleID == "R002" {
+			return commandError{Code: "invalid_contract", ExitCode: exitInvalidContract, Message: issue.Message}
+		}
+	}
+	return nil
 }
 
 func printHelp(w io.Writer) {

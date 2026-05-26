@@ -60,7 +60,7 @@ func TestGoldenConflictsJSON(t *testing.T) {
 		"--base", collabFixtureForCLI("base.json"),
 		"--head", collabFixtureForCLI("conflicting_decision_head.json"),
 		"--json",
-	}, 1)
+	}, exitSemanticConflict)
 	assertGolden(t, "conflicts_json.golden", normalizeGolden(got, ""))
 }
 

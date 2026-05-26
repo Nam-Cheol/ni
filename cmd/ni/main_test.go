@@ -158,6 +158,50 @@ func TestStatusJSON(t *testing.T) {
 	}
 }
 
+func TestStatusJSONInvalidContractStructuredError(t *testing.T) {
+	dir := t.TempDir()
+	if code := run([]string{"init", "--dir", dir}, &bytes.Buffer{}, &bytes.Buffer{}); code != 0 {
+		t.Fatalf("init expected exit code 0, got %d", code)
+	}
+	if err := os.WriteFile(filepath.Join(dir, ".ni", "contract.json"), []byte("{\n"), 0o644); err != nil {
+		t.Fatalf("writing invalid contract: %v", err)
+	}
+
+	var stdout, stderr bytes.Buffer
+	code := run([]string{"status", "--dir", dir, "--json"}, &stdout, &stderr)
+	if code != exitInvalidContract {
+		t.Fatalf("expected exit code %d, got %d", exitInvalidContract, code)
+	}
+	if stderr.Len() != 0 {
+		t.Fatalf("expected no stderr for JSON error, got %q", stderr.String())
+	}
+	envelope := decodeErrorEnvelope(t, stdout.Bytes())
+	if envelope.Error.Code != "invalid_contract" || envelope.Error.ExitCode != exitInvalidContract {
+		t.Fatalf("expected invalid_contract envelope, got %#v", envelope)
+	}
+	if envelope.Error.Details["command"] != "status" {
+		t.Fatalf("expected status command detail, got %#v", envelope)
+	}
+	if !strings.Contains(envelope.Error.Message, "malformed contract JSON") {
+		t.Fatalf("expected malformed contract message, got %#v", envelope)
+	}
+}
+
+func TestJSONUsageErrorEnvelope(t *testing.T) {
+	var stdout, stderr bytes.Buffer
+	code := run([]string{"status", "--json", "--bad"}, &stdout, &stderr)
+	if code != exitUsageError {
+		t.Fatalf("expected exit code %d, got %d", exitUsageError, code)
+	}
+	if stderr.Len() != 0 {
+		t.Fatalf("expected no stderr for JSON usage error, got %q", stderr.String())
+	}
+	envelope := decodeErrorEnvelope(t, stdout.Bytes())
+	if envelope.Error.Code != "usage_error" || envelope.Error.ExitCode != exitUsageError {
+		t.Fatalf("expected usage_error envelope, got %#v", envelope)
+	}
+}
+
 func TestEndBlocked(t *testing.T) {
 	dir := t.TempDir()
 	if code := run([]string{"init", "--dir", dir}, &bytes.Buffer{}, &bytes.Buffer{}); code != 0 {
@@ -166,8 +210,8 @@ func TestEndBlocked(t *testing.T) {
 
 	var stderr bytes.Buffer
 	code := run([]string{"end", "--dir", dir}, &bytes.Buffer{}, &stderr)
-	if code != 1 {
-		t.Fatalf("expected exit code 1, got %d", code)
+	if code != exitReadinessBlocked {
+		t.Fatalf("expected exit code %d, got %d", exitReadinessBlocked, code)
 	}
 	if !strings.Contains(stderr.String(), "readiness is BLOCKED") {
 		t.Fatalf("expected blocked error, got %q", stderr.String())
@@ -249,6 +293,23 @@ func TestRunWithTarget(t *testing.T) {
 	}
 }
 
+func TestRunMissingLockfileGenericFailure(t *testing.T) {
+	dir := t.TempDir()
+	if code := run([]string{"init", "--dir", dir}, &bytes.Buffer{}, &bytes.Buffer{}); code != 0 {
+		t.Fatalf("init expected exit code 0, got %d", code)
+	}
+	writeReadyContractForCLI(t, dir)
+
+	var stderr bytes.Buffer
+	code := run([]string{"run", "--dir", dir}, &bytes.Buffer{}, &stderr)
+	if code != exitGenericFailure {
+		t.Fatalf("expected exit code %d, got %d", exitGenericFailure, code)
+	}
+	if !strings.Contains(stderr.String(), "missing lockfile") {
+		t.Fatalf("expected missing lockfile error, got %q", stderr.String())
+	}
+}
+
 func TestRunRejectsUnsupportedTarget(t *testing.T) {
 	dir := t.TempDir()
 	if code := run([]string{"init", "--dir", dir}, &bytes.Buffer{}, &bytes.Buffer{}); code != 0 {
@@ -261,8 +322,8 @@ func TestRunRejectsUnsupportedTarget(t *testing.T) {
 
 	var stderr bytes.Buffer
 	code := run([]string{"run", "--dir", dir, "--target", "shell"}, &bytes.Buffer{}, &stderr)
-	if code != 1 {
-		t.Fatalf("expected exit code 1, got %d", code)
+	if code != exitUnsupportedTarget {
+		t.Fatalf("expected exit code %d, got %d", exitUnsupportedTarget, code)
 	}
 	if !strings.Contains(stderr.String(), `unsupported target "shell"`) {
 		t.Fatalf("expected unsupported target error, got %q", stderr.String())
@@ -308,8 +369,8 @@ func TestAmendApplyAndRelockFlow(t *testing.T) {
 
 	var stderr bytes.Buffer
 	code = run([]string{"run", "--dir", dir}, &bytes.Buffer{}, &stderr)
-	if code != 1 {
-		t.Fatalf("expected stale run exit code 1, got %d", code)
+	if code != exitStaleLock {
+		t.Fatalf("expected stale run exit code %d, got %d", exitStaleLock, code)
 	}
 	if !strings.Contains(stderr.String(), "BLOCKED: lock hash mismatch") {
 		t.Fatalf("expected stale lock rejection before relock, got %q", stderr.String())
@@ -317,8 +378,8 @@ func TestAmendApplyAndRelockFlow(t *testing.T) {
 
 	stderr.Reset()
 	code = run([]string{"relock", "--dir", dir}, &bytes.Buffer{}, &stderr)
-	if code != 1 {
-		t.Fatalf("expected relock without applied amendment exit code 1, got %d", code)
+	if code != exitStaleLock {
+		t.Fatalf("expected relock without applied amendment exit code %d, got %d", exitStaleLock, code)
 	}
 	if !strings.Contains(stderr.String(), "without an applied amendment") {
 		t.Fatalf("expected explicit amendment rejection, got %q", stderr.String())
@@ -393,8 +454,8 @@ func TestRelockRefusesBlockedReadiness(t *testing.T) {
 
 	var stderr bytes.Buffer
 	code := run([]string{"relock", "--dir", dir}, &bytes.Buffer{}, &stderr)
-	if code != 1 {
-		t.Fatalf("expected relock exit code 1, got %d", code)
+	if code != exitReadinessBlocked {
+		t.Fatalf("expected relock exit code %d, got %d", exitReadinessBlocked, code)
 	}
 	if !strings.Contains(stderr.String(), "readiness is BLOCKED") {
 		t.Fatalf("expected blocked readiness refusal, got %q", stderr.String())
@@ -632,8 +693,8 @@ func TestFeedbackAddBlocksOnLockMismatch(t *testing.T) {
 
 	var stderr bytes.Buffer
 	code := run([]string{"feedback", "add", "--dir", dir, "--file", filepath.Join("..", "..", "testdata", "feedback", "codex.json")}, &bytes.Buffer{}, &stderr)
-	if code != 1 {
-		t.Fatalf("expected exit code 1, got %d", code)
+	if code != exitStaleLock {
+		t.Fatalf("expected exit code %d, got %d", exitStaleLock, code)
 	}
 	if !strings.Contains(stderr.String(), "BLOCKED: lock hash mismatch") {
 		t.Fatalf("expected lock mismatch block, got %q", stderr.String())
@@ -738,6 +799,26 @@ func TestExportHyperRunRejectsExistingRuntimePacketDirectory(t *testing.T) {
 	}
 	if !strings.Contains(stderr.String(), "non-seed entry") {
 		t.Fatalf("expected non-seed rejection, got %q", stderr.String())
+	}
+}
+
+func TestExportRejectsUnsupportedTargetWithExitCode(t *testing.T) {
+	dir := t.TempDir()
+	if code := run([]string{"init", "--dir", dir}, &bytes.Buffer{}, &bytes.Buffer{}); code != 0 {
+		t.Fatalf("init expected exit code 0, got %d", code)
+	}
+	writeReadyContractForCLI(t, dir)
+	if code := run([]string{"end", "--dir", dir}, &bytes.Buffer{}, &bytes.Buffer{}); code != 0 {
+		t.Fatalf("end expected exit code 0, got %d", code)
+	}
+
+	var stderr bytes.Buffer
+	code := run([]string{"export", "--dir", dir, "--target", "codex", "--out", filepath.Join(dir, "export")}, &bytes.Buffer{}, &stderr)
+	if code != exitUnsupportedTarget {
+		t.Fatalf("expected exit code %d, got %d", exitUnsupportedTarget, code)
+	}
+	if !strings.Contains(stderr.String(), `unsupported export target "codex"`) {
+		t.Fatalf("expected unsupported export target error, got %q", stderr.String())
 	}
 }
 
@@ -1004,8 +1085,8 @@ func TestConflictsCommandExitsNonzeroOnConflict(t *testing.T) {
 		"--base", collabFixtureForCLI("base.json"),
 		"--head", collabFixtureForCLI("conflicting_decision_head.json"),
 	}, &stdout, &bytes.Buffer{})
-	if code != 1 {
-		t.Fatalf("expected conflicts exit code 1, got %d", code)
+	if code != exitSemanticConflict {
+		t.Fatalf("expected conflicts exit code %d, got %d", exitSemanticConflict, code)
 	}
 	if !strings.Contains(stdout.String(), "collaboration conflicts") || !strings.Contains(stdout.String(), "DEC-001") {
 		t.Fatalf("expected conflict text, got %q", stdout.String())
@@ -1175,8 +1256,8 @@ func TestHarnessCandidateCommands(t *testing.T) {
 func TestUnknownCommand(t *testing.T) {
 	var stderr bytes.Buffer
 	code := run([]string{"serve"}, &bytes.Buffer{}, &stderr)
-	if code != 1 {
-		t.Fatalf("expected exit code 1, got %d", code)
+	if code != exitUsageError {
+		t.Fatalf("expected exit code %d, got %d", exitUsageError, code)
 	}
 	if !strings.Contains(stderr.String(), "unknown command: serve") {
 		t.Fatalf("expected unknown command error, got %q", stderr.String())
@@ -1312,6 +1393,18 @@ func readFileForCLI(t *testing.T, path string) []byte {
 		t.Fatalf("reading %s: %v", path, err)
 	}
 	return data
+}
+
+func decodeErrorEnvelope(t *testing.T, data []byte) errorEnvelope {
+	t.Helper()
+	var envelope errorEnvelope
+	if err := json.Unmarshal(data, &envelope); err != nil {
+		t.Fatalf("expected error envelope JSON, got %v: %q", err, string(data))
+	}
+	if envelope.Error.Code == "" || envelope.Error.ExitCode == 0 || envelope.Error.Message == "" {
+		t.Fatalf("expected populated error envelope, got %#v", envelope)
+	}
+	return envelope
 }
 
 func collabFixtureForCLI(name string) string {
