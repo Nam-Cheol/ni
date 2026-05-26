@@ -8,11 +8,12 @@ The first implementation target is a planning kernel:
 conversation -> docs contract -> readiness gate -> lockfile -> 4000-char goal prompt
 ```
 
-Generated harnesses and execution come later.
+Generated harnesses and downstream execution systems may consume locked output
+later, but they must not become kernel-owned runtime behavior.
 
-## First development sequence
+## Prompt archive
 
-Use the prompts in this order:
+Use available prompts in numeric order. The original bootstrap sequence is:
 
 ```text
 000-readonly-review.md
@@ -30,7 +31,9 @@ Use the prompts in this order:
 012-codex-exec-experiment-later.md
 ```
 
-Stop after each prompt, review the diff, run validation, and commit.
+Later follow-up prompts may use higher task numbers, such as
+`029-repo-consistency-audit.md`. Stop after each prompt, review the diff, run
+validation, and commit.
 
 ## The key invariant
 

@@ -1,14 +1,22 @@
 # Roadmap
 
-## Phase 0: reframe
+The v0.1 release-candidate shape is complete: `ni-kernel` can initialize a
+planning workspace, validate readiness deterministically, lock a ready plan,
+compile a bounded prompt, and export locked-plan seed material. The kernel
+remains pre-runtime; generated harnesses and downstream adapters are derived
+material, not kernel-owned execution state.
+
+## Completed: v0.1 RC
+
+### Phase 0: reframe
 
 ```text
 SPEC-000 reframe docs from lightweight harness to project intent compiler
 ```
 
-## Phase 1: kernel CLI
+### Phase 1: kernel CLI
 
-The first implementation target is the contract/readiness/lock/prompt kernel:
+The contract/readiness/lock/prompt kernel is implemented:
 
 ```text
 SPEC-001 bootstrap CLI
@@ -19,7 +27,7 @@ SPEC-005 lockfile end
 SPEC-006 prompt compiler run
 ```
 
-## Phase 2: Codex UX
+### Phase 2: Codex UX and generated harness proposals
 
 ```text
 SPEC-007 Codex skills
@@ -27,13 +35,41 @@ SPEC-008 work graph proposal
 SPEC-009 generated harness contract
 ```
 
-## Phase 3: dogfood
+### Phase 3: dogfood and v0.1 release candidate
 
 ```text
 SPEC-010 ni plans ni
 ```
 
-## Phase 4: execution experiments
+The v0.1 RC also includes target registry entries, seed exports, readiness
+profiles, product-shape fields, inert feedback and pressure tracking, amendment
+and relock flow, and collaboration checks.
+
+## Next: v0.1.0 stabilization
+
+The next phase should make the release candidate shippable without expanding
+the kernel boundary:
+
+- keep README, release notes, roadmap, prompt archive, and docs aligned;
+- tighten examples and target documentation around locked-plan seed material;
+- verify `ni status`, `ni end`, `ni run`, and `ni export` behavior against the
+  documented source-of-truth rule;
+- preserve the rule that `ni run` compiles prompts only;
+- do not add shell adapters, Codex adapters, queues, evidence runners, PR automation,
+  release automation, plugin systems, and UI work.
+
+## Next: v0.2 planning
+
+v0.2 may improve downstream seed quality while keeping downstream state outside
+the kernel:
+
+- richer target-specific seed packages;
+- clearer generated harness candidate review flows;
+- better feedback-to-amendment workflows;
+- additional deterministic checks for collaboration, pressure, and target
+  export consistency.
+
+## Historical experiment notes
 
 ```text
 SPEC-011 Codex exec experiment
@@ -41,4 +77,8 @@ SPEC-012 shell adapter experiment
 SPEC-013 evidence runner experiment
 ```
 
-Execution experiments are intentionally after lock and prompt compilation.
+These entries were early execution-experiment placeholders. They are not active
+kernel roadmap items for v0.1.0 or v0.2. The retained Codex exec material lives
+only as a local experiment under `docs/experiments/` and `prompts/012-*`; it
+must not become `ni run` behavior or a Codex adapter. Shell adapters and
+evidence runners remain out of scope for the kernel.

@@ -26,6 +26,7 @@ docs/16_TARGET_SPEC_KIT.md
 docs/17_TARGET_OUROBOROS.md
 docs/18_EXAMPLES.md
 docs/19_RELEASE_NOTES_v0.1.md
+docs/20_NEXT_STEPS.md
 
 docs/plan/*.md
 .ni/project.json
