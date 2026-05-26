@@ -14,6 +14,11 @@ asks for explicit confirmation, and only then lets `ni end` write the lock.
 lets `ni run` verify the lock while compiling the prompt, and states that NI
 did not execute implementation.
 
+`session-resume.md` demonstrates how a later `ni-start` session resumes from
+persisted docs, `.ni/contract.json`, and bounded `.ni/session.json` state
+instead of hidden chat memory.
+
 See [transcript.md](transcript.md) and
 [ni-end-confirmation.md](ni-end-confirmation.md), and
-[ni-run-handoff.md](ni-run-handoff.md).
+[ni-run-handoff.md](ni-run-handoff.md), and
+[session-resume.md](session-resume.md).

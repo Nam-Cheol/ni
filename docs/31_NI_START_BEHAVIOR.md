@@ -7,6 +7,10 @@ maintain planning state without manually editing `.ni/contract.json`.
 The skill does not replace the CLI gates. It writes planning state; the CLI
 validates, locks, and compiles.
 
+It also supports resume mode for long-running planning. Resume mode reconstructs
+or verifies planning continuity from persisted project files, not hidden chat
+memory.
+
 ```text
 ni init -> ni-start conversation -> docs/plan + .ni/contract.json -> ni status
 ```
@@ -26,6 +30,25 @@ summary names the active planning focus, purpose, accepted capabilities,
 delivery surface, decisions, non-goals, open questions, and known readiness
 blockers. Claims from `.ni/session.json` should be checked against the contract,
 docs, and `ni status`.
+
+## Resume mode
+
+When a later model session resumes planning, `ni-start` first uses the same
+authoritative inputs as a normal turn. If `.ni/session.json` exists, it may use
+the file for active focus, last summary, pending questions, recent decisions and
+risks, last readiness status, and recently updated docs.
+
+Every session claim must be verified against `.ni/contract.json`,
+`docs/plan/**`, lock state, and `ni status --dir . --next-questions` when
+available. If the session file conflicts with a contract record, the contract
+wins and the conflict is reported. If it conflicts with a locked plan, the lock
+and locked docs win. A lock hash mismatch stops the turn with `BLOCKED`.
+
+If `.ni/session.json` is missing, invalid, empty, or stale, `ni-start`
+reconstructs a resumed summary from `docs/plan/**`, `.ni/contract.json`, and
+CLI readiness output. The next meaningful planning edit should recreate or
+refresh `.ni/session.json` with bounded continuity state. It should not store a
+full raw transcript by default.
 
 ## Gap detection
 

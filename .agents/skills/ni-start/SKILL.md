@@ -11,6 +11,10 @@ Use this skill when the user says `ni-start` or asks to continue planning a proj
 model-user planning conversation into synchronized updates to `docs/plan/**`
 and `.ni/contract.json`.
 
+It also supports resume mode for long-running planning. A later model session
+must resume from persisted docs, `.ni/contract.json`, and bounded
+`.ni/session.json` state rather than hidden chat memory.
+
 ## Authority boundary
 
 You are not the authority for readiness or lock state. The `ni` CLI is the authority.
@@ -66,17 +70,54 @@ not make downstream harness state the source of truth.
 override locked docs, must not mark docs complete, and must not store full raw
 chat logs by default.
 
+## Resume mode
+
+Use resume mode whenever the user asks to continue, resume, pick up, or
+re-enter planning after an earlier model session.
+
+Resume mode starts from persisted files:
+
+- If `.ni/session.json` exists, read it as a planning aid and verify every
+  important claim against `.ni/contract.json`, `docs/plan/**`, lock state, and
+  `ni status --dir . --next-questions` when available.
+- If `.ni/session.json` is missing, invalid, empty, or too stale to trust,
+  reconstruct the planning summary from `.ni/contract.json`, `docs/plan/**`,
+  lock state, and CLI readiness output.
+- Do not depend on hidden chat memory or a raw transcript.
+- Do not store full raw transcript content by default.
+
+When session state conflicts with contract records, the contract wins. Report
+the conflict using the relevant IDs, ignore or correct the stale session entry
+in the next planning update, and continue from the contract value. When session
+state conflicts with locked docs or a valid lock, the lock and locked docs win.
+If a lock hash mismatch exists, stop and report `BLOCKED`.
+
+The resumed summary should name:
+
+- the active focus from `.ni/session.json`, or that focus was reconstructed,
+- which session claims were confirmed against docs and contract,
+- which session claims were stale or conflicted,
+- accepted and draft capabilities,
+- decisions, non-goals, risks, and assumptions that affect readiness,
+- open blocker questions and the CLI readiness status.
+
 ## Start-of-turn process
 
-1. Read `AGENTS.md`, `.ni/contract.json`, `docs/plan/**`, `.ni/session.json` if it exists, and `.ni/plan.lock.json` if it exists.
-2. Summarize current planning state in a few concrete bullets:
+1. Read `AGENTS.md`, `.ni/contract.json`, `docs/plan/**`, `.ni/session.json`
+   if it exists, and `.ni/plan.lock.json` if it exists.
+2. If this is a resumed session, compare `.ni/session.json` to the contract,
+   docs, and lock state. Report conflicts, use the contract or locked docs as
+   authority, and reconstruct from docs and contract if session state is
+   missing or unusable.
+3. Summarize current planning state in a few concrete bullets:
    - active planning focus from `.ni/session.json`, verified against docs and contract,
+   - whether the focus came from session state or was reconstructed,
    - purpose and delivery surface,
    - accepted capabilities,
    - known decisions and non-goals,
    - open blocker questions,
    - readiness state if `ni status --dir .` has already been run.
-3. Identify missing required planning areas from the current docs, contract,
+4. Identify missing required planning areas from the current docs, contract,
    and readiness profile. Check for:
    - missing or TODO purpose, actors, capabilities, requirements, risks,
      evaluations, artifacts, constraints, delivery expectations, non-goals, or
@@ -84,8 +125,8 @@ chat logs by default.
    - accepted capabilities without linked requirements or evaluations,
    - high-severity risks without mitigation,
    - blocker questions that still affect acceptance criteria or scope.
-4. Run or request `ni status --dir . --next-questions` when available.
-5. Ask focused questions about the highest-impact gaps. Prefer one to three
+5. Run or request `ni status --dir . --next-questions` when available.
+6. Ask focused questions about the highest-impact gaps. Prefer one to three
    questions from the CLI `next_questions` result. You may lightly rephrase for
    clarity, but preserve the referenced IDs, readiness gap, and allowed outcomes.
    Do not ask broad generic questions such as "What else should we add?"

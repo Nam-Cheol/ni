@@ -22,6 +22,24 @@ and docs win, and the session state should be corrected.
 Raw transcript is not the source of truth. The session file stores only a
 bounded summary and selected planning records by default.
 
+## Resume behavior
+
+`ni-start` uses `.ni/session.json` to make long-running planning resumable
+across model sessions. At resume, the file can suggest the active focus,
+pending questions, recent decisions, recent risks, and last readiness result.
+Those entries are hints, not truth.
+
+Before asking the next question, `ni-start` verifies session entries against
+`.ni/contract.json`, `docs/plan/**`, `.ni/plan.lock.json` when present, and
+`ni status --dir . --next-questions` when available. If session state conflicts
+with the contract, the contract wins and the model reports the conflict. If
+session state says readiness was `READY` but the CLI now reports `BLOCKED`, the
+CLI result wins.
+
+If the session file is missing or unusable, `ni-start` reconstructs continuity
+from the contract and planning docs. It should then refresh `.ni/session.json`
+after the next meaningful planning update.
+
 ## Schema
 
 The published schema is `schema/ni.session.v0.json`. `ni init` creates an empty
@@ -52,3 +70,6 @@ where the previous turn left off, but it must verify important claims against
 After a meaningful planning update, `ni-start` should update `.ni/session.json`
 with the latest focus, summary, pending questions, recent decisions, recent
 risks, readiness result, blockers, and docs changed in that turn.
+
+See [Session resume](38_SESSION_RESUME.md) for the full resume procedure and an
+illustrative transcript.

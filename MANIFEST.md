@@ -29,10 +29,12 @@ docs/19_RELEASE_NOTES_v0.1.md
 docs/20_NEXT_STEPS.md
 docs/21_ERROR_MODEL.md
 docs/24_TARGET_CONFORMANCE.md
+docs/38_SESSION_RESUME.md
 
 docs/plan/*.md
 .ni/project.json
 .ni/contract.json
+.ni/session.json
 .ni/pressure.json
 .ni/readiness.rules.json
 .ni/readiness.profiles.json
