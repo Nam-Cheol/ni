@@ -114,7 +114,7 @@ The following remain forbidden as `ni-kernel` responsibilities:
 - queue;
 - multi-agent orchestration;
 - PR automation;
-- release automation;
+- no release automation;
 - execution evidence loop.
 
 If any of these become useful, they belong downstream or in separate packages.

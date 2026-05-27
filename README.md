@@ -18,83 +18,71 @@
   <a href="docs/00_START_HERE.md"><kbd>Docs</kbd></a>
 </p>
 
-## Don't run the agent yet. Compile the intent first.
+## Don't Run The Agent Yet
 
-Turn planning conversations into locked project contracts before AI agents or
-teams start work.
+`ni` turns planning conversations into locked project contracts before AI
+agents or teams start work.
 
-`ni` creates a locked, versioned, verifiable project contract before execution
-begins. The current product is `ni-kernel`: a deterministic pre-runtime control
-layer for intent, not a tool that runs work.
-
-<p align="center">
-  <a href="#what-problem-ni-solves"><img src="assets/card-why.svg" alt="Why ni: vague prompts can hide users, risks, non-goals, acceptance, and blockers." width="32%"></a>
-  <a href="#core-flow"><img src="assets/card-start.svg" alt="Start path: initialize, check readiness, lock intent, and compile a prompt." width="32%"></a>
-  <a href="#examples-and-docs"><img src="assets/card-docs.svg" alt="Docs map: read the protocol, command reference, target boundaries, benchmark, and launch notes." width="32%"></a>
-</p>
+The current product is `ni-kernel`: a deterministic pre-runtime control layer
+for intent. It validates whether a plan is explicit enough to trust, locks the
+accepted version, and compiles bounded handoff prompts or inert seed material.
+It does not run the downstream work.
 
 ```text
-conversation -> docs/plan + .ni/contract.json -> ni status -> ni end -> locked intent -> ni run
+conversation -> planning contract -> readiness gate -> intent lock -> bounded handoff
 ```
 
-## What Problem ni Solves
+## Why ni
 
-AI agents often start executing before the user's intent is explicit,
-accepted, validated, locked, and unchanged. They are handed prompts that sound
-actionable while still hiding the intent needed for trustworthy execution:
+Prompts can sound actionable while still hiding the details that make execution
+trustworthy: users, acceptance criteria, risks, non-goals, blocker questions,
+and whether the accepted plan has changed.
 
-- who the project is for,
-- what must be accepted,
-- which risks need mitigation,
-- what is explicitly out of scope,
-- which questions should block execution,
-- whether the accepted plan has changed.
+`ni` moves control before execution. It makes intent explicit, checks it
+deterministically, locks the accepted snapshot, and stops handoff when the
+current files no longer match the lock.
 
-Most tools try to control the agent after a prompt, spec, worklist, or
-execution loop exists. `ni` moves control earlier. It asks whether project
-intent is explicit, accepted, validated, locked, and unchanged before any
-downstream actor starts work.
+Read the deeper product argument in [Why ni](docs/why-ni.md).
 
-## Core Idea: Intent Lock Protocol
+## Start In 3 Steps
 
-The [Intent Lock Protocol](docs/42_INTENT_LOCK_PROTOCOL.md) defines how a
-planning conversation becomes a project contract, when that contract is ready
-to lock, how the accepted plan is hashed, what downstream actors may trust, and
-when handoff must stop because intent changed.
+```bash
+go run ./cmd/ni init --dir <path> --profile prototype
+go run ./cmd/ni status --dir <path>
+go run ./cmd/ni end --dir <path>
+go run ./cmd/ni run --dir <path> --target codex --max-chars 4000
+```
 
-The kernel owns:
+1. Create a planning workspace.
+2. Use model-user conversation to maintain `docs/plan/**` and
+   `.ni/contract.json`; `ni status` is the readiness authority.
+3. Lock with `ni end`, then compile a bounded prompt with `ni run`.
 
-- `docs/plan/**`
-- `.ni/contract.json`
-- deterministic readiness validation
-- `.ni/plan.lock.json`
-- lock hash verification
-- bounded prompt compilation
-- inert downstream seed exports
+`ni run` prints or writes a prompt. It does not execute Codex, shell commands,
+agents, queues, or adapters.
 
-After a plan is locked, source-of-truth precedence is:
+## Visual Flow
 
 ```text
-.ni/plan.lock.json > .ni/contract.json > docs/plan/** > .ni/session.json > chat history
+vague request
+  -> docs/plan/** + .ni/contract.json
+  -> ni status
+  -> ni end
+  -> .ni/plan.lock.json
+  -> ni run / ni export
+  -> downstream prompt or inert seed material
 ```
 
-If locked hashes no longer match, target handoff stops with `BLOCKED`.
+## One Demo
 
-## 5-Minute Demo
-
-The fastest way to understand `ni` is the
-[Ambiguous Prompt Blocked](examples/ambiguous-prompt-blocked/) demo.
-
+The fastest demo is [Ambiguous Prompt Blocked](examples/ambiguous-prompt-blocked/).
 It starts from:
 
 ```text
 Build me a dashboard for my team.
 ```
 
-A direct-to-agent path would force hidden assumptions about users, data,
-workflow, non-goals, and success criteria. The `ni` path records the request as
-planning intent, then refuses to treat it as executable while blocker questions
-remain open.
+Run:
 
 ```bash
 go run ./cmd/ni status --dir ./examples/ambiguous-prompt-blocked/workspace
@@ -107,160 +95,51 @@ Expected result:
 BLOCKED
 ```
 
-That is the point: ambiguous execution is blocked before an agent starts.
+That is success: execution has not earned a trustworthy starting point yet.
 
-## Non-Software Proof
+## Install And Use
 
-`ni` is not a software spec generator. It compiles project intent for any
-product surface.
-
-Try the [Neighborhood Cooling Study Protocol](examples/research-protocol/):
-
-```bash
-go run ./cmd/ni status --dir examples/research-protocol
-go run ./cmd/ni run --dir examples/research-protocol --target human-team --out examples/research-protocol/generated/human-team.prompt.md
-```
-
-This locked example plans a research protocol, not an app. It has
-`product_type: research_protocol`, a `document` delivery surface, protocol
-review evaluations, and a human-team handoff prompt. It does not collect data,
-run analysis, deploy sensors, or execute fieldwork.
-
-## Core Flow
-
-Create a planning workspace:
+`ni` is currently source-first. It does not claim package-manager distribution,
+hosted service availability, or a published binary release.
+Release status: does not claim package distribution or a published binary release.
 
 ```bash
-go run ./cmd/ni init --dir <path> --profile prototype
+go run ./cmd/ni --help
+make build
+make install-local
 ```
 
-Use sustained model-user conversation to maintain `docs/plan/**` and
-`.ni/contract.json` together. Skills and models are UX. The CLI is authority.
+See [Install](docs/22_INSTALL.md) for source, local build, or local install
+details.
 
-```bash
-go run ./cmd/ni status --dir <path>
-go run ./cmd/ni end --dir <path>
-go run ./cmd/ni run --dir <path> --target codex --max-chars 4000
-```
+## Trust Signals
 
-`ni run` prints or writes a prompt. It does not execute that prompt.
-
-## What ni Blocks
-
-`ni` blocks downstream handoff when intent is not trustworthy yet:
-
-- accepted capabilities without linked evaluations,
-- high-severity risks without mitigation,
-- open blocker questions,
-- conflicting accepted decisions,
-- missing or invalid required planning records,
-- stale locks where current files no longer match `.ni/plan.lock.json`,
-- target prompt compilation before a valid lock exists.
-
-The [Benchmark Protocol](docs/43_BENCHMARK_PROTOCOL.md) describes how to
-compare direct-to-agent prompts against locked `ni` intent without running
-downstream agents.
-The fixture corpus lives in
-[`testdata/benchmark/vague-requests/`](testdata/benchmark/vague-requests/),
-and the sample report template lives in
-[`examples/benchmark-report/sample-report.md`](examples/benchmark-report/sample-report.md).
-
-## Commands Summary
-
-The core path is:
-
-```text
-ni init -> ni status -> ni end -> ni run
-```
-
-Other implemented kernel commands inspect targets, export locked seed material,
-record inert feedback and pressure, manage explicit amendments, compare
-planning states, and propose inert graph or downstream tool material.
-
-See the full [command reference](docs/commands.md).
-
-## Targets Summary
-
-Targets are consumption shapes for a locked plan. They are not integrations
-that `ni` executes, adapters that `ni` owns, or lifecycle state that becomes
-part of `ni-kernel`.
-
-Built-in targets include:
-
-- prompt and handoff targets for coding models, model workspaces, and human
-  teams,
-- inert seed targets for downstream tools and execution environments.
-
-See the [Target Story](docs/45_TARGET_STORY.md) for target-by-target
-boundaries and named downstream examples.
+- deterministic readiness through `ni status`;
+- lockfile hash verification through `.ni/plan.lock.json`;
+- prompt compilation budget, initially 4000 characters;
+- no downstream execution in `ni run`;
+- repository validation through `bash scripts/quality.sh`;
+- Public demo verification through `bash scripts/demo-check.sh`;
+- Source/build/install verification through `bash scripts/install-check.sh`;
+- licensed under the [MIT License](LICENSE);
+- CI validation in `.github/workflows/ci.yml`.
 
 ## What ni Is Not
 
-`ni` is not:
+`ni` is not a task runner, spec runner, multi-agent execution layer, queue,
+shell adapter, PR automation system, release automation system, or
+downstream-specific runtime. Downstream prompts and seed packages are derived
+and mutable; they do not become kernel-owned execution state.
 
-- a task runner,
-- a spec runner,
-- a multi-agent execution layer,
-- a host-specific adapter,
-- a queue,
-- a shell adapter,
-- release automation,
-- PR automation,
-- a competitor to downstream tools.
+## Read Next
 
-Downstream prompts, seed packages, and tool proposals are derived and mutable.
-They do not become kernel-owned execution state.
-
-## Examples and Docs
-
-Start here:
-
-- [Positioning](docs/40_POSITIONING.md)
-- [Intent Lock Protocol](docs/42_INTENT_LOCK_PROTOCOL.md)
-- [Ambiguous Prompt Blocked](examples/ambiguous-prompt-blocked/)
-- [Neighborhood Cooling Study Protocol](examples/research-protocol/)
+- [Why ni](docs/why-ni.md)
+- [How ni works](docs/how-ni-works.md)
+- [Intent Lock Protocol](docs/intent-lock-protocol.md)
+- [Protocol Specification](docs/42_INTENT_LOCK_PROTOCOL.md)
 - [Command Reference](docs/commands.md)
-- [Benchmark Protocol](docs/43_BENCHMARK_PROTOCOL.md)
-- [Benchmark Report Template](examples/benchmark-report/sample-report.md)
+- [Positioning](docs/40_POSITIONING.md)
 - [Target Story](docs/45_TARGET_STORY.md)
-- [v0.2.0 Release Draft](docs/47_RELEASE_DRAFT_v0.2.0.md)
-- [Public Launch Checklist](docs/50_LAUNCH_CHECKLIST.md)
-- [Post-Release Roadmap](docs/51_POST_RELEASE_ROADMAP.md)
-
-## Development and Release Status
-
-`ni` is currently source-first.
-Release status: does not claim package distribution or a published binary release.
-Package publishing, Homebrew taps, GoReleaser, and automated release tooling are
-outside the current kernel scope.
-
-Use `go run` from source, build a local binary with `make build`, or install
-locally with `make install-local`. See [docs/22_INSTALL.md](docs/22_INSTALL.md)
-for source, local build, or local install details.
-
-Public demo verification:
-
-```bash
-bash scripts/demo-check.sh
-```
-
-Repository validation:
-
-```bash
-bash scripts/quality.sh
-```
-
-CI validation is defined in `.github/workflows/ci.yml` and runs Go tests,
-quality checks, and smoke tests.
-
-Source/build/install verification:
-
-```bash
-bash scripts/install-check.sh
-```
-
-`ni` is licensed under the [MIT License](LICENSE). Contribution guidelines are
-in [CONTRIBUTING.md](CONTRIBUTING.md). Release readiness notes live in
-[docs/46_RELEASE_READINESS.md](docs/46_RELEASE_READINESS.md), public launch
-checks live in [docs/50_LAUNCH_CHECKLIST.md](docs/50_LAUNCH_CHECKLIST.md), and
-the project security policy is [SECURITY.md](SECURITY.md).
+- [Benchmark Protocol](docs/43_BENCHMARK_PROTOCOL.md)
+- [Release Readiness](docs/46_RELEASE_READINESS.md)
+- [Launch Checklist](docs/50_LAUNCH_CHECKLIST.md)

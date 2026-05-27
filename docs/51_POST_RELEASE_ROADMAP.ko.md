@@ -114,7 +114,7 @@ validation, locking, bounded prompt compilation, inert seed export에서 멈춘�
 - multi-agent orchestration;
 - PR automation;
 <!-- ni-boundary-allow: explicit negative boundary list item. -->
-- release automation;
+- no release automation;
 <!-- ni-boundary-allow: explicit negative boundary list item. -->
 - execution evidence loop.
 

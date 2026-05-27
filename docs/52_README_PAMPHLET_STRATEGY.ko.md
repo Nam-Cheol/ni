@@ -128,8 +128,8 @@ validation과 CLI commands를 벗어난 shell work를 요구하면 안 된다.
 - local build;
 - repository가 지원한다면 local install.
 
-Homebrew, package-manager distribution, hosted binaries, release automation을
-claim하지 않는다.
+Do not claim Homebrew, package-manager distribution, hosted binaries, or
+release automation.
 
 ### Trust Signals
 
