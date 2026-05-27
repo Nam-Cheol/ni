@@ -233,6 +233,7 @@ Source/build/install verification:
 bash scripts/install-check.sh
 ```
 
-`ni`는 [MIT License](LICENSE)에 따라 licensed된다. Release readiness notes는
+`ni`는 [MIT License](LICENSE)에 따라 licensed된다. Contribution guidelines는
+[CONTRIBUTING.ko.md](CONTRIBUTING.ko.md)에 있다. Release readiness notes는
 [docs/46_RELEASE_READINESS.ko.md](docs/46_RELEASE_READINESS.ko.md)에 있고,
 project security policy는 [SECURITY.md](SECURITY.md)에 있다.

@@ -235,6 +235,7 @@ Source/build/install verification:
 bash scripts/install-check.sh
 ```
 
-`ni` is licensed under the [MIT License](LICENSE). Release readiness notes live
-in [docs/46_RELEASE_READINESS.md](docs/46_RELEASE_READINESS.md), and the
-project security policy is [SECURITY.md](SECURITY.md).
+`ni` is licensed under the [MIT License](LICENSE). Contribution guidelines are
+in [CONTRIBUTING.md](CONTRIBUTING.md). Release readiness notes live in
+[docs/46_RELEASE_READINESS.md](docs/46_RELEASE_READINESS.md), and the project
+security policy is [SECURITY.md](SECURITY.md).
