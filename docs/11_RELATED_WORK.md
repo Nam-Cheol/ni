@@ -16,11 +16,14 @@ locked source of truth.
 
 `ni` is not an execution runtime, task runner, SPEC runner, Codex adapter,
 task queue, agent team, evidence loop, or project growth system. It is not
-Hyper Run, Spec Kit, Ouroboros, or namba-ai. Those systems can consume locked
-intent downstream, but they must not be absorbed into the kernel.
+Hyper Run, Spec Kit, Ouroboros, or namba-ai. It gives those downstream systems
+a locked intent contract to obey, but they must not be absorbed into the kernel.
 
 For a row-by-row comparison of adjacent categories, see the
 [differentiation map](41_DIFFERENTIATION.md).
+
+For target-by-target downstream consumption boundaries, see the
+[target story](45_TARGET_STORY.md).
 
 ## Positioning matrix
 

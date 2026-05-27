@@ -118,6 +118,9 @@ See the [differentiation map](docs/41_DIFFERENTIATION.md) for how `ni`
 differs from host enhancers, SDD toolkits, coding-agent operating systems, and
 execution growth runtimes.
 
+See the [target story](docs/45_TARGET_STORY.md) for how `ni` gives downstream
+humans, agents, and harnesses a locked intent contract without replacing them.
+
 ## Quickstart
 
 ### Go run mode
@@ -347,19 +350,24 @@ Built-in targets:
 
 ```text
 generic     prompt   general downstream implementation prompt
-codex       prompt   Codex-oriented prompt seed
-human-team  handoff  team handoff prompt
-hyper-run   seed     Hyper Run seed material
-namba-ai    seed     namba-ai seed material
-ouroboros   seed     Ouroboros seed notes
-spec-kit    seed     Spec Kit seed notes
+codex       prompt   bounded implementation prompt seed
+human-team  handoff  planning handoff for people
+hyper-run   seed     seed material, not .hyper/goals runtime packets
+namba-ai    seed     planning seed and suggested graph boundaries
+ouroboros   seed     upstream intent notes, not Agent OS execution state
+spec-kit    seed     upstream intent summary, not Spec Kit workflow state
 ```
 
-Targets are downstream shapes. They do not change kernel authority.
+Targets are downstream consumption shapes. They do not change kernel authority,
+call downstream tools, or make downstream runtime state part of `ni-kernel`.
+`ni` does not replace Codex, Spec Kit, Hyper Run, Ouroboros, namba-ai, or a
+human team. It gives them a locked intent contract to obey.
 
 ## Export
 
 `ni export` writes locked-plan seed packages for supported downstream targets.
+Those outputs are derived from a locked plan and remain mutable downstream
+artifacts.
 
 ```bash
 go run ./cmd/ni export --dir <path> --target hyper-run --out <dir>
@@ -370,7 +378,8 @@ go run ./cmd/ni export --dir <path> --target spec-kit --out <dir>
 
 Export requires `.ni/plan.lock.json`, verifies locked hashes, and refuses stale
 plans with `BLOCKED`. It writes seed Markdown only. It does not call external
-runtimes or create downstream runtime packets.
+runtimes, create downstream runtime packets, or add target adapters. See
+[Target Story](docs/45_TARGET_STORY.md) for the target-by-target boundary.
 
 ## Feedback
 
