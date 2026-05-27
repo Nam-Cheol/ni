@@ -92,7 +92,7 @@ def render_hero(out_dir: Path) -> Path:
     template = load_template("hero.template.svg")
     content = template.substitute(
         title=xml_text("ni hero"),
-        desc=xml_text("Intent Lock before run. Project Intent Compiler for AI Agents."),
+        desc=xml_text("Project Intent Compiler for AI Agents."),
         font_family=xml_attr(FONT_FAMILY),
     )
     path = out_dir / "hero.svg"

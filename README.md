@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="assets/hero.svg" alt="ni hero: Don't run the agent yet. Compile the intent first." width="100%">
+  <img src="assets/hero.svg" alt="ni hero banner: Project Intent Compiler for AI Agents" width="100%">
 </p>
 
 <h1 align="center">Don't run the agent yet. Compile the intent first.</h1>

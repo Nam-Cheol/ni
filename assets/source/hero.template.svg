@@ -4,56 +4,60 @@
   <defs>
     <linearGradient id="hero-bg" x1="0" y1="0" x2="1" y2="1">
       <stop offset="0" stop-color="#F8FAFC"/>
-      <stop offset="0.54" stop-color="#EEF4FF"/>
+      <stop offset="0.48" stop-color="#EEF4FF"/>
       <stop offset="1" stop-color="#E8FFF7"/>
     </linearGradient>
-    <linearGradient id="hero-accent" x1="0" y1="0" x2="1" y2="0">
+    <linearGradient id="hero-wave-a" x1="0" y1="0" x2="1" y2="0">
       <stop offset="0" stop-color="#5B8DEF"/>
-      <stop offset="0.55" stop-color="#8B7CF6"/>
+      <stop offset="0.52" stop-color="#8B7CF6"/>
       <stop offset="1" stop-color="#4FBF9F"/>
     </linearGradient>
+    <linearGradient id="hero-wave-b" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#DCEBFF"/>
+      <stop offset="0.58" stop-color="#EDE9FE"/>
+      <stop offset="1" stop-color="#DCFCE7"/>
+    </linearGradient>
+    <clipPath id="hero-clip">
+      <rect width="1200" height="460" rx="30"/>
+    </clipPath>
   </defs>
-  <rect width="1200" height="460" rx="28" fill="url(#hero-bg)"/>
-  <path d="M80 350 C210 260 320 378 455 286 S690 235 790 160 S1010 80 1120 138" fill="none" stroke="#D8E1EE" stroke-width="24" stroke-linecap="round"/>
-  <path d="M80 350 C210 260 320 378 455 286 S690 235 790 160 S1010 80 1120 138" fill="none" stroke="url(#hero-accent)" stroke-width="7" stroke-linecap="round"/>
-  <g fill="none" stroke="#D8E1EE" stroke-width="1" opacity="0.6">
-    <path d="M100 80 H1100"/>
-    <path d="M100 160 H1100"/>
-    <path d="M100 240 H1100"/>
-    <path d="M100 320 H1100"/>
-    <path d="M180 54 V380"/>
-    <path d="M360 54 V380"/>
-    <path d="M540 54 V380"/>
-    <path d="M720 54 V380"/>
-    <path d="M900 54 V380"/>
+  <g clip-path="url(#hero-clip)">
+    <rect width="1200" height="460" fill="url(#hero-bg)"/>
+    <g fill="none" stroke="#D8E1EE" stroke-width="1" opacity="0.55">
+      <path d="M96 74 H1104"/>
+      <path d="M96 146 H1104"/>
+      <path d="M96 218 H1104"/>
+      <path d="M96 290 H1104"/>
+      <path d="M96 362 H1104"/>
+      <path d="M168 50 V406"/>
+      <path d="M300 50 V406"/>
+      <path d="M432 50 V406"/>
+      <path d="M564 50 V406"/>
+      <path d="M696 50 V406"/>
+      <path d="M828 50 V406"/>
+      <path d="M960 50 V406"/>
+      <path d="M1092 50 V406"/>
+    </g>
+    <path d="M-20 330 C134 246 262 384 430 302 C570 234 694 130 850 184 C1000 236 1080 178 1220 94 L1220 460 L-20 460 Z" fill="url(#hero-wave-b)" opacity="0.9"/>
+    <path d="M-20 364 C130 294 278 414 450 336 C588 274 692 196 844 232 C1016 272 1114 222 1220 150 L1220 460 L-20 460 Z" fill="url(#hero-wave-a)" opacity="0.18"/>
+    <path d="M92 336 C236 264 338 368 480 298 S690 174 836 210 S1030 234 1112 138" fill="none" stroke="#FFFFFF" stroke-width="30" stroke-linecap="round" opacity="0.78"/>
+    <path d="M92 336 C236 264 338 368 480 298 S690 174 836 210 S1030 234 1112 138" fill="none" stroke="url(#hero-wave-a)" stroke-width="8" stroke-linecap="round"/>
+    <g transform="translate(750 92)" fill="none" stroke-linecap="round" stroke-linejoin="round">
+      <rect x="114" y="118" width="168" height="132" rx="26" fill="#FFFFFF" stroke="#D8E1EE" stroke-width="2"/>
+      <path d="M154 118 V84 C154 54 174 34 198 34 C222 34 242 54 242 84 V118" stroke="#111827" stroke-width="14"/>
+      <circle cx="198" cy="176" r="22" fill="#DCEBFF" stroke="#5B8DEF" stroke-width="6"/>
+      <path d="M198 198 V220" stroke="#5B8DEF" stroke-width="8"/>
+      <path d="M42 54 H112 M42 94 H96 M42 134 H112 M312 182 H374 M312 222 H352" stroke="#8B7CF6" stroke-width="8" opacity="0.55"/>
+      <path d="M114 54 C150 54 142 84 154 94 M282 182 C310 182 302 210 312 222" stroke="#4FBF9F" stroke-width="6" opacity="0.7"/>
+    </g>
   </g>
-  <g transform="translate(82 76)" font-family="${font_family}">
-    <rect x="0" y="0" width="132" height="36" rx="18" fill="#EDE9FE" stroke="#D8E1EE"/>
-    <text x="22" y="24" fill="#111827" font-size="16" font-weight="700">ni-kernel</text>
-    <text x="0" y="112" fill="#111827" font-size="54" font-weight="800">Intent Lock</text>
-    <text x="0" y="176" fill="#111827" font-size="54" font-weight="800">before run</text>
-    <text x="2" y="230" fill="#475569" font-size="24" font-weight="600">Project Intent Compiler for AI Agents</text>
-    <rect x="0" y="268" width="178" height="38" rx="10" fill="#DCEBFF"/>
-    <text x="20" y="293" fill="#111827" font-size="16" font-weight="700">readiness gate</text>
-    <rect x="194" y="268" width="140" height="38" rx="10" fill="#DCFCE7"/>
-    <text x="214" y="293" fill="#111827" font-size="16" font-weight="700">lockfile</text>
-  </g>
-  <g transform="translate(662 84)" font-family="${font_family}">
-    <rect x="0" y="0" width="430" height="292" rx="20" fill="#FFFFFF" stroke="#D8E1EE"/>
-    <rect x="32" y="32" width="366" height="48" rx="12" fill="#F8FAFC" stroke="#D8E1EE"/>
-    <text x="58" y="62" fill="#111827" font-size="17" font-weight="700">conversation</text>
-    <path d="M202 56 H254" stroke="#5B8DEF" stroke-width="3" stroke-linecap="round"/>
-    <path d="M246 47 L258 56 L246 65" fill="none" stroke="#5B8DEF" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
-    <text x="282" y="62" fill="#111827" font-size="17" font-weight="700">contract</text>
-    <path d="M215 92 V124" stroke="#D8E1EE" stroke-width="3" stroke-linecap="round"/>
-    <rect x="32" y="124" width="366" height="56" rx="14" fill="#EEF4FF" stroke="#D8E1EE"/>
-    <circle cx="68" cy="152" r="14" fill="#5B8DEF"/>
-    <path d="M61 152 H75 M68 145 V159" stroke="#FFFFFF" stroke-width="3" stroke-linecap="round"/>
-    <text x="96" y="158" fill="#111827" font-size="18" font-weight="700">status blocks ambiguity</text>
-    <path d="M215 192 V214" stroke="#D8E1EE" stroke-width="3" stroke-linecap="round"/>
-    <rect x="32" y="214" width="174" height="46" rx="12" fill="#111827"/>
-    <text x="76" y="243" fill="#FFFFFF" font-size="17" font-weight="700">end locks</text>
-    <rect x="224" y="214" width="174" height="46" rx="12" fill="#DCFCE7" stroke="#D8E1EE"/>
-    <text x="266" y="243" fill="#111827" font-size="17" font-weight="700">run compiles</text>
+  <rect width="1200" height="460" rx="30" fill="none" stroke="#D8E1EE"/>
+  <g transform="translate(96 114)" font-family="${font_family}">
+    <rect x="0" y="0" width="156" height="48" rx="24" fill="#FFFFFF" stroke="#D8E1EE" opacity="0.92"/>
+    <path d="M30 25 H52 M42 14 V25" fill="none" stroke="#5B8DEF" stroke-width="4" stroke-linecap="round"/>
+    <path d="M32 25 V34 H50 V25" fill="none" stroke="#111827" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+    <text x="74" y="31" fill="#111827" font-size="19" font-weight="700">ni</text>
+    <text x="0" y="136" fill="#111827" font-size="74" font-weight="800">ni</text>
+    <text x="4" y="180" fill="#475569" font-size="28" font-weight="700">Project Intent Compiler</text>
   </g>
 </svg>

@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="assets/hero.svg" alt="ni hero: agent를 아직 실행하지 말고 의도를 먼저 컴파일하라는 메시지" width="100%">
+  <img src="assets/hero.svg" alt="ni hero banner: Project Intent Compiler for AI Agents" width="100%">
 </p>
 
 <h1 align="center">agent를 아직 실행하지 마라. 먼저 의도를 컴파일하라.</h1>
