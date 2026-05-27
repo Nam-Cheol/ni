@@ -260,6 +260,7 @@ run_step "core boundary has no violations" python3 scripts/check-core-boundary.p
 run_step "Go tests pass" go test ./...
 run_step "golden tests pass" go test ./cmd/ni -run Golden -count=1
 run_step "smoke passes" bash scripts/smoke.sh
+run_step "public demos verify" bash scripts/demo-check.sh
 
 run_step "status proof works" bash -c '
   go run ./cmd/ni status --dir examples/conversation-product --proof >"$1/status-proof.out"

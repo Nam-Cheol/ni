@@ -123,6 +123,16 @@ Another non-software example is
 product that compiles a human concierge handoff without deploying a chatbot or
 booking travel.
 
+Verify all public README demos from source:
+
+```bash
+bash scripts/demo-check.sh
+```
+
+The demo check asserts the intentionally blocked state for the ambiguous prompt
+demo and compiles locked example prompts to temporary files only. It does not
+execute downstream agents.
+
 ## Core Flow
 
 Create a planning workspace:
@@ -540,6 +550,16 @@ bash scripts/quality.sh
 `scripts/quality.sh` runs formatting checks, Go tests, JSON checks, Markdown
 fence checks, skill metadata checks, prompt budget checks, core-boundary
 self-tests, and smoke tests.
+
+Public demo verification is a separate release proof check:
+
+```bash
+bash scripts/demo-check.sh
+```
+
+Run it when README demos, example workspaces, status output, or prompt
+compilation behavior changes. Details live in
+[docs/48_DEMO_VERIFICATION.md](docs/48_DEMO_VERIFICATION.md).
 
 ## License and Release Status
 
