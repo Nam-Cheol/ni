@@ -8,6 +8,12 @@ The initial product is `ni-kernel`: a Project Intent Compiler for AI Agents
 that creates, validates, locks, and compiles planning contracts before any
 execution harness runs.
 
+Its core mechanism is the Intent Lock Protocol: a deterministic pre-runtime
+control layer that defines how planning conversations become a project
+contract, when the contract is ready to lock, how the accepted plan is hashed,
+what downstream actors may trust, and when execution must stop because intent
+changed.
+
 ## Product architecture
 
 Use this boundary throughout the repository:

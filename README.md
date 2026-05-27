@@ -14,9 +14,18 @@ The current product is `ni-kernel`: the upstream intent contract layer, not an
 execution harness, task runner, SPEC runner, multi-agent layer, or Codex
 adapter.
 
+Its core mechanism is the **Intent Lock Protocol**: a deterministic pre-runtime
+control layer that defines how planning conversations become a project
+contract, when the contract is ready to lock, how the accepted plan is hashed,
+what downstream actors may trust, and when execution must stop because intent
+changed.
+
 ```text
 conversation -> docs/plan + .ni/contract.json -> ni status -> ni end -> locked intent -> ni run
 ```
+
+See [Intent Lock Protocol](docs/42_INTENT_LOCK_PROTOCOL.md) for the protocol
+definition, inputs, gates, outputs, and non-goals.
 
 ## Authoring model
 

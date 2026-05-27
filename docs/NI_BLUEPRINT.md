@@ -12,6 +12,11 @@ Run, namba-ai, a generated harness, or a human team starts execution.
 
 Lock intent before any harness runs.
 
+The core mechanism is the Intent Lock Protocol: a deterministic pre-runtime
+control layer for turning planning conversation into a project contract,
+checking readiness, hashing the accepted plan, defining what downstream actors
+may trust, and refusing execution from changed intent.
+
 ## Why this exists
 
 Traditional harnesses try to stabilize model behavior by controlling the
@@ -33,6 +38,7 @@ The kernel owns:
 5. hash validation
 6. prompt compilation
 7. source-of-truth precedence
+8. Intent Lock Protocol boundaries
 ```
 
 The kernel does not own:
