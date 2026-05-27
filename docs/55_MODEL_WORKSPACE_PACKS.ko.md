@@ -31,8 +31,8 @@ pack은 model judgment로 대체하지 말고 `BLOCKED`를 report해야 한다.
 | Pack type | Purpose | Current status | Boundary |
 | --- | --- | --- | --- |
 | Repo-local `ni` skills | Current project workspace에 checked-in된 skill files를 사용한다. | Codex-style repo-local skills에 한해 Available. | Model은 planning docs와 `.ni/contract.json` edits를 도울 수 있지만 `ni status`, `ni end`, `ni run`이 authority다. |
-| User-global skill pack | 같은 `ni` UX를 user의 global model workspace skill folder에 설치한다. | Planned; global Codex installation은 여기서 verify되지 않았으므로 claimed하지 않는다. | CLI가 bundled, installed, bypassed된다고 imply하면 안 된다. |
-| Downloadable zip skill pack | Skills, prompts, README instructions를 portable archive로 제공한다. | Planned. | Archive는 UX만 package한다; CLI gates를 호출할 trusted way가 여전히 필요하다. |
+| User-global skill pack | 같은 `ni` UX를 user의 global model workspace skill folder에 설치한다. | Claude pack은 user-provided, verified target directory에 한해 Available; global Codex installation은 여기서 verify되지 않았으므로 claimed하지 않는다. | CLI가 bundled, installed, bypassed된다고 imply하면 안 된다. |
+| Downloadable zip skill pack | Skills, prompts, README instructions를 portable archive로 제공한다. | Claude skill pack에 한해 Available. | Archive는 UX만 package한다; CLI gates를 호출할 trusted way가 여전히 필요하다. |
 | Manual copy-paste workflow | No-terminal users가 planning text를 model workspace에 붙여넣고 CLI-produced proofs를 다시 conversation에 붙여넣게 한다. | Workflow pattern으로는 Experimental; supported no-terminal product path는 아니다. | Copied result가 CLI에서 나온 것이 아니면 model은 readiness, lock, handoff를 선언할 수 없다. |
 | Future package installer | Future package mechanism으로 model workspace packs를 install 또는 update한다. | Planned. | Installer work는 distribution infrastructure이며 `ni-kernel` execution behavior가 아니다. |
 
@@ -41,7 +41,7 @@ pack은 model judgment로 대체하지 말고 `BLOCKED`를 report해야 한다.
 | Environment | Repo-local skills | User-global pack | Downloadable zip pack | Manual copy-paste | Future package installer |
 | --- | --- | --- | --- | --- | --- |
 | Codex-style skill folders | Available: `.agents/skills/ni-start`, `.agents/skills/ni-end`, `.agents/skills/ni-run`이 이 repo에 있다. | Unverified: global Codex install path는 verified 또는 documented available 상태가 아니다. | Planned: packaging이 정의된 뒤 repo-local skill shape을 reuse할 수 있다. | Experimental: users가 docs와 CLI outputs를 paste할 수 있지만 현재 preferred path는 repo-local skills다. | Planned. |
-| Claude Skills / slash commands | Unverified: 이 repo에는 Claude-specific skill 또는 slash-command package가 없다. | Unverified: Claude distribution path가 verify되지 않았다. | Claude required structure와 test가 끝난 뒤에만 Planned에서 이동할 수 있다. | Experimental: generic instructions는 copy할 수 있지만 Claude-specific distribution은 claimed하지 않는다. | Planned. |
+| Claude Skills / slash commands | `packages/claude-skills` 아래 repository files로 Available; slash-command behavior는 claim하지 않는다. | `scripts/install-claude-skills.sh --target <verified-dir>`에 한해 Available; global Claude path는 assume하지 않는다. | Available: `scripts/package-claude-skills.sh`가 `dist/ni-claude-skills.zip`을 만든다. | Host가 skills를 load하지 않는 경우 generic instructions copy는 여전히 Experimental이다. | Planned. |
 | Generic model instruction packs | Experimental: model이 repository docs를 읽을 수 있지만 `.agents/skills`는 Codex-style convention이다. | Planned. | Planned. | Experimental: visible instructions와 pasted CLI proofs를 사용한다. | Planned. |
 
 이 matrix는 global Codex installation이나 Claude Skills distribution을
@@ -57,7 +57,7 @@ Model workspace pack은 다음 UX actions를 cover해야 한다.
 | `ni-start` | Planning conversation을 계속하고 user intent에서 `docs/plan/**`, `.ni/contract.json`, session continuity를 update한다. | `.agents/skills/ni-start/SKILL.md`가 있다. | Repo-local Codex-style skills에서 Available. |
 | `ni-end` | CLI readiness를 review하고 explicit user confirmation을 받은 뒤 CLI가 `.ni/plan.lock.json`을 쓰게 한다. | `.agents/skills/ni-end/SKILL.md`가 있다. | Repo-local Codex-style skills에서 Available. |
 | `ni-run` | Valid lock에서 4000 characters 이하의 handoff prompt를 compile한다. | `.agents/skills/ni-run/SKILL.md`가 있다. | Repo-local Codex-style skills에서 Available. |
-| `ni-status-review` | `ni status` 또는 `ni status --proof` output을 설명하고 blockers와 next planning question을 제안한다. | Standalone skill file은 아직 없다. | Planned. |
+| `ni-status-review` | `ni status` 또는 `ni status --proof` output을 설명하고 blockers와 next planning question을 제안한다. | `packages/claude-skills/ni-status-review/SKILL.md`가 있다. | Claude skill pack에서 Available. |
 | `ni-readme-pamphlet-review` | `docs/52_README_PAMPHLET_STRATEGY.md` 기준으로 README changes를 review한다. | Standalone skill file은 아직 없다. | Planned and optional. |
 
 `ni-status-review`는 model이 status output을 reinterpret하지 않고 preserve해야 하는
@@ -90,8 +90,9 @@ exact CLI output을 요청할 수 있다고 가정한다.
 ### User-global skill pack
 
 User-global pack은 repo-local behavior를 mirror하지만 특정 project checkout 밖에
-있다. Global install location, update behavior, host-specific loading rules가
-verify되기 전까지 planned다.
+있다. Claude-compatible environment의 경우 이 repository는 user-provided,
+verified target directory를 요구하는 safe copy script를 제공한다. Global Claude
+path를 claim하거나 assume하지 않는다.
 
 포함해야 할 내용:
 
@@ -104,26 +105,29 @@ verify되기 전까지 planned다.
 ### Downloadable zip skill pack
 
 Zip pack은 portable archive여야 하며 kernel behavior를 바꾸는 installer가 아니다.
-예상 archive shape은 다음과 같다:
+Claude archive shape은 다음과 같다:
 
 ```text
-ni-model-workspace-pack/
+ni-claude-skills/
   README.md
-  codex/
-    skills/
-      ni-start/SKILL.md
-      ni-end/SKILL.md
-      ni-run/SKILL.md
-  generic/
-    instructions.md
-    status-review.md
-    manual-copy-paste.md
+  README.ko.md
+  ni-start/SKILL.md
+  ni-status-review/SKILL.md
+  ni-end/SKILL.md
+  ni-run/SKILL.md
 ```
 
-Claude-specific files는 repository가 required Claude Skills 또는 slash-command
-structure를 verify한 뒤에만 추가해야 한다. 그 전까지 zip은 Claude users를 위한
-generic instructions를 포함할 수 있지만 Claude Skills distribution을 claim하면 안
-된다.
+다음 command로 생성한다:
+
+```bash
+bash scripts/package-claude-skills.sh
+```
+
+Output path:
+
+```text
+dist/ni-claude-skills.zip
+```
 
 ### Manual copy-paste workflow
 
@@ -190,11 +194,12 @@ Lock hash mismatch가 있으면 모든 pack은 stop하고 `BLOCKED`를 report해
 - Repo-local Codex-style skills는 이 repository에서 available하다고 설명할 수 있다.
 - Global Codex installation은 real install location과 loading behavior가 verify될
   때까지 available하다고 설명하면 안 된다.
-- Claude Skills 또는 slash-command distribution은 files가 Claude required
-  structure에 맞고 해당 environment에서 test되기 전까지 available하다고 설명하면
-  안 된다.
-- Downloadable zip packs는 archive가 produced, inspected, documented되기 전까지
-  available하다고 설명하면 안 된다.
+- Claude skill installation은 user-provided, verified target directory를 요구해야
+  하며 repository가 global Claude path를 assume하면 안 된다.
+- Claude slash-command behavior는 available하다고 설명하면 안 된다. 이 pack은
+  slash-command integration이 아니라 skills를 제공한다.
+- Downloadable zip packs는 archive가 produced, inspected, documented된 경우에만
+  available하다고 설명할 수 있다.
 - Manual copy-paste는 experimental workflow로 설명할 수 있지만 complete
   no-terminal product로 설명하면 안 된다.
 - Future package installer work는 real implementation과 validation path가 있기
