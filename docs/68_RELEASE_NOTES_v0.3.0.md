@@ -1,21 +1,20 @@
 # ni v0.3.0 - Project Intent Compiler for AI Agents
 
-Tag suggestion: `v0.3.0`
+Tag: `v0.3.0`
 
 Summary: Don't run the agent yet. Compile the intent first.
 
-These are draft GitHub Release notes for the first public `ni` release. They
-do not publish a release, create a tag, upload binaries, or claim package
-manager availability. Release binaries and curl installer availability are
-available only after a tagged GitHub Release exists with assets and checksums.
+These notes describe the first public `ni` GitHub Release. The release includes
+OS/architecture binary archives and `ni_0.3.0_checksums.txt`. They do not claim
+package manager availability or public curl installer availability.
 
 ## Why v0.3.0
 
 `v0.2.0` was used as a planning and differentiation label. The repository now
 also contains the visual and distribution packaging work for the next public
-surface: README product-pamphlet direction, local SVG assets, source-first
+surface: README product-pamphlet direction, local SVG assets, release-binary
 distribution language, and model workspace pack docs. That makes `v0.3.0` the
-candidate version for the first public GitHub Release.
+first public GitHub Release.
 
 ## Category
 
@@ -39,9 +38,8 @@ trust, and when execution must stop because intent changed.
 - Ambiguous prompt blocked demo.
 - Non-software demos for planning outside software delivery.
 - Model workspace packs for Codex- and Claude-style planning UX.
-- Source-first usage through `go run ./cmd/ni ...`, local build, and local
-  install.
-- Release binary pipeline configuration for future GitHub Release assets.
+- Source usage through `go run ./cmd/ni ...`, local build, and local install.
+- Release binary archives for Linux, macOS, and Windows with checksums.
 
 ## Not Included
 
@@ -58,10 +56,10 @@ trust, and when execution must stop because intent changed.
 
 ## Distribution
 
-Available usage for this release preparation remains source-first:
-`go run ./cmd/ni ...`, `make build`, and `make install-local`.
+Available usage for this release includes source, local build, local install,
+and manual GitHub Release binary download with checksum verification.
 
-The repository includes GoReleaser configuration for future release assets:
+The release includes these asset patterns:
 
 | Platform | Architecture | Archive |
 | --- | --- | --- |
@@ -71,10 +69,14 @@ The repository includes GoReleaser configuration for future release assets:
 | macOS | arm64 | `ni_<version>_darwin_arm64.tar.gz` |
 | Windows | amd64 | `ni_<version>_windows_amd64.zip` |
 
-The release workflow should also generate `ni_<version>_checksums.txt`. These
-notes do not claim hosted release assets, Homebrew support, Scoop support,
-published binary packages, or curl installer availability before the GitHub
-Release actually contains the assets and checksums.
+The release also includes `ni_0.3.0_checksums.txt`. Manual binary installation
+requires choosing the OS/arch archive, downloading the checksum file from the
+same release, verifying the checksum, unpacking the binary, and running
+`ni --help` and `ni version`.
+
+These notes do not claim Homebrew support, Scoop support, package-manager
+distribution, global model-pack installation, or public curl installer
+availability.
 
 ## Validation Commands
 

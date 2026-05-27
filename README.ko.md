@@ -67,7 +67,7 @@ Shell commands, queues, agents, downstream work는 실행하지 않습니다.
 
 ## 60초 시작
 
-`ni`는 현재 source-first입니다:
+이 checkout에서 평가하거나 개발할 때는 source로 시작하세요:
 
 ```bash
 go run ./cmd/ni --help
@@ -92,12 +92,23 @@ go run ./cmd/ni run --dir ./my-plan --target generic --max-chars 4000
 | Local binary | Available after local build | 이 checkout에서 `./bin/ni` 또는 local install을 원할 때 사용합니다. | Local build/install만 말하며 hosted binary는 주장하지 않습니다. |
 | Model workspaces | Available as assisted planning | Codex 또는 Claude가 docs와 contract records draft를 돕게 하고 싶을 때 사용합니다. | Skills are UX; readiness와 lock authority는 CLI입니다. |
 | No-terminal method | Available as assisted method | CLI run 전 Intent Lock method를 배우거나 draft하고 싶을 때 사용합니다. | Useful drafting이며 deterministic validation은 아닙니다. |
-| Release binary | Planned | Published release에서 Go 없이 `ni`를 받고 싶을 때 사용합니다. | Public release assets와 checksums를 기다립니다. |
-| Curl installer | Release-gated | Release assets가 생긴 뒤 one-command install을 원할 때 사용합니다. | `install.sh`는 있지만 public install은 release assets를 기다립니다. |
+| Release binary | Available | Published release에서 Go 없이 `ni`를 받고 싶을 때 사용합니다. | GitHub Releases에서 OS/arch archive를 받고 checksum file로 검증합니다. |
+| Curl installer | Release-gated | Release assets에서 one-command install을 원할 때 사용합니다. | `install.sh`는 있지만 public installer availability는 real release verification을 기다립니다. |
 | Homebrew | Planned | Package manager를 선호할 때 사용합니다. | Published tap이나 formula가 없습니다. |
 
-Release status: `ni`는 package distribution이나 published binary release를 claim하지 않는다.
-GitHub Release가 실제로 assets와 checksums를 publish할 때까지 source, local build, local install mode를 사용합니다.
+Release status: GitHub Release binaries와 checksums는 available입니다. Package
+manager distribution은 available이 아니며, curl installer는 real release assets
+검증이 끝날 때까지 release-gated입니다.
+
+Manual release download:
+
+1. <https://github.com/Nam-Cheol/ni/releases>를 열고 OS와 architecture에 맞는
+   archive를 선택합니다.
+2. 같은 release에서 matching archive와 `ni_<version>_checksums.txt`를
+   다운로드합니다.
+3. Checksum file로 archive를 검증합니다.
+4. Archive를 unpack하고 필요하면 `ni`를 `PATH`에 둔 뒤 `ni --help`와
+   `ni version`을 실행합니다.
 
 License: `ni`는 [MIT License](LICENSE)로 배포됩니다.
 

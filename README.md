@@ -67,7 +67,7 @@ execute shell commands, queues, agents, or downstream work.
 
 ## Start in 60 seconds
 
-`ni` is currently source-first:
+Start from source when you are evaluating or developing from this checkout:
 
 ```bash
 go run ./cmd/ni --help
@@ -92,13 +92,23 @@ go run ./cmd/ni run --dir ./my-plan --target generic --max-chars 4000
 | Local binary | Available after local build | You want `./bin/ni` or a local install from this checkout. | Build or install locally; no hosted binary is claimed. |
 | Model workspaces | Available as assisted planning | You want Codex or Claude to help draft docs and contract records. | Skills are UX; the CLI remains readiness and lock authority. |
 | No-terminal method | Available as assisted method | You want to learn or draft the Intent Lock method before a CLI run. | Useful drafting, not deterministic validation. |
-| Release binary | Planned | You want `ni` without Go from a published release. | Wait for public release assets and checksums. |
-| Curl installer | Release-gated | You want one-command install after release assets exist. | `install.sh` exists, but public install waits on release assets. |
+| Release binary | Available | You want `ni` without Go from a published release. | Download an OS/arch archive from GitHub Releases and verify it with the checksum file. |
+| Curl installer | Release-gated | You want one-command install from release assets. | `install.sh` exists, but public installer availability waits on real-release verification. |
 | Homebrew | Planned | You prefer a package manager. | No tap or formula is published. |
 
-Release status: `ni` does not claim package distribution or a published binary release.
-Use source, local build, or local install mode until a GitHub Release actually
-publishes assets and checksums.
+Release status: GitHub Release binaries and checksums are available. Package
+manager distribution is not available, and the curl installer remains
+release-gated until verified against the real release assets.
+
+Manual release download:
+
+1. Open <https://github.com/Nam-Cheol/ni/releases> and choose the archive for
+   your OS and architecture.
+2. Download the matching archive and `ni_<version>_checksums.txt` from the same
+   release.
+3. Verify the archive with the checksum file.
+4. Unpack the archive, place `ni` on your `PATH` if desired, then run
+   `ni --help` and `ni version`.
 
 License: `ni` is licensed under the [MIT License](LICENSE).
 

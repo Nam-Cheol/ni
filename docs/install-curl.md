@@ -1,12 +1,13 @@
 # Curl Installer
 
-`install.sh` installs a released `ni` binary without requiring Go. It is release
-asset infrastructure only: it downloads an archive, verifies the checksum when
+`install.sh` is release asset infrastructure for installing a released `ni`
+binary without requiring Go. It downloads an archive, verifies the checksum when
 the release provides one, copies `ni` into a local bin directory, and prints next
 steps. It does not install model skills or run downstream work.
 
-Use this path only after a GitHub Release contains the matching archive and
-`ni_<version>_checksums.txt`.
+Status: release-gated. GitHub Release archives and checksums are available, but
+the curl installer should not be presented as an available public install path
+until `install.sh` is verified against the real release assets.
 
 ## Safer Script Path
 
@@ -16,18 +17,18 @@ Download and inspect the installer first:
 curl -fsSLO https://raw.githubusercontent.com/Nam-Cheol/ni/main/install.sh
 sed -n '1,320p' install.sh
 sh install.sh --dry-run
-sh install.sh --version 0.2.0
 ```
 
 By default, the script installs to `~/.local/bin/ni`. Override the destination
 with `BINDIR`:
 
 ```bash
-BINDIR="$HOME/bin" sh install.sh --version 0.2.0
+BINDIR="$HOME/bin" sh install.sh --dry-run
 ```
 
 If you omit `--version`, the installer asks GitHub for the latest release tag.
-The installed CLI should only be checked with help or version commands:
+After the installer gate is cleared, the installed CLI should only be checked
+with help or version commands:
 
 ```bash
 ~/.local/bin/ni --help
@@ -56,20 +57,20 @@ Manual install keeps every trust step visible.
 Linux:
 
 ```bash
-grep ' ni_0.2.0_linux_amd64.tar.gz$' ni_0.2.0_checksums.txt | sha256sum -c -
+grep ' ni_0.3.0_linux_amd64.tar.gz$' ni_0.3.0_checksums.txt | sha256sum -c -
 ```
 
 macOS:
 
 ```bash
-grep ' ni_0.2.0_darwin_arm64.tar.gz$' ni_0.2.0_checksums.txt | shasum -a 256 -c -
+grep ' ni_0.3.0_darwin_arm64.tar.gz$' ni_0.3.0_checksums.txt | shasum -a 256 -c -
 ```
 
 5. Extract and install:
 
 ```bash
 mkdir -p "$HOME/.local/bin"
-tar -xzf ni_0.2.0_darwin_arm64.tar.gz
+tar -xzf ni_0.3.0_darwin_arm64.tar.gz
 install -m 0755 ni "$HOME/.local/bin/ni"
 "$HOME/.local/bin/ni" --help
 "$HOME/.local/bin/ni" version
@@ -96,7 +97,8 @@ agents, queues, or runtime execution.
 ## Test Release Validation
 
 Repository validation uses a local fake release asset so the installer can be
-tested without network access and without Go:
+tested without network access and without Go. This is not the same as real
+GitHub Release verification:
 
 ```bash
 bash scripts/test-install-sh.sh

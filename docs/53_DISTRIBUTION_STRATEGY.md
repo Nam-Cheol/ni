@@ -4,9 +4,10 @@ This document defines how users can adopt `ni` before they know Go, and later
 before they use a terminal directly.
 
 The strategy is directional. It must not be read as a claim that all paths are
-available today. Current availability is source-first. Future distribution work
-belongs to repository infrastructure, packaging, and documentation. It is not
-`ni-kernel` runtime execution behavior.
+available today. Current availability includes source, local builds, and
+verified GitHub Release binary assets. Future package-manager and installer
+work belongs to repository infrastructure, packaging, and documentation. It is
+not `ni-kernel` runtime execution behavior.
 
 `ni-kernel` remains the authority for:
 
@@ -24,8 +25,8 @@ execution service, or multi-agent execution layer.
 | Track | Status | User type | Required dependency | Trust model | Implementation work needed |
 | --- | --- | --- | --- | --- | --- |
 | Source mode | Available | Developers, early evaluators, contributors, Go-comfortable users | Go 1.22 or newer; Git optional for version metadata | Trust the checked-out source, local Go toolchain, repository tests, and quality checks | Keep `go run`, `make build`, `make test`, and `make quality` documented and working |
-| Release binary mode | Next | Users comfortable with a terminal but not with Go | Terminal; OS-specific downloaded `ni` binary | Trust GitHub Releases assets plus published checksums or signatures once implemented | Define manual release asset process, build per OS/arch, publish checksums, document verification and rollback |
-| Curl installer mode | Script added, release-gated | Terminal users who want one command and no Go setup | `curl` or equivalent downloader; POSIX shell on supported platforms | Trust the installer script only after it verifies downloaded release assets against published checksums or signatures | Keep `install.sh` small, auditable, and covered by installer checks; do not describe it as usable until release assets exist |
+| Release binary mode | Available | Users comfortable with a terminal but not with Go | Terminal; OS-specific downloaded `ni` binary | Trust GitHub Release assets plus published checksums | Keep manual release asset process, OS/arch builds, checksums, verification docs, and rollback notes current |
+| Curl installer mode | Script added, release-gated | Terminal users who want one command and no Go setup | `curl` or equivalent downloader; POSIX shell on supported platforms | Trust the installer script only after it is verified against real release assets and published checksums | Keep `install.sh` small, auditable, and covered by installer checks; do not describe it as usable until real-release verification passes |
 | Package manager mode | Planned | Users who prefer platform package managers | Homebrew first; Scoop later if Windows demand appears | Trust package manager metadata, formulas/manifests, and checksums that point to official release assets | Create a Homebrew tap or formula after release binaries stabilize; consider Scoop later; keep publishing outside `ni-kernel` |
 | Model workspace mode | Available in repo-local form; portable packs planned | Codex/Claude users who author plans through a model workspace | A model workspace that can read the repository docs and invoke the `ni` CLI as authority | Trust the CLI gates, not the model; skills are UX over docs and `.ni/contract.json` | Package and document portable skill packs; keep skill behavior aligned with `ni status`, `ni end`, and `ni run` |
 | No-terminal mode | Planned | Non-technical users, product leads, researchers, and teams who want docs-first planning without direct terminal use | Downloadable model pack and docs-first workflow; some trusted runner still invokes `ni` gates behind the scenes | Trust visible docs, lockfile hashes, and CLI-generated status/lock/run outputs; the model may not declare readiness on its own | Design downloadable model pack, guided docs workflow, and proof display; do not add a hosted service or terminal-less web runtime in this task |
@@ -57,12 +58,13 @@ installed. Its trust model is transparent source plus local validation.
 
 ### 2. Release binary mode
 
-Release binary mode is next, not available yet.
+Release binary mode is available.
 
-The goal is to let users download `ni` from GitHub Releases without installing
-Go. Release assets should be plain OS/architecture binaries or archives with
-checksums. Verification should be documented before the path is presented as
-supported.
+Users can download `ni` from GitHub Releases without installing Go. Release
+assets are OS/architecture archives with a published checksum file. The
+documented trust path is: choose the OS/arch asset, download the matching
+checksum file from the same release, verify the checksum, unpack the binary, and
+run `ni --help` and `ni version`.
 
 This is repository distribution infrastructure. It must not add release
 automation to `ni-kernel`, and it must not change `ni run` into an executor.
@@ -78,7 +80,8 @@ and how it verifies the asset.
 
 This track depends on release binary mode. The script is tested with local fake
 release assets, but it must not be presented as a working public install path
-until real release assets and verification metadata exist.
+until `install.sh` is verified against the real GitHub Release assets and
+checksum file.
 
 ### 4. Package manager mode
 
@@ -132,12 +135,13 @@ planning conversation -> docs contract -> readiness gate -> lockfile -> prompt
 
 ## Availability Rules
 
-- Only source mode, local binary build, local install, and repo-local model
-  workspace usage may be described as available today.
-- Release binaries must not be described as available until GitHub Releases
-  assets exist for supported platforms.
-- Curl install must not be described as available until real release assets
-  exist and `install.sh` verifies them.
+- Source mode, local binary build, local install, repo-local model workspace
+  usage, and GitHub Release binary downloads may be described as available
+  today.
+- Release binaries may be described as available only when GitHub Release assets
+  and checksums exist for supported platforms.
+- Curl install must not be described as available until `install.sh` is verified
+  against real release assets and checksums.
 - Package manager install must not be described as available until packages or
   formulas are published.
 - No-terminal mode must not be described as available until a downloadable model

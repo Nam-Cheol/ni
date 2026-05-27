@@ -1,9 +1,9 @@
 # Install ni
 
-`ni` is currently usable from source or from a locally built binary. A
-GoReleaser-based release binary pipeline is prepared for future GitHub Releases,
-but hosted release assets are not available until the first tagged release
-publishes them.
+`ni` is usable from source, from a locally built binary, or from published
+GitHub Release archives. Release binaries and checksums are available for
+`v0.3.0`; the curl installer remains release-gated until `install.sh` is
+verified against the real release assets.
 
 ## Prerequisites
 
@@ -68,13 +68,13 @@ make install-local BINDIR="$tmpdir/bin"
 "$tmpdir/bin/ni" version
 ```
 
-## Release binary after first assets exist
+## Release binary
 
-Release binaries are planned for GitHub Releases, but no release asset should be
-treated as available until a published release page includes the matching file
-and checksum.
+Release binaries are available from GitHub Releases:
 
-When those assets exist, use this matrix:
+<https://github.com/Nam-Cheol/ni/releases>
+
+Use this matrix to choose the archive for your OS and architecture:
 
 | Platform | Architecture | Archive |
 | --- | --- | --- |
@@ -84,41 +84,62 @@ When those assets exist, use this matrix:
 | macOS | arm64 | `ni_<version>_darwin_arm64.tar.gz` |
 | Windows | amd64 | `ni_<version>_windows_amd64.zip` |
 
-Each release is also expected to include
-`ni_<version>_checksums.txt`. After downloading a published archive and the
-checksum file from the same release, verify the archive before placing `ni` on
-your `PATH`.
+Each release also includes `ni_<version>_checksums.txt`. Download the archive
+and checksum file from the same release, verify the archive, unpack the binary,
+and then run `ni --help` and `ni version`.
 
-Linux or macOS:
+Linux example:
 
 ```bash
-sha256sum -c ni_<version>_checksums.txt --ignore-missing
-tar -xzf ni_<version>_<os>_<arch>.tar.gz
+VERSION=0.3.0
+curl -fSLO "https://github.com/Nam-Cheol/ni/releases/download/v${VERSION}/ni_${VERSION}_linux_amd64.tar.gz"
+curl -fSLO "https://github.com/Nam-Cheol/ni/releases/download/v${VERSION}/ni_${VERSION}_checksums.txt"
+grep " ni_${VERSION}_linux_amd64.tar.gz$" "ni_${VERSION}_checksums.txt" | sha256sum -c -
+tar -xzf "ni_${VERSION}_linux_amd64.tar.gz"
+./ni --help
 ./ni version
 ```
 
-macOS also provides `shasum -a 256 -c` if `sha256sum` is not installed.
+macOS example:
+
+```bash
+VERSION=0.3.0
+curl -fSLO "https://github.com/Nam-Cheol/ni/releases/download/v${VERSION}/ni_${VERSION}_darwin_arm64.tar.gz"
+curl -fSLO "https://github.com/Nam-Cheol/ni/releases/download/v${VERSION}/ni_${VERSION}_checksums.txt"
+grep " ni_${VERSION}_darwin_arm64.tar.gz$" "ni_${VERSION}_checksums.txt" | shasum -a 256 -c -
+tar -xzf "ni_${VERSION}_darwin_arm64.tar.gz"
+./ni --help
+./ni version
+```
 
 Windows PowerShell:
 
 ```powershell
-Expand-Archive ni_<version>_windows_amd64.zip -DestinationPath ni_<version>_windows_amd64
-.\ni_<version>_windows_amd64\ni.exe version
+$Version = "0.3.0"
+Invoke-WebRequest "https://github.com/Nam-Cheol/ni/releases/download/v$Version/ni_$($Version)_windows_amd64.zip" -OutFile "ni_$($Version)_windows_amd64.zip"
+Invoke-WebRequest "https://github.com/Nam-Cheol/ni/releases/download/v$Version/ni_$($Version)_checksums.txt" -OutFile "ni_$($Version)_checksums.txt"
+Get-FileHash "ni_$($Version)_windows_amd64.zip" -Algorithm SHA256
+Select-String "ni_$($Version)_windows_amd64.zip" "ni_$($Version)_checksums.txt"
+Expand-Archive "ni_$($Version)_windows_amd64.zip" -DestinationPath "ni_$($Version)_windows_amd64"
+.\ni_$($Version)_windows_amd64\ni.exe --help
+.\ni_$($Version)_windows_amd64\ni.exe version
 ```
 
-## Curl installer after first assets exist
+Compare the `Get-FileHash` output with the checksum line printed by
+`Select-String` before trusting the extracted binary.
 
-`install.sh` can install a release archive without requiring Go, but it remains
-release-gated: use it only after the GitHub Release contains the matching archive
-and checksum file.
+## Curl installer
 
-Download and inspect the script before running it:
+`install.sh` can install a release archive without requiring Go, but public
+installer availability remains release-gated until the script is verified
+against the real GitHub Release assets.
+
+Download and inspect the script before any local trial:
 
 ```bash
 curl -fsSLO https://raw.githubusercontent.com/Nam-Cheol/ni/main/install.sh
 sed -n '1,320p' install.sh
 sh install.sh --dry-run
-sh install.sh --version 0.2.0
 ```
 
 See [Curl Installer](install-curl.md) for `BINDIR`, checksum behavior, and the
@@ -155,7 +176,6 @@ bash scripts/release-check.sh
 
 `ni` is licensed under the [MIT License](../LICENSE).
 
-This install document does not claim package distribution, Homebrew support,
-Scoop support, or currently available release binaries. Use source, local build,
-or local install mode unless a published GitHub Release contains verified
-assets.
+This install document claims published GitHub Release binary assets and
+checksums. It does not claim curl installer availability, package distribution,
+Homebrew support, Scoop support, or global model-pack installation.
