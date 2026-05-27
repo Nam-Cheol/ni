@@ -3,7 +3,7 @@
 This document plans Homebrew distribution for `ni` without claiming that
 Homebrew installation works today.
 
-Current status: planned. There is no published Homebrew formula for `ni`, no
+Current status: Planned. There is no published Homebrew formula for `ni`, no
 verified `brew install` path, and no package-manager release automation enabled
 for Homebrew.
 

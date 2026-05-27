@@ -1,12 +1,13 @@
 # ni v0.3.0 - Project Intent Compiler for AI Agents
 
-Tag: `v0.3.0`
+Tag suggestion: `v0.3.0`
 
 Summary: Don't run the agent yet. Compile the intent first.
 
-These notes describe the first public `ni` GitHub Release. The release includes
-OS/architecture binary archives and `ni_0.3.0_checksums.txt`. They do not claim
-package manager availability or public curl installer availability.
+These notes are draft release notes for a future public `ni` GitHub Release.
+They do not publish a release, create a tag, upload binaries, or claim package
+manager availability. Hosted release binaries and curl installer availability
+are only available after a tagged GitHub Release contains assets and checksums.
 
 ## Why v0.3.0
 
@@ -38,8 +39,9 @@ trust, and when execution must stop because intent changed.
 - Ambiguous prompt blocked demo.
 - Non-software demos for planning outside software delivery.
 - Model workspace packs for Codex- and Claude-style planning UX.
-- Source usage through `go run ./cmd/ni ...`, local build, and local install.
-- Release binary archives for Linux, macOS, and Windows with checksums.
+- Source-first usage through `go run ./cmd/ni ...`, local build, and local
+  install.
+- Release binary pipeline configuration for future GitHub Release assets.
 
 ## Not Included
 
@@ -56,10 +58,10 @@ trust, and when execution must stop because intent changed.
 
 ## Distribution
 
-Available usage for this release includes source, local build, local install,
-and manual GitHub Release binary download with checksum verification.
+Available usage for this release preparation is source-first: `go run
+./cmd/ni ...`, `make build`, and `make install-local`.
 
-The release includes these asset patterns:
+The repository includes GoReleaser configuration for future release assets:
 
 | Platform | Architecture | Archive |
 | --- | --- | --- |
@@ -69,14 +71,14 @@ The release includes these asset patterns:
 | macOS | arm64 | `ni_<version>_darwin_arm64.tar.gz` |
 | Windows | amd64 | `ni_<version>_windows_amd64.zip` |
 
-The release also includes `ni_0.3.0_checksums.txt`. Manual binary installation
-requires choosing the OS/arch archive, downloading the checksum file from the
-same release, verifying the checksum, unpacking the binary, and running
-`ni --help` and `ni version`.
+The release workflow must also generate `ni_<version>_checksums.txt`. These
+notes do not claim hosted release assets, Homebrew support, Scoop support,
+published binary packages, or curl installer availability before the GitHub
+Release contains real assets and checksums.
 
 These notes do not claim Homebrew support, Scoop support, package-manager
-distribution, global model-pack installation, or public curl installer
-availability.
+distribution, global model-pack installation, hosted release assets, or public
+curl installer availability.
 
 ## Validation Commands
 

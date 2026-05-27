@@ -89,37 +89,17 @@ go run ./cmd/ni run --dir ./my-plan --target generic --max-chars 4000
 | Path | Status | Use it when | Boundary |
 | --- | --- | --- | --- |
 | Source | Available | You can run `go run ./cmd/ni ...`. | Full deterministic `status`, `end`, and `run`. |
-| Local binary | Available after local build | You want `./bin/ni` or a local install from this checkout. | Build or install locally; no hosted binary is claimed. |
-| Model workspaces | Available as assisted planning | You want Codex or Claude to help draft docs and contract records. | Skills are UX; the CLI remains readiness and lock authority. |
-| No-terminal method | Available as assisted method | You want to learn or draft the Intent Lock method before a CLI run. | Useful drafting, not deterministic validation. |
-| Release binary | Available | You want `ni` without Go from a published release. | Download an OS/arch archive from GitHub Releases and verify it with the checksum file. |
-| Curl installer | Available | You want a small shell installer for release assets. | Download and inspect `install.sh`; it installs the release archive and verifies the checksum when available. |
+| Local binary | Available | You want `./bin/ni` or a local install from this checkout. | Build or install locally from source; no hosted binary is claimed. |
+| Model workspaces | Experimental | You want Codex or Claude to help draft docs and contract records. | Skills are UX; the CLI remains readiness and lock authority. |
+| No-terminal method | Experimental | You want to learn or draft the Intent Lock method before a CLI run. | Assisted drafting only; it is not deterministic validation. |
+| Release binary | Release-gated | You want `ni` without Go from a published release. | Wait for a GitHub Release with OS/arch archives and checksums, then verify before use. |
+| Curl installer | Release-gated | You want a small shell installer for release assets. | Use only after release assets exist and `install.sh` has been verified against them. |
 | Homebrew | Planned | You prefer a package manager. | No tap or formula is published. |
 
-Release status: GitHub Release binaries and checksums are available. Package
-manager distribution is not available. The curl installer has been verified
-against the published `v0.3.0` release assets.
-
-Curl installer, with inspection first:
-
-```bash
-curl -fsSLO https://raw.githubusercontent.com/Nam-Cheol/ni/main/install.sh
-sed -n '1,320p' install.sh
-sh install.sh --dry-run --version 0.3.0
-BINDIR="$HOME/.local/bin" sh install.sh --version 0.3.0
-"$HOME/.local/bin/ni" --help
-"$HOME/.local/bin/ni" version
-```
-
-Manual release download:
-
-1. Open <https://github.com/Nam-Cheol/ni/releases> and choose the archive for
-   your OS and architecture.
-2. Download the matching archive and `ni_<version>_checksums.txt` from the same
-   release.
-3. Verify the archive with the checksum file.
-4. Unpack the archive, place `ni` on your `PATH` if desired, then run
-   `ni --help` and `ni version`.
+Release status: this repository does not claim package distribution or a published binary release.
+Use source, local build, or local install mode until a GitHub Release actually
+publishes binary archives and checksums. The curl installer is release-gated for
+the same reason.
 
 License: `ni` is licensed under the [MIT License](LICENSE).
 

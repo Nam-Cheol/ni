@@ -89,37 +89,16 @@ go run ./cmd/ni run --dir ./my-plan --target generic --max-chars 4000
 | Path | Status | Use it when | Boundary |
 | --- | --- | --- | --- |
 | Source | Available | `go run ./cmd/ni ...`를 실행할 수 있습니다. | Full deterministic `status`, `end`, `run`. |
-| Local binary | Available after local build | 이 checkout에서 `./bin/ni` 또는 local install을 원할 때 사용합니다. | Local build/install만 말하며 hosted binary는 주장하지 않습니다. |
-| Model workspaces | Available as assisted planning | Codex 또는 Claude가 docs와 contract records draft를 돕게 하고 싶을 때 사용합니다. | Skills are UX; readiness와 lock authority는 CLI입니다. |
-| No-terminal method | Available as assisted method | CLI run 전 Intent Lock method를 배우거나 draft하고 싶을 때 사용합니다. | Useful drafting이며 deterministic validation은 아닙니다. |
-| Release binary | Available | Published release에서 Go 없이 `ni`를 받고 싶을 때 사용합니다. | GitHub Releases에서 OS/arch archive를 받고 checksum file로 검증합니다. |
-| Curl installer | Available | Release assets용 작은 shell installer를 원할 때 사용합니다. | `install.sh`를 download하고 inspect합니다. Installer는 release archive를 설치하고 checksum이 있으면 검증합니다. |
+| Local binary | Available | 이 checkout에서 `./bin/ni` 또는 local install을 원할 때 사용합니다. | Source에서 local build/install만 말하며 hosted binary는 주장하지 않습니다. |
+| Model workspaces | Experimental | Codex 또는 Claude가 docs와 contract records draft를 돕게 하고 싶을 때 사용합니다. | Skills are UX; readiness와 lock authority는 CLI입니다. |
+| No-terminal method | Experimental | CLI run 전 Intent Lock method를 배우거나 draft하고 싶을 때 사용합니다. | Assisted drafting일 뿐 deterministic validation은 아닙니다. |
+| Release binary | Release-gated | Published release에서 Go 없이 `ni`를 받고 싶을 때 사용합니다. | GitHub Release에 OS/arch archives와 checksums가 publish된 뒤 verify하고 사용합니다. |
+| Curl installer | Release-gated | Release assets용 작은 shell installer를 원할 때 사용합니다. | Release assets가 존재하고 `install.sh`가 그 assets에 대해 verified된 뒤에만 사용합니다. |
 | Homebrew | Planned | Package manager를 선호할 때 사용합니다. | Published tap이나 formula가 없습니다. |
 
-Release status: GitHub Release binaries와 checksums는 available입니다. Package
-manager distribution은 available이 아닙니다. Curl installer는 published `v0.3.0`
-release assets에 대해 검증되었습니다.
-
-Curl installer, inspect 먼저:
-
-```bash
-curl -fsSLO https://raw.githubusercontent.com/Nam-Cheol/ni/main/install.sh
-sed -n '1,320p' install.sh
-sh install.sh --dry-run --version 0.3.0
-BINDIR="$HOME/.local/bin" sh install.sh --version 0.3.0
-"$HOME/.local/bin/ni" --help
-"$HOME/.local/bin/ni" version
-```
-
-Manual release download:
-
-1. <https://github.com/Nam-Cheol/ni/releases>를 열고 OS와 architecture에 맞는
-   archive를 선택합니다.
-2. 같은 release에서 matching archive와 `ni_<version>_checksums.txt`를
-   다운로드합니다.
-3. Checksum file로 archive를 검증합니다.
-4. Archive를 unpack하고 필요하면 `ni`를 `PATH`에 둔 뒤 `ni --help`와
-   `ni version`을 실행합니다.
+Release status: 이 repository는 package distribution이나 published binary release를 claim하지 않는다.
+GitHub Release가 실제 binary archives와 checksums를 publish하기 전까지는 source, local build, local install mode를 사용한다.
+Curl installer도 같은 이유로 release-gated다.
 
 License: `ni`는 [MIT License](LICENSE)로 배포됩니다.
 

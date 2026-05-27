@@ -3,7 +3,7 @@
 이 문서는 `ni`의 Homebrew distribution을 계획한다. 아직 Homebrew installation이
 동작한다고 claim하지 않는다.
 
-현재 상태: planned. `ni`용 published Homebrew formula는 없고, verified
+현재 상태: Planned. `ni`용 published Homebrew formula는 없고, verified
 `brew install` path도 없다. Homebrew package-manager release automation은 아니다.
 
 2026-05-28 기준으로 `https://github.com/Nam-Cheol/homebrew-tap.git`에 대한

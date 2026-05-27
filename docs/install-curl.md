@@ -5,29 +5,32 @@ binary without requiring Go. It downloads an archive, verifies the checksum when
 the release provides one, copies `ni` into a local bin directory, and prints next
 steps. It does not install model skills or run downstream work.
 
-Status: available. `install.sh` has been verified against the published
-`v0.3.0` GitHub Release archives and `ni_0.3.0_checksums.txt`.
+Status: Release-gated. `install.sh` must not be presented as an available
+public install path until a GitHub Release publishes the expected archives and
+checksum file, and the script has been verified against those real assets.
 
 ## Safer Script Path
 
-Download and inspect the installer first:
+After the release gate is satisfied, download and inspect the installer first:
 
 ```bash
+VERSION="<published-version-without-v>"
 curl -fsSLO https://raw.githubusercontent.com/Nam-Cheol/ni/main/install.sh
 sed -n '1,320p' install.sh
-sh install.sh --dry-run --version 0.3.0
-BINDIR="$HOME/.local/bin" sh install.sh --version 0.3.0
+sh install.sh --dry-run --version "$VERSION"
+BINDIR="$HOME/.local/bin" sh install.sh --version "$VERSION"
 ```
 
 By default, the script installs to `~/.local/bin/ni`. Override the destination
 with `BINDIR`:
 
 ```bash
-BINDIR="$HOME/bin" sh install.sh --dry-run --version 0.3.0
+BINDIR="$HOME/bin" sh install.sh --dry-run --version "$VERSION"
 ```
 
-If you omit `--version`, the installer asks GitHub for the latest release tag.
-The installed CLI should only be checked with help or version commands:
+If you omit `--version`, the installer asks GitHub for the latest release tag;
+that requires at least one published release. The installed CLI should only be
+checked with help or version commands:
 
 ```bash
 ~/.local/bin/ni --help
@@ -40,7 +43,7 @@ Manual install keeps every trust step visible.
 
 1. Open the release page:
    <https://github.com/Nam-Cheol/ni/releases>
-2. Pick the archive for your platform:
+2. Confirm the release has assets, then pick the archive for your platform:
 
 | Platform | Architecture | Archive |
 | --- | --- | --- |
@@ -56,20 +59,23 @@ Manual install keeps every trust step visible.
 Linux:
 
 ```bash
-grep ' ni_0.3.0_linux_amd64.tar.gz$' ni_0.3.0_checksums.txt | sha256sum -c -
+VERSION="<published-version-without-v>"
+grep " ni_${VERSION}_linux_amd64.tar.gz$" "ni_${VERSION}_checksums.txt" | sha256sum -c -
 ```
 
 macOS:
 
 ```bash
-grep ' ni_0.3.0_darwin_arm64.tar.gz$' ni_0.3.0_checksums.txt | shasum -a 256 -c -
+VERSION="<published-version-without-v>"
+grep " ni_${VERSION}_darwin_arm64.tar.gz$" "ni_${VERSION}_checksums.txt" | shasum -a 256 -c -
 ```
 
 5. Extract and install:
 
 ```bash
 mkdir -p "$HOME/.local/bin"
-tar -xzf ni_0.3.0_darwin_arm64.tar.gz
+VERSION="<published-version-without-v>"
+tar -xzf "ni_${VERSION}_darwin_arm64.tar.gz"
 install -m 0755 ni "$HOME/.local/bin/ni"
 "$HOME/.local/bin/ni" --help
 "$HOME/.local/bin/ni" version
@@ -105,6 +111,7 @@ bash scripts/test-install-sh.sh
 Before changing public availability language, also verify a real release asset:
 
 ```bash
-sh install.sh --dry-run --version 0.3.0
-BINDIR="$(mktemp -d)" sh install.sh --version 0.3.0
+VERSION="<published-version-without-v>"
+sh install.sh --dry-run --version "$VERSION"
+BINDIR="$(mktemp -d)" sh install.sh --version "$VERSION"
 ```
