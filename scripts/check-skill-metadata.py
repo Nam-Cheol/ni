@@ -36,6 +36,7 @@ required_phrases = {
 skill_roots = [
     root / '.agents' / 'skills',
     root / 'packages' / 'claude-skills',
+    root / 'packages' / 'codex-skills',
 ]
 
 for skills_root in skill_roots:
