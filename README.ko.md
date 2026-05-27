@@ -25,7 +25,7 @@ contracts로 바꾼다.
 
 `ni`는 execution이 시작되기 전에 locked, versioned, verifiable project
 contract를 만든다. 현재 제품은 `ni-kernel`이다. 이것은 intent를 위한
-deterministic pre-runtime control layer이며, 구현을 실행하는 하네스가 아니다.
+deterministic pre-runtime control layer이며, work를 실행하는 tool이 아니다.
 
 <p align="center">
   <a href="#what-problem-ni-solves"><img src="assets/card-why.svg" alt="Why ni: 모호한 prompt가 users, risks, non-goals, acceptance, blockers를 숨길 수 있다." width="32%"></a>
@@ -39,8 +39,9 @@ conversation -> docs/plan + .ni/contract.json -> ni status -> ni end -> locked i
 
 ## What Problem ni Solves
 
-Agents는 실행 가능해 보이지만 trustworthy execution에 필요한 intent를 숨기는
-prompt를 자주 받는다:
+AI agents는 사용자의 intent가 explicit, accepted, validated, locked, unchanged
+상태가 되기 전에 execution을 시작하는 경우가 많다. Agents는 실행 가능해
+보이지만 trustworthy execution에 필요한 intent를 숨기는 prompt를 자주 받는다:
 
 - 이 project가 누구를 위한 것인지,
 - 무엇이 accepted되어야 하는지,
@@ -49,7 +50,7 @@ prompt를 자주 받는다:
 - 어떤 questions가 execution을 막아야 하는지,
 - accepted plan이 바뀌었는지.
 
-대부분의 tools는 prompt, spec, worklist, runtime loop가 이미 존재한 뒤에
+대부분의 tools는 prompt, spec, worklist, execution loop가 이미 존재한 뒤에
 agent를 제어하려고 한다. `ni`는 control을 더 앞쪽으로 옮긴다. `ni`는
 downstream actor가 work를 시작하기 전에 project intent가 explicit, accepted,
 validated, locked, unchanged 상태인지 묻는다.
@@ -172,39 +173,40 @@ ni init -> ni status -> ni end -> ni run
 
 다른 implemented kernel commands는 targets를 inspect하고, locked seed
 material을 export하고, inert feedback과 pressure를 기록하고, explicit
-amendments를 관리하고, planning states를 비교하고, inert graph 또는 harness
-material을 제안한다.
+amendments를 관리하고, planning states를 비교하고, inert graph 또는 downstream
+tool material을 제안한다.
 
 전체 내용은 [command reference](docs/commands.ko.md)를 참고하라.
 
 ## Targets Summary
 
 Targets는 locked plan을 소비하는 shapes다. `ni`가 실행하는 integrations도,
-`ni`가 소유하는 runtime adapters도, `ni-kernel`의 일부가 되는 lifecycle state도
-아니다.
+`ni`가 소유하는 adapters도, `ni-kernel`의 일부가 되는 lifecycle state도 아니다.
 
 Built-in targets는 다음을 포함한다:
 
-- `generic`, `codex`, `human-team` prompt 또는 handoff targets,
-- `hyper-run`, `namba-ai`, `ouroboros`, `spec-kit` seed targets.
+- coding models, model workspaces, human teams를 위한 prompt 또는 handoff
+  targets,
+- downstream tools와 execution environments를 위한 inert seed targets.
 
-target별 boundary는 [Target Story](docs/45_TARGET_STORY.md)를 참고하라.
+target별 boundary와 named downstream examples는
+[Target Story](docs/45_TARGET_STORY.md)를 참고하라.
 
 ## What ni Is Not
 
 `ni`는 다음이 아니다:
 
 - task runner,
-- SPEC runner,
+- spec runner,
 - multi-agent execution layer,
-- Codex adapter,
+- host-specific adapter,
 - queue,
 - shell adapter,
 - release automation,
 - PR automation,
-- Hyper Run, Spec Kit, Ouroboros, 또는 namba-ai.
+- downstream tools의 competitor.
 
-Downstream prompts, seed packages, harness proposals는 derived and mutable이다.
+Downstream prompts, seed packages, tool proposals는 derived and mutable이다.
 이것들은 kernel-owned execution state가 되지 않는다.
 
 ## Examples and Docs

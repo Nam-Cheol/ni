@@ -25,7 +25,7 @@ teams start work.
 
 `ni` creates a locked, versioned, verifiable project contract before execution
 begins. The current product is `ni-kernel`: a deterministic pre-runtime control
-layer for intent, not an execution harness.
+layer for intent, not a tool that runs work.
 
 <p align="center">
   <a href="#what-problem-ni-solves"><img src="assets/card-why.svg" alt="Why ni: vague prompts can hide users, risks, non-goals, acceptance, and blockers." width="32%"></a>
@@ -39,8 +39,9 @@ conversation -> docs/plan + .ni/contract.json -> ni status -> ni end -> locked i
 
 ## What Problem ni Solves
 
-Agents are often handed prompts that sound actionable while still hiding the
-intent needed for trustworthy execution:
+AI agents often start executing before the user's intent is explicit,
+accepted, validated, locked, and unchanged. They are handed prompts that sound
+actionable while still hiding the intent needed for trustworthy execution:
 
 - who the project is for,
 - what must be accepted,
@@ -49,10 +50,10 @@ intent needed for trustworthy execution:
 - which questions should block execution,
 - whether the accepted plan has changed.
 
-Most tools try to control the agent after a prompt, spec, worklist, or runtime
-loop exists. `ni` moves control earlier. It asks whether project intent is
-explicit, accepted, validated, locked, and unchanged before any downstream
-actor starts work.
+Most tools try to control the agent after a prompt, spec, worklist, or
+execution loop exists. `ni` moves control earlier. It asks whether project
+intent is explicit, accepted, validated, locked, and unchanged before any
+downstream actor starts work.
 
 ## Core Idea: Intent Lock Protocol
 
@@ -174,40 +175,41 @@ ni init -> ni status -> ni end -> ni run
 
 Other implemented kernel commands inspect targets, export locked seed material,
 record inert feedback and pressure, manage explicit amendments, compare
-planning states, and propose inert graph or harness material.
+planning states, and propose inert graph or downstream tool material.
 
 See the full [command reference](docs/commands.md).
 
 ## Targets Summary
 
 Targets are consumption shapes for a locked plan. They are not integrations
-that `ni` executes, runtime adapters that `ni` owns, or lifecycle state that
-becomes part of `ni-kernel`.
+that `ni` executes, adapters that `ni` owns, or lifecycle state that becomes
+part of `ni-kernel`.
 
 Built-in targets include:
 
-- `generic`, `codex`, and `human-team` prompt or handoff targets,
-- `hyper-run`, `namba-ai`, `ouroboros`, and `spec-kit` seed targets.
+- prompt and handoff targets for coding models, model workspaces, and human
+  teams,
+- inert seed targets for downstream tools and execution environments.
 
 See the [Target Story](docs/45_TARGET_STORY.md) for target-by-target
-boundaries.
+boundaries and named downstream examples.
 
 ## What ni Is Not
 
 `ni` is not:
 
 - a task runner,
-- a SPEC runner,
+- a spec runner,
 - a multi-agent execution layer,
-- a Codex adapter,
+- a host-specific adapter,
 - a queue,
 - a shell adapter,
 - release automation,
 - PR automation,
-- Hyper Run, Spec Kit, Ouroboros, or namba-ai.
+- a competitor to downstream tools.
 
-Downstream prompts, seed packages, and harness proposals are derived and
-mutable. They do not become kernel-owned execution state.
+Downstream prompts, seed packages, and tool proposals are derived and mutable.
+They do not become kernel-owned execution state.
 
 ## Examples and Docs
 
