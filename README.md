@@ -1,5 +1,7 @@
 # ni
 
+[English](README.md) | [한국어](README.ko.md)
+
 Project Intent Compiler for AI Agents.
 
 Don't run the agent yet. Compile the intent first.

@@ -497,8 +497,8 @@ make install-local
 ```
 
 다른 install location을 선택하려면 `PREFIX` 또는 `BINDIR`를 override한다. 설치
-상세 정보는 [docs/22_INSTALL.md](docs/22_INSTALL.md)를 참고하라. Korean
-companion README는 [README.ko.md](README.ko.md)에서 함께 유지된다.
+상세 정보는 [docs/22_INSTALL.md](docs/22_INSTALL.md)를 참고하라. English
+canonical README는 [README.md](README.md)에서 유지된다.
 
 ## JSON Schemas
 
