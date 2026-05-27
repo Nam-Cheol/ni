@@ -1,12 +1,12 @@
 {
   "schema": "ni.lock.v0",
-  "locked_at": "2026-05-26T12:00:07Z",
+  "locked_at": "2026-05-27T00:54:26Z",
   "source_of_truth": [
     ".ni/plan.lock.json",
     ".ni/contract.json",
     "docs/plan/**",
-    "chat transcript",
-    "model guess"
+    ".ni/session.json",
+    "chat history"
   ],
   "readiness": {
     "status": "READY"
@@ -14,7 +14,7 @@
   "files": [
     {
       "path": ".ni/contract.json",
-      "sha256": "f54334c99c9b4f5ae2b576be065b8ce182ddaadaf258d1f390d617f8517e444a"
+      "sha256": "07f9148cc33dcc21cb70f5a2719bcd8161460234e2113cd2f9dc24752b33b464"
     },
     {
       "path": "docs/plan/00_project_brief.md",

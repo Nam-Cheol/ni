@@ -4,6 +4,9 @@ These examples show how to use `ni` as a pre-runtime contract compiler. They
 are not task-runner recipes. Each flow ends at readiness, lock, prompt, export,
 or handoff material derived from the lock.
 
+ni is not a software spec generator.
+ni compiles project intent for any product surface.
+
 All commands assume the repository form:
 
 ```bash

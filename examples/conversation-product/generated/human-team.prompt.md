@@ -1,10 +1,10 @@
-Codex target prompt
+Human-team handoff
 
-Goal: Paste this prompt into Codex to make the smallest implementation move allowed by the locked NI plan.
+Goal: Hand this locked NI plan to a PM/dev/design/research team for coordinated implementation planning.
 
 Project: Travel Concierge Triage - Plan a human-operated travel intake conversation that clarifies trip intent, catches unsupported requests, and hands a concise brief to a human concierge.
 Readiness: READY
-Target: codex (prompt)
+Target: human-team (handoff)
 Locked at: 2026-05-27T00:54:26Z
 
 Authoritative sources:
@@ -24,14 +24,15 @@ Rules:
 - Do not make ni run execute shell, Codex, adapters, queues, PR automation, or agent teams.
 
 Target instructions:
-- Use the current worktree as evidence; preserve user changes and stay within the locked contract.
-- Define validation before editing, then implement only the selected work packet.
-- Do not ask ni to invoke Codex automatically; ni run only compiled this prompt.
+- PM: maintain scope against accepted capabilities, non-goals, and open blocker questions.
+- Dev: identify implementation packets and validation mapped to CAP/REQ/EVAL/RISK IDs.
+- Design/research: confirm user-facing assumptions, evidence needs, and unresolved risks without changing acceptance criteria.
+- Execution responsibility stays outside ni; this is a handoff artifact, not orchestration.
 
 Process:
-1. Read .ni/plan.lock.json, .ni/contract.json, and relevant docs/plan files.
-2. Choose the smallest coherent packet traced to CAP/REQ/EVAL/RISK IDs.
-3. Edit code or docs only as needed, run validation, and report evidence.
+1. Review .ni/plan.lock.json first, then .ni/contract.json and docs/plan.
+2. Assign next ownership only after confirming no lock mismatch or conflicting requirements.
+3. Record validation evidence and blockers for the team before implementation proceeds.
 
 Accepted capabilities:
 - CAP-001: Collect trip goals, constraints, and traveler preferences through a bounded intake conversation.
@@ -50,4 +51,4 @@ Risks:
 - RISK-002 (medium): Collect only information needed for triage, avoid regulated advice, and include privacy reminders in handoff guidance.
 - RISK-003 (medium): Require separate fields for facts, constraints, open questions, and next action; evaluate against a handoff rubric.
 
-Expected output: changed files, validation commands/results, remaining risks, and BLOCKED if the lock or requirements conflict.
+Expected output: team handoff with owners, next packets, validation evidence, risks, decisions needed, and BLOCKED if the lock or requirements conflict.

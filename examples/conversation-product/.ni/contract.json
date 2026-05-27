@@ -177,7 +177,7 @@
     },
     {
       "id": "ART-003",
-      "path": "generated/human-team.prompt.txt",
+      "path": "generated/human-team.prompt.md",
       "kind": "generated_handoff_prompt"
     }
   ],

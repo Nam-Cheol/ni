@@ -175,8 +175,13 @@ Complete locked example workspaces live in `examples/`:
 - [Neighborhood Cooling Study Protocol](examples/research-protocol/): a non-software research protocol with human-team and generic prompt artifacts.
 - [Namba AI Upgrade](examples/namba-ai-upgrade/): a software product planning example.
 
-The non-software examples demonstrate that ni compiles product planning
-contracts before implementation, not only software specs.
+ni is not a software spec generator.
+ni compiles project intent for any product surface.
+
+The non-software examples demonstrate that `product_type` is not always
+`software`, delivery is not always web or CLI, evaluation can be
+review/checklist/protocol-based, and `ni run` compiles a handoff prompt rather
+than executing implementation.
 
 ### Built binary mode
 
