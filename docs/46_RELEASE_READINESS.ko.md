@@ -1,8 +1,8 @@
 # Release Readiness
 
-이 문서는 publish 전 release readiness 기록이다. `ni`의 future release를
-준비하지만 release를 announce, publish, 또는 package manager나 hosted binary
-availability가 있다고 claim하지 않는다.
+이 문서는 `ni`의 release readiness facts를 기록한다. Published release-binary와
+curl-installer paths는 문서화하지만 package manager나 hosted service
+availability는 claim하지 않는다.
 
 ## Current Factual State
 
@@ -13,18 +13,14 @@ availability가 있다고 claim하지 않는다.
 - Security policy: `SECURITY.md`가 존재하며 early source-first scope,
   reporting limits, secret-handling guidance, runtime boundary를 문서화한다.
 - Distribution: documented available usage는 source, local build, local
-  install이다. Future release assets를 위한 GoReleaser configuration과
-  tag-triggered GitHub release workflow가 있지만, 이 문서는 hosted binary
-  availability, package distribution, Homebrew support, Scoop support를
-  claim하지 않는다.
+  install, GitHub Release binaries, curl installer이다. Package manager
+  distribution, Homebrew support, Scoop support, hosted service availability는
+  available하지 않다.
 - Repository release workflow: `.github/workflows/release.yml`은 tagged GitHub
   Releases에 대해서만 release binaries를 build한다. 이는 distribution
   infrastructure이지 `ni` runtime behavior가 아니다.
-- Release notes: `docs/68_RELEASE_NOTES_v0.3.0.ko.md`는 factual GitHub Release
-  notes draft일 뿐이다. `v0.2.0`은 planning label로 사용되었고 repository가 이제
-  visual/distribution packaging work를 포함하므로 tag `v0.3.0`을 suggest한다.
-  Tag 생성, release publish, binary upload, package-manager availability claim을
-  하지 않는다.
+- Release notes: `docs/68_RELEASE_NOTES_v0.3.0.ko.md`는 first public GitHub
+  Release notes이다. Package-manager availability를 claim하지 않는다.
 
 ## Readiness Checklist
 
@@ -45,8 +41,8 @@ availability가 있다고 claim하지 않는다.
 - [ ] no runtime execution claims are present: `ni run`은 bounded prompt만
       compile하며 agents, shells, queues, adapters를 실행하지 않는다.
 - [ ] no false release/license/CI/security claims are present:
-      - release docs는 published release가 assets를 포함하기 전에 hosted release
-        assets availability를 claim하지 않는다;
+      - release docs는 published GitHub Release에 존재하는 hosted release
+        assets만 claim한다;
       - license docs는 committed `LICENSE`와 일치한다;
       - CI docs는 `.github/workflows/ci.yml`과 일치한다;
       - security docs는 private reporting channels, enterprise support, runtime
@@ -54,7 +50,7 @@ availability가 있다고 claim하지 않는다.
 
 ## Local Verification
 
-future release step 전에 local release-readiness check를 실행한다:
+future release changes 전에 local release-readiness check를 실행한다:
 
 ```bash
 bash scripts/release-check.sh

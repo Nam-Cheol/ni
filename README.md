@@ -93,12 +93,23 @@ go run ./cmd/ni run --dir ./my-plan --target generic --max-chars 4000
 | Model workspaces | Available as assisted planning | You want Codex or Claude to help draft docs and contract records. | Skills are UX; the CLI remains readiness and lock authority. |
 | No-terminal method | Available as assisted method | You want to learn or draft the Intent Lock method before a CLI run. | Useful drafting, not deterministic validation. |
 | Release binary | Available | You want `ni` without Go from a published release. | Download an OS/arch archive from GitHub Releases and verify it with the checksum file. |
-| Curl installer | Release-gated | You want one-command install from release assets. | `install.sh` exists, but public installer availability waits on real-release verification. |
+| Curl installer | Available | You want a small shell installer for release assets. | Download and inspect `install.sh`; it installs the release archive and verifies the checksum when available. |
 | Homebrew | Planned | You prefer a package manager. | No tap or formula is published. |
 
 Release status: GitHub Release binaries and checksums are available. Package
-manager distribution is not available, and the curl installer remains
-release-gated until verified against the real release assets.
+manager distribution is not available. The curl installer has been verified
+against the published `v0.3.0` release assets.
+
+Curl installer, with inspection first:
+
+```bash
+curl -fsSLO https://raw.githubusercontent.com/Nam-Cheol/ni/main/install.sh
+sed -n '1,320p' install.sh
+sh install.sh --dry-run --version 0.3.0
+BINDIR="$HOME/.local/bin" sh install.sh --version 0.3.0
+"$HOME/.local/bin/ni" --help
+"$HOME/.local/bin/ni" version
+```
 
 Manual release download:
 
@@ -143,6 +154,6 @@ checks, and prompt compilation.
 | --- | --- |
 | [Why ni exists](docs/product-story.md) | The short product story behind compile-before-run. |
 | [Intent Lock Protocol](docs/42_INTENT_LOCK_PROTOCOL.md) | The deeper rules for readiness, locking, hash trust, and blocked handoff. |
-| [Install ni](docs/22_INSTALL.md) | Source, local build, and release-gated install details. |
+| [Install ni](docs/22_INSTALL.md) | Source, local build, release binary, and curl installer details. |
 | [Command reference](docs/commands.md) | The implemented CLI surface. |
 | [README Visual Wireframe](docs/63_README_VISUAL_WIREFRAME.md) | The visual layout contract for this README. |

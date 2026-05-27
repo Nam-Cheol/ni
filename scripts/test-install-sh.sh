@@ -140,6 +140,52 @@ run_cmd "dry-run strips v prefix for asset names" env \
   sh ./install.sh --dry-run --version "v$VERSION"
 require_stdout "$ASSET"
 
+run_cmd "linux amd64 override dry-run" env \
+  NI_INSTALL_BASE_URL="$BASE_URL" \
+  NI_INSTALL_OS=linux \
+  NI_INSTALL_ARCH=amd64 \
+  BINDIR="$INSTALL_DIR" \
+  sh ./install.sh --dry-run --version "$VERSION"
+require_stdout "platform:   linux/amd64"
+require_stdout "ni_${VERSION}_linux_amd64.tar.gz"
+
+run_cmd "linux arm64 override dry-run" env \
+  NI_INSTALL_BASE_URL="$BASE_URL" \
+  NI_INSTALL_OS=linux \
+  NI_INSTALL_ARCH=arm64 \
+  BINDIR="$INSTALL_DIR" \
+  sh ./install.sh --dry-run --version "$VERSION"
+require_stdout "platform:   linux/arm64"
+require_stdout "ni_${VERSION}_linux_arm64.tar.gz"
+
+run_cmd "darwin amd64 override dry-run" env \
+  NI_INSTALL_BASE_URL="$BASE_URL" \
+  NI_INSTALL_OS=darwin \
+  NI_INSTALL_ARCH=amd64 \
+  BINDIR="$INSTALL_DIR" \
+  sh ./install.sh --dry-run --version "$VERSION"
+require_stdout "platform:   darwin/amd64"
+require_stdout "ni_${VERSION}_darwin_amd64.tar.gz"
+
+run_cmd "darwin arm64 override dry-run" env \
+  NI_INSTALL_BASE_URL="$BASE_URL" \
+  NI_INSTALL_OS=darwin \
+  NI_INSTALL_ARCH=arm64 \
+  BINDIR="$INSTALL_DIR" \
+  sh ./install.sh --dry-run --version "$VERSION"
+require_stdout "platform:   darwin/arm64"
+require_stdout "ni_${VERSION}_darwin_arm64.tar.gz"
+
+run_cmd "windows amd64 override dry-run" env \
+  NI_INSTALL_BASE_URL="$BASE_URL" \
+  NI_INSTALL_OS=windows \
+  NI_INSTALL_ARCH=amd64 \
+  BINDIR="$INSTALL_DIR" \
+  sh ./install.sh --dry-run --version "$VERSION"
+require_stdout "platform:   windows/amd64"
+require_stdout "ni_${VERSION}_windows_amd64.zip"
+require_stdout "$INSTALL_DIR/ni.exe"
+
 if [[ -e "$INSTALL_DIR/ni" ]]; then
   echo "test-install-sh failed: dry-run created $INSTALL_DIR/ni" >&2
   exit 1

@@ -5,9 +5,8 @@ binary without requiring Go. It downloads an archive, verifies the checksum when
 the release provides one, copies `ni` into a local bin directory, and prints next
 steps. It does not install model skills or run downstream work.
 
-Status: release-gated. GitHub Release archives and checksums are available, but
-the curl installer should not be presented as an available public install path
-until `install.sh` is verified against the real release assets.
+Status: available. `install.sh` has been verified against the published
+`v0.3.0` GitHub Release archives and `ni_0.3.0_checksums.txt`.
 
 ## Safer Script Path
 
@@ -16,19 +15,19 @@ Download and inspect the installer first:
 ```bash
 curl -fsSLO https://raw.githubusercontent.com/Nam-Cheol/ni/main/install.sh
 sed -n '1,320p' install.sh
-sh install.sh --dry-run
+sh install.sh --dry-run --version 0.3.0
+BINDIR="$HOME/.local/bin" sh install.sh --version 0.3.0
 ```
 
 By default, the script installs to `~/.local/bin/ni`. Override the destination
 with `BINDIR`:
 
 ```bash
-BINDIR="$HOME/bin" sh install.sh --dry-run
+BINDIR="$HOME/bin" sh install.sh --dry-run --version 0.3.0
 ```
 
 If you omit `--version`, the installer asks GitHub for the latest release tag.
-After the installer gate is cleared, the installed CLI should only be checked
-with help or version commands:
+The installed CLI should only be checked with help or version commands:
 
 ```bash
 ~/.local/bin/ni --help
@@ -97,9 +96,15 @@ agents, queues, or runtime execution.
 ## Test Release Validation
 
 Repository validation uses a local fake release asset so the installer can be
-tested without network access and without Go. This is not the same as real
-GitHub Release verification:
+tested without network access and without Go:
 
 ```bash
 bash scripts/test-install-sh.sh
+```
+
+Before changing public availability language, also verify a real release asset:
+
+```bash
+sh install.sh --dry-run --version 0.3.0
+BINDIR="$(mktemp -d)" sh install.sh --version 0.3.0
 ```

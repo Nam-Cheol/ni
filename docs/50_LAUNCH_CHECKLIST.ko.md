@@ -29,8 +29,8 @@ bash scripts/launch-check.sh
       `bash scripts/quality.sh`, 또는 `bash scripts/install-check.sh`를 사용한다.
 - [ ] README가 install, security, release-readiness, benchmark, target story,
       launch checklist docs로 link한다.
-- [ ] README가 hosted binaries, package-manager distribution, package publishing을
-      claim하지 않는다.
+- [ ] README는 published GitHub Release에 존재하는 hosted binaries만 claim하고,
+      package-manager distribution이나 package publishing은 claim하지 않는다.
 
 ## README.ko Parity
 
@@ -115,7 +115,7 @@ bash scripts/launch-check.sh
 
 ## No False Claims
 
-- [ ] Public docs가 published binary release를 claim하지 않는다.
+- [ ] Public docs는 존재하는 published binary release assets만 claim한다.
 - [ ] Public docs가 package publishing, package-manager support, Homebrew
       support를 claim하지 않는다.
 - [ ] Public docs가 hosted service availability를 claim하지 않는다.

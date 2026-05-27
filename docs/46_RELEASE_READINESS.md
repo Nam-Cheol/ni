@@ -1,8 +1,8 @@
 # Release Readiness
 
-This document is a pre-publish readiness record. It prepares `ni` for a future
-release without announcing one, publishing one, or claiming package-manager or
-hosted binary availability.
+This document records release readiness facts for `ni`. It documents the
+published release-binary and curl-installer paths without claiming package
+manager or hosted service availability.
 
 ## Current Factual State
 
@@ -12,19 +12,16 @@ hosted binary availability.
   `bash scripts/smoke.sh`.
 - Security policy: `SECURITY.md` exists and documents the early source-first
   scope, reporting limits, secret-handling guidance, and runtime boundary.
-- Distribution: documented available usage remains source, local build, and
-  local install. GoReleaser configuration and a tag-triggered GitHub release
-  workflow exist for future release assets, but this document does not claim
-  hosted binary availability, package distribution, Homebrew support, or Scoop
-  support.
+- Distribution: documented available usage includes source, local build, local
+  install, GitHub Release binaries, and the curl installer. Package manager
+  distribution, Homebrew support, Scoop support, and hosted service
+  availability are not available.
 - Repository release workflow: `.github/workflows/release.yml` builds release
   binaries only for tagged GitHub Releases. It is distribution infrastructure,
   not `ni` runtime behavior.
 - Release notes: `docs/68_RELEASE_NOTES_v0.3.0.md` is a factual GitHub Release
-  notes draft only. It suggests tag `v0.3.0` because `v0.2.0` was used as a
-  planning label and the repository now includes visual/distribution packaging
-  work. It does not create a tag, publish a release, upload binaries, or claim
-  package-manager availability.
+  notes for the first public GitHub Release. It does not claim package-manager
+  availability.
 
 ## Readiness Checklist
 
@@ -45,8 +42,8 @@ hosted binary availability.
 - [ ] no runtime execution claims are present: `ni run` compiles a bounded
       prompt only and does not execute agents, shells, queues, or adapters.
 - [ ] no false release/license/CI/security claims are present:
-      - release docs do not claim hosted release assets are available before a
-        published release contains them;
+      - release docs only claim hosted release assets that exist in the
+        published GitHub Release;
       - license docs match the committed `LICENSE`;
       - CI docs match `.github/workflows/ci.yml`;
       - security docs do not claim private reporting channels, enterprise
@@ -54,7 +51,7 @@ hosted binary availability.
 
 ## Local Verification
 
-Run the local release-readiness check before any future release step:
+Run the local release-readiness check before future release changes:
 
 ```bash
 bash scripts/release-check.sh

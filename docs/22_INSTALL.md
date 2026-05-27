@@ -2,8 +2,8 @@
 
 `ni` is usable from source, from a locally built binary, or from published
 GitHub Release archives. Release binaries and checksums are available for
-`v0.3.0`; the curl installer remains release-gated until `install.sh` is
-verified against the real release assets.
+`v0.3.0`; the curl installer is available after verification against the real
+release assets.
 
 ## Prerequisites
 
@@ -130,16 +130,18 @@ Compare the `Get-FileHash` output with the checksum line printed by
 
 ## Curl installer
 
-`install.sh` can install a release archive without requiring Go, but public
-installer availability remains release-gated until the script is verified
-against the real GitHub Release assets.
+`install.sh` can install a release archive without requiring Go. It has been
+verified against the published `v0.3.0` GitHub Release assets.
 
 Download and inspect the script before any local trial:
 
 ```bash
 curl -fsSLO https://raw.githubusercontent.com/Nam-Cheol/ni/main/install.sh
 sed -n '1,320p' install.sh
-sh install.sh --dry-run
+sh install.sh --dry-run --version 0.3.0
+BINDIR="$HOME/.local/bin" sh install.sh --version 0.3.0
+"$HOME/.local/bin/ni" --help
+"$HOME/.local/bin/ni" version
 ```
 
 See [Curl Installer](install-curl.md) for `BINDIR`, checksum behavior, and the

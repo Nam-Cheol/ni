@@ -30,8 +30,9 @@ bash scripts/launch-check.sh
       `bash scripts/quality.sh`, or `bash scripts/install-check.sh`.
 - [ ] README links to install, security, release-readiness, benchmark, target
       story, and launch checklist docs.
-- [ ] README does not claim hosted binaries, package-manager distribution, or
-      package publishing.
+- [ ] README only claims hosted binaries that exist in the published GitHub
+      Release, and does not claim package-manager distribution or package
+      publishing.
 
 ## README.ko Parity
 
@@ -116,7 +117,7 @@ bash scripts/launch-check.sh
 
 ## No False Claims
 
-- [ ] Public docs do not claim a published binary release.
+- [ ] Public docs only claim published binary release assets that exist.
 - [ ] Public docs do not claim package publishing, package-manager support, or
       Homebrew support.
 - [ ] Public docs do not claim hosted service availability.

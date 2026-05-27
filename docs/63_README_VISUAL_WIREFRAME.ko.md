@@ -59,7 +59,7 @@ Markdown fallback     Markdown fallback     Markdown fallback
 Markdown commands and source-first path.
 
 ## Choose your path
-Markdown table for source, release-gated install paths, and assisted planning
+Markdown table for source, verified install paths, and assisted planning
 paths. Codex and Claude may appear here only as usage path labels.
 
 ## Demo

@@ -93,12 +93,23 @@ go run ./cmd/ni run --dir ./my-plan --target generic --max-chars 4000
 | Model workspaces | Available as assisted planning | Codex 또는 Claude가 docs와 contract records draft를 돕게 하고 싶을 때 사용합니다. | Skills are UX; readiness와 lock authority는 CLI입니다. |
 | No-terminal method | Available as assisted method | CLI run 전 Intent Lock method를 배우거나 draft하고 싶을 때 사용합니다. | Useful drafting이며 deterministic validation은 아닙니다. |
 | Release binary | Available | Published release에서 Go 없이 `ni`를 받고 싶을 때 사용합니다. | GitHub Releases에서 OS/arch archive를 받고 checksum file로 검증합니다. |
-| Curl installer | Release-gated | Release assets에서 one-command install을 원할 때 사용합니다. | `install.sh`는 있지만 public installer availability는 real release verification을 기다립니다. |
+| Curl installer | Available | Release assets용 작은 shell installer를 원할 때 사용합니다. | `install.sh`를 download하고 inspect합니다. Installer는 release archive를 설치하고 checksum이 있으면 검증합니다. |
 | Homebrew | Planned | Package manager를 선호할 때 사용합니다. | Published tap이나 formula가 없습니다. |
 
 Release status: GitHub Release binaries와 checksums는 available입니다. Package
-manager distribution은 available이 아니며, curl installer는 real release assets
-검증이 끝날 때까지 release-gated입니다.
+manager distribution은 available이 아닙니다. Curl installer는 published `v0.3.0`
+release assets에 대해 검증되었습니다.
+
+Curl installer, inspect 먼저:
+
+```bash
+curl -fsSLO https://raw.githubusercontent.com/Nam-Cheol/ni/main/install.sh
+sed -n '1,320p' install.sh
+sh install.sh --dry-run --version 0.3.0
+BINDIR="$HOME/.local/bin" sh install.sh --version 0.3.0
+"$HOME/.local/bin/ni" --help
+"$HOME/.local/bin/ni" version
+```
 
 Manual release download:
 
@@ -145,6 +156,6 @@ checks, prompt compilation을 소유합니다.
 | --- | --- |
 | [Why ni exists](docs/product-story.ko.md) | Compile-before-run 뒤의 짧은 product story. |
 | [Intent Lock Protocol](docs/42_INTENT_LOCK_PROTOCOL.md) | Readiness, locking, hash trust, blocked handoff의 깊은 규칙. |
-| [Install ni](docs/22_INSTALL.md) | Source, local build, release-gated install details. |
+| [Install ni](docs/22_INSTALL.md) | Source, local build, release binary, curl installer details. |
 | [Command reference](docs/commands.ko.md) | Implemented CLI surface. |
 | [README Visual Wireframe](docs/63_README_VISUAL_WIREFRAME.ko.md) | 이 README의 visual layout contract. |
