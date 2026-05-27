@@ -2,9 +2,9 @@
   <img src="assets/hero.svg" alt="ni hero: agent를 아직 실행하지 말고 의도를 먼저 컴파일하라는 메시지" width="100%">
 </p>
 
-<h1 align="center">ni</h1>
+<h1 align="center">agent를 아직 실행하지 마라. 먼저 의도를 컴파일하라.</h1>
 
-<p align="center"><strong>AI agent를 위한 Project Intent Compiler.</strong></p>
+<p align="center"><strong>ni는 AI agents나 teams가 work를 시작하기 전에 planning conversation을 locked project contract로 바꾼다.</strong></p>
 
 <p align="center">
   <a href="README.md"><kbd>English</kbd></a>
@@ -12,254 +12,99 @@
 </p>
 
 <p align="center">
-  <a href=".github/workflows/ci.yml"><kbd>CI</kbd></a>
-  <a href="SECURITY.md"><kbd>Security</kbd></a>
-  <a href="LICENSE"><kbd>MIT License</kbd></a>
-  <a href="docs/00_START_HERE.md"><kbd>Docs</kbd></a>
+  <a href=".github/workflows/ci.yml"><img alt="CI configured" src="https://img.shields.io/badge/CI-configured-25334a"></a>
+  <a href="docs/22_INSTALL.md"><img alt="Install source-first" src="https://img.shields.io/badge/install-source--first-2d5a52"></a>
+  <a href="LICENSE"><img alt="License MIT" src="https://img.shields.io/badge/license-MIT-f4b860"></a>
+  <a href="docs/42_INTENT_LOCK_PROTOCOL.md"><img alt="Protocol Intent Lock" src="https://img.shields.io/badge/protocol-Intent%20Lock-7f92ff"></a>
 </p>
-
-## agent를 아직 실행하지 마라. 먼저 의도를 컴파일하라.
-
-planning conversation을 AI agents나 teams가 work를 시작하기 전에 locked project
-contracts로 바꾼다.
-
-`ni`는 execution이 시작되기 전에 locked, versioned, verifiable project
-contract를 만든다. 현재 제품은 `ni-kernel`이다. 이것은 intent를 위한
-deterministic pre-runtime control layer이며, work를 실행하는 tool이 아니다.
 
 <p align="center">
-  <a href="#what-problem-ni-solves"><img src="assets/card-why.svg" alt="Why ni: 모호한 prompt가 users, risks, non-goals, acceptance, blockers를 숨길 수 있다." width="32%"></a>
-  <a href="#core-flow"><img src="assets/card-start.svg" alt="Start path: workspace를 만들고 readiness를 확인한 뒤 intent를 lock하고 prompt를 compile한다." width="32%"></a>
-  <a href="#examples-and-docs"><img src="assets/card-docs.svg" alt="Docs map: protocol, command reference, target boundaries, benchmark, launch notes를 읽는다." width="32%"></a>
+  <a href="#why-ni"><img src="assets/card-why.svg" alt="Why ni: prompt가 users, risks, non-goals, acceptance, blockers를 숨길 수 있다." width="32%"></a>
+  <a href="#60초-시작"><img src="assets/card-start.svg" alt="Start path: initialize, readiness check, intent lock, prompt compile." width="32%"></a>
+  <a href="#다음에-읽을-것"><img src="assets/card-docs.svg" alt="Docs map: protocol, commands, target boundaries, benchmark, launch notes." width="32%"></a>
 </p>
 
-```text
-conversation -> docs/plan + .ni/contract.json -> ni status -> ni end -> locked intent -> ni run
-```
+## Why ni
 
-## What Problem ni Solves
+Agents는 code ability 부족보다 unclear intent 때문에 더 자주 실패한다.
 
-AI agents는 사용자의 intent가 explicit, accepted, validated, locked, unchanged
-상태가 되기 전에 execution을 시작하는 경우가 많다. Agents는 실행 가능해
-보이지만 trustworthy execution에 필요한 intent를 숨기는 prompt를 자주 받는다:
-
-- 이 project가 누구를 위한 것인지,
-- 무엇이 accepted되어야 하는지,
-- 어떤 risks에 mitigation이 필요한지,
-- 무엇이 명시적으로 scope 밖인지,
-- 어떤 questions가 execution을 막아야 하는지,
-- accepted plan이 바뀌었는지.
-
-대부분의 tools는 prompt, spec, worklist, execution loop가 이미 존재한 뒤에
-agent를 제어하려고 한다. `ni`는 control을 더 앞쪽으로 옮긴다. `ni`는
-downstream actor가 work를 시작하기 전에 project intent가 explicit, accepted,
-validated, locked, unchanged 상태인지 묻는다.
-
-## Core Idea: Intent Lock Protocol
-
-[Intent Lock Protocol](docs/42_INTENT_LOCK_PROTOCOL.md)은 planning conversation이
-project contract가 되는 방식, contract가 lock될 준비가 되는 시점, accepted
-plan이 hash되는 방식, downstream actors가 trust할 수 있는 것, intent가
-바뀌었기 때문에 handoff가 멈춰야 하는 시점을 정의한다.
-
-kernel이 소유하는 것은 다음이다:
-
-- `docs/plan/**`
-- `.ni/contract.json`
-- deterministic readiness validation
-- `.ni/plan.lock.json`
-- lock hash verification
-- bounded prompt compilation
-- inert downstream seed exports
-
-plan이 locked된 뒤 source-of-truth precedence는 다음과 같다:
+`ni`는 Project Intent Compiler다. Execution이 시작되기 전, vague goals가 hidden
+assumptions로 바뀌는 지점에 선다:
 
 ```text
-.ni/plan.lock.json > .ni/contract.json > docs/plan/** > .ni/session.json > chat history
+planning conversation -> explicit contract -> readiness gate -> locked plan -> bounded prompt or seed
 ```
 
-locked hash가 더 이상 일치하지 않으면 target handoff는 `BLOCKED`로 멈춘다.
+1. AI agents는 너무 일찍 실행된다.
+2. `ni`는 ambiguous execution을 block한다.
+3. `ni`는 intent를 locked project contract로 compile한다.
+4. 그 뒤 humans, models, tools가 그 contract를 기준으로 work할 수 있다.
 
-## 5-Minute Demo
+Payoff: `ni`는 unclear intent를 visible하게 만들고, unsafe handoff를 block하며,
+locked plan에서 bounded prompt 또는 seed를 만든다.
 
-`ni`를 가장 빠르게 이해하는 방법은
-[Ambiguous Prompt Blocked](examples/ambiguous-prompt-blocked/) demo를 보는
-것이다.
+## 60초 시작
 
-이 demo는 다음 request에서 시작한다:
-
-```text
-Build me a dashboard for my team.
-```
-
-direct-to-agent 경로라면 users, data, workflow, non-goals, success criteria에
-관한 hidden assumptions를 만들어내야 한다. `ni` 경로는 request를 planning
-intent로 기록한 뒤, blocker questions가 열려 있는 동안 executable한 것으로
-취급하기를 거부한다.
+`ni`는 현재 source-first다. Repository를 checkout한 뒤 실행한다:
 
 ```bash
-go run ./cmd/ni status --dir ./examples/ambiguous-prompt-blocked/workspace
-go run ./cmd/ni status --dir ./examples/ambiguous-prompt-blocked/workspace --next-questions
+go run ./cmd/ni --help
+go run ./cmd/ni init --dir ./my-plan --profile prototype
+go run ./cmd/ni status --dir ./my-plan
 ```
 
-Expected result:
-
-```text
-BLOCKED
-```
-
-핵심은 이것이다. 모호한 execution은 agent가 시작하기 전에 blocked된다.
-
-## Non-Software Proof
-
-`ni`는 software spec generator가 아니다. `ni`는 어떤 product surface에
-대해서도 project intent를 컴파일한다.
-
-[Neighborhood Cooling Study Protocol](examples/research-protocol/)을 실행해보라:
+이제 conversation으로 `./my-plan/docs/plan/**`과
+`./my-plan/.ni/contract.json`을 채운다. Readiness authority는 model이 아니라
+CLI다:
 
 ```bash
-go run ./cmd/ni status --dir examples/research-protocol
-go run ./cmd/ni run --dir examples/research-protocol --target human-team --out examples/research-protocol/generated/human-team.prompt.md
+go run ./cmd/ni status --dir ./my-plan --next-questions
+go run ./cmd/ni end --dir ./my-plan
+go run ./cmd/ni run --dir ./my-plan --target generic --max-chars 4000
 ```
 
-이 locked example은 app이 아니라 research protocol을 계획한다. 여기에는
-`product_type: research_protocol`, `document` delivery surface, protocol review
-evaluations, human-team handoff prompt가 있다. 데이터를 수집하거나, analysis를
-실행하거나, sensors를 배포하거나, fieldwork를 실행하지 않는다.
+`ni run`은 prompt를 compile한다. Shell commands, queues, agents, downstream
+work를 실행하지 않는다.
 
-## Core Flow
+## 어디서나 ni 사용하기
 
-planning workspace를 만든다:
+| Path | Status | Meaning |
+| --- | --- | --- |
+| Source CLI | Available now | 개발하거나 kernel을 시험할 때 `go run ./cmd/ni ...`로 실행한다. |
+| Local binary | Available now | `make build`로 build한 뒤 `./bin/ni ...`를 실행한다. |
+| Local install | Available now | `make install-local`로 local bin path에 install한다. |
+| Model workspace | Available now | Codex나 Claude 같은 model workspace에 넣을 locked prompt를 compile한다. `ni`는 handoff text만 만든다. |
+| Package manager install | Planned | 아직 publish되지 않았다. 오늘은 source 또는 local install을 사용한다. |
+| Hosted service | Planned | 아직 available하지 않다. |
+| Model plugin | Planned | 아직 available하지 않다. |
 
-```bash
-go run ./cmd/ni init --dir <path> --profile prototype
-```
+지원되는 local path는 [Install ni](docs/22_INSTALL.md)를 참고하라.
 
-sustained model-user conversation을 사용해 `docs/plan/**`과
-`.ni/contract.json`을 함께 유지한다. Skills와 models는 UX다. CLI가 authority다.
+## Locked되는 것
 
-```bash
-go run ./cmd/ni status --dir <path>
-go run ./cmd/ni end --dir <path>
-go run ./cmd/ni run --dir <path> --target codex --max-chars 4000
-```
+Kernel은 pre-runtime control layer를 소유한다:
 
-`ni run`은 prompt를 출력하거나 쓴다. 그 prompt를 실행하지 않는다.
+- `docs/plan/**` planning docs;
+- `.ni/contract.json`;
+- `ni status`의 deterministic readiness;
+- `.ni/plan.lock.json`;
+- `ni run`의 bounded prompt compilation.
 
-## What ni Blocks
+Lock이 생긴 뒤에는 lockfile이 source of truth다. Current plan이 locked hashes와
+더 이상 일치하지 않으면 handoff는 `BLOCKED`로 멈춘다.
 
-`ni`는 intent가 아직 trust할 수 있는 상태가 아닐 때 downstream handoff를
-block한다:
+## ni가 아닌 것
 
-- linked evaluations가 없는 accepted capabilities,
-- mitigation이 없는 high-severity risks,
-- open blocker questions,
-- conflicting accepted decisions,
-- 누락되었거나 invalid한 required planning records,
-- current files가 `.ni/plan.lock.json`과 더 이상 일치하지 않는 stale locks,
-- valid lock이 존재하기 전의 target prompt compilation.
+`ni`는 task runner, spec runner, multi-agent execution layer, queue, shell
+adapter, PR automation system, release automation system, downstream work
+runtime이 아니다. Seed material은 derived and mutable이며, locked plan이
+authority다.
 
-[Benchmark Protocol](docs/43_BENCHMARK_PROTOCOL.md)은 downstream agents를
-실행하지 않고 direct-to-agent prompts와 locked `ni` intent를 비교하는 방법을
-설명한다.
+## 다음에 읽을 것
 
-## Commands Summary
-
-core path는 다음이다:
-
-```text
-ni init -> ni status -> ni end -> ni run
-```
-
-다른 implemented kernel commands는 targets를 inspect하고, locked seed
-material을 export하고, inert feedback과 pressure를 기록하고, explicit
-amendments를 관리하고, planning states를 비교하고, inert graph 또는 downstream
-tool material을 제안한다.
-
-전체 내용은 [command reference](docs/commands.ko.md)를 참고하라.
-
-## Targets Summary
-
-Targets는 locked plan을 소비하는 shapes다. `ni`가 실행하는 integrations도,
-`ni`가 소유하는 adapters도, `ni-kernel`의 일부가 되는 lifecycle state도 아니다.
-
-Built-in targets는 다음을 포함한다:
-
-- coding models, model workspaces, human teams를 위한 prompt 또는 handoff
-  targets,
-- downstream tools와 execution environments를 위한 inert seed targets.
-
-target별 boundary와 named downstream examples는
-[Target Story](docs/45_TARGET_STORY.md)를 참고하라.
-
-## What ni Is Not
-
-`ni`는 다음이 아니다:
-
-- task runner,
-- spec runner,
-- multi-agent execution layer,
-- host-specific adapter,
-- queue,
-- shell adapter,
-- release automation,
-- PR automation,
-- downstream tools의 competitor.
-
-Downstream prompts, seed packages, tool proposals는 derived and mutable이다.
-이것들은 kernel-owned execution state가 되지 않는다.
-
-## Examples and Docs
-
-먼저 읽을 곳:
-
-- [Positioning](docs/40_POSITIONING.md)
-- [Intent Lock Protocol](docs/42_INTENT_LOCK_PROTOCOL.md)
-- [Ambiguous Prompt Blocked](examples/ambiguous-prompt-blocked/)
-- [Neighborhood Cooling Study Protocol](examples/research-protocol/)
-- [Command Reference](docs/commands.md)
-- [Korean Command Reference](docs/commands.ko.md)
-- [Benchmark Protocol](docs/43_BENCHMARK_PROTOCOL.md)
-- [Target Story](docs/45_TARGET_STORY.md)
-- [v0.2.0 Release Draft](docs/47_RELEASE_DRAFT_v0.2.0.ko.md)
-- [Public Launch Checklist](docs/50_LAUNCH_CHECKLIST.ko.md)
-- [Post-Release Roadmap](docs/51_POST_RELEASE_ROADMAP.ko.md)
-
-## Development and Release Status
-
-`ni`는 현재 source-first다.
-Release status: package distribution이나 published binary release를 claim하지 않는다.
-Package publishing, Homebrew taps, GoReleaser, automated release tooling은 현재
-kernel scope 밖이다.
-
-source에서는 `go run`을 사용하고, `make build`로 local binary를 build하거나
-`make install-local`로 local install mode를 사용할 수 있다. source, local build, local install mode
-상세 정보는 [docs/22_INSTALL.md](docs/22_INSTALL.md)를 참고하라.
-
-Public demo verification:
-
-```bash
-bash scripts/demo-check.sh
-```
-
-Repository validation:
-
-```bash
-bash scripts/quality.sh
-```
-
-CI validation은 `.github/workflows/ci.yml`에 정의되어 있으며 Go tests, quality
-checks, smoke tests를 실행한다.
-
-Source/build/install verification:
-
-```bash
-bash scripts/install-check.sh
-```
-
-`ni`는 [MIT License](LICENSE)에 따라 licensed된다. Contribution guidelines는
-[CONTRIBUTING.ko.md](CONTRIBUTING.ko.md)에 있다. Release readiness notes는
-[docs/46_RELEASE_READINESS.ko.md](docs/46_RELEASE_READINESS.ko.md)에 있고,
-public launch checks는
-[docs/50_LAUNCH_CHECKLIST.ko.md](docs/50_LAUNCH_CHECKLIST.ko.md)에 있으며,
-project security policy는 [SECURITY.md](SECURITY.md)에 있다.
+| Read | Why |
+| --- | --- |
+| [Why ni](docs/why-ni.md) | Product argument와 positioning. |
+| [Intent Lock Protocol](docs/42_INTENT_LOCK_PROTOCOL.md) | Readiness, locking, hash trust, blocked handoff 규칙. |
+| [Command reference](docs/commands.ko.md) | Implemented CLI surface. |
+| [Ambiguous Prompt Blocked](examples/ambiguous-prompt-blocked/) | Vague intent가 execution을 올바르게 멈추는 small demo. |

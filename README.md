@@ -2,9 +2,9 @@
   <img src="assets/hero.svg" alt="ni hero: Don't run the agent yet. Compile the intent first." width="100%">
 </p>
 
-<h1 align="center">ni</h1>
+<h1 align="center">Don't run the agent yet. Compile the intent first.</h1>
 
-<p align="center"><strong>Project Intent Compiler for AI Agents.</strong></p>
+<p align="center"><strong>ni turns planning conversations into locked project contracts before AI agents or teams start work.</strong></p>
 
 <p align="center">
   <a href="README.md"><kbd>English</kbd></a>
@@ -12,134 +12,99 @@
 </p>
 
 <p align="center">
-  <a href=".github/workflows/ci.yml"><kbd>CI</kbd></a>
-  <a href="SECURITY.md"><kbd>Security</kbd></a>
-  <a href="LICENSE"><kbd>MIT License</kbd></a>
-  <a href="docs/00_START_HERE.md"><kbd>Docs</kbd></a>
+  <a href=".github/workflows/ci.yml"><img alt="CI configured" src="https://img.shields.io/badge/CI-configured-25334a"></a>
+  <a href="docs/22_INSTALL.md"><img alt="Install source-first" src="https://img.shields.io/badge/install-source--first-2d5a52"></a>
+  <a href="LICENSE"><img alt="License MIT" src="https://img.shields.io/badge/license-MIT-f4b860"></a>
+  <a href="docs/42_INTENT_LOCK_PROTOCOL.md"><img alt="Protocol Intent Lock" src="https://img.shields.io/badge/protocol-Intent%20Lock-7f92ff"></a>
 </p>
 
-## Don't Run The Agent Yet
-
-`ni` turns planning conversations into locked project contracts before AI
-agents or teams start work.
-
-The current product is `ni-kernel`: a deterministic pre-runtime control layer
-for intent. It validates whether a plan is explicit enough to trust, locks the
-accepted version, and compiles bounded handoff prompts or inert seed material.
-It does not run the downstream work.
-
-```text
-conversation -> planning contract -> readiness gate -> intent lock -> bounded handoff
-```
+<p align="center">
+  <a href="#why-ni"><img src="assets/card-why.svg" alt="Why ni: prompts can hide users, risks, non-goals, acceptance, and blockers." width="32%"></a>
+  <a href="#start-in-60-seconds"><img src="assets/card-start.svg" alt="Start path: initialize, check readiness, lock intent, and compile a prompt." width="32%"></a>
+  <a href="#read-next"><img src="assets/card-docs.svg" alt="Docs map: protocol, commands, target boundaries, benchmark, and launch notes." width="32%"></a>
+</p>
 
 ## Why ni
 
-Prompts can sound actionable while still hiding the details that make execution
-trustworthy: users, acceptance criteria, risks, non-goals, blocker questions,
-and whether the accepted plan has changed.
+Agents fail less from lack of code ability and more from unclear intent.
 
-`ni` moves control before execution. It makes intent explicit, checks it
-deterministically, locks the accepted snapshot, and stops handoff when the
-current files no longer match the lock.
-
-Read the deeper product argument in [Why ni](docs/why-ni.md).
-
-## Start In 3 Steps
-
-```bash
-go run ./cmd/ni init --dir <path> --profile prototype
-go run ./cmd/ni status --dir <path>
-go run ./cmd/ni end --dir <path>
-go run ./cmd/ni run --dir <path> --target codex --max-chars 4000
-```
-
-1. Create a planning workspace.
-2. Use model-user conversation to maintain `docs/plan/**` and
-   `.ni/contract.json`; `ni status` is the readiness authority.
-3. Lock with `ni end`, then compile a bounded prompt with `ni run`.
-
-`ni run` prints or writes a prompt. It does not execute Codex, shell commands,
-agents, queues, or adapters.
-
-## Visual Flow
+`ni` is a Project Intent Compiler. It sits before execution, where vague goals
+usually become hidden assumptions:
 
 ```text
-vague request
-  -> docs/plan/** + .ni/contract.json
-  -> ni status
-  -> ni end
-  -> .ni/plan.lock.json
-  -> ni run / ni export
-  -> downstream prompt or inert seed material
+planning conversation -> explicit contract -> readiness gate -> locked plan -> bounded prompt or seed
 ```
 
-## One Demo
+1. AI agents execute too early.
+2. `ni` blocks ambiguous execution.
+3. `ni` compiles intent into a locked project contract.
+4. Then humans, models, or tools can work from that contract.
 
-The fastest demo is [Ambiguous Prompt Blocked](examples/ambiguous-prompt-blocked/).
-It starts from:
+The payoff: `ni` makes unclear intent visible, blocks unsafe handoff, and
+produces a bounded prompt or seed from a locked plan.
 
-```text
-Build me a dashboard for my team.
-```
+## Start in 60 seconds
 
-Run:
-
-```bash
-go run ./cmd/ni status --dir ./examples/ambiguous-prompt-blocked/workspace
-go run ./cmd/ni status --dir ./examples/ambiguous-prompt-blocked/workspace --next-questions
-```
-
-Expected result:
-
-```text
-BLOCKED
-```
-
-That is success: execution has not earned a trustworthy starting point yet.
-
-## Install And Use
-
-`ni` is currently source-first. It does not claim package-manager distribution,
-hosted service availability, or a published binary release.
-Release status: does not claim package distribution or a published binary release.
+`ni` is currently source-first. From a checked-out repository:
 
 ```bash
 go run ./cmd/ni --help
-make build
-make install-local
+go run ./cmd/ni init --dir ./my-plan --profile prototype
+go run ./cmd/ni status --dir ./my-plan
 ```
 
-See [Install](docs/22_INSTALL.md) for source, local build, or local install
-details.
+Now use conversation to fill `./my-plan/docs/plan/**` and
+`./my-plan/.ni/contract.json`. The CLI, not the model, is the readiness
+authority:
 
-## Trust Signals
+```bash
+go run ./cmd/ni status --dir ./my-plan --next-questions
+go run ./cmd/ni end --dir ./my-plan
+go run ./cmd/ni run --dir ./my-plan --target generic --max-chars 4000
+```
 
+`ni run` compiles a prompt. It does not execute shell commands, queues, agents,
+or downstream work.
+
+## Use ni anywhere
+
+| Path | Status | What it means |
+| --- | --- | --- |
+| Source CLI | Available now | Run with `go run ./cmd/ni ...` while developing or trying the kernel. |
+| Local binary | Available now | Build with `make build`, then run `./bin/ni ...`. |
+| Local install | Available now | Install to a local bin path with `make install-local`. |
+| Model workspace | Available now | Compile a locked prompt for a model workspace such as Codex or Claude; `ni` only produces the handoff text. |
+| Package manager install | Planned | Not published yet. Use source or local install today. |
+| Hosted service | Planned | Not available yet. |
+| Model plugin | Planned | Not available yet. |
+
+See [Install ni](docs/22_INSTALL.md) for the supported local paths.
+
+## What stays locked
+
+The kernel owns the pre-runtime control layer:
+
+- planning docs in `docs/plan/**`;
+- `.ni/contract.json`;
 - deterministic readiness through `ni status`;
-- lockfile hash verification through `.ni/plan.lock.json`;
-- prompt compilation budget, initially 4000 characters;
-- no downstream execution in `ni run`;
-- repository validation through `bash scripts/quality.sh`;
-- Public demo verification through `bash scripts/demo-check.sh`;
-- Source/build/install verification through `bash scripts/install-check.sh`;
-- licensed under the [MIT License](LICENSE);
-- CI validation in `.github/workflows/ci.yml`.
+- `.ni/plan.lock.json`;
+- bounded prompt compilation through `ni run`.
 
-## What ni Is Not
+After a lock exists, the lockfile is the source of truth. If the current plan no
+longer matches the locked hashes, handoff stops as `BLOCKED`.
+
+## What ni is not
 
 `ni` is not a task runner, spec runner, multi-agent execution layer, queue,
-shell adapter, PR automation system, release automation system, or
-downstream-specific runtime. Downstream prompts and seed packages are derived
-and mutable; they do not become kernel-owned execution state.
+shell adapter, PR automation system, release automation system, or runtime for
+downstream work. Seed material is derived and mutable; the locked plan is the
+authority.
 
-## Read Next
+## Read next
 
-- [Why ni](docs/why-ni.md)
-- [How ni works](docs/how-ni-works.md)
-- [Intent Lock Protocol](docs/intent-lock-protocol.md)
-- [Protocol Specification](docs/42_INTENT_LOCK_PROTOCOL.md)
-- [Command Reference](docs/commands.md)
-- [Positioning](docs/40_POSITIONING.md)
-- [Target Story](docs/45_TARGET_STORY.md)
-- [Benchmark Protocol](docs/43_BENCHMARK_PROTOCOL.md)
-- [Release Readiness](docs/46_RELEASE_READINESS.md)
-- [Launch Checklist](docs/50_LAUNCH_CHECKLIST.md)
+| Read | Why |
+| --- | --- |
+| [Why ni](docs/why-ni.md) | The product argument and positioning. |
+| [Intent Lock Protocol](docs/42_INTENT_LOCK_PROTOCOL.md) | The rules for readiness, locking, hash trust, and blocked handoff. |
+| [Command reference](docs/commands.md) | The implemented CLI surface. |
+| [Ambiguous Prompt Blocked](examples/ambiguous-prompt-blocked/) | A small demo where vague intent correctly stops execution. |
