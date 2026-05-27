@@ -14,11 +14,6 @@
   <a href="docs/00_START_HERE.md"><img alt="Docs index exists" src="https://img.shields.io/badge/docs-index%20exists-5b8def"></a>
 </p>
 
-<p align="center"><sub>Trust signals: MIT license; CI workflow; security policy; docs index.</sub></p>
-
-Trust signals: [MIT License](LICENSE); [.github/workflows/ci.yml](.github/workflows/ci.yml);
-[SECURITY.md](SECURITY.md); [docs index](docs/00_START_HERE.md).
-
 <h1 align="center">Don't run the agent yet. Compile the intent first.</h1>
 
 <p align="center"><strong>ni turns planning conversations into locked project contracts before implementation work starts.</strong></p>

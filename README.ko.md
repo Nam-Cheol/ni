@@ -14,11 +14,6 @@
   <a href="docs/00_START_HERE.md"><img alt="Docs index exists" src="https://img.shields.io/badge/docs-index%20exists-5b8def"></a>
 </p>
 
-<p align="center"><sub>신뢰 신호: MIT license; CI workflow; security policy; docs index.</sub></p>
-
-신뢰 신호: [MIT License](LICENSE); [.github/workflows/ci.yml](.github/workflows/ci.yml);
-[SECURITY.md](SECURITY.md); [docs index](docs/00_START_HERE.md).
-
 <h1 align="center">agent를 아직 실행하지 마세요. 먼저 의도를 컴파일하세요.</h1>
 
 <p align="center"><strong>ni는 implementation work가 시작되기 전에 planning conversation을 locked project contract로 바꿉니다.</strong></p>
