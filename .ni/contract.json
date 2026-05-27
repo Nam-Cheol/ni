@@ -375,7 +375,8 @@
       ],
       "evaluations": [
         "EVAL-019",
-        "EVAL-020"
+        "EVAL-020",
+        "EVAL-021"
       ],
       "risks": [
         "RISK-013",
@@ -395,7 +396,8 @@
         "ART-039",
         "ART-040",
         "ART-041",
-        "ART-042"
+        "ART-042",
+        "ART-043"
       ]
     }
   ],
@@ -482,7 +484,7 @@
     },
     {
       "id": "REQ-017",
-      "title": "v0.3 packaging treats README as a product pamphlet, keeps technical details in docs, uses local deterministic SVG visuals with important copy in Markdown, keeps SVGs free of emoji, foreignObject, external fonts, external references, and long text, keeps generated social images optional, keeps README.ko within English canonical claims, treats remote capsule-style renderers as inspiration only, supports non-Go users through release binaries before curl or package-manager claims, keeps Codex/Claude model packs plus no-terminal mode as assisted planning UX rather than execution adapters or deterministic validation substitutes, and guards README/assets with visual regression checks",
+      "title": "v0.3 packaging treats README as a public-facing visual product pamphlet, keeps technical details in docs, uses local deterministic SVG visuals with important copy in Markdown, keeps SVGs free of emoji, foreignObject, external fonts, external references, and long text, keeps generated social images optional, keeps README.ko within English canonical claims, treats remote capsule-style renderers as inspiration only, records source and local binary paths as available from this checkout, keeps hosted release binaries release-gated until GitHub Release archives and checksums exist, keeps curl installer availability release-gated until install.sh is verified against real release assets, keeps Homebrew planned until a tap/formula is published and tested, keeps Codex/Claude model packs plus no-terminal mode as assisted planning UX rather than execution adapters or deterministic validation substitutes, preserves ni-kernel as pre-runtime, and guards README/assets/distribution claims with regression checks",
       "status": "accepted"
     }
   ],
@@ -545,6 +547,11 @@
     {
       "id": "DEC-012",
       "title": "v0.3 visual identity is local deterministic SVG plus Markdown copy",
+      "status": "accepted"
+    },
+    {
+      "id": "DEC-013",
+      "title": "v0.3 distribution release state is factual and release-gated where needed",
       "status": "accepted"
     }
   ],
@@ -638,7 +645,7 @@
       "title": "Packaging claims outrun implemented distribution",
       "severity": "high",
       "status": "accepted",
-      "mitigation": "Keep README, distribution docs, visual assets, and model workspace pack docs factual: release binaries are required for non-Go users before curl or package-manager availability claims; model packs remain planning UX; no-terminal mode requires CLI-produced proof before deterministic validation claims."
+      "mitigation": "Keep README, install, distribution, Homebrew, manual release, visual asset, and model workspace pack docs factual: source and local binary paths are available from the checkout; hosted release binaries require real GitHub Release archives and checksums; curl install remains gated until install.sh is verified against those assets; package-manager and Homebrew language remains planned until a tap/formula is published and tested; model packs remain planning UX; no-terminal mode requires CLI-produced proof before deterministic validation claims."
     },
     {
       "id": "RISK-014",
@@ -748,6 +755,11 @@
       "id": "EVAL-020",
       "title": "visual identity surface stays local, deterministic, and claim-safe",
       "method": "go test ./..., bash scripts/quality.sh, python3 scripts/check-assets.py, and python3 scripts/check-readme-surface.py verify README/assets keep a local deterministic SVG hero, Markdown product copy fallbacks, SVG structural bans, Korean companion claim parity, remote capsule renderers as inspiration only, and visual regression coverage"
+    },
+    {
+      "id": "EVAL-021",
+      "title": "v0.3 distribution release state stays factual",
+      "method": "go test ./..., bash scripts/quality.sh, bash scripts/demo-check.sh, bash scripts/install-check.sh, and bash scripts/release-check.sh verify README.md, README.ko.md, docs/22_INSTALL.md, docs/53_DISTRIBUTION_STRATEGY.md, docs/54_HOMEBREW_DISTRIBUTION.md, docs/69_MANUAL_RELEASE_STEPS.md, and docs/51_POST_RELEASE_ROADMAP.md preserve public visual README positioning, factual release binary and curl gating, planned Homebrew status, assisted no-terminal wording, model-pack UX boundaries, and the pre-runtime ni-kernel boundary"
     }
   ],
   "artifacts": [
@@ -960,6 +972,11 @@
       "id": "ART-042",
       "path": "assets/source/ assets/*.svg scripts/render-assets.py scripts/check-assets.py scripts/check-readme-surface.py",
       "kind": "visual_asset_pipeline"
+    },
+    {
+      "id": "ART-043",
+      "path": "docs/22_INSTALL.md docs/69_MANUAL_RELEASE_STEPS.md scripts/demo-check.sh scripts/install-check.sh scripts/release-check.sh",
+      "kind": "distribution_release_state"
     }
   ],
   "open_questions": [

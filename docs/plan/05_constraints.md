@@ -16,6 +16,11 @@
 - README must be a product pamphlet; technical details belong in docs and should be linked rather than expanded inline.
 - README hero copy must avoid specific downstream harness product mentions.
 - README and docs must not claim release binary, curl, Homebrew, or package-manager availability until those paths are implemented and verified.
+- Release binary, curl installer, Homebrew, and package-manager status must
+  match README.md, README.ko.md, docs/22_INSTALL.md,
+  docs/53_DISTRIBUTION_STRATEGY.md, docs/54_HOMEBREW_DISTRIBUTION.md, and
+  docs/69_MANUAL_RELEASE_STEPS.md; release-gated or planned paths stay labeled
+  that way until verified evidence exists.
 - The README hero uses SVG first; generated images and social cards are optional marketing assets, not kernel behavior.
 - The README hero and core visual assets must be local deterministic SVG from
   the repository asset pipeline; remote capsule-style renderers are inspiration

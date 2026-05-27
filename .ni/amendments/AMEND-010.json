@@ -1,0 +1,38 @@
+{
+  "schema": "ni.amendment.v0",
+  "id": "AMEND-010",
+  "title": "Lock v0.3 distribution release state",
+  "reason": "Lock the v0.3 distribution and release state after README, release binary, curl installer, Homebrew, manual release, and post-release roadmap planning work, without claiming unavailable install paths or adding runtime behavior.",
+  "affected_docs": [
+    "docs/plan/00_project_brief.md",
+    "docs/plan/02_capabilities.md",
+    "docs/plan/05_constraints.md",
+    "docs/plan/06_risks_security.md",
+    "docs/plan/07_evaluation_contract.md",
+    "docs/plan/08_delivery_operation.md",
+    "docs/plan/11_decision_log.md",
+    ".ni/contract.json"
+  ],
+  "affected_contract_ids": [
+    "CAP-017",
+    "REQ-017",
+    "DEC-013",
+    "RISK-013",
+    "EVAL-019",
+    "EVAL-021",
+    "ART-043"
+  ],
+  "proposed_changes": [
+    "Record that README.md and README.ko.md are public-facing visual pamphlets backed by docs rather than runtime behavior.",
+    "Lock source/local binary availability as factual while keeping hosted release binaries and curl installer release-gated until real GitHub Release assets and checksums exist and are verified.",
+    "Lock Homebrew as planned with no published tap or formula, no-terminal mode as assisted unless trusted CLI proof is supplied, model workspace packs as UX rather than authority, and ni-kernel as pre-runtime."
+  ],
+  "risk_impact": "Strengthens the existing high-severity packaging-claim risk by adding explicit release binary, curl installer, Homebrew, no-terminal, model-pack, and pre-runtime boundary wording.",
+  "readiness_impact": "Expected to remain READY because CAP-017 keeps accepted requirements, evaluations, mitigated high risks, artifacts, non-goals, and no blocker questions while adding EVAL-021 and ART-043 traceability.",
+  "created_from_feedback_refs": [],
+  "created_from_pressure_refs": [],
+  "status": "applied",
+  "created_at": "2026-05-27T15:49:23Z",
+  "applied_at": "2026-05-27T15:51:39Z",
+  "source_lock_hash": "e5cca21466fe5377b53a823f46e2d811a8f1d6cd281de49de73e4a0050bcf51c"
+}

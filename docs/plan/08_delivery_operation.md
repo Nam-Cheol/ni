@@ -35,6 +35,8 @@ Packaging and distribution references:
 - `docs/52_README_PAMPHLET_STRATEGY.md`
 - `docs/53_DISTRIBUTION_STRATEGY.md`
 - `docs/54_HOMEBREW_DISTRIBUTION.md`
+- `docs/22_INSTALL.md`
+- `docs/69_MANUAL_RELEASE_STEPS.md`
 - `docs/55_MODEL_WORKSPACE_PACKS.md`
 - `docs/56_CLAUDE_SKILL_PACK.md`
 - `docs/57_CODEX_SKILL_PACK.md`

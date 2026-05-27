@@ -1,19 +1,19 @@
 {
   "schema": "ni.session.v0",
-  "active_planning_focus": "Lock v0.3 visual identity and README pamphlet direction.",
-  "last_planning_summary": "The v0.3 visual identity plan accepts README as a product pamphlet, uses a local deterministic SVG hero, keeps important product copy in Markdown text, bans emoji, foreignObject, external fonts, external references, and long text from core SVGs, keeps README.ko within English canonical claims, treats remote capsule-style renderers as inspiration only, and guards README/assets through regression checks. The CLI readiness gate reported READY and relock wrote .ni/plan.lock.json.",
+  "active_planning_focus": "Lock v0.3 distribution release state.",
+  "last_planning_summary": "Task 120 locked the v0.3 public distribution state: README.md and README.ko.md are public-facing visual pamphlets; source and local binary paths are factual from this checkout; hosted release binaries remain release-gated until GitHub Release archives and checksums exist; the curl installer remains release-gated until verified against those real assets; Homebrew remains planned with no published tap or formula; no-terminal mode is assisted unless a trusted runner supplies exact CLI proof; model workspace packs are UX, not authority; and ni-kernel remains pre-runtime and does not execute downstream work. The CLI readiness gate reported READY, AMEND-010 was applied, ni relock wrote .ni/plan.lock.json, and ni run compiled .ni/generated/v0.3-distribution-release.prompt.txt within the 4000-character budget.",
   "pending_questions": [],
   "recent_decisions": [
     {
-      "id": "DEC-012",
-      "title": "v0.3 visual identity is local deterministic SVG plus Markdown copy",
+      "id": "DEC-013",
+      "title": "v0.3 distribution release state is factual and release-gated where needed",
       "status": "accepted"
     }
   ],
   "recent_risks": [
     {
-      "id": "RISK-014",
-      "title": "Visual identity drifts into fragile or overclaiming README surface",
+      "id": "RISK-013",
+      "title": "Packaging claims outrun implemented distribution",
       "severity": "high",
       "status": "accepted"
     }
@@ -27,10 +27,12 @@
     "docs/plan/05_constraints.md",
     "docs/plan/06_risks_security.md",
     "docs/plan/07_evaluation_contract.md",
+    "docs/plan/08_delivery_operation.md",
     "docs/plan/11_decision_log.md",
     ".ni/contract.json",
-    ".ni/amendments/AMEND-009.json",
+    ".ni/amendments/AMEND-010.json",
     ".ni/plan.lock.json",
+    ".ni/generated/v0.3-distribution-release.prompt.txt",
     ".ni/session.json"
   ],
   "authority_order": [

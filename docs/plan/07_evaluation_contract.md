@@ -78,7 +78,12 @@ Method: static quality and planning review verify README.md, README.ko.md,
 docs/52_README_PAMPHLET_STRATEGY.md through docs/58_VISUAL_ASSETS.md, install
 docs, and model workspace pack docs preserve SVG-first product packaging,
 truthful distribution availability, assisted no-terminal wording, and
-non-executing Codex/Claude pack boundaries.
+non-executing Codex/Claude pack boundaries. The v0.3 distribution release-state
+check also covers docs/22_INSTALL.md, docs/53_DISTRIBUTION_STRATEGY.md,
+docs/54_HOMEBREW_DISTRIBUTION.md, docs/69_MANUAL_RELEASE_STEPS.md,
+docs/51_POST_RELEASE_ROADMAP.md, `go test ./...`, `bash scripts/quality.sh`,
+`bash scripts/demo-check.sh`, `bash scripts/install-check.sh`, and
+`bash scripts/release-check.sh`.
 
 ## EVAL-020: visual identity surface stays local, deterministic, and claim-safe
 
@@ -87,3 +92,15 @@ Method: `go test ./...`, `bash scripts/quality.sh`,
 verify README/assets keep a local deterministic SVG hero, Markdown product copy
 fallbacks, SVG structural bans, Korean companion claim parity, remote capsule
 renderers as inspiration only, and visual regression coverage.
+
+## EVAL-021: v0.3 distribution release state stays factual
+
+Method: `go test ./...`, `bash scripts/quality.sh`,
+`bash scripts/demo-check.sh`, `bash scripts/install-check.sh`, and
+`bash scripts/release-check.sh` verify README.md, README.ko.md,
+docs/22_INSTALL.md, docs/53_DISTRIBUTION_STRATEGY.md,
+docs/54_HOMEBREW_DISTRIBUTION.md, docs/69_MANUAL_RELEASE_STEPS.md, and
+docs/51_POST_RELEASE_ROADMAP.md preserve public visual README positioning,
+factual release binary and curl gating, planned Homebrew status, assisted
+no-terminal wording, model-pack UX boundaries, and the pre-runtime
+`ni-kernel` boundary.

@@ -81,3 +81,13 @@ SVG assets avoid emoji, `foreignObject`, external fonts, external references,
 and long text, README.ko does not exceed English canonical claims, remote
 capsule-style renderers are inspiration only, and visual regression checks guard
 the README and assets surface.
+
+The distribution release-state portion is locked as factual and pre-runtime:
+README.md and README.ko.md are public-facing visual pamphlets; source and local
+binary paths are available from the checkout; hosted release binaries are
+release-gated until GitHub Release archives and checksums exist; `install.sh`
+and curl install language are release-gated until verified against those real
+assets; Homebrew remains planned with no published tap or formula; no-terminal
+mode is assisted planning rather than deterministic validation without CLI
+proof; model workspace packs are UX over docs and CLI gates; and `ni-kernel`
+does not execute downstream work.

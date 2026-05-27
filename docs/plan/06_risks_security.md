@@ -80,7 +80,11 @@ Mitigation: README, distribution docs, visual assets, and model workspace pack
 docs must use factual availability language. Release binaries are required for
 non-Go users before curl or package-manager paths are claimed as available;
 model packs remain planning UX rather than execution adapters; no-terminal mode
-must show CLI-produced proof before claiming deterministic validation.
+must show CLI-produced proof before claiming deterministic validation. The v0.3
+distribution release-state lock keeps README, install, distribution, Homebrew,
+manual release, and post-release roadmap docs aligned with source/local
+availability, release-gated binary and curl paths, planned Homebrew status, and
+the pre-runtime kernel boundary.
 
 ## RISK-014: visual identity drifts into fragile or overclaiming README surface
 
