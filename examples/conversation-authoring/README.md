@@ -1,38 +1,79 @@
-# Conversation authoring fixture
+# Conversation Authoring Fixture
 
-This fixture shows the expected conversational planning loop after `ni init`.
+## 1. Purpose
 
-It is not a runnable harness and it does not execute downstream tools.
-`transcript.md` demonstrates how a model summarizes current planning state,
-asks focused questions, persists the answer into `docs/plan/**` and
-`.ni/contract.json`, then relies on `ni status` for readiness.
+This fixture shows the sustained planning loop after `ni init`: a model and
+user author planning docs through conversation while the CLI remains the
+readiness, lock, and prompt compiler authority.
 
-The completed example state is checked in under:
+## 2. What this proves
 
-- `docs/plan/**`: generated human-facing plan docs after conversation resolved
-  the blocker question.
+- The user does not need contract authoring commands such as `contract add`,
+  `contract set`, or `contract list`.
+- A model may update `docs/plan/**` and `.ni/contract.json` together, then use
+  `ni status` to verify readiness.
+- `READY_WITH_DEFERRALS` can be locked when the deferrals are explicit and
+  accepted.
+- `ni run` compiles a human-team handoff prompt without executing downstream
+  implementation.
+
+## 3. Product type / surface
+
+- `product_type`: `conversation_product`
+- `delivery_surface`: `conversation`, `document`
+- Expected `ni status`: `READY_WITH_DEFERRALS`
+- Expected `ni run` target: `human-team`
+
+## 4. Files
+
+- `transcript.md`: model-user authoring loop and status checks.
+- `ni-end-confirmation.md`: confirmation behavior before lock.
+- `ni-run-handoff.md`: target selection, stale-lock refusal, and prompt
+  compilation behavior.
+- `session-resume.md`: bounded session resume below contract authority.
+- `docs/plan/**`: completed human-facing plan docs.
 - `.ni/contract.json`: matching machine-readable planning contract.
-- `.ni/session.json`: bounded resume state, below docs and contract in
-  authority.
+- `.ni/session.json`: bounded resume state below docs and contract.
 - `.ni/plan.lock.json`: CLI-written lockfile for the completed plan.
-- `generated/human-team.prompt.txt`: CLI-compiled handoff prompt.
+- `generated/human-team.prompt.txt`: checked-in compiled handoff prompt.
 
-The user never types contract authoring commands such as `contract add`,
-`contract set`, or `contract list`; the model maintains the docs and contract
-while the CLI validates, locks, and compiles.
+## 5. Commands
 
-`ni-end-confirmation.md` demonstrates how `ni-end` summarizes a CLI-ready plan,
-asks for explicit confirmation, and only then lets `ni end` write the lock.
+From the repository root:
 
-`ni-run-handoff.md` demonstrates how `ni-run` infers or asks for a target,
-lets `ni run` verify the lock while compiling the prompt, and states that NI
-did not execute implementation.
+```bash
+go run ./cmd/ni status --dir examples/conversation-authoring
+tmpdir="$(mktemp -d)"
+go run ./cmd/ni run --dir examples/conversation-authoring --target human-team --max-chars 4000 --out "$tmpdir/human-team.prompt.txt"
+wc -m "$tmpdir/human-team.prompt.txt"
+rm -rf "$tmpdir"
+```
 
-`session-resume.md` demonstrates how a later `ni-start` session resumes from
-persisted docs, `.ni/contract.json`, and bounded `.ni/session.json` state
-instead of hidden chat memory.
+## 6. Expected output
 
-See [transcript.md](transcript.md),
-[ni-end-confirmation.md](ni-end-confirmation.md),
-[ni-run-handoff.md](ni-run-handoff.md), and
-[session-resume.md](session-resume.md).
+Expected status: `READY_WITH_DEFERRALS`.
+
+The status command should start with:
+
+```text
+READY_WITH_DEFERRALS
+profile: prototype
+product type: conversation_product
+delivery surfaces: conversation, document
+```
+
+It should also report the accepted deferrals:
+
+```text
+deferral D001: DEC-004 is deferred
+deferral D002: OQ-002 remains open
+```
+
+The run command should write a non-empty prompt at or below 4000 characters.
+
+## 7. Non-execution boundary
+
+This fixture does not run a support assistant, contact customers, approve
+refunds, call a model API, or invoke downstream tools. ni validates planning
+state, writes the lock through `ni end`, and compiles a bounded prompt through
+`ni run`.
