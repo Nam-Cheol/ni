@@ -174,7 +174,8 @@ Allowed:
 - local SVG assets under `assets/`;
 - optional locally generated PNG exports when a platform requires PNG;
 - existing remote status badges when they are factual and non-essential;
-- remote capsule-style examples documented as optional inspiration only.
+- remote capsule-style examples documented as optional inspiration only. See
+  `docs/64_CAPSULE_STYLE_NOTES.md`.
 
 Not allowed for primary README visuals:
 
@@ -210,6 +211,7 @@ Before editing or generating README assets, check this spec and the asset audit:
 
 - `docs/59_VISUAL_ASSET_AUDIT.md`
 - `docs/60_VISUAL_DESIGN_SPEC.md`
+- `docs/64_CAPSULE_STYLE_NOTES.md`
 
 Asset work should preserve the kernel boundary: visual changes may improve
 communication, but they must not imply runtime execution, downstream adapter

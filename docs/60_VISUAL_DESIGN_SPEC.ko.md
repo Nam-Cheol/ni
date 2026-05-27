@@ -171,7 +171,8 @@ Allowed:
 - `assets/` 아래 local SVG assets;
 - platform이 PNG를 요구할 때 optional locally generated PNG exports;
 - factual and non-essential 기존 remote status badges;
-- optional inspiration으로 문서화된 remote capsule-style examples only.
+- optional inspiration으로 문서화된 remote capsule-style examples only. 자세한
+  기준은 `docs/64_CAPSULE_STYLE_NOTES.ko.md`를 본다.
 
 Primary README visuals에서 금지:
 
@@ -207,6 +208,7 @@ README assets를 edit하거나 generate하기 전에 이 spec과 asset audit를 
 
 - `docs/59_VISUAL_ASSET_AUDIT.md`
 - `docs/60_VISUAL_DESIGN_SPEC.md`
+- `docs/64_CAPSULE_STYLE_NOTES.ko.md`
 
 Asset work는 kernel boundary를 보존해야 한다. Visual changes는 communication을
 개선할 수 있지만 runtime execution, downstream adapter behavior, package
