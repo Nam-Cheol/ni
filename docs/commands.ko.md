@@ -56,6 +56,33 @@ make install-local
 다른 install location을 선택하려면 `PREFIX` 또는 `BINDIR`를 override한다. 설치
 상세 정보는 [docs/22_INSTALL.md](22_INSTALL.md)를 참고하라.
 
+## Command Reference Table
+
+이 표의 어떤 command도 downstream work를 실행하지 않는다. Codex, shell
+commands, agents, adapters, queues, PR automation, release automation, target
+runtimes, work graphs, harness evidence를 실행하지 않는다.
+
+| Command | Purpose | Example | Authority boundary | Lock behavior | Mutates kernel state? | Requires valid lock? | Can return `BLOCKED`? |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| `ni --help` | implemented command usage를 출력한다. | `ni --help` | Informational CLI surface only. | lock을 읽거나 만들거나 검증하지 않는다. | No. | No. | No. |
+| `ni version` | source version을 출력한다. | `ni version` | Informational CLI surface only. | lock을 읽거나 만들거나 검증하지 않는다. | No. | No. | No. |
+| `ni init` | `docs/plan/**`, `.ni/contract.json`, readiness config, bounded session state가 있는 planning workspace를 만든다. | `ni init --dir ./my-plan --profile prototype` | kernel planning state를 시작한다. interactive contract editor가 아니며 contract `add`, `list`, `set` authoring commands를 추가하지 않는다. | `.ni/plan.lock.json`을 요구하거나 만들지 않는다. | Yes, kernel planning files를 만들거나 보존한다. | No. | No. |
+| `ni status` | docs, contract, sync, decisions, risks, evaluations, blocker questions에서 deterministic readiness를 평가한다. | `ni status --dir .` | authoritative readiness gate다. model judgment가 override할 수 없다. | lock hashes를 만들거나 검증하지 않는다. | No. | No. | Yes, readiness result로 반환될 수 있다. |
+| `ni status --proof` | 같은 readiness result와 rule-level proof evidence를 출력한다. | `ni status --dir . --proof` | planning conversations와 release checks를 위한 authoritative readiness proof다. | lock hashes를 만들거나 검증하지 않는다. | No. | No. | Yes, readiness result로 반환될 수 있다. |
+| `ni status --next-questions` | readiness failures에서 focused planning questions를 도출한다. | `ni status --dir . --next-questions` | model-user planning을 위한 interview aid다. questions는 그 자체로 readiness를 바꾸지 않는다. | lock hashes를 만들거나 검증하지 않는다. | No. | No. | Yes, readiness result로 반환될 수 있다. |
+| `ni end` | ready accepted plan을 lock한다. | `ni end --dir .` | first lock에 대한 CLI authority다. readiness를 실행하고 model-only readiness claims를 거부한다. | readiness가 `BLOCKED`가 아닐 때만 `.ni/plan.lock.json`을 쓴다. `.ni/contract.json`과 required `docs/plan/**`를 hash한다. | Yes, lockfile을 쓴다. | No existing lock required. | Yes, readiness가 `BLOCKED`일 때. |
+| `ni run` | locked plan에서 bounded downstream prompt를 컴파일한다. | `ni run --dir . --target codex --max-chars 4000` | prompt compilation only. output은 handoff text이지 execution이 아니다. | `.ni/plan.lock.json`을 검증하고 stale hashes를 거부한다. | No kernel mutation. `--out`은 prompt artifact만 쓴다. | Yes. | Yes, lock hash mismatch 때. |
+| `ni targets` | supported prompt/export targets를 나열한다. | `ni targets --json` | target registry only. targets는 consumption shapes이지 runtime adapters가 아니다. | lock을 읽거나 만들거나 검증하지 않는다. | No. | No. | No. |
+| `ni export` | locked plan에서 downstream seed Markdown을 쓴다. | `ni export --dir . --target hyper-run --out ./seed` | seed export only. exported files는 derived and mutable downstream artifacts다. | `.ni/plan.lock.json`을 검증하고 stale hashes를 거부한다. | No kernel mutation. `--out`에 seed Markdown을 쓴다. | Yes. | Yes, lock hash mismatch 때. |
+| `ni feedback` | inert downstream observations를 기록하거나 나열한다. | `ni feedback add --dir . --file ./feedback.json` | future planning cycles를 위한 evidence다. contract나 lock을 바꾸지 않는다. | lock이 있으면 feedback read/write 전에 검증한다. | `add`는 `.ni/feedback.jsonl`과 observed pressure를 mutate한다. `list`는 mutate하지 않는다. | Only when a lock exists. | Yes, existing stale lock 때. |
+| `ni pressure` | observed planning pressure와 explicit promotion state를 추적한다. | `ni pressure status --dir .` | pressure는 human planning decision이 docs와 contract를 바꾸기 전까지 advisory다. | lock이 있으면 pressure read/write 전에 검증한다. | `promote`와 `retire`는 `.ni/pressure.json`을 mutate한다. `status`는 mutate하지 않는다. | Only when a lock exists. | Yes, existing stale lock 때. |
+| `ni amend` | locked-plan changes를 위한 explicit amendment records를 만들고 조회하고 apply한다. | `ni amend create --dir . --title "Clarify acceptance criteria"` | amendment records는 intent changes를 설명한다. contract, docs, lock을 직접 edit하지 않는다. | `create`는 lock이 있으면 current lock hash를 기록한다. `apply`는 다른 source lock에 묶인 amendment를 거부한다. | `create`와 `apply`는 `.ni/amendments/**`를 mutate한다. `list`와 `show`는 mutate하지 않는다. | No. | Yes, 다른 source lock에 대해 amendment를 apply할 때. |
+| `ni relock` | explicitly amended plan 뒤에 새 lock을 만든다. | `ni relock --dir .` | relocking에 대한 CLI authority다. amendment gate와 readiness gate를 보존한다. | existing lock이 필요하다. previous lock을 archive한다. current lock에 대한 applied amendment가 없으면 stale docs를 거부하고 blocked readiness도 거부한다. | Yes, previous lock을 archive하고 새 `.ni/plan.lock.json`을 쓴다. | Existing lock required. current hashes는 applied amendment가 있을 때만 stale일 수 있다. | Yes, blocked readiness 또는 applied amendment 없는 stale lock 때. |
+| `ni diff` | 두 planning states 사이의 contract-level changes를 보여준다. | `ni diff --base ./base --head ./head --json` | informational collaboration check only. changes를 resolve하거나 apply하지 않는다. | inputs를 orient하기 위해 lockfiles를 읽을 수 있지만 valid locks를 요구하거나 lock gates를 enforce하지 않는다. | No. | No. | No. |
+| `ni conflicts` | 두 planning states 사이의 semantic planning conflicts를 보고한다. | `ni conflicts --base ./base --head ./head` | collaboration guardrail only. conflicts를 보고하지만 merge, resolve, mutate하지 않는다. | lockfiles가 있으면 읽고 lock hash mismatches를 semantic conflicts로 보고한다. | No. | No. | Yes, blocking conflicts가 있을 때 conflict severity와 nonzero exit로. |
+| `ni graph` | contract capabilities와 artifacts에서 read-only work graph proposal을 출력한다. | `ni graph --dir . --json` | inert proposal material only. task runner, queue, scheduler, execution graph가 아니다. | lock이 있으면 graph proposal 전에 검증한다. | No. | Only when a lock exists. | Yes, existing stale lock 때. |
+| `ni harness` | generated-harness proposal records를 출력하거나 관리한다. | `ni harness plan --dir .` | inert proposal material only. evidence runner, adapter, queue, kernel-owned execution state가 아니다. | `plan`, `candidates`, `propose`, `validate`, `accept`, `retire`는 valid lock을 요구하고 검증한다. | `propose`, `validate`, `accept`, `retire`는 `.ni/harness.candidates.json`을 mutate한다. `plan`과 `candidates`는 mutate하지 않는다. | Yes. | Yes, lock hash mismatch 때. |
+
 ## Core Flow
 
 planning workspace를 만든다:
@@ -327,8 +354,10 @@ semantic conflicts를 발견하면 nonzero로 종료한다.
 
 ## graph and harness
 
-`ni graph`와 `ni harness`는 locked contract에서 optional downstream work를
-설명한다. command names와 달리, 이 outputs는 inert seed/proposal material이다.
+`ni graph`와 `ni harness`는 optional downstream work를 inert seed/proposal
+material로 설명한다. `ni graph`는 draft contract state에서도 proposal을 만들 수
+있고 lock이 있으면 hashes를 검증한다. `ni harness`는 proposal과 candidate
+lifecycle commands에 valid lock을 요구한다. command names와 달리, 이 outputs는
 task runner, evidence runner, queue, adapter, kernel-owned execution state가
 아니다.
 
