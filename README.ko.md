@@ -497,10 +497,8 @@ make install-local
 ```
 
 다른 install location을 선택하려면 `PREFIX` 또는 `BINDIR`를 override한다. 설치
-상세 정보는 [docs/22_INSTALL.md](docs/22_INSTALL.md)를 참고하라.
-
-TODO(Task 063): 이 canonical English README에서 `README.ko.md`를 생성하거나
-동기화한다.
+상세 정보는 [docs/22_INSTALL.md](docs/22_INSTALL.md)를 참고하라. Korean
+companion README는 [README.ko.md](README.ko.md)에서 함께 유지된다.
 
 ## JSON Schemas
 
@@ -551,3 +549,8 @@ smoke tests를 실행한다.
 이 README는 package distribution이나 published binary release를 claim하지 않는다.
 release process가 달리 말하지 않는 한 source, local build, local install mode를
 사용한다.
+
+Release readiness notes는
+[docs/46_RELEASE_READINESS.ko.md](docs/46_RELEASE_READINESS.ko.md)에 있다. CI는
+[.github/workflows/ci.yml](.github/workflows/ci.yml)에 정의되어 있다. Project
+security policy는 `SECURITY.md`가 존재하지 않으므로 아직 publish되지 않았다.

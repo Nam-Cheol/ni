@@ -74,8 +74,9 @@ and local binary build.
 
 ## License
 
-TODO: choose an open-source license with the project owner, then add a root
-`LICENSE` file and update this section.
+`ni` is licensed under the [MIT License](../LICENSE).
 
-Until a license is selected and committed, the repository should not be treated
-as legally reusable open-source software.
+This install document does not claim package distribution, Homebrew support,
+GoReleaser support, or a published binary release. Use source, local build, or
+local install mode unless a future release process documents another supported
+distribution channel.

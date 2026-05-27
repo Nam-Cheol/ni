@@ -494,10 +494,8 @@ make install-local
 ```
 
 Override `PREFIX` or `BINDIR` to choose another install location. See
-[docs/22_INSTALL.md](docs/22_INSTALL.md) for installation details.
-
-TODO(Task 063): create or synchronize `README.ko.md` from this canonical
-English README.
+[docs/22_INSTALL.md](docs/22_INSTALL.md) for installation details. The Korean
+companion README is maintained at [README.ko.md](README.ko.md).
 
 ## JSON Schemas
 
@@ -548,3 +546,8 @@ self-tests, and smoke tests.
 This README does not claim package distribution or a published binary release.
 Use source, local build, or local install mode unless a release process says
 otherwise.
+
+Release readiness notes live in
+[docs/46_RELEASE_READINESS.md](docs/46_RELEASE_READINESS.md). CI is defined in
+[.github/workflows/ci.yml](.github/workflows/ci.yml). A project security policy
+has not been published yet because `SECURITY.md` does not exist.

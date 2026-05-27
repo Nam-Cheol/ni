@@ -26,49 +26,147 @@ require_output() {
 }
 export -f require_output
 
-run_step "release checklist is complete" python3 - <<'PY'
+run_step "release readiness checklist is complete" python3 - <<'PY'
 from pathlib import Path
 
-path = Path("docs/23_RELEASE_CHECKLIST_v0.1.0.md")
+path = Path("docs/46_RELEASE_READINESS.md")
 text = path.read_text(encoding="utf-8")
 
 required = [
-    "CI passes",
-    "Smoke passes",
-    "Golden tests pass",
-    "Schemas validate",
-    "README quickstart verified",
-    "No stale roadmap references",
-    "No core-boundary violations",
-    "No release automation claims",
-    "No runtime execution claims",
-    "All public commands listed in README have smoke coverage",
+    "quality passes",
+    "tests pass",
+    "README and README.ko are in sync",
+    "examples exist",
+    "status proof works",
+    "benchmark protocol exists",
+    "no runtime execution claims",
+    "no false release/license/CI/security claims",
     "bash scripts/release-check.sh",
 ]
 
 missing = [item for item in required if item not in text]
 if missing:
     raise SystemExit(f"{path} is missing required checklist items: {missing}")
+
+if Path("README.ko.md").exists() and not Path("docs/46_RELEASE_READINESS.ko.md").exists():
+    raise SystemExit("README.ko.md exists, but docs/46_RELEASE_READINESS.ko.md is missing")
 PY
 
-run_step "CI workflow covers release validation" python3 - <<'PY'
+run_step "release facts match repository resources" python3 - <<'PY'
 from pathlib import Path
 
-path = Path(".github/workflows/ci.yml")
-text = path.read_text(encoding="utf-8")
+readme = Path("README.md").read_text(encoding="utf-8")
+readme_ko = Path("README.ko.md").read_text(encoding="utf-8")
+install = Path("docs/22_INSTALL.md").read_text(encoding="utf-8")
+readiness = Path("docs/46_RELEASE_READINESS.md").read_text(encoding="utf-8")
+readiness_ko = Path("docs/46_RELEASE_READINESS.ko.md").read_text(encoding="utf-8")
 
-required = [
-    "push:",
-    "pull_request:",
-    "go-version: \"1.22.x\"",
-    "go test ./...",
-    "bash scripts/quality.sh",
-    "bash scripts/smoke.sh",
+if Path("LICENSE").exists():
+    texts = {
+        "README.md": readme,
+        "README.ko.md": readme_ko,
+        "docs/22_INSTALL.md": install,
+        "docs/46_RELEASE_READINESS.md": readiness,
+        "docs/46_RELEASE_READINESS.ko.md": readiness_ko,
+    }
+    required_license_markers = {
+        "README.md": ("MIT License", "[MIT License](LICENSE)"),
+        "README.ko.md": ("MIT License", "[MIT License](LICENSE)"),
+        "docs/22_INSTALL.md": ("MIT License", "[MIT License](../LICENSE)"),
+        "docs/46_RELEASE_READINESS.md": ("MIT License", "[MIT License](../LICENSE)"),
+        "docs/46_RELEASE_READINESS.ko.md": ("MIT License", "[MIT License](../LICENSE)"),
+    }
+    for label, markers in required_license_markers.items():
+        missing = [marker for marker in markers if marker not in texts[label]]
+        if missing:
+            raise SystemExit(f"{label} is missing factual license markers: {missing}")
+else:
+    if "does not claim a license" not in readiness:
+        raise SystemExit("LICENSE is absent, but release readiness does not say so")
+
+ci_path = Path(".github/workflows/ci.yml")
+if ci_path.exists():
+    ci_text = ci_path.read_text(encoding="utf-8")
+    required_ci = [
+        "push:",
+        "pull_request:",
+        "go test ./...",
+        "bash scripts/quality.sh",
+        "bash scripts/smoke.sh",
+    ]
+    missing = [item for item in required_ci if item not in ci_text]
+    if missing:
+        raise SystemExit(f"{ci_path} is missing required CI entries: {missing}")
+    for label, text in {
+        "README.md": readme,
+        "README.ko.md": readme_ko,
+        "docs/46_RELEASE_READINESS.md": readiness,
+        "docs/46_RELEASE_READINESS.ko.md": readiness_ko,
+    }.items():
+        if ".github/workflows/ci.yml" not in text:
+            raise SystemExit(f"{label} does not document the existing CI workflow")
+else:
+    for label, text in {"README.md": readme, "README.ko.md": readme_ko}.items():
+        if "workflows/ci" in text or "badge.svg" in text:
+            raise SystemExit(f"{label} links CI resources, but no CI workflow exists")
+
+if Path("SECURITY.md").exists():
+    for label, text in {"README.md": readme, "README.ko.md": readme_ko}.items():
+        if "SECURITY.md" not in text:
+            raise SystemExit(f"{label} should link SECURITY.md because it exists")
+else:
+    required_security = [
+        "SECURITY.md` does not exist",
+        "security policy",
+        "TODO",
+    ]
+    missing = [item for item in required_security if item not in readiness]
+    if missing:
+        raise SystemExit(f"docs/46_RELEASE_READINESS.md is missing security-status markers: {missing}")
+
+release_claim_markers = {
+    "README.md": [
+        "does not claim package distribution or a published binary release",
+        "source, local build, or local install",
+    ],
+    "README.ko.md": [
+        "package distribution이나 published binary release를 claim하지 않는다",
+        "source, local build, local install mode",
+    ],
+}
+for label, text in {"README.md": readme, "README.ko.md": readme_ko}.items():
+    missing = [marker for marker in release_claim_markers[label] if marker not in text]
+    if missing:
+        raise SystemExit(f"{label} is missing release-status markers: {missing}")
+PY
+
+run_step "examples and benchmark protocol exist" python3 - <<'PY'
+from pathlib import Path
+
+examples = Path("examples")
+if not examples.is_dir():
+    raise SystemExit("examples/ is missing")
+
+required_examples = [
+    examples / "ambiguous-prompt-blocked" / "README.md",
+    examples / "conversation-product" / "README.md",
+    examples / "research-protocol" / "README.md",
+    examples / "benchmark-report" / "README.md",
 ]
+missing = [str(path) for path in required_examples if not path.exists()]
+if missing:
+    raise SystemExit(f"required examples are missing: {missing}")
 
+benchmark = Path("docs/43_BENCHMARK_PROTOCOL.md")
+text = benchmark.read_text(encoding="utf-8")
+required = [
+    "It is not an execution benchmark",
+    "must not execute downstream agents",
+    "Target prompt boundedness",
+]
 missing = [item for item in required if item not in text]
 if missing:
-    raise SystemExit(f"{path} is missing required CI entries: {missing}")
+    raise SystemExit(f"{benchmark} is missing benchmark protocol markers: {missing}")
 PY
 
 run_step "schemas validate" python3 scripts/check-schema.py
@@ -76,6 +174,12 @@ run_step "core boundary has no violations" python3 scripts/check-core-boundary.p
 run_step "Go tests pass" go test ./...
 run_step "golden tests pass" go test ./cmd/ni -run Golden -count=1
 run_step "smoke passes" bash scripts/smoke.sh
+
+run_step "status proof works" bash -c '
+  go run ./cmd/ni status --dir examples/conversation-product --proof >"$1/status-proof.out"
+  require_output "NI Intent Readiness: READY" "$1/status-proof.out"
+  require_output "Proof:" "$1/status-proof.out"
+' bash "$QUICKSTART_TMP"
 
 run_step "README quickstart works in go run mode" bash -c '
   go run ./cmd/ni --help >"$1/go-run-help.out"
@@ -212,4 +316,4 @@ if missing:
     )
 PY
 
-echo "release-check: v0.1.0 release gate passed"
+echo "release-check: release readiness gate passed"
