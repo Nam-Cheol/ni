@@ -201,6 +201,7 @@ Downstream prompts, seed packages, harness proposals는 derived and mutable이�
 - [Target Story](docs/45_TARGET_STORY.md)
 - [v0.2.0 Release Draft](docs/47_RELEASE_DRAFT_v0.2.0.ko.md)
 - [Public Launch Checklist](docs/50_LAUNCH_CHECKLIST.ko.md)
+- [Post-Release Roadmap](docs/51_POST_RELEASE_ROADMAP.ko.md)
 
 ## Development and Release Status
 

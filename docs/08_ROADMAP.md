@@ -69,6 +69,19 @@ the kernel:
 - additional deterministic checks for collaboration, pressure, and target
   export consistency.
 
+## Post-v0.2.0 roadmap
+
+The post-release roadmap is tracked in
+[docs/51_POST_RELEASE_ROADMAP.md](51_POST_RELEASE_ROADMAP.md). It organizes the
+next work into launch stabilization, conversation authoring UX hardening, target
+seed quality and conformance, benchmark data and case studies, and later
+optional downstream integrations as separate packages.
+
+That roadmap preserves the pre-runtime boundary: `ni-kernel` may improve
+planning contracts, readiness gates, lockfiles, prompt compilation, and inert
+seed exports, but runtime execution integrations remain downstream or
+separate-package work.
+
 ## Historical experiment notes
 
 ```text
