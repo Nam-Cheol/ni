@@ -16,6 +16,9 @@ availability가 있다고 claim하지 않는다.
   한정된다. 이 문서는 package distribution, Homebrew support, GoReleaser
   support, published binary release를 claim하지 않는다.
 - Release automation: no release automation is part of release readiness.
+- Release draft: `docs/47_RELEASE_DRAFT_v0.2.0.ko.md`는 factual GitHub release
+  draft일 뿐이다. Tag `v0.2.0`을 suggest하지만 tag 생성, release publish,
+  binary upload, package-manager availability claim을 하지 않는다.
 
 ## Readiness Checklist
 
@@ -29,6 +32,9 @@ availability가 있다고 claim하지 않는다.
       `go run ./cmd/ni status --dir examples/conversation-product --proof`.
 - [ ] benchmark protocol exists at
       [docs/43_BENCHMARK_PROTOCOL.md](43_BENCHMARK_PROTOCOL.md).
+- [ ] v0.2.0 release draft exists and clearly separates included capability
+      claims from not-included runtime, adapter, automation, and binary-package
+      scope.
 - [ ] no runtime execution claims are present: `ni run`은 bounded prompt만
       compile하며 agents, shells, queues, adapters를 실행하지 않는다.
 - [ ] no false release/license/CI/security claims are present:

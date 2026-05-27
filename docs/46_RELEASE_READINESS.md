@@ -16,6 +16,9 @@ hosted binary availability.
   only. This document does not claim package distribution, Homebrew support,
   GoReleaser support, or a published binary release.
 - Release automation: no release automation is part of release readiness.
+- Release draft: `docs/47_RELEASE_DRAFT_v0.2.0.md` is a factual GitHub release
+  draft only. It suggests tag `v0.2.0` but does not create a tag, publish a
+  release, upload binaries, or claim package-manager availability.
 
 ## Readiness Checklist
 
@@ -29,6 +32,9 @@ hosted binary availability.
       `go run ./cmd/ni status --dir examples/conversation-product --proof`.
 - [ ] benchmark protocol exists at
       [docs/43_BENCHMARK_PROTOCOL.md](43_BENCHMARK_PROTOCOL.md).
+- [ ] v0.2.0 release draft exists and clearly separates included capability
+      claims from not-included runtime, adapter, automation, and binary-package
+      scope.
 - [ ] no runtime execution claims are present: `ni run` compiles a bounded
       prompt only and does not execute agents, shells, queues, or adapters.
 - [ ] no false release/license/CI/security claims are present:

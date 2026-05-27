@@ -39,6 +39,7 @@ required = [
     "examples exist",
     "status proof works",
     "benchmark protocol exists",
+    "v0.2.0 release draft exists",
     "no runtime execution claims",
     "no false release/license/CI/security claims",
     "bash scripts/release-check.sh",
@@ -50,6 +51,91 @@ if missing:
 
 if Path("README.ko.md").exists() and not Path("docs/46_RELEASE_READINESS.ko.md").exists():
     raise SystemExit("README.ko.md exists, but docs/46_RELEASE_READINESS.ko.md is missing")
+PY
+
+run_step "v0.2.0 release draft is factual and source-first" python3 - <<'PY'
+from pathlib import Path
+
+drafts = [
+    Path("docs/47_RELEASE_DRAFT_v0.2.0.md"),
+    Path("docs/47_RELEASE_DRAFT_v0.2.0.ko.md"),
+]
+
+for path in drafts:
+    if not path.exists():
+        raise SystemExit(f"{path} is missing")
+
+required_markers = [
+    "# ni v0.2.0 — Project Intent Compiler for AI Agents",
+    "Tag suggestion: `v0.2.0`",
+    "Summary: Don't run the agent yet. Compile the intent first.",
+    "## Included",
+    "Intent Lock Protocol",
+    "Conversation-driven authoring model",
+    "`ni init`, `ni status`, `ni end`, and `ni run`",
+    "Status proof report",
+    "Locked plan hash validation",
+    "Target prompt and export seed outputs",
+    "Ambiguous prompt blocked demo",
+    "Non-software planning demos",
+    "Benchmark protocol",
+    "Korean companion README",
+    "## Not Included",
+    "Execution runtime",
+    "Codex adapter",
+    "Shell adapter",
+    "SPEC runner",
+    "Task queue",
+    "Multi-agent orchestration",
+    "PR/release automation",
+    "Binary package distribution",
+    "go test ./...",
+    "bash scripts/quality.sh",
+    "bash scripts/smoke.sh",
+]
+
+boundary_markers = [
+    "does not publish a release",
+    "does not claim hosted release assets",
+    "does not add release automation",
+    "does not execute Codex",
+    "release를 publish하거나",
+    "claim하지 않는다",
+    "release automation을 추가하지 않는다",
+    "Codex, shells, model APIs",
+]
+
+for path in drafts:
+    text = path.read_text(encoding="utf-8")
+    missing = [marker for marker in required_markers if marker not in text]
+    if missing:
+        raise SystemExit(f"{path} is missing release draft markers: {missing}")
+
+    if not any(marker in text for marker in boundary_markers):
+        raise SystemExit(f"{path} is missing source-first/non-execution boundary markers")
+
+    forbidden_claims = [
+        "Homebrew install",
+        "brew install",
+        "GoReleaser",
+        "published binary release",
+        "published binary packages are available",
+        "download the binary",
+        "automatically publishes",
+    ]
+    for claim in forbidden_claims:
+        context = text[max(0, text.find(claim) - 120): text.find(claim) + len(claim) + 120]
+        allowed_negations = [
+            "does not",
+            "do not",
+            "not claim",
+            "claim하지",
+            "추가하지",
+            "실행하지",
+            "않는다",
+        ]
+        if claim in text and not any(marker in context for marker in allowed_negations):
+            raise SystemExit(f"{path} appears to make a forbidden release claim: {claim}")
 PY
 
 run_step "release facts match repository resources" python3 - <<'PY'
