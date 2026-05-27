@@ -100,6 +100,10 @@ pressure commands stop with `BLOCKED`.
 Downstream prompts, seed packages, and harness proposals are derived and
 mutable. They do not become kernel-owned execution state.
 
+See the [differentiation map](docs/41_DIFFERENTIATION.md) for how `ni`
+differs from host enhancers, SDD toolkits, coding-agent operating systems, and
+execution growth runtimes.
+
 ## Quickstart
 
 ### Go run mode

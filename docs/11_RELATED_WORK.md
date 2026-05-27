@@ -19,6 +19,9 @@ task queue, agent team, evidence loop, or project growth system. It is not
 Hyper Run, Spec Kit, Ouroboros, or namba-ai. Those systems can consume locked
 intent downstream, but they must not be absorbed into the kernel.
 
+For a row-by-row comparison of adjacent categories, see the
+[differentiation map](41_DIFFERENTIATION.md).
+
 ## Positioning matrix
 
 | Category | Examples | What they optimize for | `ni` boundary |
