@@ -1,223 +1,186 @@
 # ni
 
-`ni` is the Project Intent Compiler for AI Agents.
+Project Intent Compiler for AI Agents.
 
 Don't run the agent yet. Compile the intent first.
 
 `ni` turns planning conversations into a locked, versioned, verifiable project
-contract before Codex, Claude, Spec Kit, Hyper Run, namba-ai, or a human team
-starts execution.
+contract before Codex, Claude, Spec Kit, Hyper Run, namba-ai, a generated
+harness, or a human team starts execution.
 
-Lock intent before any harness runs.
-
-The current product is `ni-kernel`: the upstream intent contract layer, not an
-execution harness, task runner, SPEC runner, multi-agent layer, or Codex
-adapter.
-
-Its core mechanism is the **Intent Lock Protocol**: a deterministic pre-runtime
-control layer that defines how planning conversations become a project
-contract, when the contract is ready to lock, how the accepted plan is hashed,
-what downstream actors may trust, and when execution must stop because intent
-changed.
+The current product is `ni-kernel`: a deterministic pre-runtime control layer
+for intent, not an execution harness.
 
 ```text
 conversation -> docs/plan + .ni/contract.json -> ni status -> ni end -> locked intent -> ni run
 ```
 
-See [Intent Lock Protocol](docs/42_INTENT_LOCK_PROTOCOL.md) for the protocol
-definition, inputs, gates, outputs, and non-goals.
+Start with the category docs:
 
-The [benchmark protocol](docs/43_BENCHMARK_PROTOCOL.md) defines a manual,
-pre-runtime way to compare direct-to-agent prompts with locked `ni` intent on
-ambiguity, acceptance criteria, blockers, risks, assumptions, non-goals, stale
-plan detection, bounded prompts, and readiness before execution.
+- [Positioning](docs/40_POSITIONING.md)
+- [Differentiation map](docs/41_DIFFERENTIATION.md)
+- [Intent Lock Protocol](docs/42_INTENT_LOCK_PROTOCOL.md)
 
-## Authoring model
+## What Problem ni Solves
 
-`ni init` creates the planning workspace. After that, authoring happens through
-conversation with a planning model and NI skills. The model maintains
-`docs/plan/**` and `.ni/contract.json` from the ongoing conversation; users
-should not have to manually edit contract JSON.
+Agents are often asked to begin from prompts that sound actionable but still
+hide critical intent:
 
-The CLI is still authoritative, but it is not the primary planning interface.
-Use `ni status` to validate readiness, `ni end` to lock a ready plan, and
-`ni run` to compile a bounded prompt from a valid lock.
+- Who is the project for?
+- What must be true before work is accepted?
+- Which risks require mitigation?
+- What is explicitly out of scope?
+- Which questions should block execution?
+- Has the plan changed since it was accepted?
 
-Authoring rules are documented in:
+Most tools try to control the agent after a prompt, spec, worklist, or runtime
+loop already exists. `ni` moves control earlier. It asks whether
+project intent is explicit, accepted, validated, locked, and unchanged before
+any downstream actor starts work.
 
-- [Conversation authoring](docs/28_CONVERSATION_AUTHORING.md)
-- [Authoring protocol](docs/29_AUTHORING_PROTOCOL.md)
-- [Document update rules](docs/30_DOC_UPDATE_RULES.md)
-- [ni-start behavior](docs/31_NI_START_BEHAVIOR.md)
-- [Session state](docs/32_SESSION_STATE.md)
-- [Model edit safety](docs/37_MODEL_EDIT_SAFETY.md)
-- [Session resume](docs/38_SESSION_RESUME.md)
+## The ni Answer: Intent Lock Protocol
 
-## JSON schemas
+The [Intent Lock Protocol](docs/42_INTENT_LOCK_PROTOCOL.md) is the core
+mechanism of `ni-kernel`. It defines:
 
-Versioned JSON Schemas for NI state files live in `schema/`:
+1. how planning conversations become a project contract,
+2. when the contract is ready to lock,
+3. how the accepted plan is hashed,
+4. what downstream actors may trust,
+5. when execution must stop because intent changed.
 
-```text
-schema/ni.project.v0.json
-schema/ni.contract.v0.json
-schema/ni.lock.v0.json
-schema/ni.readiness-rules.v0.json
-schema/ni.readiness-profiles.v0.json
-schema/ni.feedback.v0.json
-schema/ni.pressure.v0.json
-schema/ni.amendment.v0.json
-schema/ni.harness-candidate.v0.json
-```
+The kernel owns:
 
-Validate the published schemas and current `.ni` state files with:
+- `docs/plan/**`
+- `.ni/contract.json`
+- deterministic readiness validation
+- `.ni/plan.lock.json`
+- lock hash verification
+- bounded prompt compilation
+- inert downstream seed exports
 
-```bash
-python3 scripts/check-schema.py
-```
-
-## What ni is
-
-`ni` is the authority for:
-
-- planning docs and the `.ni/contract.json` schema,
-- deterministic readiness checks,
-- `.ni/plan.lock.json`,
-- source-of-truth ordering,
-- prompt compilation from a locked plan,
-- `.ni/session.json` as non-authoritative planning continuity state,
-- downstream seed exports derived from a locked plan,
-- inert feedback, pressure, amendment, and collaboration records.
-
-After a plan is locked, the source-of-truth order is:
+After a plan is locked, source-of-truth precedence is:
 
 ```text
 .ni/plan.lock.json > .ni/contract.json > docs/plan/** > .ni/session.json > chat history
 ```
 
-If a locked file hash no longer matches, `ni run`, `ni export`, feedback, and
-pressure commands stop with `BLOCKED`.
+If locked hashes no longer match, `ni run`, `ni export`, feedback, pressure,
+and downstream handoff commands stop with `BLOCKED`.
 
-## What ni is not
+## 5-Minute Demo: Ambiguous Prompt Blocked
 
-`ni` is not:
+The fastest way to understand `ni` is the
+[ambiguous prompt blocked demo](examples/ambiguous-prompt-blocked/).
 
-- a task runner,
-- a SPEC runner,
-- a multi-agent execution layer,
-- a Codex adapter,
-- a queue,
-- a shell adapter,
-- release automation,
-- PR automation,
-- Hyper Run, Spec Kit, Ouroboros, or namba-ai.
+It starts from a vague request:
 
-Downstream prompts, seed packages, and harness proposals are derived and
-mutable. They do not become kernel-owned execution state.
+```text
+Build me a dashboard for my team.
+```
 
-See the [differentiation map](docs/41_DIFFERENTIATION.md) for how `ni`
-differs from host enhancers, SDD toolkits, coding-agent operating systems, and
-execution growth runtimes.
+A direct-to-agent path would force the agent to invent hidden assumptions about
+users, data, workflow, non-goals, and success criteria. The `ni` path records
+the request as planning intent, then refuses to treat it as executable while
+blocker questions remain open.
 
-See the [target story](docs/45_TARGET_STORY.md) for how `ni` gives downstream
-humans, agents, and harnesses a locked intent contract without replacing them.
+Try the blocked workspace:
 
-## Quickstart
+```bash
+go run ./cmd/ni status --dir ./examples/ambiguous-prompt-blocked/workspace
+go run ./cmd/ni status --dir ./examples/ambiguous-prompt-blocked/workspace --next-questions
+```
 
-### Go run mode
+Expected result:
 
-Use `go run` when trying the CLI directly from source:
+```text
+BLOCKED
+```
+
+That is the point: ambiguous execution is blocked before an agent starts.
+
+## Non-Software Demo
+
+`ni` is not a software spec generator. It compiles project intent for any
+product surface.
+
+Try the [Neighborhood Cooling Study Protocol](examples/research-protocol/):
+
+```bash
+go run ./cmd/ni status --dir examples/research-protocol
+go run ./cmd/ni run --dir examples/research-protocol --target human-team --out examples/research-protocol/generated/human-team.prompt.md
+```
+
+This locked example plans a research protocol, not an app. It has
+`product_type: research_protocol`, a `document` delivery surface, protocol
+review evaluations, and a human-team handoff prompt. It does not collect data,
+run analysis, deploy sensors, or execute fieldwork.
+
+Another non-software example is
+[Travel Concierge Triage](examples/conversation-product/), a conversation
+product that compiles a human concierge handoff without deploying a chatbot or
+booking travel.
+
+## Core Flow
+
+Create a planning workspace:
+
+```bash
+go run ./cmd/ni init --dir <path> --profile prototype
+```
+
+Use sustained model-user conversation to maintain `docs/plan/**` and
+`.ni/contract.json` together. Skills and models are UX. The CLI is authority.
+
+Check readiness:
+
+```bash
+go run ./cmd/ni status --dir <path>
+go run ./cmd/ni status --dir <path> --proof --next-questions
+```
+
+A model may explain the status, but it may not override it. If the status is
+`BLOCKED`, execution must not start.
+
+Lock only after readiness passes:
+
+```bash
+go run ./cmd/ni end --dir <path>
+```
+
+Compile a bounded downstream prompt from the valid lock:
+
+```bash
+go run ./cmd/ni run --dir <path> --target codex --max-chars 4000
+```
+
+`ni run` prints or writes a prompt. It does not execute that prompt.
+
+## What ni Blocks
+
+`ni` blocks downstream handoff when intent is not trustworthy yet:
+
+- accepted capabilities without linked evaluations,
+- high-severity risks without mitigation,
+- open blocker questions,
+- conflicting accepted decisions,
+- missing or invalid required planning records,
+- stale locks where current files no longer match `.ni/plan.lock.json`,
+- target prompt compilation before a valid lock exists.
+
+The benchmark protocol in
+[docs/43_BENCHMARK_PROTOCOL.md](docs/43_BENCHMARK_PROTOCOL.md) describes how
+to compare direct-to-agent prompts against locked `ni` intent without running
+downstream agents.
+
+## Core Commands
+
+### Help and Version
 
 ```bash
 go run ./cmd/ni --help
 go run ./cmd/ni version
 ```
-
-Create a planning workspace:
-
-```bash
-tmp="$(mktemp -d)"
-go run ./cmd/ni init --dir "$tmp/plan" --profile prototype
-go run ./cmd/ni status --dir "$tmp/plan"
-```
-
-A new template workspace is expected to print `BLOCKED` because it still has
-TODO values and an open blocker question.
-
-Continue planning with `ni-start` in Codex or another model environment:
-
-```text
-User: Invoke ni-start for $tmp/plan. Help me finish the plan.
-Model: Reads docs/plan/** and .ni/contract.json, summarizes state, asks focused questions.
-User: Answers the focused questions.
-Model: Updates docs/plan/** and .ni/contract.json together, then runs or requests ni status.
-```
-
-Keep the conversation going until the model has persisted the answers into the
-planning docs and contract. Then check readiness again:
-
-```bash
-go run ./cmd/ni status --dir "$tmp/plan"
-```
-
-Only after `ni status` reports `READY` or `READY_WITH_DEFERRALS`, lock and
-compile:
-
-```bash
-go run ./cmd/ni end --dir "$tmp/plan"
-go run ./cmd/ni run --dir "$tmp/plan" --target codex --out "$tmp/codex.prompt.txt"
-```
-
-To inspect this repository's already locked plan:
-
-```bash
-go run ./cmd/ni status --dir .
-go run ./cmd/ni run --dir . --target generic --max-chars 4000
-```
-
-## Examples
-
-Complete locked example workspaces live in `examples/`:
-
-- [Travel Concierge Triage](examples/conversation-product/): a non-software conversation product with human-team and Codex prompt artifacts.
-- [Conversation Authoring Fixture](examples/conversation-authoring/): an end-to-end transcript showing model-maintained docs and contract records after `ni init`, with CLI validation, lock, and prompt compilation.
-- [Neighborhood Cooling Study Protocol](examples/research-protocol/): a non-software research protocol with human-team and generic prompt artifacts.
-- [Namba AI Upgrade](examples/namba-ai-upgrade/): a software product planning example.
-- [Benchmark Report Template](examples/benchmark-report/): a manual report
-  template for the pre-runtime intent readiness benchmark.
-
-ni is not a software spec generator.
-ni compiles project intent for any product surface.
-
-The non-software examples demonstrate that `product_type` is not always
-`software`, delivery is not always web or CLI, evaluation can be
-review/checklist/protocol-based, and `ni run` compiles a handoff prompt rather
-than executing implementation.
-
-### Built binary mode
-
-Build a local binary into `bin/ni`:
-
-```bash
-make build
-./bin/ni --help
-./bin/ni version
-```
-
-`make build` injects a git-derived version when git metadata is available.
-
-### Local install mode
-
-Install a local binary to `~/.local/bin/ni` by default:
-
-```bash
-make install-local
-~/.local/bin/ni version
-```
-
-Override `PREFIX` or `BINDIR` to choose another install location. See
-[docs/22_INSTALL.md](docs/22_INSTALL.md) for installation details.
-
-## Core commands
 
 ### init
 
@@ -291,25 +254,12 @@ READY_WITH_DEFERRALS
 READY
 ```
 
-A model may explain the status, but it may not override it.
 When `--proof` is present, `ni status` prints rule-level evidence from the
-readiness, docs/contract sync, and accepted-decision conflict checks:
-
-```text
-NI Intent Readiness: BLOCKED
-
-Proof:
-- CAP-003 is accepted but has no linked EVAL.
-- RISK-002 is high severity but has no mitigation.
-- OQ-001 is marked as blocker.
-- DEC-004 conflicts with DEC-002.
-
-Execution must not start.
-```
+readiness, docs/contract sync, and accepted-decision conflict checks.
 
 When `--next-questions` is present, `ni status` derives concise planning
-questions from readiness rule failures so `ni-start` can ask about the next
-specific gap.
+questions from readiness rule failures so a planning conversation can address
+the next specific gap.
 
 ### end
 
@@ -326,7 +276,7 @@ planning aid below locked docs.
 
 ### run
 
-`ni run` compiles a 4000-character-or-less prompt from a locked plan.
+`ni run` compiles a prompt from a locked plan.
 
 ```bash
 go run ./cmd/ni run --dir <path>
@@ -335,9 +285,18 @@ go run ./cmd/ni run --dir <path> --target human-team --out <file>
 go run ./cmd/ni run --dir <path> --max-chars 2400
 ```
 
-`ni run` does not execute Codex, shell commands, agents, queues, or adapters.
+Prompt output must stay within the configured maximum, initially 4000
+characters. `ni run` does not execute Codex, shell commands, agents, queues, or
+adapters.
 
-## Targets
+## Targets and Exports
+
+Targets are consumption shapes for a locked plan. They are not integrations
+that `ni` executes, runtime adapters that `ni` owns, or lifecycle state that
+becomes part of `ni-kernel`.
+
+See the [target story](docs/45_TARGET_STORY.md) for target-by-target
+boundaries.
 
 List supported prompt/export targets:
 
@@ -358,13 +317,6 @@ ouroboros   seed     upstream intent notes, not Agent OS execution state
 spec-kit    seed     upstream intent summary, not Spec Kit workflow state
 ```
 
-Targets are downstream consumption shapes. They do not change kernel authority,
-call downstream tools, or make downstream runtime state part of `ni-kernel`.
-`ni` does not replace Codex, Spec Kit, Hyper Run, Ouroboros, namba-ai, or a
-human team. It gives them a locked intent contract to obey.
-
-## Export
-
 `ni export` writes locked-plan seed packages for supported downstream targets.
 Those outputs are derived from a locked plan and remain mutable downstream
 artifacts.
@@ -378,10 +330,14 @@ go run ./cmd/ni export --dir <path> --target spec-kit --out <dir>
 
 Export requires `.ni/plan.lock.json`, verifies locked hashes, and refuses stale
 plans with `BLOCKED`. It writes seed Markdown only. It does not call external
-runtimes, create downstream runtime packets, or add target adapters. See
-[Target Story](docs/45_TARGET_STORY.md) for the target-by-target boundary.
+runtimes, create downstream runtime packets, or add target adapters.
 
-## Feedback
+## Additional Kernel Commands
+
+These commands preserve the same boundary: they read or write kernel records
+and inert proposals, but they do not execute downstream work.
+
+### feedback
 
 `ni feedback` records downstream observations without mutating the contract or
 lock.
@@ -396,7 +352,7 @@ Feedback is appended to `.ni/feedback.jsonl` and translated into observed
 pressure items. It is evidence for a future planning cycle, not an automatic
 contract change.
 
-## Pressure
+### pressure
 
 `ni pressure` tracks recurring planning pressure without changing readiness
 rules by itself.
@@ -416,7 +372,7 @@ observed -> repeated -> promotable -> accepted
 Accepted pressure still requires a human planning decision before it changes a
 locked contract.
 
-## Amend and relock
+### amend and relock
 
 Locked planning docs must not be silently edited. Use amendments to explain why
 a locked plan changed, then relock.
@@ -433,7 +389,7 @@ An applied amendment must include a reason, affected docs or contract IDs,
 proposed changes, risk impact, and readiness impact. `ni relock` refuses stale
 locks without an applied amendment and refuses blocked readiness.
 
-## Collaboration conflict checks
+### diff and conflicts
 
 `ni diff` and `ni conflicts` compare planning states without resolving or
 mutating them.
@@ -449,10 +405,10 @@ Inputs may be a project directory, `.ni/contract.json`, or
 conflicts are found, including stale locks, conflicting decisions, weakened
 accepted requirements, and risk severity reductions without mitigation context.
 
-## Downstream planning artifacts
+### graph and harness
 
 `ni graph` and `ni harness` describe optional downstream work from a locked
-contract. Despite the command name, these outputs are inert seed/proposal
+contract. Despite the command names, these outputs are inert seed/proposal
 material. They are not a task runner, evidence runner, queue, adapter, or
 kernel-owned execution state.
 
@@ -470,23 +426,125 @@ The kernel may compile work graphs, evaluation-plan proposals, evidence-rule
 notes, and downstream handoff material from a valid lock. It must not execute
 them.
 
-## Development validation
+## What ni Is Not
+
+`ni` is not:
+
+- a task runner,
+- a SPEC runner,
+- a multi-agent execution layer,
+- a Codex adapter,
+- a queue,
+- a shell adapter,
+- release automation,
+- PR automation,
+- Hyper Run, Spec Kit, Ouroboros, or namba-ai.
+
+Downstream prompts, seed packages, and harness proposals are derived and
+mutable. They do not become kernel-owned execution state.
+
+See the [differentiation map](docs/41_DIFFERENTIATION.md) for how `ni`
+differs from host enhancers, SDD toolkits, coding-agent operating systems, and
+execution growth runtimes.
+
+## Examples
+
+Complete example workspaces live in `examples/`:
+
+- [Ambiguous Prompt Blocked](examples/ambiguous-prompt-blocked/): the core
+  blocking demo for vague requests.
+- [Neighborhood Cooling Study Protocol](examples/research-protocol/): a
+  non-software research protocol with human-team and generic prompt artifacts.
+- [Travel Concierge Triage](examples/conversation-product/): a conversation
+  product with human-team and Codex prompt artifacts.
+- [Conversation Authoring Fixture](examples/conversation-authoring/): an
+  end-to-end transcript showing model-maintained docs and contract records
+  after `ni init`, with CLI validation, lock, and prompt compilation.
+- [Namba AI Upgrade](examples/namba-ai-upgrade/): a software product planning
+  example.
+- [Benchmark Report Template](examples/benchmark-report/): a manual report
+  template for the pre-runtime intent readiness benchmark.
+
+## Development Status
+
+`ni` is currently source-first. Package publishing, Homebrew taps, GoReleaser,
+and automated release tooling are outside the current kernel scope.
+
+Use `go run` when trying the CLI directly from source:
+
+```bash
+go run ./cmd/ni --help
+go run ./cmd/ni version
+go run ./cmd/ni status --dir .
+```
+
+Build a local binary into `bin/ni`:
+
+```bash
+make build
+./bin/ni --help
+./bin/ni version
+```
+
+Install a local binary to `~/.local/bin/ni` by default:
+
+```bash
+make install-local
+~/.local/bin/ni version
+```
+
+Override `PREFIX` or `BINDIR` to choose another install location. See
+[docs/22_INSTALL.md](docs/22_INSTALL.md) for installation details.
+
+TODO(Task 063): create or synchronize `README.ko.md` from this canonical
+English README.
+
+## JSON Schemas
+
+Versioned JSON Schemas for NI state files live in `schema/`:
+
+```text
+schema/ni.project.v0.json
+schema/ni.contract.v0.json
+schema/ni.lock.v0.json
+schema/ni.readiness-rules.v0.json
+schema/ni.readiness-profiles.v0.json
+schema/ni.feedback.v0.json
+schema/ni.pressure.v0.json
+schema/ni.amendment.v0.json
+schema/ni.harness-candidate.v0.json
+```
+
+Validate the published schemas and current `.ni` state files with:
+
+```bash
+python3 scripts/check-schema.py
+```
+
+## Validation
 
 When Go code exists, run:
 
 ```bash
-make test
-make quality
-make smoke
-make build
+gofmt -w .
+go test ./...
+bash scripts/quality.sh
 ```
 
-`make quality` runs `scripts/quality.sh`, which already runs formatting, Go
-tests, JSON checks, Markdown fence checks, skill metadata checks, prompt budget
-checks, core-boundary self-tests, and smoke tests.
+For this repository, the main quality entry point is:
 
-## License
+```bash
+bash scripts/quality.sh
+```
 
-TODO: choose an open-source license with the project owner, then add a root
-`LICENSE` file. Until then, this repository should not be treated as legally
-reusable open-source software.
+`scripts/quality.sh` runs formatting checks, Go tests, JSON checks, Markdown
+fence checks, skill metadata checks, prompt budget checks, core-boundary
+self-tests, and smoke tests.
+
+## License and Release Status
+
+`ni` is licensed under the [MIT License](LICENSE).
+
+This README does not claim package distribution or a published binary release.
+Use source, local build, or local install mode unless a release process says
+otherwise.
