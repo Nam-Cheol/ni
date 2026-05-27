@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="520" height="320" viewBox="0 0 520 320" role="img" aria-labelledby="title desc">
+  <title id="title">${title}</title>
+  <desc id="desc">${desc}</desc>
+  <defs>
+    <linearGradient id="${gradient_id}" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="${soft_color}"/>
+      <stop offset="1" stop-color="#FFFFFF"/>
+    </linearGradient>
+  </defs>
+  <rect width="520" height="320" rx="20" fill="url(#${gradient_id})"/>
+  <rect x="28" y="28" width="464" height="264" rx="16" fill="#FFFFFF" stroke="#D8E1EE"/>
+  <g transform="translate(54 56)" font-family="${font_family}">
+    <circle cx="24" cy="24" r="24" fill="${accent_color}"/>
+    <path d="${icon_path}" fill="none" stroke="${icon_stroke}" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+    <text x="68" y="32" fill="#111827" font-size="28" font-weight="800">${heading}</text>
+    <g transform="translate(0 82)" font-size="17" font-weight="700">
+${rows}
+    </g>
+    <rect x="0" y="190" width="${footer_width}" height="36" rx="10" fill="${footer_fill}" stroke="#D8E1EE"/>
+    <text x="18" y="214" fill="#111827" font-size="15" font-weight="700">${footer}</text>
+  </g>
+</svg>

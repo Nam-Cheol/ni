@@ -1,22 +1,42 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="520" height="320" viewBox="0 0 520 320" role="img" aria-labelledby="title desc">
   <title id="title">Start path</title>
-  <desc id="desc">Initialize, check readiness, lock intent, and compile a prompt.</desc>
-  <rect width="520" height="320" rx="20" fill="#fbfaf6"/>
-  <rect x="28" y="28" width="464" height="264" rx="18" fill="#ffffff" stroke="#e6dfd1"/>
-  <circle cx="72" cy="72" r="24" fill="#70d6c7"/>
-  <path d="M62 73 H82 M74 63 L84 73 L74 83" fill="none" stroke="#243044" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
-  <text x="112" y="79" fill="#243044" font-family="Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif" font-size="26" font-weight="800">Start</text>
-  <g font-family="Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif" font-size="18" font-weight="700">
-    <rect x="54" y="122" width="116" height="40" rx="20" fill="#e8f0eb"/>
-    <text x="82" y="148" fill="#243044">init</text>
-    <path d="M178 142 H220" stroke="#8aa096" stroke-width="3" stroke-linecap="round"/>
-    <rect x="228" y="122" width="116" height="40" rx="20" fill="#fff2d8"/>
-    <text x="257" y="148" fill="#243044">status</text>
-    <path d="M170 218 H220" stroke="#8aa096" stroke-width="3" stroke-linecap="round"/>
-    <rect x="54" y="198" width="116" height="40" rx="20" fill="#25334a"/>
-    <text x="88" y="224" fill="#ffffff">end</text>
-    <rect x="228" y="198" width="116" height="40" rx="20" fill="#edf1ff"/>
-    <text x="262" y="224" fill="#243044">run</text>
+  <desc id="desc">Initialize a planning workspace, check readiness, lock intent, and compile a prompt.</desc>
+  <defs>
+    <linearGradient id="card-bg-1" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#DCEBFF"/>
+      <stop offset="1" stop-color="#FFFFFF"/>
+    </linearGradient>
+  </defs>
+  <rect width="520" height="320" rx="20" fill="url(#card-bg-1)"/>
+  <rect x="28" y="28" width="464" height="264" rx="16" fill="#FFFFFF" stroke="#D8E1EE"/>
+  <g transform="translate(54 56)" font-family="-apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Helvetica, Arial, sans-serif">
+    <circle cx="24" cy="24" r="24" fill="#4FBF9F"/>
+    <path d="M15 24 H33 M26 15 L35 24 L26 33" fill="none" stroke="#111827" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+    <text x="68" y="32" fill="#111827" font-size="28" font-weight="800">Start</text>
+    <g transform="translate(0 82)" font-size="17" font-weight="700">
+      <g transform="translate(0 0)">
+        <circle cx="10" cy="10" r="6" fill="#4FBF9F"/>
+        <path d="M28 10 H396" stroke="#D8E1EE" stroke-width="2" stroke-linecap="round"/>
+        <text x="28" y="16" fill="#475569">init workspace</text>
+      </g>
+      <g transform="translate(0 42)">
+        <circle cx="10" cy="10" r="6" fill="#4FBF9F"/>
+        <path d="M28 10 H396" stroke="#D8E1EE" stroke-width="2" stroke-linecap="round"/>
+        <text x="28" y="16" fill="#475569">status gate</text>
+      </g>
+      <g transform="translate(0 84)">
+        <circle cx="10" cy="10" r="6" fill="#4FBF9F"/>
+        <path d="M28 10 H396" stroke="#D8E1EE" stroke-width="2" stroke-linecap="round"/>
+        <text x="28" y="16" fill="#475569">end lock</text>
+      </g>
+      <g transform="translate(0 126)">
+        <circle cx="10" cy="10" r="6" fill="#4FBF9F"/>
+        <path d="M28 10 H396" stroke="#D8E1EE" stroke-width="2" stroke-linecap="round"/>
+        <text x="28" y="16" fill="#475569">run prompt</text>
+      </g>
+    </g>
+    <rect x="0" y="190" width="214" height="36" rx="10" fill="#DCEBFF" stroke="#D8E1EE"/>
+    <text x="18" y="214" fill="#111827" font-size="15" font-weight="700">prompt compilation only</text>
   </g>
-  <text x="54" y="272" fill="#385064" font-family="Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif" font-size="16">prompt compilation only</text>
 </svg>
+
