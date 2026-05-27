@@ -60,6 +60,20 @@ run_if_locked() {
   fi
 }
 
+export_if_locked() {
+  local example_dir="$1"
+  local target="$2"
+  local out_dir="$3"
+
+  if [[ ! -f "$example_dir/.ni/plan.lock.json" ]]; then
+    echo "demo-check: skipping $example_dir export; example is not locked" >&2
+    return 0
+  fi
+
+  go run ./cmd/ni export --dir "$example_dir" --target "$target" --out "$out_dir"
+  python3 scripts/check-target-conformance.py --target "$target" --dir "$out_dir"
+}
+
 run_demo "ambiguous prompt demo remains blocked" bash -c '
   go run ./cmd/ni status --dir ./examples/ambiguous-prompt-blocked/workspace >"$1/ambiguous-status.out"
 ' bash "$DEMO_TMP"
@@ -89,5 +103,10 @@ require_first_line "READY" "$DEMO_TMP/conversation-status.out"
 
 run_demo "conversation product human-team prompt compiles if locked" \
   run_if_locked "examples/conversation-product" "human-team" "$DEMO_TMP/ni-conversation-human-team.prompt.md"
+
+for export_target in hyper-run namba-ai ouroboros spec-kit; do
+  run_demo "conversation product $export_target export stays seed-only if locked" \
+    export_if_locked "examples/conversation-product" "$export_target" "$DEMO_TMP/conversation-product-export-$export_target"
+done
 
 echo "demo-check: public demos verified without downstream runtime execution"

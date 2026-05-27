@@ -30,6 +30,8 @@ docs/20_NEXT_STEPS.md
 docs/21_ERROR_MODEL.md
 docs/24_TARGET_CONFORMANCE.md
 docs/38_SESSION_RESUME.md
+docs/49_TARGET_CONFORMANCE.md
+docs/49_TARGET_CONFORMANCE.ko.md
 
 docs/plan/*.md
 .ni/project.json

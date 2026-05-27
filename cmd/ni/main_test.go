@@ -448,6 +448,80 @@ func TestRunWithTarget(t *testing.T) {
 	}
 }
 
+func TestRunCodexAndHumanTeamTargetsArePromptArtifactsOnly(t *testing.T) {
+	dir := t.TempDir()
+	if code := run([]string{"init", "--dir", dir}, &bytes.Buffer{}, &bytes.Buffer{}); code != 0 {
+		t.Fatalf("init expected exit code 0, got %d", code)
+	}
+	writeReadyContractForCLI(t, dir)
+	if code := run([]string{"end", "--dir", dir}, &bytes.Buffer{}, &bytes.Buffer{}); code != 0 {
+		t.Fatalf("end expected exit code 0, got %d", code)
+	}
+
+	cases := []struct {
+		target      string
+		outName     string
+		wantContent []string
+		forbidden   []string
+	}{
+		{
+			target:  "codex",
+			outName: "codex.prompt.txt",
+			wantContent: []string{
+				"Codex target prompt",
+				"Target: codex (prompt)",
+				"Paste this prompt into Codex",
+				"Do not ask ni to invoke Codex automatically",
+				"ni run only compiled this prompt",
+			},
+			forbidden: []string{
+				filepath.Join(".codex", "commands"),
+				"codex-exec.sh",
+				"queue",
+				"tasks.md",
+			},
+		},
+		{
+			target:  "human-team",
+			outName: "human-team.prompt.md",
+			wantContent: []string{
+				"Human-team handoff",
+				"Target: human-team (handoff)",
+				"PM/dev/design/research team",
+				"Execution responsibility stays outside ni",
+				"team handoff",
+			},
+			forbidden: []string{
+				"owners.db",
+				"team-runtime",
+				"queue",
+				"tasks.md",
+			},
+		},
+	}
+
+	for _, tc := range cases {
+		t.Run(tc.target, func(t *testing.T) {
+			outDir := filepath.Join(dir, "target-output", tc.target)
+			outPath := filepath.Join(outDir, tc.outName)
+			var stdout bytes.Buffer
+			code := run([]string{"run", "--dir", dir, "--target", tc.target, "--out", outPath}, &stdout, &bytes.Buffer{})
+			if code != 0 {
+				t.Fatalf("expected exit code 0, got %d", code)
+			}
+			if !strings.Contains(stdout.String(), "compiled prompt at "+outPath) {
+				t.Fatalf("expected write summary, got %q", stdout.String())
+			}
+			assertExportFilesExactly(t, outDir, []string{tc.outName})
+			if len([]rune(string(readFileForCLI(t, outPath)))) > 4000 {
+				t.Fatalf("expected %s output <= 4000 chars", tc.target)
+			}
+			assertFileContains(t, outPath, tc.wantContent)
+			assertExportOmitsPaths(t, dir, tc.forbidden)
+		})
+	}
+}
+
 func TestRunMissingLockfileGenericFailure(t *testing.T) {
 	dir := t.TempDir()
 	if code := run([]string{"init", "--dir", dir}, &bytes.Buffer{}, &bytes.Buffer{}); code != 0 {
@@ -977,6 +1051,63 @@ func TestExportRejectsUnsupportedTargetWithExitCode(t *testing.T) {
 	}
 }
 
+func TestExportRefusesStaleLocksForAllTargets(t *testing.T) {
+	for _, targetName := range []string{"hyper-run", "namba-ai", "ouroboros", "spec-kit"} {
+		t.Run(targetName, func(t *testing.T) {
+			dir := t.TempDir()
+			if code := run([]string{"init", "--dir", dir}, &bytes.Buffer{}, &bytes.Buffer{}); code != 0 {
+				t.Fatalf("init expected exit code 0, got %d", code)
+			}
+			writeReadyContractForCLI(t, dir)
+			if code := run([]string{"end", "--dir", dir}, &bytes.Buffer{}, &bytes.Buffer{}); code != 0 {
+				t.Fatalf("end expected exit code 0, got %d", code)
+			}
+			if err := os.WriteFile(filepath.Join(dir, "docs", "plan", "00_project_brief.md"), []byte("changed after lock\n"), 0o644); err != nil {
+				t.Fatalf("changing locked doc: %v", err)
+			}
+
+			out := filepath.Join(dir, "export", targetName)
+			var stderr bytes.Buffer
+			code := run([]string{"export", "--dir", dir, "--target", targetName, "--out", out}, &bytes.Buffer{}, &stderr)
+			if code != exitStaleLock {
+				t.Fatalf("expected stale lock exit code %d, got %d", exitStaleLock, code)
+			}
+			if !strings.Contains(stderr.String(), "BLOCKED: lock hash mismatch") {
+				t.Fatalf("expected stale lock rejection, got %q", stderr.String())
+			}
+			if _, err := os.Stat(out); !os.IsNotExist(err) {
+				t.Fatalf("stale export should not create output dir, stat err: %v", err)
+			}
+		})
+	}
+}
+
+func TestExportCommandDoesNotInvokeExternalBinaries(t *testing.T) {
+	for _, path := range []string{
+		filepath.Join("..", "..", "cmd", "ni", "main.go"),
+		filepath.Join("..", "..", "internal", "core", "exporter", "exporter.go"),
+	} {
+		t.Run(path, func(t *testing.T) {
+			data, err := os.ReadFile(path)
+			if err != nil {
+				t.Fatalf("reading %s: %v", path, err)
+			}
+			text := string(data)
+			for _, forbidden := range []string{
+				`"os/exec"`,
+				"exec.Command",
+				"exec.CommandContext",
+				"os.StartProcess",
+				"syscall.Exec",
+			} {
+				if strings.Contains(text, forbidden) {
+					t.Fatalf("export path must not invoke external binaries; found %q in %s", forbidden, path)
+				}
+			}
+		})
+	}
+}
+
 func TestExportNambaAICreatesSeedDocsOnly(t *testing.T) {
 	dir := t.TempDir()
 	if code := run([]string{"init", "--dir", dir}, &bytes.Buffer{}, &bytes.Buffer{}); code != 0 {
@@ -1227,6 +1358,7 @@ func TestExportTargetConformanceBoundaries(t *testing.T) {
 			}
 
 			assertExportFilesExactly(t, out, tc.seedFiles)
+			assertExportBundleContains(t, out, []string{".ni/plan.lock.json", "sha256:"})
 			assertExportOmitsPaths(t, out, tc.forbiddenPaths)
 			if tc.assertContent != nil {
 				tc.assertContent(t, out)
@@ -1341,6 +1473,33 @@ func assertExportOmitsPaths(t *testing.T, out string, forbiddenPaths []string) {
 	for _, path := range forbiddenPaths {
 		if _, err := os.Stat(filepath.Join(out, path)); !os.IsNotExist(err) {
 			t.Fatalf("expected no forbidden export path %s, stat err: %v", path, err)
+		}
+	}
+}
+
+func assertExportBundleContains(t *testing.T, out string, wants []string) {
+	t.Helper()
+
+	var combined strings.Builder
+	entries, err := os.ReadDir(out)
+	if err != nil {
+		t.Fatalf("reading export directory: %v", err)
+	}
+	for _, entry := range entries {
+		if entry.IsDir() {
+			continue
+		}
+		data, err := os.ReadFile(filepath.Join(out, entry.Name()))
+		if err != nil {
+			t.Fatalf("reading export file %s: %v", entry.Name(), err)
+		}
+		combined.Write(data)
+		combined.WriteByte('\n')
+	}
+	text := combined.String()
+	for _, want := range wants {
+		if !strings.Contains(text, want) {
+			t.Fatalf("expected export bundle to contain %q, got %q", want, text)
 		}
 	}
 }
