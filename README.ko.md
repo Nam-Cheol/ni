@@ -99,6 +99,8 @@ go run ./cmd/ni run --dir ./my-plan --target generic --max-chars 4000
 Release status: `ni`는 package distribution이나 published binary release를 claim하지 않는다.
 GitHub Release가 실제로 assets와 checksums를 publish할 때까지 source, local build, local install mode를 사용합니다.
 
+License: `ni`는 [MIT License](LICENSE)로 배포됩니다.
+
 자세한 내용은 [Install ni](docs/22_INSTALL.md),
 [터미널 없이 계획하기](docs/no-terminal.ko.md),
 [Model Workspace Packs](docs/55_MODEL_WORKSPACE_PACKS.md)를 참고하세요.

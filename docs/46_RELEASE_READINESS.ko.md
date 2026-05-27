@@ -20,9 +20,11 @@ availability가 있다고 claim하지 않는다.
 - Repository release workflow: `.github/workflows/release.yml`은 tagged GitHub
   Releases에 대해서만 release binaries를 build한다. 이는 distribution
   infrastructure이지 `ni` runtime behavior가 아니다.
-- Release draft: `docs/47_RELEASE_DRAFT_v0.2.0.ko.md`는 factual GitHub release
-  draft일 뿐이다. Tag `v0.2.0`을 suggest하지만 tag 생성, release publish,
-  binary upload, package-manager availability claim을 하지 않는다.
+- Release notes: `docs/68_RELEASE_NOTES_v0.3.0.ko.md`는 factual GitHub Release
+  notes draft일 뿐이다. `v0.2.0`은 planning label로 사용되었고 repository가 이제
+  visual/distribution packaging work를 포함하므로 tag `v0.3.0`을 suggest한다.
+  Tag 생성, release publish, binary upload, package-manager availability claim을
+  하지 않는다.
 
 ## Readiness Checklist
 
@@ -37,7 +39,7 @@ availability가 있다고 claim하지 않는다.
       `go run ./cmd/ni status --dir examples/conversation-product --proof`.
 - [ ] benchmark protocol exists at
       [docs/43_BENCHMARK_PROTOCOL.md](43_BENCHMARK_PROTOCOL.md).
-- [ ] v0.2.0 release draft exists and clearly separates included capability
+- [ ] v0.3.0 release notes exist and clearly separate included capability
       claims from not-included runtime, adapter, automation, and binary-package
       scope.
 - [ ] no runtime execution claims are present: `ni run`은 bounded prompt만
@@ -56,6 +58,7 @@ future release step 전에 local release-readiness check를 실행한다:
 
 ```bash
 bash scripts/release-check.sh
+bash scripts/release-dry-run.sh
 ```
 
 This script is a readiness gate only. It does not publish packages, create a

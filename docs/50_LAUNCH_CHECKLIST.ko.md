@@ -83,14 +83,17 @@ bash scripts/launch-check.sh
 - [ ] Benchmark docs가 direct-to-agent comparisons와 runtime performance claims를
       분리한다.
 
-## Release Draft
+## Release Notes
 
-- [ ] [docs/47_RELEASE_DRAFT_v0.2.0.md](47_RELEASE_DRAFT_v0.2.0.md)가 존재한다.
-- [ ] Release draft가 factual and source-first 상태다.
+- [ ] [docs/68_RELEASE_NOTES_v0.3.0.md](68_RELEASE_NOTES_v0.3.0.md)가 존재한다.
+- [ ] Release notes draft가 factual and source-first 상태다.
 - [ ] Draft가 release publish, tag 생성, binary upload, package-manager
       availability claim을 하지 않는다고 말한다.
 - [ ] Draft가 included kernel capability claims와 not-included runtime, adapter,
       automation, binary-package scope를 분리한다.
+- [ ] [docs/69_MANUAL_RELEASE_STEPS.md](69_MANUAL_RELEASE_STEPS.md)가 존재하며
+      tag push, asset confirmation, checksum confirmation, README install-status
+      updates를 manual step으로 유지한다.
 
 ## Install/Build Verification
 

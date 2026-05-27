@@ -100,6 +100,8 @@ Release status: `ni` does not claim package distribution or a published binary r
 Use source, local build, or local install mode until a GitHub Release actually
 publishes assets and checksums.
 
+License: `ni` is licensed under the [MIT License](LICENSE).
+
 See [Install ni](docs/22_INSTALL.md), [No-Terminal Planning](docs/no-terminal.md),
 and [Model Workspace Packs](docs/55_MODEL_WORKSPACE_PACKS.md) for details.
 

@@ -20,9 +20,11 @@ hosted binary availability.
 - Repository release workflow: `.github/workflows/release.yml` builds release
   binaries only for tagged GitHub Releases. It is distribution infrastructure,
   not `ni` runtime behavior.
-- Release draft: `docs/47_RELEASE_DRAFT_v0.2.0.md` is a factual GitHub release
-  draft only. It suggests tag `v0.2.0` but does not create a tag, publish a
-  release, upload binaries, or claim package-manager availability.
+- Release notes: `docs/68_RELEASE_NOTES_v0.3.0.md` is a factual GitHub Release
+  notes draft only. It suggests tag `v0.3.0` because `v0.2.0` was used as a
+  planning label and the repository now includes visual/distribution packaging
+  work. It does not create a tag, publish a release, upload binaries, or claim
+  package-manager availability.
 
 ## Readiness Checklist
 
@@ -37,7 +39,7 @@ hosted binary availability.
       `go run ./cmd/ni status --dir examples/conversation-product --proof`.
 - [ ] benchmark protocol exists at
       [docs/43_BENCHMARK_PROTOCOL.md](43_BENCHMARK_PROTOCOL.md).
-- [ ] v0.2.0 release draft exists and clearly separates included capability
+- [ ] v0.3.0 release notes exist and clearly separate included capability
       claims from not-included runtime, adapter, automation, and binary-package
       scope.
 - [ ] no runtime execution claims are present: `ni run` compiles a bounded
@@ -56,6 +58,7 @@ Run the local release-readiness check before any future release step:
 
 ```bash
 bash scripts/release-check.sh
+bash scripts/release-dry-run.sh
 ```
 
 The script is a readiness gate only. It does not publish packages, create a

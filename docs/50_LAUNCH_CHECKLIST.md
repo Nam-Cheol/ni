@@ -85,14 +85,17 @@ bash scripts/launch-check.sh
 - [ ] Benchmark docs keep direct-to-agent comparisons separate from runtime
       performance claims.
 
-## Release Draft
+## Release Notes
 
-- [ ] [docs/47_RELEASE_DRAFT_v0.2.0.md](47_RELEASE_DRAFT_v0.2.0.md) exists.
-- [ ] The release draft is factual and source-first.
+- [ ] [docs/68_RELEASE_NOTES_v0.3.0.md](68_RELEASE_NOTES_v0.3.0.md) exists.
+- [ ] The release notes draft is factual and source-first.
 - [ ] The draft says it does not publish a release, create a tag, upload
       binaries, or claim package-manager availability.
 - [ ] The draft separates included kernel capability claims from not-included
       runtime, adapter, automation, and binary-package scope.
+- [ ] [docs/69_MANUAL_RELEASE_STEPS.md](69_MANUAL_RELEASE_STEPS.md) exists and
+      keeps tag push, asset confirmation, checksum confirmation, and README
+      install-status updates manual.
 
 ## Install/Build Verification
 

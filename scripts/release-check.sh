@@ -3,10 +3,13 @@ set -euo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 QUICKSTART_TMP="$(mktemp -d "${TMPDIR:-/tmp}/ni-release-check.XXXXXX")"
+RELEASE_VERSION="v0.3.0"
 
 trap 'rm -rf "$QUICKSTART_TMP"' EXIT
 
 cd "$ROOT"
+
+echo "release-check: planned release version $RELEASE_VERSION" >&2
 
 run_step() {
   local label="$1"
@@ -40,10 +43,11 @@ required = [
     "examples exist",
     "status proof works",
     "benchmark protocol exists",
-    "v0.2.0 release draft exists",
+    "v0.3.0 release notes exist",
     "no runtime execution claims",
     "no false release/license/CI/security claims",
     "bash scripts/release-check.sh",
+    "bash scripts/release-dry-run.sh",
     "bash scripts/install-check.sh",
 ]
 
@@ -55,12 +59,12 @@ if Path("README.ko.md").exists() and not Path("docs/46_RELEASE_READINESS.ko.md")
     raise SystemExit("README.ko.md exists, but docs/46_RELEASE_READINESS.ko.md is missing")
 PY
 
-run_step "v0.2.0 release draft is factual and release-binary prepared" python3 - <<'PY'
+run_step "v0.3.0 release notes are factual and release-binary prepared" python3 - <<'PY'
 from pathlib import Path
 
 drafts = [
-    Path("docs/47_RELEASE_DRAFT_v0.2.0.md"),
-    Path("docs/47_RELEASE_DRAFT_v0.2.0.ko.md"),
+    Path("docs/68_RELEASE_NOTES_v0.3.0.md"),
+    Path("docs/68_RELEASE_NOTES_v0.3.0.ko.md"),
 ]
 
 for path in drafts:
@@ -68,35 +72,37 @@ for path in drafts:
         raise SystemExit(f"{path} is missing")
 
 required_markers = [
-    "# ni v0.2.0 — Project Intent Compiler for AI Agents",
-    "Tag suggestion: `v0.2.0`",
+    "# ni v0.3.0 - Project Intent Compiler for AI Agents",
+    "Tag suggestion: `v0.3.0`",
     "Summary: Don't run the agent yet. Compile the intent first.",
+    "## Why v0.3.0",
     "## Included",
+    "Project Intent Compiler positioning",
+    "README as product pamphlet",
+    "Local deterministic SVG visual system",
     "Intent Lock Protocol",
-    "Conversation-driven authoring model",
     "`ni init`, `ni status`, `ni end`, and `ni run`",
     "Status proof report",
     "Locked plan hash validation",
-    "Target prompt and export seed outputs",
     "Ambiguous prompt blocked demo",
-    "Non-software planning demos",
-    "Benchmark protocol",
-    "Korean companion README",
+    "Non-software demos",
+    "Model workspace packs",
+    "Source-first usage",
     "## Not Included",
-    "Execution runtime",
-    "Codex adapter",
-    "Shell adapter",
+    "Task runner",
     "SPEC runner",
-    "Task queue",
-    "Multi-agent orchestration",
+    "Multi-agent execution layer",
+    "Codex exec adapter",
+    "Shell adapter",
+    "Queue",
+    "PR automation",
+    "Release automation inside `ni-kernel`",
+    "Downstream execution runtime",
     "Release binary pipeline",
-    "Product-level PR/release automation or release commands",
     "Package manager distribution",
-    "goreleaser check",
+    "bash scripts/release-dry-run.sh",
     "go test ./...",
     "bash scripts/quality.sh",
-    "bash scripts/smoke.sh",
-    "bash scripts/release-check.sh",
     "ni_<version>_linux_amd64.tar.gz",
     "ni_<version>_linux_arm64.tar.gz",
     "ni_<version>_darwin_amd64.tar.gz",
@@ -106,11 +112,11 @@ required_markers = [
 ]
 
 boundary_markers = [
-    "does not publish a release",
-    "does not claim hosted release assets are already available",
+    "do not publish a release",
+    "do not claim hosted release assets",
     "not part of `ni` runtime behavior",
     "does not execute Codex",
-    "release를 publish하거나",
+    "Release를 publish하거나",
     "claim하지 않는다",
     "release automation을 추가하지 않는다",
     "Codex, shells, model APIs",
@@ -129,6 +135,7 @@ for path in drafts:
         "Homebrew install",
         "brew install",
         "published binary packages are available",
+        "curl installer is available",
         "automatically publishes",
     ]
     for claim in forbidden_claims:
