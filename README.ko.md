@@ -75,7 +75,7 @@ work를 실행하지 않는다.
 | Local install | Available | `make install-local`로 local bin path에 install한다. Build step에는 Go가 필요하다. |
 | Release binary mode | Prepared, not yet available | Future GitHub Releases를 위한 GoReleaser pipeline은 configured 상태지만, 첫 release assets가 publish되기 전까지 binaries는 available하지 않다. |
 | Curl installer mode | Script added, release-gated | `install.sh`는 dry-run과 verified release-asset install을 지원하지만, matching archive와 checksum이 있는 GitHub Release 이후에만 사용한다. |
-| Package manager mode | Planned | Homebrew와 Scoop packages는 아직 publish되지 않았다. |
+| Package manager mode | Planned | Homebrew는 planned 상태이며, tap이나 formula는 아직 publish되지 않았다. |
 | Model workspace mode | Available in repo-local form | Codex/Claude-style skills는 plan authoring을 도울 수 있지만 CLI가 계속 authority다. Portable packs는 planned다. |
 | No-terminal mode | Planned | Downloadable model pack과 docs-first workflow는 아직 available하지 않다. |
 
@@ -83,8 +83,10 @@ work를 실행하지 않는다.
 install과 manual verification은 [Curl Installer](docs/install-curl.ko.md)를
 참고하라. Planned adoption tracks는
 [Distribution Strategy](docs/53_DISTRIBUTION_STRATEGY.ko.md)를 참고하라.
-Distribution automation은 repository infrastructure이지 `ni` runtime
-execution이 아니다.
+Planned Homebrew path는
+[Homebrew Distribution Plan](docs/54_HOMEBREW_DISTRIBUTION.ko.md)를 참고하라.
+Distribution automation은 repository infrastructure이지 `ni` runtime execution이
+아니다.
 
 이 README는 package distribution이나 published binary release를 claim하지 않는다.
 GitHub Release가 verified release assets를 실제로 포함하기 전까지는 source, local build, local install mode를 사용한다.

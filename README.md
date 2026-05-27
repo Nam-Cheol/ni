@@ -75,15 +75,17 @@ or downstream work.
 | Local install | Available | Install to a local bin path with `make install-local`. Requires Go for the build step. |
 | Release binary mode | Prepared, not yet available | A GoReleaser pipeline is configured for future GitHub Releases, but binaries are not available until the first release assets are published. |
 | Curl installer mode | Script added, release-gated | `install.sh` supports dry-run and verified release-asset installs, but use it only after a GitHub Release contains the matching archive and checksum. |
-| Package manager mode | Planned | Homebrew and Scoop packages are not published yet. |
+| Package manager mode | Planned | Homebrew is planned, but no tap or formula is published yet. |
 | Model workspace mode | Available in repo-local form | Codex/Claude-style skills can help author plans, but the CLI remains the authority. Portable packs are planned. |
 | No-terminal mode | Planned | A downloadable model pack and docs-first workflow are not available yet. |
 
 See [Install ni](docs/22_INSTALL.md) for supported local paths and
 [Curl Installer](docs/install-curl.md) for release-asset installs with manual
 verification. See [Distribution Strategy](docs/53_DISTRIBUTION_STRATEGY.md) for
-planned adoption tracks. Distribution automation is repository infrastructure,
-not `ni` runtime execution.
+planned adoption tracks and
+[Homebrew Distribution Plan](docs/54_HOMEBREW_DISTRIBUTION.md) for the planned
+Homebrew path. Distribution automation is repository infrastructure, not `ni`
+runtime execution.
 
 This README does not claim package distribution or a published binary release:
 use source, local build, or local install mode until a GitHub Release actually
