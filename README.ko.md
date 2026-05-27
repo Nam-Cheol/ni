@@ -43,6 +43,8 @@ planning conversation -> explicit contract -> readiness gate -> locked plan -> b
 Payoff: `ni`는 unclear intent를 visible하게 만들고, unsafe handoff를 block하며,
 locked plan에서 bounded prompt 또는 seed를 만든다.
 
+더 깊은 product story는 [Why ni exists](docs/product-story.ko.md)에 있다.
+
 ## 60초 시작
 
 `ni`는 현재 source-first다. Repository를 checkout한 뒤 실행한다:
@@ -119,7 +121,8 @@ authority다.
 
 | Read | Why |
 | --- | --- |
-| [Why ni](docs/why-ni.md) | Product argument와 positioning. |
+| [Why ni exists](docs/product-story.ko.md) | Compile-before-run 뒤의 product story. |
+| [Why ni](docs/why-ni.md) | Product argument, boundary, benchmark framing. |
 | [Intent Lock Protocol](docs/42_INTENT_LOCK_PROTOCOL.md) | Readiness, locking, hash trust, blocked handoff 규칙. |
 | [터미널 없이 계획하기](docs/no-terminal.ko.md) | CLI 설치 전 method를 사용하되 validation claim을 하지 않는 방법. |
 | [Command reference](docs/commands.ko.md) | Implemented CLI surface. |

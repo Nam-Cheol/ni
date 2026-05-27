@@ -43,6 +43,8 @@ planning conversation -> explicit contract -> readiness gate -> locked plan -> b
 The payoff: `ni` makes unclear intent visible, blocks unsafe handoff, and
 produces a bounded prompt or seed from a locked plan.
 
+For the deeper product story, see [Why ni exists](docs/product-story.md).
+
 ## Start in 60 seconds
 
 `ni` is currently source-first. From a checked-out repository:
@@ -117,7 +119,8 @@ authority.
 
 | Read | Why |
 | --- | --- |
-| [Why ni](docs/why-ni.md) | The product argument and positioning. |
+| [Why ni exists](docs/product-story.md) | The product story behind compile-before-run. |
+| [Why ni](docs/why-ni.md) | The product argument, boundary, and benchmark framing. |
 | [Intent Lock Protocol](docs/42_INTENT_LOCK_PROTOCOL.md) | The rules for readiness, locking, hash trust, and blocked handoff. |
 | [No-Terminal Planning](docs/no-terminal.md) | How to use the method before installing the CLI, without claiming validation. |
 | [Command reference](docs/commands.md) | The implemented CLI surface. |
