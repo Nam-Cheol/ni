@@ -1,8 +1,10 @@
-# Generated harness
+# Downstream harness seed material
 
-The generated harness is derived from a locked project contract.
+Downstream harness seed material is derived from a locked project contract.
 
-The harness is not the kernel. It is a mutable proposal that selects part of the locked plan and describes how another tool or agent could execute it later.
+The harness is not the kernel. `ni` may compile a mutable proposal that selects
+part of the locked plan and describes how another tool or agent could execute it
+later.
 
 It may contain:
 
@@ -30,9 +32,9 @@ CAP-003 depends_on CAP-001
 
 Independent nodes may be executed in parallel by different people or agents. Nodes that touch the same artifact or decision should be serialized.
 
-## Generated harness contract
+## Harness seed contract
 
-A generated harness must declare:
+A harness seed proposal must declare:
 
 ```text
 source lock hash

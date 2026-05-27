@@ -3,15 +3,15 @@
 The v0.1 release-candidate shape is complete: `ni-kernel` can initialize a
 planning workspace, validate readiness deterministically, lock a ready plan,
 compile a bounded prompt, and export locked-plan seed material. The kernel
-remains pre-runtime; generated harnesses and downstream adapters are derived
-material, not kernel-owned execution state.
+remains pre-runtime; downstream harnesses and adapters may consume derived
+material, but they are not kernel-owned execution state.
 
 ## Completed: v0.1 RC
 
 ### Phase 0: reframe
 
 ```text
-SPEC-000 reframe docs from lightweight harness to project intent compiler
+SPEC-000 reframe docs to Project Intent Compiler for AI Agents
 ```
 
 ### Phase 1: kernel CLI

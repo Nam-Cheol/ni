@@ -1,6 +1,7 @@
 # Related work
 
-This document positions `ni` against adjacent agent, specification, and harness projects.
+This document positions `ni` against adjacent agent, specification, and
+execution-harness projects.
 
 The point is not to rank those projects. The point is to keep `ni` inside its product boundary:
 
@@ -8,9 +9,15 @@ The point is not to rank those projects. The point is to keep `ni` inside its pr
 conversation -> planning docs -> contract -> readiness gate -> lockfile -> prompt or seed material
 ```
 
-`ni` is a pre-runtime project intent compiler. It should make project intent explicit, validate whether planning is structurally ready, lock the accepted plan, and compile a short downstream prompt or seed artifact from the locked source of truth.
+`ni` is the Project Intent Compiler for AI Agents. It should make project
+intent explicit, validate whether planning is structurally ready, lock the
+accepted plan, and compile a short downstream prompt or seed artifact from the
+locked source of truth.
 
-`ni` is not an execution runtime, SPEC runner, task queue, agent team, evidence loop, or project growth system. Those can exist downstream, but they must be derived from a locked plan rather than absorbed into the kernel.
+`ni` is not an execution runtime, task runner, SPEC runner, Codex adapter,
+task queue, agent team, evidence loop, or project growth system. It is not
+Hyper Run, Spec Kit, Ouroboros, or namba-ai. Those systems can consume locked
+intent downstream, but they must not be absorbed into the kernel.
 
 ## Positioning matrix
 
@@ -20,7 +27,7 @@ conversation -> planning docs -> contract -> readiness gate -> lockfile -> promp
 | Spec-first coding OS | `Ouroboros` | A larger operating model around specs, tasks, code, and execution | `ni` owns readiness and locking, not the whole coding operating system. |
 | SDD workflow toolkit | `Spec Kit`, `spec-first` | Spec-driven documents, tasks, and implementation workflow | `ni` may use spec-shaped planning inputs, but must not become a generic SPEC runner. |
 | Evidence-first execution growth runtime | `orange-hyper-run` | Running work, collecting evidence, completing loops, and growing a project through runtime feedback | `ni` must not copy run or complete behavior into core. It may generate downstream-compatible seed material only after lock. |
-| Heavy harness or guardrail template | `ai-harness-template`, `MoAI-ADK` | Guardrails, agents, adapters, checks, and execution scaffolding | `ni` may derive a project-specific harness proposal, but the kernel must not become that harness. |
+| Heavy harness or guardrail template | `ai-harness-template`, `MoAI-ADK` | Guardrails, agents, adapters, checks, and execution scaffolding | `ni` may compile downstream harness seed material from a valid lock, but the kernel must not become that harness. |
 | Design-time compiler | `agent-compiler` | Compile design-time intent into agent-facing artifacts | `ni` aligns with compile-before-run, but its source of truth is the locked project contract. |
 
 ## Host enhancers
@@ -45,7 +52,7 @@ Boundary rules:
 
 - Do not turn `ni` into a project growth runtime.
 - Do not add a permanent task lifecycle to the kernel.
-- Keep project-specific implementation strategy in generated harnesses or downstream tools.
+- Keep project-specific implementation strategy in downstream seed material or downstream tools.
 
 ## SDD workflow toolkits
 
@@ -76,14 +83,17 @@ Boundary rules:
 
 Harness templates such as `ai-harness-template` and `MoAI-ADK` can define adapters, agents, guardrails, evidence expectations, test commands, and execution scaffolding.
 
-`ni` should be able to describe what a project-specific harness needs, but that harness is derived and mutable. The kernel remains authoritative only for the contract, readiness gate, lockfile, prompt compiler, and source-of-truth rule.
+`ni` should be able to describe what a project-specific downstream harness
+would need, but that description is derived and mutable. The kernel remains
+authoritative only for the contract, readiness gate, lockfile, prompt compiler,
+and source-of-truth rule.
 
 Boundary rules:
 
 - Do not add agent teams to the kernel.
 - Do not add adapter execution to the kernel.
 - Do not add evidence runners or task queues to the kernel.
-- Keep generated harness material traceable to `.ni/plan.lock.json`.
+- Keep harness seed material traceable to `.ni/plan.lock.json`.
 
 ## Design-time compilers
 

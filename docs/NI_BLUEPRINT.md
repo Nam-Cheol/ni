@@ -2,13 +2,22 @@
 
 ## Definition
 
-`ni` is a project intent compiler.
+`ni` is the Project Intent Compiler for AI Agents.
 
-It compiles planning conversations and planning documents into a locked project contract. From that locked contract, an agent can derive a project-specific harness.
+Don't run the agent yet. Compile the intent first.
+
+It compiles planning conversations and planning documents into a locked,
+versioned, verifiable project contract before Codex, Claude, Spec Kit, Hyper
+Run, namba-ai, a generated harness, or a human team starts execution.
+
+Lock intent before any harness runs.
 
 ## Why this exists
 
-Traditional harnesses try to stabilize model behavior by controlling the external environment, retrying failures, and enforcing execution loops. That is useful, but it still begins too late. It assumes the plan is already correct enough to execute.
+Traditional harnesses try to stabilize model behavior by controlling the
+external environment, retrying failures, and enforcing execution loops. That is
+useful, but it still begins too late. It assumes the plan is already correct
+enough to execute.
 
 `ni` moves the control boundary earlier. It asks whether the project intent, constraints, risks, evaluations, and delivery model are explicit enough to start execution at all.
 
@@ -34,6 +43,8 @@ The kernel does not own:
 3. PR automation
 4. multi-agent orchestration
 5. project-specific implementation strategy
+6. Codex adapter behavior
+7. task, SPEC, or evidence-runner lifecycle state
 ```
 
 ## Conceptual pipeline

@@ -1,6 +1,9 @@
 # Start here
 
-This repository starts from a strict premise: `ni` should not begin as a generic agent harness.
+This repository starts from a strict premise: `ni` is the Project Intent
+Compiler for AI Agents, not a generic agent harness.
+
+Don't run the agent yet. Compile the intent first.
 
 The first implementation target is a planning kernel:
 
@@ -8,8 +11,8 @@ The first implementation target is a planning kernel:
 conversation -> docs contract -> readiness gate -> lockfile -> 4000-char goal prompt
 ```
 
-Generated harnesses and downstream execution systems may consume locked output
-later, but they must not become kernel-owned runtime behavior.
+Downstream harnesses and execution systems may consume locked output later, but
+they must not become kernel-owned runtime behavior.
 
 ## Prompt archive
 

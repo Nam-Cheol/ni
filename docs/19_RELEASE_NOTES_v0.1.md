@@ -1,6 +1,7 @@
 # Release Notes: v0.1 Release Candidate
 
-`ni` v0.1 is the first release-candidate shape of the project intent compiler.
+`ni` v0.1 is the first release-candidate shape of the Project Intent Compiler
+for AI Agents.
 It is usable by someone who understands the pre-runtime contract compiler model:
 plan first, validate deterministically, lock the accepted plan, then derive
 prompts or seed material.
@@ -23,7 +24,7 @@ prompts or seed material.
 - Inert feedback ingest and pressure tracking.
 - Amendment and relock flow for explicit post-lock planning changes.
 - Collaboration diff and conflict checks.
-- Read-only work graph and generated harness proposal support.
+- Read-only work graph and downstream harness seed proposal support.
 
 ## Kernel Boundary
 
@@ -37,13 +38,13 @@ prompt compiler
 source-of-truth rule
 ```
 
-Generated harnesses and exports are downstream seed material:
+Harness seed proposals and exports are downstream seed material:
 
 ```text
 project-specific work graph
 project-specific evaluation plan
 project-specific evidence rules
-project-specific adapters
+project-specific adapter notes
 ```
 
 The kernel does not own runtime execution state.

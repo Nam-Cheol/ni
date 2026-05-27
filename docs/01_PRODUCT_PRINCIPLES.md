@@ -8,17 +8,19 @@ Do not rely on a model's memory of the conversation. Important intent must be wr
 
 Readiness is a deterministic gate. It is not the model's impression that the docs are good enough.
 
-## 3. Lock before execution
+## 3. Compile intent before execution
 
-Execution prompts should be compiled only from a locked project contract.
+Don't run the agent yet. Compile the intent first. Execution prompts should be
+compiled only from a locked project contract.
 
 ## 4. Prompts should be short
 
 `ni run` must emit a 4000-character-or-less prompt. The prompt should point to authoritative files rather than embed the entire plan.
 
-## 5. Harnesses are derived
+## 5. Downstream systems consume locked intent
 
-A project-specific harness should be generated from the locked contract. It should not become the kernel.
+A project-specific harness may consume seed material compiled from the locked
+contract. It should not become the kernel.
 
 ## 6. Provider-specific behavior is outside the kernel
 

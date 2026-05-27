@@ -4,7 +4,9 @@
 
 Do not implement `ni` as a task runner first.
 
-The initial product is `ni-kernel`: a project intent compiler that creates, validates, locks, and compiles planning contracts before any execution harness runs.
+The initial product is `ni-kernel`: a Project Intent Compiler for AI Agents
+that creates, validates, locks, and compiles planning contracts before any
+execution harness runs.
 
 ## Product architecture
 
@@ -18,14 +20,14 @@ ni-kernel
   prompt compiler
   source-of-truth rule
 
-ni-generated-harness
+ni-downstream-seeds
   project-specific work graph
   project-specific evaluation plan
   project-specific evidence rules
-  project-specific adapters
+  project-specific adapter notes
 ```
 
-The kernel is authoritative. Generated harnesses are derived and mutable.
+The kernel is authoritative. Downstream seed material is derived and mutable.
 
 ## Explicit boundary rules
 
@@ -34,12 +36,14 @@ The kernel is authoritative. Generated harnesses are derived and mutable.
 - `ni` is not a multi-agent execution layer.
 - `ni` must not copy Hyper Run `run` or `complete` behavior into core.
 - `ni` may generate downstream-compatible seed material only after `.ni/plan.lock.json` exists and locked hashes are valid.
-- Downstream seed material may include prompts, harness proposals, or handoff packets. It must not become kernel-owned execution state.
+- Downstream seed material may include prompts, work-graph proposals,
+  evaluation-plan proposals, evidence-rule notes, harness seed proposals, or
+  handoff packets. It must not become kernel-owned execution state.
 
 ## Authority rules
 
 1. Skills are UX; the CLI is authority.
-2. A model may draft docs, detect gaps, propose work graphs, and propose a harness.
+2. A model may draft docs, detect gaps, propose work graphs, and propose downstream seed material.
 3. A model may not declare readiness without `ni status`.
 4. A model may not lock a plan without `ni end`.
 5. A model may not weaken acceptance criteria to pass validation.

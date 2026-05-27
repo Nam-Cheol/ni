@@ -1,15 +1,21 @@
 # ni
 
-`ni` is a pre-runtime project intent compiler.
+`ni` is the Project Intent Compiler for AI Agents.
 
-It turns planning work into a machine-readable contract, checks whether that
-contract is ready, locks the accepted plan with hashes, and compiles short
-handoff prompts or seed material from the locked plan.
+Don't run the agent yet. Compile the intent first.
 
-The current product is `ni-kernel`, not an execution harness.
+`ni` turns planning conversations into a locked, versioned, verifiable project
+contract before Codex, Claude, Spec Kit, Hyper Run, namba-ai, or a human team
+starts execution.
+
+Lock intent before any harness runs.
+
+The current product is `ni-kernel`: the upstream intent contract layer, not an
+execution harness, task runner, SPEC runner, multi-agent layer, or Codex
+adapter.
 
 ```text
-conversation -> docs/plan + .ni/contract.json -> ni status -> ni end -> ni run
+conversation -> docs/plan + .ni/contract.json -> ni status -> ni end -> locked intent -> ni run
 ```
 
 ## Authoring model
@@ -84,14 +90,15 @@ pressure commands stop with `BLOCKED`.
 - a task runner,
 - a SPEC runner,
 - a multi-agent execution layer,
+- a Codex adapter,
 - a queue,
-- a shell or Codex adapter,
+- a shell adapter,
 - release automation,
 - PR automation,
-- a Hyper Run clone.
+- Hyper Run, Spec Kit, Ouroboros, or namba-ai.
 
-Generated harnesses, prompts, and export packages are derived and mutable. They
-do not become kernel-owned execution state.
+Downstream prompts, seed packages, and harness proposals are derived and
+mutable. They do not become kernel-owned execution state.
 
 ## Quickstart
 
@@ -391,10 +398,12 @@ Inputs may be a project directory, `.ni/contract.json`, or
 conflicts are found, including stale locks, conflicting decisions, weakened
 accepted requirements, and risk severity reductions without mitigation context.
 
-## Generated harness
+## Downstream planning artifacts
 
-`ni graph` and `ni harness` describe possible downstream work from a locked
-contract. They remain inert planning artifacts.
+`ni graph` and `ni harness` describe optional downstream work from a locked
+contract. Despite the command name, these outputs are inert seed/proposal
+material. They are not a task runner, evidence runner, queue, adapter, or
+kernel-owned execution state.
 
 ```bash
 go run ./cmd/ni graph --dir <path>
@@ -406,8 +415,9 @@ go run ./cmd/ni harness accept CAND-001 --dir <path>
 go run ./cmd/ni harness retire CAND-001 --dir <path>
 ```
 
-The kernel may propose work graphs, evaluation plans, and evidence rules. It
-must not execute them.
+The kernel may compile work graphs, evaluation-plan proposals, evidence-rule
+notes, and downstream handoff material from a valid lock. It must not execute
+them.
 
 ## Development validation
 
