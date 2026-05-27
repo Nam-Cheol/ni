@@ -8,12 +8,17 @@ import subprocess
 import sys
 import tempfile
 import xml.etree.ElementTree as ET
+from html.parser import HTMLParser
 from pathlib import Path
 
 
 ROOT = Path(__file__).resolve().parents[1]
 ASSETS = ROOT / "assets"
 MAX_SVG_BYTES = 30_000
+README_FILES = [
+    ROOT / "README.md",
+    ROOT / "README.ko.md",
+]
 REQUIRED_ASSETS = [
     ASSETS / "hero.svg",
     ASSETS / "badge-english.svg",
@@ -37,6 +42,23 @@ EMOJI_RE = re.compile(
     "\ufe0f"
     "]"
 )
+REMOTE_RESOURCE_RE = re.compile(
+    r"(?:url\(\s*['\"]?https?://|(?:href|src)\s*=\s*['\"]https?://)",
+    re.IGNORECASE,
+)
+
+
+class LocalAssetParser(HTMLParser):
+    def __init__(self) -> None:
+        super().__init__()
+        self.references: list[str] = []
+
+    def handle_starttag(self, tag: str, attrs: list[tuple[str, str | None]]) -> None:
+        for name, value in attrs:
+            if name.lower() not in {"src", "href"} or value is None:
+                continue
+            if value.startswith("assets/"):
+                self.references.append(value)
 
 
 def fail(message: str) -> None:
@@ -71,6 +93,8 @@ def check_svg(path: Path) -> None:
     text = path.read_text(encoding="utf-8")
     if path.stat().st_size > MAX_SVG_BYTES:
         fail(f"{path.relative_to(ROOT)} exceeds {MAX_SVG_BYTES} bytes")
+    if REMOTE_RESOURCE_RE.search(text):
+        fail(f"{path.relative_to(ROOT)} contains a remote HTTP resource reference")
     if EMOJI_RE.search(text):
         fail(f"{path.relative_to(ROOT)} contains emoji or emoji-style codepoints")
 
@@ -91,6 +115,24 @@ def check_required_assets() -> None:
     missing = [path.relative_to(ROOT) for path in REQUIRED_ASSETS if not path.exists()]
     if missing:
         fail("missing required assets: " + ", ".join(str(path) for path in missing))
+
+
+def check_readme_asset_references() -> None:
+    for readme in README_FILES:
+        if not readme.exists():
+            continue
+        parser = LocalAssetParser()
+        parser.feed(readme.read_text(encoding="utf-8"))
+        missing = []
+        for reference in parser.references:
+            target = ROOT / reference
+            if not target.exists():
+                missing.append(reference)
+        if missing:
+            fail(
+                f"{readme.relative_to(ROOT)} references missing local assets: "
+                + ", ".join(sorted(set(missing)))
+            )
 
 
 def check_generated_assets_current() -> None:
@@ -118,6 +160,7 @@ def check_generated_assets_current() -> None:
 
 def main() -> None:
     check_required_assets()
+    check_readme_asset_references()
     for path in sorted(ASSETS.glob("*.svg")):
         check_svg(path)
     check_generated_assets_current()
