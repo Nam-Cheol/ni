@@ -1,17 +1,37 @@
-# ni
+<p align="center">
+  <img src="assets/hero.svg" alt="ni hero: agent를 아직 실행하지 말고 의도를 먼저 컴파일하라는 메시지" width="100%">
+</p>
 
-[English](README.md) | [한국어](README.ko.md)
+<h1 align="center">ni</h1>
 
-ni는 AI agent를 위한 Project Intent Compiler다.
+<p align="center"><strong>AI agent를 위한 Project Intent Compiler.</strong></p>
 
-agent를 아직 실행하지 마라. 먼저 의도를 컴파일하라.
+<p align="center">
+  <a href="README.md"><kbd>English</kbd></a>
+  <a href="README.ko.md"><kbd>한국어</kbd></a>
+</p>
 
-`ni`는 Codex, Claude, Spec Kit, Hyper Run, namba-ai, generated harness, 또는
-human team이 실행을 시작하기 전에 planning conversation을 잠긴, versioned,
-검증 가능한 project contract로 바꾼다.
+<p align="center">
+  <a href=".github/workflows/ci.yml"><kbd>CI</kbd></a>
+  <a href="SECURITY.md"><kbd>Security</kbd></a>
+  <a href="LICENSE"><kbd>MIT License</kbd></a>
+  <a href="docs/00_START_HERE.md"><kbd>Docs</kbd></a>
+</p>
 
-현재 제품은 `ni-kernel`이다. 이것은 intent를 위한 deterministic pre-runtime
-control layer이며, 구현을 실행하는 하네스가 아니다.
+## agent를 아직 실행하지 마라. 먼저 의도를 컴파일하라.
+
+planning conversation을 AI agents나 teams가 work를 시작하기 전에 locked project
+contracts로 바꾼다.
+
+`ni`는 execution이 시작되기 전에 locked, versioned, verifiable project
+contract를 만든다. 현재 제품은 `ni-kernel`이다. 이것은 intent를 위한
+deterministic pre-runtime control layer이며, 구현을 실행하는 하네스가 아니다.
+
+<p align="center">
+  <a href="#what-problem-ni-solves"><img src="assets/card-why.svg" alt="Why ni: 모호한 prompt가 users, risks, non-goals, acceptance, blockers를 숨길 수 있다." width="32%"></a>
+  <a href="#core-flow"><img src="assets/card-start.svg" alt="Start path: workspace를 만들고 readiness를 확인한 뒤 intent를 lock하고 prompt를 compile한다." width="32%"></a>
+  <a href="#examples-and-docs"><img src="assets/card-docs.svg" alt="Docs map: protocol, command reference, target boundaries, benchmark, launch notes를 읽는다." width="32%"></a>
+</p>
 
 ```text
 conversation -> docs/plan + .ni/contract.json -> ni status -> ni end -> locked intent -> ni run

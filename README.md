@@ -1,17 +1,37 @@
-# ni
+<p align="center">
+  <img src="assets/hero.svg" alt="ni hero: Don't run the agent yet. Compile the intent first." width="100%">
+</p>
 
-[English](README.md) | [한국어](README.ko.md)
+<h1 align="center">ni</h1>
 
-Project Intent Compiler for AI Agents.
+<p align="center"><strong>Project Intent Compiler for AI Agents.</strong></p>
 
-Don't run the agent yet. Compile the intent first.
+<p align="center">
+  <a href="README.md"><kbd>English</kbd></a>
+  <a href="README.ko.md"><kbd>한국어</kbd></a>
+</p>
 
-`ni` turns planning conversations into a locked, versioned, verifiable project
-contract before Codex, Claude, Spec Kit, Hyper Run, namba-ai, a generated
-harness, or a human team starts execution.
+<p align="center">
+  <a href=".github/workflows/ci.yml"><kbd>CI</kbd></a>
+  <a href="SECURITY.md"><kbd>Security</kbd></a>
+  <a href="LICENSE"><kbd>MIT License</kbd></a>
+  <a href="docs/00_START_HERE.md"><kbd>Docs</kbd></a>
+</p>
 
-The current product is `ni-kernel`: a deterministic pre-runtime control layer
-for intent, not an execution harness.
+## Don't run the agent yet. Compile the intent first.
+
+Turn planning conversations into locked project contracts before AI agents or
+teams start work.
+
+`ni` creates a locked, versioned, verifiable project contract before execution
+begins. The current product is `ni-kernel`: a deterministic pre-runtime control
+layer for intent, not an execution harness.
+
+<p align="center">
+  <a href="#what-problem-ni-solves"><img src="assets/card-why.svg" alt="Why ni: vague prompts can hide users, risks, non-goals, acceptance, and blockers." width="32%"></a>
+  <a href="#core-flow"><img src="assets/card-start.svg" alt="Start path: initialize, check readiness, lock intent, and compile a prompt." width="32%"></a>
+  <a href="#examples-and-docs"><img src="assets/card-docs.svg" alt="Docs map: read the protocol, command reference, target boundaries, benchmark, and launch notes." width="32%"></a>
+</p>
 
 ```text
 conversation -> docs/plan + .ni/contract.json -> ni status -> ni end -> locked intent -> ni run
