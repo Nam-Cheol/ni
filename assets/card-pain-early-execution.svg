@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="520" height="320" viewBox="0 0 520 320" role="img" aria-labelledby="title desc">
+  <title id="title">Early execution</title>
+  <desc id="desc">Work should not begin just because a request sounds plausible.</desc>
+  <defs>
+    <linearGradient id="card-bg-5" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#EDE9FE"/>
+      <stop offset="1" stop-color="#FFFFFF"/>
+    </linearGradient>
+  </defs>
+  <rect width="520" height="320" rx="20" fill="url(#card-bg-5)"/>
+  <rect x="28" y="28" width="464" height="264" rx="16" fill="#FFFFFF" stroke="#D8E1EE"/>
+  <g transform="translate(54 56)" font-family="-apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Helvetica, Arial, sans-serif">
+    <circle cx="24" cy="24" r="24" fill="#8B7CF6"/>
+    <path d="M16 16 L34 24 L16 32 Z M36 16 V32" fill="none" stroke="#FFFFFF" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+    <text x="68" y="32" fill="#111827" font-size="28" font-weight="800">Early run</text>
+    <g transform="translate(0 82)" font-size="17" font-weight="700">
+      <g transform="translate(0 0)">
+        <circle cx="10" cy="10" r="6" fill="#8B7CF6"/>
+        <path d="M28 10 H396" stroke="#D8E1EE" stroke-width="2" stroke-linecap="round"/>
+        <text x="28" y="16" fill="#475569">before agreement</text>
+      </g>
+      <g transform="translate(0 42)">
+        <circle cx="10" cy="10" r="6" fill="#8B7CF6"/>
+        <path d="M28 10 H396" stroke="#D8E1EE" stroke-width="2" stroke-linecap="round"/>
+        <text x="28" y="16" fill="#475569">model momentum</text>
+      </g>
+      <g transform="translate(0 84)">
+        <circle cx="10" cy="10" r="6" fill="#8B7CF6"/>
+        <path d="M28 10 H396" stroke="#D8E1EE" stroke-width="2" stroke-linecap="round"/>
+        <text x="28" y="16" fill="#475569">unchecked assumptions</text>
+      </g>
+    </g>
+    <rect x="0" y="190" width="186" height="36" rx="10" fill="#EDE9FE" stroke="#D8E1EE"/>
+    <text x="18" y="214" fill="#111827" font-size="15" font-weight="700">pause before handoff</text>
+  </g>
+</svg>
+

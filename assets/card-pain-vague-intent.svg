@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="520" height="320" viewBox="0 0 520 320" role="img" aria-labelledby="title desc">
+  <title id="title">Vague intent</title>
+  <desc id="desc">A plausible prompt can still hide missing users, acceptance criteria, risks, and blockers.</desc>
+  <defs>
+    <linearGradient id="card-bg-4" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#DCEBFF"/>
+      <stop offset="1" stop-color="#FFFFFF"/>
+    </linearGradient>
+  </defs>
+  <rect width="520" height="320" rx="20" fill="url(#card-bg-4)"/>
+  <rect x="28" y="28" width="464" height="264" rx="16" fill="#FFFFFF" stroke="#D8E1EE"/>
+  <g transform="translate(54 56)" font-family="-apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Helvetica, Arial, sans-serif">
+    <circle cx="24" cy="24" r="24" fill="#5B8DEF"/>
+    <path d="M16 18 H32 M16 26 H28 M16 34 H24" fill="none" stroke="#FFFFFF" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+    <text x="68" y="32" fill="#111827" font-size="28" font-weight="800">Vague intent</text>
+    <g transform="translate(0 82)" font-size="17" font-weight="700">
+      <g transform="translate(0 0)">
+        <circle cx="10" cy="10" r="6" fill="#5B8DEF"/>
+        <path d="M28 10 H396" stroke="#D8E1EE" stroke-width="2" stroke-linecap="round"/>
+        <text x="28" y="16" fill="#475569">missing users</text>
+      </g>
+      <g transform="translate(0 42)">
+        <circle cx="10" cy="10" r="6" fill="#5B8DEF"/>
+        <path d="M28 10 H396" stroke="#D8E1EE" stroke-width="2" stroke-linecap="round"/>
+        <text x="28" y="16" fill="#475569">unclear acceptance</text>
+      </g>
+      <g transform="translate(0 84)">
+        <circle cx="10" cy="10" r="6" fill="#5B8DEF"/>
+        <path d="M28 10 H396" stroke="#D8E1EE" stroke-width="2" stroke-linecap="round"/>
+        <text x="28" y="16" fill="#475569">open blockers</text>
+      </g>
+    </g>
+    <rect x="0" y="190" width="184" height="36" rx="10" fill="#DCEBFF" stroke="#D8E1EE"/>
+    <text x="18" y="214" fill="#111827" font-size="15" font-weight="700">sounds ready, is not</text>
+  </g>
+</svg>
+
