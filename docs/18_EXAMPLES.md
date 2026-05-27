@@ -78,6 +78,31 @@ The checked-in example includes generated `docs/plan/**`, `.ni/contract.json`,
 bounded `.ni/session.json` state, the CLI-written lockfile, and the
 `human-team` prompt for the refund triage assistant plan.
 
+## Ambiguous prompt blocked
+
+Use this to see ni block a vague implementation request before any agent starts
+work.
+
+See the demo at
+[`examples/ambiguous-prompt-blocked/`](../examples/ambiguous-prompt-blocked/).
+
+The checked-in workspace is intentionally blocked:
+
+```bash
+go run ./cmd/ni status --dir ./examples/ambiguous-prompt-blocked/workspace
+```
+
+Expected payoff:
+
+```text
+This is ni's core payoff: it blocks ambiguous execution before the agent starts.
+```
+
+The demo does not execute Codex, implement the product, or add downstream
+runner behavior. It shows how `ni-start` turns ambiguity into docs and contract
+records, how `ni status` blocks on missing intent, and how `ni run` would later
+compile a bounded target prompt after lock.
+
 ## Software CLI
 
 Use this for a command-line tool, library, API, or normal software project.

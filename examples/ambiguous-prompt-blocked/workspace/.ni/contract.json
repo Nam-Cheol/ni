@@ -1,0 +1,121 @@
+{
+  "schema": "ni.contract.v0",
+  "readiness_profile": "prototype",
+  "product_type": "software",
+  "delivery_surfaces": ["web"],
+  "interaction_mode": "human_to_system",
+  "project": {
+    "id": "ambiguous-dashboard",
+    "name": "Ambiguous Dashboard Request",
+    "purpose": "Plan a customer-issue dashboard request before implementation so ambiguous execution is blocked until the first workflow and data boundary are explicit.",
+    "status": "draft"
+  },
+  "non_goals": [
+    {
+      "id": "NG-001",
+      "title": "Do not implement the dashboard before blocker intent questions are resolved."
+    },
+    {
+      "id": "NG-002",
+      "title": "Do not connect live customer systems, assign tickets, send notifications, or create downstream automation."
+    }
+  ],
+  "capabilities": [
+    {
+      "id": "CAP-001",
+      "title": "Capture dashboard intent without starting implementation.",
+      "status": "accepted",
+      "requirements": ["REQ-001"],
+      "evaluations": ["EVAL-001"],
+      "risks": ["RISK-001"],
+      "artifacts": ["ART-001"]
+    },
+    {
+      "id": "CAP-002",
+      "title": "Block readiness while workflow and data-source questions remain open.",
+      "status": "accepted",
+      "requirements": ["REQ-002"],
+      "evaluations": ["EVAL-002"],
+      "risks": ["RISK-002"],
+      "artifacts": ["ART-002"]
+    }
+  ],
+  "requirements": [
+    {
+      "id": "REQ-001",
+      "title": "The plan must record the vague dashboard request as intent, assumptions, and blocker questions instead of implementation instructions.",
+      "status": "accepted"
+    },
+    {
+      "id": "REQ-002",
+      "title": "The readiness gate must remain blocked while the first workflow and data boundary are unresolved.",
+      "status": "accepted"
+    }
+  ],
+  "decisions": [
+    {
+      "id": "DEC-001",
+      "title": "Treat the current request as planning state, not executable implementation scope.",
+      "status": "accepted"
+    },
+    {
+      "id": "DEC-002",
+      "title": "Use downstream prompts only after the plan is locked.",
+      "status": "accepted"
+    }
+  ],
+  "risks": [
+    {
+      "id": "RISK-001",
+      "title": "A direct agent may implement a dashboard based on hidden assumptions.",
+      "severity": "high",
+      "status": "accepted",
+      "mitigation": "Keep unresolved workflow and data-boundary questions as blocker open questions until the user answers."
+    },
+    {
+      "id": "RISK-002",
+      "title": "Customer data handling may be unsafe if the source and sensitivity boundary are guessed.",
+      "severity": "high",
+      "status": "accepted",
+      "mitigation": "Block lock until the allowed data source and non-goals for live systems are explicit."
+    }
+  ],
+  "evaluations": [
+    {
+      "id": "EVAL-001",
+      "title": "Planning record review.",
+      "method": "Review docs/plan and .ni/contract.json to confirm the vague request is represented as planning state, not executable implementation scope."
+    },
+    {
+      "id": "EVAL-002",
+      "title": "Blocked readiness check.",
+      "method": "Run ni status for the workspace and verify it reports BLOCKED with R009 blocker open-question issues."
+    }
+  ],
+  "artifacts": [
+    {
+      "id": "ART-001",
+      "path": "docs/plan/00_project_brief.md",
+      "kind": "planning_doc"
+    },
+    {
+      "id": "ART-002",
+      "path": ".ni/contract.json",
+      "kind": "planning_contract"
+    }
+  ],
+  "open_questions": [
+    {
+      "id": "OQ-001",
+      "title": "Which team and first workflow must the dashboard serve?",
+      "blocker": true,
+      "status": "open"
+    },
+    {
+      "id": "OQ-002",
+      "title": "What data source and customer-data boundary may v0 use?",
+      "blocker": true,
+      "status": "open"
+    }
+  ]
+}
