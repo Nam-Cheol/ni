@@ -27,6 +27,11 @@ conversation -> docs/plan + .ni/contract.json -> ni status -> ni end -> locked i
 See [Intent Lock Protocol](docs/42_INTENT_LOCK_PROTOCOL.md) for the protocol
 definition, inputs, gates, outputs, and non-goals.
 
+The [benchmark protocol](docs/43_BENCHMARK_PROTOCOL.md) defines a manual,
+pre-runtime way to compare direct-to-agent prompts with locked `ni` intent on
+ambiguity, acceptance criteria, blockers, risks, assumptions, non-goals, stale
+plan detection, bounded prompts, and readiness before execution.
+
 ## Authoring model
 
 `ni init` creates the planning workspace. After that, authoring happens through
@@ -174,6 +179,8 @@ Complete locked example workspaces live in `examples/`:
 - [Conversation Authoring Fixture](examples/conversation-authoring/): an end-to-end transcript showing model-maintained docs and contract records after `ni init`, with CLI validation, lock, and prompt compilation.
 - [Neighborhood Cooling Study Protocol](examples/research-protocol/): a non-software research protocol with human-team and generic prompt artifacts.
 - [Namba AI Upgrade](examples/namba-ai-upgrade/): a software product planning example.
+- [Benchmark Report Template](examples/benchmark-report/): a manual report
+  template for the pre-runtime intent readiness benchmark.
 
 ni is not a software spec generator.
 ni compiles project intent for any product surface.
