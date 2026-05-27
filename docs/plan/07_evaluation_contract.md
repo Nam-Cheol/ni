@@ -71,3 +71,11 @@ Method: collab unit tests for changed IDs, contradictory decisions, weakened req
 ## EVAL-018: differentiation proof assets stay pre-runtime and synchronized
 
 Method: static quality and release-readiness checks verify README.md, README.ko.md, docs/40_POSITIONING.md through docs/46_RELEASE_READINESS.md, examples, status proof output, and prompt budget claims preserve Project Intent Compiler positioning without runtime execution claims.
+
+## EVAL-019: v0.3 packaging claims stay factual and pre-runtime
+
+Method: static quality and planning review verify README.md, README.ko.md,
+docs/52_README_PAMPHLET_STRATEGY.md through docs/58_VISUAL_ASSETS.md, install
+docs, and model workspace pack docs preserve SVG-first product packaging,
+truthful distribution availability, assisted no-terminal wording, and
+non-executing Codex/Claude pack boundaries.

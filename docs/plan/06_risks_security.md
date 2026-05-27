@@ -71,3 +71,13 @@ Mitigation: keep v0.2 authoring in `ni-start` conversation updates to `docs/plan
 Severity: high
 
 Mitigation: keep positioning, demos, benchmark protocol, status proof, target story, README relaunch, README.ko sync, and release readiness as pre-runtime proof assets. They may validate intent readiness and compile bounded prompts or seed notes, but they must not claim agent execution, shell execution, queues, adapters, or release automation inside `ni-kernel`.
+
+## RISK-013: packaging claims outrun implemented distribution
+
+Severity: high
+
+Mitigation: README, distribution docs, visual assets, and model workspace pack
+docs must use factual availability language. Release binaries are required for
+non-Go users before curl or package-manager paths are claimed as available;
+model packs remain planning UX rather than execution adapters; no-terminal mode
+must show CLI-produced proof before claiming deterministic validation.

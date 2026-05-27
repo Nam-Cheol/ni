@@ -4,7 +4,12 @@
 
 `ni` does not execute implementation work. It compiles locked planning context into bounded prompts and seed artifacts.
 
-For v0.2, `ni run` compiles a handoff prompt only. It must not call Codex, shell commands, adapters, queues, PR automation, or downstream runtimes.
+For v0.2 and v0.3, `ni run` compiles a handoff prompt only. It must not call Codex, shell commands, adapters, queues, PR automation, or downstream runtimes.
+
+Model workspace packs for Codex- and Claude-style workflows are planning UX.
+They may help author docs, review status proof, confirm lock intent, and invoke
+or request CLI commands, but they must not become execution adapters or replace
+CLI validation.
 
 ## Target strategy
 
@@ -37,3 +42,11 @@ Generated harness candidates are proposals for downstream work. They must remain
 ## Amendment strategy
 
 Locked docs are changed through explicit amendment and relock. If a lock hash mismatch exists, prompt compilation and exports stop with `BLOCKED`.
+
+## Packaging strategy
+
+The v0.3 packaging plan changes public surfaces, not runtime behavior. README
+acts as a product pamphlet; technical detail lives in docs; visual assets use
+SVG first; generated social images are optional; distribution claims stay
+behind implemented release binaries, curl installers, and package-manager
+paths; no-terminal mode is assisted unless exact CLI proof is available.

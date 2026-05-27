@@ -1,0 +1,27 @@
+{
+  "schema": "ni.amendment.v0",
+  "id": "AMEND-008",
+  "title": "Preserve cli delivery surface for v0.3 packaging lock",
+  "reason": "Keep the ni project contract's delivery surface as the implemented CLI while preserving v0.3 packaging scope through accepted capability, requirement, evaluation, risk, and artifact records.",
+  "affected_docs": [
+    ".ni/contract.json"
+  ],
+  "affected_contract_ids": [
+    "CAP-017",
+    "REQ-017",
+    "EVAL-019",
+    "RISK-013"
+  ],
+  "proposed_changes": [
+    "Restore delivery_surfaces to the implemented cli surface expected by the contract tests.",
+    "Leave v0.3 README, distribution, visual identity, model workspace pack, and no-terminal planning scope represented by CAP-017 and linked records."
+  ],
+  "risk_impact": "Reduces ambiguity between the implemented ni-kernel CLI surface and surrounding packaging or model-workspace adoption surfaces.",
+  "readiness_impact": "Expected to remain READY because the v0.3 packaging capability keeps linked requirement, evaluation, risk mitigation, artifacts, non-goals, and no blocker questions.",
+  "created_from_feedback_refs": [],
+  "created_from_pressure_refs": [],
+  "status": "applied",
+  "created_at": "2026-05-27T12:46:06Z",
+  "applied_at": "2026-05-27T12:46:19Z",
+  "source_lock_hash": "46e141b9dcf0bc1324d87b4d2f3c492bbaac86cd08fd63c9afc5b11effa51527"
+}

@@ -59,3 +59,15 @@ Rationale: `ni init` should create the workspace, while `ni-start` keeps docs an
 Status: accepted
 
 Rationale: The post-053 product direction is that `ni` is the Project Intent Compiler for AI Agents. The core message is "do not run the agent yet; compile the intent first," and the unique mechanism is the Intent Lock Protocol. v0.2 proof should come from ambiguous prompt blocking, non-software planning, benchmark protocol, status proof, downstream target story, README relaunch, README.ko companion sync, and release readiness, not from adding runtime execution.
+
+## DEC-011: v0.3 packaging is README pamphlet, truthful distribution, and model workspace UX
+
+Status: accepted
+
+Rationale: The v0.3 public packaging direction should make `ni` easier to
+understand and adopt without weakening the kernel boundary. README is a product
+pamphlet with technical details in docs, the hero stays harness-neutral and
+SVG-first, generated social imagery is optional, release binaries are required
+before non-Go curl or package-manager availability claims, Codex/Claude packs
+are planning UX rather than execution adapters, and no-terminal mode remains
+assisted unless exact CLI proof is supplied.

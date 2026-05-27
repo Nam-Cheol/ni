@@ -63,3 +63,13 @@ Compare planning states and report deterministic contract conflicts, including l
 ## CAP-016: prove Project Intent Compiler differentiation
 
 Maintain the v0.2 positioning and proof assets that show `ni` as a pre-runtime Project Intent Compiler for AI Agents. The plan must tie the message "do not run the agent yet; compile the intent first" to the Intent Lock Protocol, the ambiguous prompt blocking demo, the non-software planning demo, the intent readiness benchmark protocol, the status proof report, the downstream target story, README relaunch, README.ko companion sync, and release readiness checklist.
+
+## CAP-017: package v0.3 public product surface
+
+Lock the v0.3 product packaging direction across README pamphlet strategy,
+visual identity, distribution, and model workspace packs. README is a product
+pamphlet with technical depth moved to docs, no specific harness product claims
+in the hero, SVG-first visual assets, optional generated social images, factual
+distribution language for release binaries, curl, and package managers, Codex-
+and Claude-style model workspace packs as planning UX, and no-terminal mode as
+assisted rather than deterministic validation.

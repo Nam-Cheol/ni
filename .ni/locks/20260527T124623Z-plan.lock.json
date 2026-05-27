@@ -1,10 +1,10 @@
 {
   "schema": "ni.lock.v0",
-  "locked_at": "2026-05-27T12:46:23Z",
+  "locked_at": "2026-05-27T12:45:16Z",
   "previous_lock": {
-    "path": ".ni/locks/20260527T124623Z-plan.lock.json",
-    "sha256": "46e141b9dcf0bc1324d87b4d2f3c492bbaac86cd08fd63c9afc5b11effa51527",
-    "locked_at": "2026-05-27T12:45:16Z"
+    "path": ".ni/locks/20260527T124516Z-plan.lock.json",
+    "sha256": "b91f6afd41870a2965e2979abd9d979d980482a02b841300bb5b82aa7abe70c4",
+    "locked_at": "2026-05-27T10:36:03Z"
   },
   "source_of_truth": [
     ".ni/plan.lock.json",
@@ -19,7 +19,7 @@
   "files": [
     {
       "path": ".ni/contract.json",
-      "sha256": "1d6e598a3daa97506a4ac4f7924f3e5184397359a59658628681c74fdbd0a0ea"
+      "sha256": "003454080a283ea1adf3b423872ffaafb490db5c0d7b413b00abfff5a3d537fd"
     },
     {
       "path": "docs/plan/00_project_brief.md",

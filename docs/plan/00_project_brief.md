@@ -2,9 +2,29 @@
 
 ## Purpose
 
-`ni` is the Project Intent Compiler for AI Agents. In v0.2, it turns model-user planning conversations into synchronized human planning docs, `.ni/contract.json`, a deterministic readiness result, a lockfile, and a bounded handoff prompt for downstream tools before any execution harness runs.
+`ni` is the Project Intent Compiler for AI Agents. In v0.3, it packages the product direction around a README pamphlet, lightweight visual identity, truthful distribution paths, and model workspace packs while preserving the same deterministic readiness, lockfile, and bounded prompt compiler boundary before any execution harness runs.
 
-## v0.2 focus
+## v0.3 focus
+
+The v0.3 packaging plan makes the public product surface easier to adopt without
+turning `ni-kernel` into a runtime:
+
+- `README.md` is a product pamphlet, with detailed protocol, command,
+  distribution, and target material moved to docs.
+- The README hero uses repository-local SVG first; generated image or social
+  card assets are optional marketing outputs.
+- README copy avoids specific harness product claims in the hero and avoids
+  claiming curl, package-manager, or binary availability before those paths are
+  implemented and verified.
+- Distribution must support non-Go users through release binaries before curl
+  or package-manager paths are presented as available.
+- Model workspace packs support Codex- and Claude-style planning workflows as
+  UX over docs and CLI proof, not execution adapters.
+- No-terminal mode is an assisted planning workflow; it is not full
+  deterministic validation unless a trusted runner supplies exact `ni` CLI
+  output.
+
+## v0.2 foundation
 
 `ni init` creates the initial planning structure. After initialization, the primary authoring interface is sustained model-user conversation through `ni-start`, which updates `docs/plan/**` and `.ni/contract.json` together. The CLI remains authoritative for deterministic gaps (`ni status`), explicit lock or relock (`ni end` or `ni relock`), and prompt compilation (`ni run`).
 
@@ -12,9 +32,9 @@ User-facing contract `add`, `list`, or `set` commands are not part of the v0.2 p
 
 The public v0.2 message is: do not run the agent yet; compile the intent first. The unique mechanism is the Intent Lock Protocol, which defines how planning conversations become a contract, when the contract is ready to lock, how the accepted plan is hashed, what downstream actors may trust, and when execution must stop because intent changed.
 
-## Differentiation proof assets
+## Differentiation and packaging proof assets
 
-The v0.2 differentiation plan is supported by:
+The v0.2 and v0.3 direction is supported by:
 
 - ambiguous prompt blocking demo,
 - non-software planning demo,
@@ -23,7 +43,11 @@ The v0.2 differentiation plan is supported by:
 - downstream target story,
 - README relaunch,
 - README.ko companion sync,
-- release readiness checklist.
+- release readiness checklist,
+- README pamphlet strategy,
+- distribution strategy and Homebrew plan,
+- model workspace pack docs for Codex and Claude,
+- visual asset rules.
 
 ## Later direction
 
@@ -46,7 +70,7 @@ Agent and SPEC systems often mix planning, execution, evidence collection, and p
 
 ## Success definition
 
-A user can start with `ni init`, plan through model-user conversation, let `ni-start` update planning docs and `.ni/contract.json`, run `ni status --proof`, lock or relock through the CLI, and compile a 4000-character-or-less target prompt from the valid lock. The resulting contract presents `ni-kernel` as a pre-runtime intent compiler, not a task runner, SPEC runner, or multi-agent execution layer.
+A user can start with `ni init`, plan through model-user conversation, let `ni-start` update planning docs and `.ni/contract.json`, run `ni status --proof`, lock or relock through the CLI, and compile a 4000-character-or-less target prompt from the valid lock. The resulting contract presents `ni-kernel` as a pre-runtime intent compiler and packages `ni` through truthful README, distribution, visual, and model workspace surfaces, not as a task runner, SPEC runner, package availability claim, model execution adapter, or multi-agent execution layer.
 
 ## Boundary
 
