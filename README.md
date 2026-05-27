@@ -66,49 +66,32 @@ go run ./cmd/ni run --dir ./my-plan --target generic --max-chars 4000
 `ni run` compiles a prompt. It does not execute shell commands, queues, agents,
 or downstream work.
 
-## No terminal? Start with the model pack.
+## Choose your path
 
-You can use the Intent Lock method before installing the CLI by copying the
-Claude/Codex skill instructions into a model workspace and asking the model to
-draft `docs/plan/**` plus a `.ni/contract.json` draft. This is useful for
-learning the method, surfacing blockers, and preparing a plan with a teammate.
+You do not need to be a Go user to start using the Intent Lock method. The full
+deterministic `ni` gates still come from the CLI.
 
-There are three levels:
+| Path | Status | Best for | Boundary |
+| --- | --- | --- | --- |
+| Source | Available | Contributors and early users who can run `go run ./cmd/ni ...`. | Full deterministic `status`, `end`, and `run`. |
+| Release binary | Next | Terminal users who want `ni` without installing Go. | Wait for published GitHub Release assets and checksums. |
+| Curl installer | Next | One-command install after release assets exist. | `install.sh` is present and tested locally, but public install waits on release assets. |
+| Homebrew | Planned | macOS users who prefer package managers. | No tap or formula is published. |
+| Claude skill pack | Available | Model-assisted planning with the packaged Claude skills. | Drafting UX only; use the CLI for readiness and lock authority. |
+| Codex skill pack | Available | Model-assisted planning with the packaged Codex skills. | Drafting UX only; use the CLI for readiness and lock authority. |
+| No-terminal model workflow | Available as assisted method | Teams that want to draft and review intent before anyone runs the CLI. | Not deterministic full `ni`; CLI output is required for authoritative validation. |
 
-| Level | What you get | Authority |
-| --- | --- | --- |
-| Full `ni` | CLI installed; deterministic `status`, `end`, and `run` are available. | Authoritative readiness, lock, hash verification, and prompt compilation. |
-| Model pack assisted | Skills guide docs authoring and contract drafting in Claude/Codex-style workspaces. | Helpful drafting; run CLI validation before lock. |
-| Read-only method | Copy the Intent Lock checklist into a model session. | Useful for learning; not authoritative. |
+See [Install ni](docs/22_INSTALL.md) for source and local build paths,
+[Curl Installer](docs/install-curl.md) for the release-gated installer, and
+[No-Terminal Planning](docs/no-terminal.md) for the assisted workflow. See
+[Distribution Strategy](docs/53_DISTRIBUTION_STRATEGY.md) and
+[Homebrew Distribution Plan](docs/54_HOMEBREW_DISTRIBUTION.md) for planned
+distribution tracks. Distribution automation is repository infrastructure, not
+`ni` runtime execution.
 
-The honest boundary: no-terminal mode is not equivalent to validated `ni`.
-Deterministic readiness and locking require the CLI. See
-[No-Terminal Planning](docs/no-terminal.md) for the manual flow.
-
-## Install and use
-
-| Path | Status | What it means |
-| --- | --- | --- |
-| Source mode | Available | Run with `go run ./cmd/ni ...` while developing or trying the kernel. Requires Go. |
-| Local binary | Available | Build with `make build`, then run `./bin/ni ...`. Requires Go for the build step. |
-| Local install | Available | Install to a local bin path with `make install-local`. Requires Go for the build step. |
-| Release binary mode | Prepared, not yet available | A GoReleaser pipeline is configured for future GitHub Releases, but binaries are not available until the first release assets are published. |
-| Curl installer mode | Script added, release-gated | `install.sh` supports dry-run and verified release-asset installs, but use it only after a GitHub Release contains the matching archive and checksum. |
-| Package manager mode | Planned | Homebrew is planned, but no tap or formula is published yet. |
-| Model workspace mode | Available in repo-local form | Codex/Claude-style skills can help author plans, but the CLI remains the authority. Portable packs are planned. |
-| No-terminal mode | Docs-first workflow available | Start with model-pack instructions or a copied checklist, then validate with the CLI or a teammate before lock. |
-
-See [Install ni](docs/22_INSTALL.md) for supported local paths and
-[Curl Installer](docs/install-curl.md) for release-asset installs with manual
-verification. See [Distribution Strategy](docs/53_DISTRIBUTION_STRATEGY.md) for
-planned adoption tracks and
-[Homebrew Distribution Plan](docs/54_HOMEBREW_DISTRIBUTION.md) for the planned
-Homebrew path. Distribution automation is repository infrastructure, not `ni`
-runtime execution.
-
-This README does not claim package distribution or a published binary release:
-use source, local build, or local install mode until a GitHub Release actually
-contains verified release assets.
+This README does not claim package distribution or a published binary release.
+For deterministic CLI use, use source, local build, or local install mode until a GitHub Release actually contains verified release assets; skill packs and
+assisted no-terminal planning can help draft intent before that validation.
 
 ## What stays locked
 

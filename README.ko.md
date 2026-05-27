@@ -66,49 +66,34 @@ go run ./cmd/ni run --dir ./my-plan --target generic --max-chars 4000
 `ni run`은 prompt를 compile한다. Shell commands, queues, agents, downstream
 work를 실행하지 않는다.
 
-## 터미널이 없나? Model pack으로 시작하라.
+## Choose your path
 
-CLI를 설치하기 전에도 Claude/Codex skill instructions를 model workspace에
-copy하고, model에게 `docs/plan/**`과 `.ni/contract.json` draft를 만들게 하면서
-Intent Lock method를 사용할 수 있다. 이 방식은 method를 배우고, blocker를
-드러내고, teammate와 함께 plan을 준비하는 데 유용하다.
+Go user가 아니어도 Intent Lock method를 시작할 수 있다. 다만 full deterministic
+`ni` gate는 여전히 CLI에서 나온다.
 
-세 가지 수준이 있다:
+| Path | Status | Best for | Boundary |
+| --- | --- | --- | --- |
+| Source | Available | `go run ./cmd/ni ...`를 실행할 수 있는 contributors와 early users. | Full deterministic `status`, `end`, `run`. |
+| Release binary | Next | Go 설치 없이 `ni`를 쓰고 싶은 terminal users. | Published GitHub Release assets와 checksums를 기다린다. |
+| Curl installer | Next | Release assets가 생긴 뒤 one-command install을 원하는 users. | `install.sh`는 있고 local test도 있지만, public install은 release assets를 기다린다. |
+| Homebrew | Planned | Package manager를 선호하는 macOS users. | Published tap이나 formula가 없다. |
+| Claude skill pack | Available | Packaged Claude skills로 model-assisted planning을 시작하는 users. | Drafting UX일 뿐이며 readiness와 lock authority는 CLI다. |
+| Codex skill pack | Available | Packaged Codex skills로 model-assisted planning을 시작하는 users. | Drafting UX일 뿐이며 readiness와 lock authority는 CLI다. |
+| No-terminal model workflow | Available as assisted method | CLI를 누군가 실행하기 전에 intent를 draft하고 review하려는 teams. | Deterministic full `ni`가 아니며 authoritative validation에는 CLI output이 필요하다. |
 
-| Level | 얻는 것 | Authority |
-| --- | --- | --- |
-| Full `ni` | CLI installed; deterministic `status`, `end`, `run`을 사용할 수 있다. | Authoritative readiness, lock, hash verification, prompt compilation. |
-| Model pack assisted | Skills가 Claude/Codex-style workspaces에서 docs authoring과 contract drafting을 안내한다. | Helpful drafting; lock 전에는 CLI validation을 실행한다. |
-| Read-only method | Intent Lock checklist를 model session에 copy한다. | Learning에는 유용하지만 authoritative하지 않다. |
-
-정직한 boundary: no-terminal mode는 validated `ni`와 equivalent하지 않다.
-Deterministic readiness와 locking에는 CLI가 필요하다. Manual flow는
-[터미널 없이 계획하기](docs/no-terminal.ko.md)를 참고하라.
-
-## Install and use
-
-| Path | Status | Meaning |
-| --- | --- | --- |
-| Source mode | Available | 개발하거나 kernel을 시험할 때 `go run ./cmd/ni ...`로 실행한다. Go가 필요하다. |
-| Local binary | Available | `make build`로 build한 뒤 `./bin/ni ...`를 실행한다. Build step에는 Go가 필요하다. |
-| Local install | Available | `make install-local`로 local bin path에 install한다. Build step에는 Go가 필요하다. |
-| Release binary mode | Prepared, not yet available | Future GitHub Releases를 위한 GoReleaser pipeline은 configured 상태지만, 첫 release assets가 publish되기 전까지 binaries는 available하지 않다. |
-| Curl installer mode | Script added, release-gated | `install.sh`는 dry-run과 verified release-asset install을 지원하지만, matching archive와 checksum이 있는 GitHub Release 이후에만 사용한다. |
-| Package manager mode | Planned | Homebrew는 planned 상태이며, tap이나 formula는 아직 publish되지 않았다. |
-| Model workspace mode | Available in repo-local form | Codex/Claude-style skills는 plan authoring을 도울 수 있지만 CLI가 계속 authority다. Portable packs는 planned다. |
-| No-terminal mode | Docs-first workflow available | Model-pack instructions나 copied checklist로 시작하고, lock 전에는 CLI 또는 teammate로 validate한다. |
-
-지원되는 local path는 [Install ni](docs/22_INSTALL.md)를 참고하라. Release-asset
-install과 manual verification은 [Curl Installer](docs/install-curl.ko.md)를
-참고하라. Planned adoption tracks는
-[Distribution Strategy](docs/53_DISTRIBUTION_STRATEGY.ko.md)를 참고하라.
-Planned Homebrew path는
-[Homebrew Distribution Plan](docs/54_HOMEBREW_DISTRIBUTION.ko.md)를 참고하라.
+Source와 local build path는 [Install ni](docs/22_INSTALL.md)를 참고하라.
+Release-gated installer는 [Curl Installer](docs/install-curl.ko.md)를,
+assisted workflow는 [터미널 없이 계획하기](docs/no-terminal.ko.md)를 참고하라.
+Planned distribution tracks는
+[Distribution Strategy](docs/53_DISTRIBUTION_STRATEGY.ko.md)와
+[Homebrew Distribution Plan](docs/54_HOMEBREW_DISTRIBUTION.ko.md)에 있다.
 Distribution automation은 repository infrastructure이지 `ni` runtime execution이
 아니다.
 
 이 README는 package distribution이나 published binary release를 claim하지 않는다.
-GitHub Release가 verified release assets를 실제로 포함하기 전까지는 source, local build, local install mode를 사용한다.
+Deterministic CLI 사용에는 GitHub Release가 verified release assets를 실제로
+포함하기 전까지 source, local build, local install mode를 사용한다. Skill packs와
+assisted no-terminal planning은 그 validation 전에 intent draft를 도울 수 있다.
 
 ## Locked되는 것
 
