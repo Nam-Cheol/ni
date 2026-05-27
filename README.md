@@ -205,11 +205,14 @@ Start here:
 
 ## Development and Release Status
 
-`ni` is currently source-first. Package publishing, Homebrew taps, GoReleaser,
-and automated release tooling are outside the current kernel scope.
+`ni` is currently source-first.
+Release status: does not claim package distribution or a published binary release.
+Package publishing, Homebrew taps, GoReleaser, and automated release tooling are
+outside the current kernel scope.
 
-Use `go run` from source, or build a local binary with `make build`. See
-[docs/22_INSTALL.md](docs/22_INSTALL.md) for installation details.
+Use `go run` from source, build a local binary with `make build`, or install
+locally with `make install-local`. See [docs/22_INSTALL.md](docs/22_INSTALL.md)
+for source, local build, or local install details.
 
 Public demo verification:
 
@@ -221,6 +224,15 @@ Repository validation:
 
 ```bash
 bash scripts/quality.sh
+```
+
+CI validation is defined in `.github/workflows/ci.yml` and runs Go tests,
+quality checks, and smoke tests.
+
+Source/build/install verification:
+
+```bash
+bash scripts/install-check.sh
 ```
 
 `ni` is licensed under the [MIT License](LICENSE). Release readiness notes live

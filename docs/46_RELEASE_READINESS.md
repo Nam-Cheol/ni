@@ -24,6 +24,7 @@ hosted binary availability.
 
 - [ ] quality passes through `bash scripts/quality.sh`.
 - [ ] tests pass through `go test ./...`.
+- [ ] install-check passes through `bash scripts/install-check.sh`.
 - [ ] README and README.ko are in sync for release, license, CI, security,
       install, and runtime-boundary claims.
 - [ ] examples exist under `examples/` and include runnable planning
@@ -53,4 +54,6 @@ bash scripts/release-check.sh
 ```
 
 The script is a readiness gate only. It does not publish packages, create a
-GitHub release, add release automation, or tag a commit.
+GitHub release, add release automation, or tag a commit. It includes
+`bash scripts/install-check.sh` to verify source, local build, and temporary
+local install paths.

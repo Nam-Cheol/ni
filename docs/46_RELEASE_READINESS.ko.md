@@ -24,6 +24,7 @@ availability가 있다고 claim하지 않는다.
 
 - [ ] quality passes through `bash scripts/quality.sh`.
 - [ ] tests pass through `go test ./...`.
+- [ ] install-check passes through `bash scripts/install-check.sh`.
 - [ ] README and README.ko are in sync for release, license, CI, security,
       install, and runtime-boundary claims.
 - [ ] examples exist under `examples/` and include runnable planning
@@ -53,4 +54,5 @@ bash scripts/release-check.sh
 ```
 
 This script is a readiness gate only. It does not publish packages, create a
-GitHub release, add release automation, or tag a commit.
+GitHub release, add release automation, or tag a commit. Source, local build,
+temporary local install paths는 `bash scripts/install-check.sh`로 검증한다.

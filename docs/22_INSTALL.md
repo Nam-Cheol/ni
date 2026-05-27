@@ -57,6 +57,15 @@ make install-local BINDIR="$HOME/bin"
 ```
 
 Ensure the chosen directory is on your `PATH` before running `ni` by name.
+For verification or tests, use a temporary `BINDIR` instead of a user-owned
+install directory.
+
+```bash
+tmpdir="$(mktemp -d)"
+make install-local BINDIR="$tmpdir/bin"
+"$tmpdir/bin/ni" --help
+"$tmpdir/bin/ni" version
+```
 
 ## Validation
 
@@ -67,10 +76,13 @@ make test
 make quality
 make smoke
 make build
+make install-check
 ```
 
 These map to the repository's existing Go tests, quality checks, smoke tests,
-and local binary build.
+local binary build, and source/local-install verification. `make install-check`
+uses a temporary install path and is also part of `bash scripts/release-check.sh`;
+it is not required for every quality run.
 
 ## License
 

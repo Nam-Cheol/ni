@@ -35,6 +35,7 @@ text = path.read_text(encoding="utf-8")
 required = [
     "quality passes",
     "tests pass",
+    "install-check passes",
     "README and README.ko are in sync",
     "examples exist",
     "status proof works",
@@ -43,6 +44,7 @@ required = [
     "no runtime execution claims",
     "no false release/license/CI/security claims",
     "bash scripts/release-check.sh",
+    "bash scripts/install-check.sh",
 ]
 
 missing = [item for item in required if item not in text]
@@ -261,6 +263,7 @@ run_step "Go tests pass" go test ./...
 run_step "golden tests pass" go test ./cmd/ni -run Golden -count=1
 run_step "smoke passes" bash scripts/smoke.sh
 run_step "public demos verify" bash scripts/demo-check.sh
+run_step "install and build paths pass" bash scripts/install-check.sh
 
 run_step "status proof works" bash -c '
   go run ./cmd/ni status --dir examples/conversation-product --proof >"$1/status-proof.out"
@@ -269,34 +272,10 @@ run_step "status proof works" bash -c '
 ' bash "$QUICKSTART_TMP"
 
 run_step "README quickstart works in go run mode" bash -c '
-  go run ./cmd/ni --help >"$1/go-run-help.out"
-  require_output "ni is a project intent compiler" "$1/go-run-help.out"
-  go run ./cmd/ni version >"$1/go-run-version.out"
-  require_output "0.0.0-dev" "$1/go-run-version.out"
   go run ./cmd/ni init --dir "$1/plan" --profile prototype >"$1/init.out"
   require_output "initialized ni planning workspace" "$1/init.out"
   go run ./cmd/ni status --dir "$1/plan" >"$1/status.out"
   require_output "BLOCKED" "$1/status.out"
-' bash "$QUICKSTART_TMP"
-
-run_step "README quickstart works in built binary mode" bash -c '
-  make build
-  ./bin/ni --help >"$1/bin-help.out"
-  require_output "ni is a project intent compiler" "$1/bin-help.out"
-  ./bin/ni version >"$1/bin-version.out"
-  if [[ ! -s "$1/bin-version.out" ]]; then
-    echo "release-check failed: built binary version output is empty" >&2
-    exit 1
-  fi
-' bash "$QUICKSTART_TMP"
-
-run_step "README quickstart works in local install mode" bash -c '
-  make install-local BINDIR="$1/bin"
-  "$1/bin/ni" version >"$1/install-version.out"
-  if [[ ! -s "$1/install-version.out" ]]; then
-    echo "release-check failed: installed binary version output is empty" >&2
-    exit 1
-  fi
 ' bash "$QUICKSTART_TMP"
 
 run_step "roadmap has no stale release references" python3 - <<'PY'
