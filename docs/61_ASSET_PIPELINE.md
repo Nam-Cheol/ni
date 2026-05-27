@@ -12,6 +12,7 @@ The asset source of truth is under `assets/source/`:
 | --- | --- |
 | `assets/source/hero.template.svg` | Template for the README hero. |
 | `assets/source/card.template.svg` | Shared template for small README cards. |
+| `assets/source/badge.template.svg` | Shared template for local README language chips. |
 | `scripts/render-assets.py` | Deterministic renderer for generated SVG output. |
 | `scripts/check-assets.py` | Structural and drift checks for SVG assets. |
 
@@ -31,6 +32,8 @@ It writes these generated files:
 
 ```text
 assets/hero.svg
+assets/badge-english.svg
+assets/badge-korean.svg
 assets/card-start.svg
 assets/card-contract.svg
 assets/card-handoff.svg

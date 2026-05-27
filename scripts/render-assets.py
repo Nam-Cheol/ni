@@ -87,6 +87,29 @@ CARD_DATA = [
     },
 ]
 
+BADGE_DATA = [
+    {
+        "filename": "badge-english.svg",
+        "title": "English language chip",
+        "desc": "Link chip for the English README.",
+        "label": "English",
+        "width": "84",
+        "fill": "#F8FAFC",
+        "stroke": "#94A3B8",
+        "text_fill": "#172033",
+    },
+    {
+        "filename": "badge-korean.svg",
+        "title": "Korean language chip",
+        "desc": "Link chip for the Korean README.",
+        "label": "한국어",
+        "width": "84",
+        "fill": "#F8FAFC",
+        "stroke": "#94A3B8",
+        "text_fill": "#172033",
+    },
+]
+
 
 def render_hero(out_dir: Path) -> Path:
     template = load_template("hero.template.svg")
@@ -125,11 +148,35 @@ def render_card(out_dir: Path, data: dict[str, str | list[str]], index: int) -> 
     return path
 
 
+def render_badge(out_dir: Path, data: dict[str, str], index: int) -> Path:
+    template = load_template("badge.template.svg")
+    width = int(data["width"])
+    content = template.substitute(
+        width=xml_attr(data["width"]),
+        inner_width=xml_attr(str(width - 1)),
+        title_id=xml_attr(f"badge-title-{index}"),
+        desc_id=xml_attr(f"badge-desc-{index}"),
+        title=xml_text(data["title"]),
+        desc=xml_text(data["desc"]),
+        label=xml_text(data["label"]),
+        text_x=xml_attr(str(width // 2)),
+        fill=xml_attr(data["fill"]),
+        stroke=xml_attr(data["stroke"]),
+        text_fill=xml_attr(data["text_fill"]),
+        font_family=xml_attr(FONT_FAMILY),
+    )
+    path = out_dir / data["filename"]
+    path.write_text(content + "\n", encoding="utf-8")
+    return path
+
+
 def render_assets(out_dir: Path) -> list[Path]:
     out_dir.mkdir(parents=True, exist_ok=True)
     rendered = [render_hero(out_dir)]
     for index, data in enumerate(CARD_DATA, start=1):
         rendered.append(render_card(out_dir, data, index))
+    for index, data in enumerate(BADGE_DATA, start=1):
+        rendered.append(render_badge(out_dir, data, index))
     return rendered
 
 

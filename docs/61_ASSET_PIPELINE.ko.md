@@ -12,6 +12,7 @@ Asset source of truth는 `assets/source/` 아래에 둔다:
 | --- | --- |
 | `assets/source/hero.template.svg` | README hero template. |
 | `assets/source/card.template.svg` | Small README cards shared template. |
+| `assets/source/badge.template.svg` | Local README language chips shared template. |
 | `scripts/render-assets.py` | Generated SVG output을 만드는 deterministic renderer. |
 | `scripts/check-assets.py` | SVG structural checks와 drift checks. |
 
@@ -31,6 +32,8 @@ Renderer는 다음 generated files를 쓴다:
 
 ```text
 assets/hero.svg
+assets/badge-english.svg
+assets/badge-korean.svg
 assets/card-start.svg
 assets/card-contract.svg
 assets/card-handoff.svg

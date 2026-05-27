@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="$width" height="28" viewBox="0 0 $width 28" role="img" aria-labelledby="$title_id $desc_id">
+  <title id="$title_id">$title</title>
+  <desc id="$desc_id">$desc</desc>
+  <rect width="$width" height="28" rx="8" fill="$fill"/>
+  <rect x="0.5" y="0.5" width="$inner_width" height="27" rx="7.5" fill="none" stroke="$stroke"/>
+  <text x="$text_x" y="18" text-anchor="middle" font-family="$font_family" font-size="13" font-weight="700" fill="$text_fill">$label</text>
+</svg>

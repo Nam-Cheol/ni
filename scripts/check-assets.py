@@ -16,6 +16,8 @@ ASSETS = ROOT / "assets"
 MAX_SVG_BYTES = 30_000
 REQUIRED_ASSETS = [
     ASSETS / "hero.svg",
+    ASSETS / "badge-english.svg",
+    ASSETS / "badge-korean.svg",
     ASSETS / "card-start.svg",
     ASSETS / "card-contract.svg",
     ASSETS / "card-handoff.svg",
