@@ -66,19 +66,23 @@ go run ./cmd/ni run --dir ./my-plan --target generic --max-chars 4000
 `ni run`은 prompt를 compile한다. Shell commands, queues, agents, downstream
 work를 실행하지 않는다.
 
-## 어디서나 ni 사용하기
+## Install and use
 
 | Path | Status | Meaning |
 | --- | --- | --- |
-| Source CLI | Available now | 개발하거나 kernel을 시험할 때 `go run ./cmd/ni ...`로 실행한다. |
-| Local binary | Available now | `make build`로 build한 뒤 `./bin/ni ...`를 실행한다. |
-| Local install | Available now | `make install-local`로 local bin path에 install한다. |
-| Model workspace | Available now | Codex나 Claude 같은 model workspace에 넣을 locked prompt를 compile한다. `ni`는 handoff text만 만든다. |
-| Package manager install | Planned | 아직 publish되지 않았다. 오늘은 source 또는 local install을 사용한다. |
-| Hosted service | Planned | 아직 available하지 않다. |
-| Model plugin | Planned | 아직 available하지 않다. |
+| Source mode | Available | 개발하거나 kernel을 시험할 때 `go run ./cmd/ni ...`로 실행한다. Go가 필요하다. |
+| Local binary | Available | `make build`로 build한 뒤 `./bin/ni ...`를 실행한다. Build step에는 Go가 필요하다. |
+| Local install | Available | `make install-local`로 local bin path에 install한다. Build step에는 Go가 필요하다. |
+| Release binary mode | Next | GitHub Releases assets는 아직 publish되지 않았다. |
+| Curl installer mode | Planned | `install.sh`는 아직 없으며 verified release assets 이후에만 가능하다. |
+| Package manager mode | Planned | Homebrew와 Scoop packages는 아직 publish되지 않았다. |
+| Model workspace mode | Available in repo-local form | Codex/Claude-style skills는 plan authoring을 도울 수 있지만 CLI가 계속 authority다. Portable packs는 planned다. |
+| No-terminal mode | Planned | Downloadable model pack과 docs-first workflow는 아직 available하지 않다. |
 
-지원되는 local path는 [Install ni](docs/22_INSTALL.md)를 참고하라.
+지원되는 local path는 [Install ni](docs/22_INSTALL.md)를 참고하라. Planned adoption
+tracks는 [Distribution Strategy](docs/53_DISTRIBUTION_STRATEGY.ko.md)를 참고하라.
+Distribution automation은 repository infrastructure이지 `ni` runtime execution이
+아니다.
 
 ## Locked되는 것
 

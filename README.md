@@ -66,19 +66,23 @@ go run ./cmd/ni run --dir ./my-plan --target generic --max-chars 4000
 `ni run` compiles a prompt. It does not execute shell commands, queues, agents,
 or downstream work.
 
-## Use ni anywhere
+## Install and use
 
 | Path | Status | What it means |
 | --- | --- | --- |
-| Source CLI | Available now | Run with `go run ./cmd/ni ...` while developing or trying the kernel. |
-| Local binary | Available now | Build with `make build`, then run `./bin/ni ...`. |
-| Local install | Available now | Install to a local bin path with `make install-local`. |
-| Model workspace | Available now | Compile a locked prompt for a model workspace such as Codex or Claude; `ni` only produces the handoff text. |
-| Package manager install | Planned | Not published yet. Use source or local install today. |
-| Hosted service | Planned | Not available yet. |
-| Model plugin | Planned | Not available yet. |
+| Source mode | Available | Run with `go run ./cmd/ni ...` while developing or trying the kernel. Requires Go. |
+| Local binary | Available | Build with `make build`, then run `./bin/ni ...`. Requires Go for the build step. |
+| Local install | Available | Install to a local bin path with `make install-local`. Requires Go for the build step. |
+| Release binary mode | Next | GitHub Releases assets are not published yet. |
+| Curl installer mode | Planned | `install.sh` does not exist yet and must wait for verified release assets. |
+| Package manager mode | Planned | Homebrew and Scoop packages are not published yet. |
+| Model workspace mode | Available in repo-local form | Codex/Claude-style skills can help author plans, but the CLI remains the authority. Portable packs are planned. |
+| No-terminal mode | Planned | A downloadable model pack and docs-first workflow are not available yet. |
 
-See [Install ni](docs/22_INSTALL.md) for the supported local paths.
+See [Install ni](docs/22_INSTALL.md) for supported local paths and
+[Distribution Strategy](docs/53_DISTRIBUTION_STRATEGY.md) for planned adoption
+tracks. Distribution automation is repository infrastructure, not `ni` runtime
+execution.
 
 ## What stays locked
 
