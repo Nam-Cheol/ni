@@ -12,6 +12,7 @@
 - Collaboration checks must be deterministic and contract-local.
 - After `ni init`, v0.2 authoring must flow through model-user conversation that updates docs and contract together.
 - User-facing contract `add`, `list`, or `set` commands must not become the v0.2 primary authoring UX.
+- Differentiation proof assets must remain pre-runtime evidence: demos, benchmark protocols, proof reports, target stories, README sync, and release checklists must not execute downstream agents or become kernel-owned runtime state.
 
 ## Kernel boundary
 

@@ -65,3 +65,9 @@ Mitigation: diff and conflict checks are deterministic and contract-local.
 Severity: high
 
 Mitigation: keep v0.2 authoring in `ni-start` conversation updates to `docs/plan/**` and `.ni/contract.json`; do not add contract `add`, `list`, or `set` commands as primary UX.
+
+## RISK-012: differentiation proof drifts into runtime claims
+
+Severity: high
+
+Mitigation: keep positioning, demos, benchmark protocol, status proof, target story, README relaunch, README.ko sync, and release readiness as pre-runtime proof assets. They may validate intent readiness and compile bounded prompts or seed notes, but they must not claim agent execution, shell execution, queues, adapters, or release automation inside `ni-kernel`.

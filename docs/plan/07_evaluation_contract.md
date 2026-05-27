@@ -67,3 +67,7 @@ Method: CLI integration test for amend, stale lock rejection, applied amendment,
 ## EVAL-017: collaboration conflicts are deterministic
 
 Method: collab unit tests for changed IDs, contradictory decisions, weakened requirements, and lock mismatch handling.
+
+## EVAL-018: differentiation proof assets stay pre-runtime and synchronized
+
+Method: static quality and release-readiness checks verify README.md, README.ko.md, docs/40_POSITIONING.md through docs/46_RELEASE_READINESS.md, examples, status proof output, and prompt budget claims preserve Project Intent Compiler positioning without runtime execution claims.

@@ -53,3 +53,9 @@ Rationale: Parallel planning changes need review without using model judgment as
 Status: accepted
 
 Rationale: `ni init` should create the workspace, while `ni-start` keeps docs and contract synchronized from conversation. The CLI should validate readiness, lock or relock, and compile prompts rather than ask users to hand-author contract records through `add`, `list`, or `set` commands.
+
+## DEC-010: v0.2 differentiation centers Intent Lock Protocol proof assets
+
+Status: accepted
+
+Rationale: The post-053 product direction is that `ni` is the Project Intent Compiler for AI Agents. The core message is "do not run the agent yet; compile the intent first," and the unique mechanism is the Intent Lock Protocol. v0.2 proof should come from ambiguous prompt blocking, non-software planning, benchmark protocol, status proof, downstream target story, README relaunch, README.ko companion sync, and release readiness, not from adding runtime execution.

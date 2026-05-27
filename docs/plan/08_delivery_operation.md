@@ -4,6 +4,8 @@
 
 The v0.2 kernel ships as a local Go CLI with repository-local Codex skills and Markdown planning docs. The primary authoring surface after `ni init` is model-user conversation, not manual contract editing commands.
 
+The v0.2 differentiation surface is documentation and proof-asset driven: README.md, README.ko.md, positioning docs, demos, benchmark protocol, status proof, target story, and release readiness checklist explain and verify the Intent Lock Protocol without starting downstream execution.
+
 Tracked planning state:
 
 - `docs/plan/**`
@@ -30,6 +32,7 @@ Generated or inert state:
 5. Run `ni end` for a first lock or `ni relock` after an applied amendment.
 6. Run `ni run --target <target> --max-chars 4000` to compile a bounded handoff prompt.
 7. Treat downstream feedback as inert until it becomes an explicit amendment.
+8. Use the differentiation proof assets to show why locked intent should precede downstream agent, human-team, or harness work.
 
 ## Validation
 

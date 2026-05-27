@@ -9,7 +9,7 @@
   "project": {
     "id": "ni",
     "name": "ni",
-    "purpose": "Compile v0.2 model-user planning conversations into synchronized docs/plan records and .ni/contract.json, then use deterministic CLI gates to report readiness, lock or relock the plan, and compile a bounded handoff prompt before any execution harness runs.",
+    "purpose": "Serve as the Project Intent Compiler for AI Agents: compile model-user planning conversations into synchronized docs/plan records and .ni/contract.json, use the Intent Lock Protocol to report readiness, lock or relock accepted intent, and compile bounded handoff prompts before any execution harness runs.",
     "status": "accepted"
   },
   "non_goals": [
@@ -311,6 +311,37 @@
         "ART-018",
         "ART-019"
       ]
+    },
+    {
+      "id": "CAP-016",
+      "title": "Prove Project Intent Compiler differentiation",
+      "status": "accepted",
+      "dependencies": [
+        "CAP-002",
+        "CAP-003",
+        "CAP-004",
+        "CAP-007"
+      ],
+      "requirements": [
+        "REQ-016"
+      ],
+      "evaluations": [
+        "EVAL-018"
+      ],
+      "risks": [
+        "RISK-012"
+      ],
+      "artifacts": [
+        "ART-022",
+        "ART-023",
+        "ART-024",
+        "ART-025",
+        "ART-026",
+        "ART-027",
+        "ART-028",
+        "ART-029",
+        "ART-030"
+      ]
     }
   ],
   "requirements": [
@@ -388,6 +419,11 @@
       "id": "REQ-015",
       "title": "diff and conflicts compare planning states and report deterministic contract conflicts",
       "status": "accepted"
+    },
+    {
+      "id": "REQ-016",
+      "title": "v0.2 differentiation presents ni as the Project Intent Compiler for AI Agents, centers the Intent Lock Protocol, and supports the claim with ambiguous prompt blocking, non-software planning, benchmark, status proof, target story, README, README.ko, and release-readiness assets",
+      "status": "accepted"
     }
   ],
   "decisions": [
@@ -434,6 +470,11 @@
     {
       "id": "DEC-009",
       "title": "v0.2 primary authoring UX is model-user conversation, not contract editing commands",
+      "status": "accepted"
+    },
+    {
+      "id": "DEC-010",
+      "title": "v0.2 differentiation centers Intent Lock Protocol proof assets",
       "status": "accepted"
     }
   ],
@@ -514,6 +555,13 @@
       "severity": "high",
       "status": "accepted",
       "mitigation": "Keep v0.2 authoring in ni-start conversation updates to docs/plan and .ni/contract.json; do not add contract add, list, or set commands as primary UX."
+    },
+    {
+      "id": "RISK-012",
+      "title": "Differentiation proof drifts into runtime claims",
+      "severity": "high",
+      "status": "accepted",
+      "mitigation": "Keep positioning, demos, benchmark protocol, status proof, target story, README relaunch, README.ko sync, and release readiness as pre-runtime proof assets; do not claim agent execution, shell execution, queues, adapters, or release automation inside ni-kernel."
     }
   ],
   "evaluations": [
@@ -601,6 +649,11 @@
       "id": "EVAL-017",
       "title": "collaboration conflicts are deterministic",
       "method": "collaboration unit tests"
+    },
+    {
+      "id": "EVAL-018",
+      "title": "differentiation proof assets stay pre-runtime and synchronized",
+      "method": "static quality and release-readiness checks verify README.md, README.ko.md, docs/40_POSITIONING.md through docs/46_RELEASE_READINESS.md, examples, status proof output, and prompt budget claims preserve Project Intent Compiler positioning without runtime execution claims"
     }
   ],
   "artifacts": [
@@ -708,6 +761,51 @@
       "id": "ART-021",
       "path": "docs/28_CONVERSATION_AUTHORING.md docs/29_AUTHORING_PROTOCOL.md docs/31_NI_START_BEHAVIOR.md docs/35_NI_END_CONFIRMATION.md docs/36_NI_RUN_HANDOFF.md .ni/session.json",
       "kind": "authoring_protocol"
+    },
+    {
+      "id": "ART-022",
+      "path": "README.md",
+      "kind": "readme"
+    },
+    {
+      "id": "ART-023",
+      "path": "README.ko.md",
+      "kind": "readme"
+    },
+    {
+      "id": "ART-024",
+      "path": "docs/40_POSITIONING.md docs/41_DIFFERENTIATION.md docs/42_INTENT_LOCK_PROTOCOL.md",
+      "kind": "positioning_docs"
+    },
+    {
+      "id": "ART-025",
+      "path": "examples/ambiguous-prompt-blocked/",
+      "kind": "demo"
+    },
+    {
+      "id": "ART-026",
+      "path": "examples/research-protocol/",
+      "kind": "demo"
+    },
+    {
+      "id": "ART-027",
+      "path": "docs/43_BENCHMARK_PROTOCOL.md",
+      "kind": "benchmark_protocol"
+    },
+    {
+      "id": "ART-028",
+      "path": "docs/44_STATUS_PROOF.md",
+      "kind": "proof_doc"
+    },
+    {
+      "id": "ART-029",
+      "path": "docs/45_TARGET_STORY.md",
+      "kind": "target_story"
+    },
+    {
+      "id": "ART-030",
+      "path": "docs/46_RELEASE_READINESS.md",
+      "kind": "release_checklist"
     }
   ],
   "open_questions": [

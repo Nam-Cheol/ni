@@ -1,19 +1,19 @@
 {
   "schema": "ni.session.v0",
-  "active_planning_focus": "Lock v0.2 conversation-authoring plan.",
-  "last_planning_summary": "The v0.2 plan centers authoring on model-user conversation after ni init. ni-start maintains docs/plan and .ni/contract.json together; ni status reports deterministic readiness gaps; ni-end confirms and locks; ni-run compiles a bounded handoff prompt. User-facing contract add/list/set commands are not the primary authoring UX.",
+  "active_planning_focus": "Lock v0.2 differentiation plan.",
+  "last_planning_summary": "The v0.2 plan now presents ni as the Project Intent Compiler for AI Agents. The core message is to compile intent before running an agent; the unique mechanism is the Intent Lock Protocol. The accepted proof assets are the ambiguous prompt blocking demo, non-software planning demo, intent readiness benchmark protocol, status proof report, downstream target story, README relaunch, README.ko companion sync, and release readiness checklist.",
   "pending_questions": [],
   "recent_decisions": [
     {
-      "id": "DEC-009",
-      "title": "v0.2 primary authoring UX is model-user conversation, not contract editing commands",
+      "id": "DEC-010",
+      "title": "v0.2 differentiation centers Intent Lock Protocol proof assets",
       "status": "accepted"
     }
   ],
   "recent_risks": [
     {
-      "id": "RISK-011",
-      "title": "CLI contract editing displaces conversation authoring",
+      "id": "RISK-012",
+      "title": "Differentiation proof drifts into runtime claims",
       "severity": "high",
       "status": "accepted"
     }
@@ -24,15 +24,13 @@
     "docs/plan/00_project_brief.md",
     "docs/plan/01_actors_outcomes.md",
     "docs/plan/02_capabilities.md",
-    "docs/plan/03_interaction_contract.md",
-    "docs/plan/04_domain_state.md",
     "docs/plan/05_constraints.md",
     "docs/plan/06_risks_security.md",
     "docs/plan/07_evaluation_contract.md",
     "docs/plan/08_delivery_operation.md",
-    "docs/plan/09_execution_strategy.md",
     "docs/plan/11_decision_log.md",
-    ".ni/contract.json"
+    ".ni/contract.json",
+    ".ni/session.json"
   ],
   "authority_order": [
     ".ni/plan.lock.json",

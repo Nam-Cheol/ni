@@ -59,3 +59,7 @@ Require an explicit applied amendment before replacing a valid existing lock.
 ## CAP-015: detect collaboration conflicts
 
 Compare planning states and report deterministic contract conflicts, including lock mismatches and weakened accepted requirements.
+
+## CAP-016: prove Project Intent Compiler differentiation
+
+Maintain the v0.2 positioning and proof assets that show `ni` as a pre-runtime Project Intent Compiler for AI Agents. The plan must tie the message "do not run the agent yet; compile the intent first" to the Intent Lock Protocol, the ambiguous prompt blocking demo, the non-software planning demo, the intent readiness benchmark protocol, the status proof report, the downstream target story, README relaunch, README.ko companion sync, and release readiness checklist.
