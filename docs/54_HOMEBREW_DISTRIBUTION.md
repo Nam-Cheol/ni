@@ -7,7 +7,7 @@ Current status: planned. There is no published Homebrew formula for `ni`, no
 verified `brew install` path, and no package-manager release automation enabled
 for Homebrew.
 
-As of 2026-05-27, a direct repository check for
+As of 2026-05-28, a direct repository check for
 `https://github.com/Nam-Cheol/homebrew-tap.git` returned "Repository not found."
 That means `Nam-Cheol/homebrew-tap` must be treated as next work, not as an
 available tap.
@@ -49,6 +49,35 @@ Homebrew can move from planned to available only after all of these are true:
 7. README install language is updated only after the tested command works.
 
 Until then, docs must use planned language only.
+
+## Tap Creation Steps
+
+Because the tap repository does not exist yet, Homebrew status remains Planned.
+Use these exact next steps when the owner is ready to create the tap:
+
+1. Create `Nam-Cheol/homebrew-tap` as a public GitHub repository.
+2. Clone the tap repository locally.
+3. Create `Formula/ni.rb` in the tap repository, not in `ni-kernel`.
+4. Use [Homebrew Formula Draft](71_HOMEBREW_FORMULA_DRAFT.md) as the starting
+   point, replacing every placeholder checksum with checksums from the published
+   GitHub Release.
+5. Validate the formula from the tap checkout:
+
+   ```bash
+   brew audit --strict --online Formula/ni.rb
+   brew install --build-from-source Formula/ni.rb
+   ni --help
+   ni version
+   ```
+
+6. Only after validation succeeds, document the tested install command as:
+
+   ```bash
+   brew install Nam-Cheol/tap/ni
+   ```
+
+Do not add a Homebrew badge, README install command, or package-manager
+availability claim before that command works.
 
 ## Future GoReleaser Work
 
