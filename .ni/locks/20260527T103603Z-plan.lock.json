@@ -1,10 +1,10 @@
 {
   "schema": "ni.lock.v0",
-  "locked_at": "2026-05-27T10:36:03Z",
+  "locked_at": "2026-05-27T01:37:48Z",
   "previous_lock": {
-    "path": ".ni/locks/20260527T103603Z-plan.lock.json",
-    "sha256": "3246ea507d8423845036da197531fe58a47d130474b68d15e5676c15e70620e2",
-    "locked_at": "2026-05-27T01:37:48Z"
+    "path": ".ni/locks/20260527T013748Z-plan.lock.json",
+    "sha256": "b0b4d582d8126ed40d11d5fd0b55e2bc533486719a1b95bd8972eacf4c121aa8",
+    "locked_at": "2026-05-26T13:56:47Z"
   },
   "source_of_truth": [
     ".ni/plan.lock.json",

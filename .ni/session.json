@@ -1,7 +1,7 @@
 {
   "schema": "ni.session.v0",
-  "active_planning_focus": "Lock v0.2 differentiation plan.",
-  "last_planning_summary": "The v0.2 plan now presents ni as the Project Intent Compiler for AI Agents. The core message is to compile intent before running an agent; the unique mechanism is the Intent Lock Protocol. The accepted proof assets are the ambiguous prompt blocking demo, non-software planning demo, intent readiness benchmark protocol, status proof report, downstream target story, README relaunch, README.ko companion sync, and release readiness checklist.",
+  "active_planning_focus": "Lock v0.2.0 public launch planning state.",
+  "last_planning_summary": "The v0.2.0 public launch planning state uses the existing accepted Project Intent Compiler differentiation plan. The launch scope includes README public surface cleanup, README.ko sync, SECURITY.md and SECURITY.ko.md, v0.2.0 release draft, demo verification, concise README and command docs, normalized examples, benchmark fixtures, target export conformance, ni-start dogfood transcript, install/build hardening, contribution boundary, and launch checklist. The CLI readiness gate reports READY with no blockers.",
   "pending_questions": [],
   "recent_decisions": [
     {
@@ -21,15 +21,6 @@
   "last_readiness_status": "READY",
   "last_readiness_blockers": [],
   "last_updated_docs": [
-    "docs/plan/00_project_brief.md",
-    "docs/plan/01_actors_outcomes.md",
-    "docs/plan/02_capabilities.md",
-    "docs/plan/05_constraints.md",
-    "docs/plan/06_risks_security.md",
-    "docs/plan/07_evaluation_contract.md",
-    "docs/plan/08_delivery_operation.md",
-    "docs/plan/11_decision_log.md",
-    ".ni/contract.json",
     ".ni/session.json"
   ],
   "authority_order": [
