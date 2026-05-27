@@ -202,6 +202,7 @@ Start here:
 - [Benchmark Report Template](examples/benchmark-report/sample-report.md)
 - [Target Story](docs/45_TARGET_STORY.md)
 - [v0.2.0 Release Draft](docs/47_RELEASE_DRAFT_v0.2.0.md)
+- [Public Launch Checklist](docs/50_LAUNCH_CHECKLIST.md)
 
 ## Development and Release Status
 
@@ -237,5 +238,6 @@ bash scripts/install-check.sh
 
 `ni` is licensed under the [MIT License](LICENSE). Contribution guidelines are
 in [CONTRIBUTING.md](CONTRIBUTING.md). Release readiness notes live in
-[docs/46_RELEASE_READINESS.md](docs/46_RELEASE_READINESS.md), and the project
-security policy is [SECURITY.md](SECURITY.md).
+[docs/46_RELEASE_READINESS.md](docs/46_RELEASE_READINESS.md), public launch
+checks live in [docs/50_LAUNCH_CHECKLIST.md](docs/50_LAUNCH_CHECKLIST.md), and
+the project security policy is [SECURITY.md](SECURITY.md).

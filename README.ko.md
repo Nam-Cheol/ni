@@ -200,6 +200,7 @@ Downstream prompts, seed packages, harness proposals는 derived and mutable이�
 - [Benchmark Protocol](docs/43_BENCHMARK_PROTOCOL.md)
 - [Target Story](docs/45_TARGET_STORY.md)
 - [v0.2.0 Release Draft](docs/47_RELEASE_DRAFT_v0.2.0.ko.md)
+- [Public Launch Checklist](docs/50_LAUNCH_CHECKLIST.ko.md)
 
 ## Development and Release Status
 
@@ -236,4 +237,6 @@ bash scripts/install-check.sh
 `ni`는 [MIT License](LICENSE)에 따라 licensed된다. Contribution guidelines는
 [CONTRIBUTING.ko.md](CONTRIBUTING.ko.md)에 있다. Release readiness notes는
 [docs/46_RELEASE_READINESS.ko.md](docs/46_RELEASE_READINESS.ko.md)에 있고,
+public launch checks는
+[docs/50_LAUNCH_CHECKLIST.ko.md](docs/50_LAUNCH_CHECKLIST.ko.md)에 있으며,
 project security policy는 [SECURITY.md](SECURITY.md)에 있다.
