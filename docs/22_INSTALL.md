@@ -1,8 +1,9 @@
 # Install ni
 
-`ni` is currently distributed from source. Package publishing, Homebrew taps,
-GoReleaser, and automated release tooling are intentionally excluded at this
-stage.
+`ni` is currently usable from source or from a locally built binary. A
+GoReleaser-based release binary pipeline is prepared for future GitHub Releases,
+but hosted release assets are not available until the first tagged release
+publishes them.
 
 ## Prerequisites
 
@@ -67,6 +68,47 @@ make install-local BINDIR="$tmpdir/bin"
 "$tmpdir/bin/ni" version
 ```
 
+## Release binary after first assets exist
+
+Release binaries are planned for GitHub Releases, but no release asset should be
+treated as available until a published release page includes the matching file
+and checksum.
+
+When those assets exist, use this matrix:
+
+| Platform | Architecture | Archive |
+| --- | --- | --- |
+| Linux | amd64 | `ni_<version>_linux_amd64.tar.gz` |
+| Linux | arm64 | `ni_<version>_linux_arm64.tar.gz` |
+| macOS | amd64 | `ni_<version>_darwin_amd64.tar.gz` |
+| macOS | arm64 | `ni_<version>_darwin_arm64.tar.gz` |
+| Windows | amd64 | `ni_<version>_windows_amd64.zip` |
+
+Each release is also expected to include
+`ni_<version>_checksums.txt`. After downloading a published archive and the
+checksum file from the same release, verify the archive before placing `ni` on
+your `PATH`.
+
+Linux or macOS:
+
+```bash
+sha256sum -c ni_<version>_checksums.txt --ignore-missing
+tar -xzf ni_<version>_<os>_<arch>.tar.gz
+./ni version
+```
+
+macOS also provides `shasum -a 256 -c` if `sha256sum` is not installed.
+
+Windows PowerShell:
+
+```powershell
+Expand-Archive ni_<version>_windows_amd64.zip -DestinationPath ni_<version>_windows_amd64
+.\ni_<version>_windows_amd64\ni.exe version
+```
+
+Do not use package manager instructions for `ni` yet; Homebrew and Scoop
+packages are not published.
+
 ## Validation
 
 The supported local validation commands are:
@@ -84,11 +126,18 @@ local binary build, and source/local-install verification. `make install-check`
 uses a temporary install path and is also part of `bash scripts/release-check.sh`;
 it is not required for every quality run.
 
+For release configuration validation, run `goreleaser check` when GoReleaser is
+installed locally. The repository release gate remains:
+
+```bash
+bash scripts/release-check.sh
+```
+
 ## License
 
 `ni` is licensed under the [MIT License](../LICENSE).
 
 This install document does not claim package distribution, Homebrew support,
-GoReleaser support, or a published binary release. Use source, local build, or
-local install mode unless a future release process documents another supported
-distribution channel.
+Scoop support, or currently available release binaries. Use source, local build,
+or local install mode unless a published GitHub Release contains verified
+assets.

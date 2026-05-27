@@ -55,7 +55,7 @@ if Path("README.ko.md").exists() and not Path("docs/46_RELEASE_READINESS.ko.md")
     raise SystemExit("README.ko.md exists, but docs/46_RELEASE_READINESS.ko.md is missing")
 PY
 
-run_step "v0.2.0 release draft is factual and source-first" python3 - <<'PY'
+run_step "v0.2.0 release draft is factual and release-binary prepared" python3 - <<'PY'
 from pathlib import Path
 
 drafts = [
@@ -89,17 +89,26 @@ required_markers = [
     "SPEC runner",
     "Task queue",
     "Multi-agent orchestration",
-    "PR/release automation",
-    "Binary package distribution",
+    "Release binary pipeline",
+    "Product-level PR/release automation or release commands",
+    "Package manager distribution",
+    "goreleaser check",
     "go test ./...",
     "bash scripts/quality.sh",
     "bash scripts/smoke.sh",
+    "bash scripts/release-check.sh",
+    "ni_<version>_linux_amd64.tar.gz",
+    "ni_<version>_linux_arm64.tar.gz",
+    "ni_<version>_darwin_amd64.tar.gz",
+    "ni_<version>_darwin_arm64.tar.gz",
+    "ni_<version>_windows_amd64.zip",
+    "ni_<version>_checksums.txt",
 ]
 
 boundary_markers = [
     "does not publish a release",
-    "does not claim hosted release assets",
-    "does not add release automation",
+    "does not claim hosted release assets are already available",
+    "not part of `ni` runtime behavior",
     "does not execute Codex",
     "release를 publish하거나",
     "claim하지 않는다",
@@ -119,10 +128,7 @@ for path in drafts:
     forbidden_claims = [
         "Homebrew install",
         "brew install",
-        "GoReleaser",
-        "published binary release",
         "published binary packages are available",
-        "download the binary",
         "automatically publishes",
     ]
     for claim in forbidden_claims:
@@ -215,7 +221,7 @@ else:
 release_claim_markers = {
     "README.md": [
         "does not claim package distribution or a published binary release",
-        "source, local build, or local install",
+        "source, local build, or local install mode until a GitHub Release actually",
     ],
     "README.ko.md": [
         "package distribution이나 published binary release를 claim하지 않는다",
@@ -226,6 +232,56 @@ for label, text in {"README.md": readme, "README.ko.md": readme_ko}.items():
     missing = [marker for marker in release_claim_markers[label] if marker not in text]
     if missing:
         raise SystemExit(f"{label} is missing release-status markers: {missing}")
+
+release_config = Path(".goreleaser.yaml")
+release_workflow = Path(".github/workflows/release.yml")
+if not release_config.exists():
+    raise SystemExit(".goreleaser.yaml is missing")
+if not release_workflow.exists():
+    raise SystemExit(".github/workflows/release.yml is missing")
+
+config = release_config.read_text(encoding="utf-8")
+workflow = release_workflow.read_text(encoding="utf-8")
+
+required_config = [
+    "version: 2",
+    "project_name: ni",
+    "main: ./cmd/ni",
+    "binary: ni",
+    "CGO_ENABLED=0",
+    "linux",
+    "darwin",
+    "windows",
+    "amd64",
+    "arm64",
+    "goos: windows",
+    "goarch: arm64",
+    "formats:",
+    "tar.gz",
+    "zip",
+    "checksum:",
+    "ni/internal/version.Version={{ .Version }}",
+]
+missing = [item for item in required_config if item not in config]
+if missing:
+    raise SystemExit(f".goreleaser.yaml is missing release config markers: {missing}")
+
+required_workflow = [
+    "name: Release",
+    "tags:",
+    '"v*"',
+    "contents: write",
+    "actions/checkout@v4",
+    "actions/setup-go@v5",
+    "go test ./...",
+    "bash scripts/quality.sh",
+    "bash scripts/release-check.sh",
+    "goreleaser/goreleaser-action@v6",
+    "release --clean",
+]
+missing = [item for item in required_workflow if item not in workflow]
+if missing:
+    raise SystemExit(f".github/workflows/release.yml is missing workflow markers: {missing}")
 PY
 
 run_step "examples and benchmark protocol exist" python3 - <<'PY'
@@ -339,6 +395,8 @@ boundary_markers = [
     "downstream",
     "do not add",
     "not add",
+    "아니다",
+    "안 된다",
 ]
 
 paths = [Path("README.md")]

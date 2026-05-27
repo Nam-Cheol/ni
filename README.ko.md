@@ -73,7 +73,7 @@ work를 실행하지 않는다.
 | Source mode | Available | 개발하거나 kernel을 시험할 때 `go run ./cmd/ni ...`로 실행한다. Go가 필요하다. |
 | Local binary | Available | `make build`로 build한 뒤 `./bin/ni ...`를 실행한다. Build step에는 Go가 필요하다. |
 | Local install | Available | `make install-local`로 local bin path에 install한다. Build step에는 Go가 필요하다. |
-| Release binary mode | Next | GitHub Releases assets는 아직 publish되지 않았다. |
+| Release binary mode | Prepared, not yet available | Future GitHub Releases를 위한 GoReleaser pipeline은 configured 상태지만, 첫 release assets가 publish되기 전까지 binaries는 available하지 않다. |
 | Curl installer mode | Planned | `install.sh`는 아직 없으며 verified release assets 이후에만 가능하다. |
 | Package manager mode | Planned | Homebrew와 Scoop packages는 아직 publish되지 않았다. |
 | Model workspace mode | Available in repo-local form | Codex/Claude-style skills는 plan authoring을 도울 수 있지만 CLI가 계속 authority다. Portable packs는 planned다. |
@@ -83,6 +83,9 @@ work를 실행하지 않는다.
 tracks는 [Distribution Strategy](docs/53_DISTRIBUTION_STRATEGY.ko.md)를 참고하라.
 Distribution automation은 repository infrastructure이지 `ni` runtime execution이
 아니다.
+
+이 README는 package distribution이나 published binary release를 claim하지 않는다.
+GitHub Release가 verified release assets를 실제로 포함하기 전까지는 source, local build, local install mode를 사용한다.
 
 ## Locked되는 것
 
@@ -112,3 +115,9 @@ authority다.
 | [Intent Lock Protocol](docs/42_INTENT_LOCK_PROTOCOL.md) | Readiness, locking, hash trust, blocked handoff 규칙. |
 | [Command reference](docs/commands.ko.md) | Implemented CLI surface. |
 | [Ambiguous Prompt Blocked](examples/ambiguous-prompt-blocked/) | Vague intent가 execution을 올바르게 멈추는 small demo. |
+
+## License
+
+`ni`는 [MIT License](LICENSE)로 licensed된다.
+
+Security policy와 reporting scope는 [SECURITY.md](SECURITY.md)에 문서화되어 있다.

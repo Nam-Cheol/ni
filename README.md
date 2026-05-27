@@ -73,7 +73,7 @@ or downstream work.
 | Source mode | Available | Run with `go run ./cmd/ni ...` while developing or trying the kernel. Requires Go. |
 | Local binary | Available | Build with `make build`, then run `./bin/ni ...`. Requires Go for the build step. |
 | Local install | Available | Install to a local bin path with `make install-local`. Requires Go for the build step. |
-| Release binary mode | Next | GitHub Releases assets are not published yet. |
+| Release binary mode | Prepared, not yet available | A GoReleaser pipeline is configured for future GitHub Releases, but binaries are not available until the first release assets are published. |
 | Curl installer mode | Planned | `install.sh` does not exist yet and must wait for verified release assets. |
 | Package manager mode | Planned | Homebrew and Scoop packages are not published yet. |
 | Model workspace mode | Available in repo-local form | Codex/Claude-style skills can help author plans, but the CLI remains the authority. Portable packs are planned. |
@@ -83,6 +83,10 @@ See [Install ni](docs/22_INSTALL.md) for supported local paths and
 [Distribution Strategy](docs/53_DISTRIBUTION_STRATEGY.md) for planned adoption
 tracks. Distribution automation is repository infrastructure, not `ni` runtime
 execution.
+
+This README does not claim package distribution or a published binary release:
+use source, local build, or local install mode until a GitHub Release actually
+contains verified release assets.
 
 ## What stays locked
 
@@ -112,3 +116,9 @@ authority.
 | [Intent Lock Protocol](docs/42_INTENT_LOCK_PROTOCOL.md) | The rules for readiness, locking, hash trust, and blocked handoff. |
 | [Command reference](docs/commands.md) | The implemented CLI surface. |
 | [Ambiguous Prompt Blocked](examples/ambiguous-prompt-blocked/) | A small demo where vague intent correctly stops execution. |
+
+## License
+
+`ni` is licensed under the [MIT License](LICENSE).
+
+Security policy and reporting scope are documented in [SECURITY.md](SECURITY.md).

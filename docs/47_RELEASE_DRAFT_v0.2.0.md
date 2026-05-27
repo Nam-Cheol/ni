@@ -4,9 +4,10 @@ Tag suggestion: `v0.2.0`
 
 Summary: Don't run the agent yet. Compile the intent first.
 
-This is a draft GitHub release note for a future source-first `ni` release. It
-does not publish a release, create a tag, upload binaries, or claim package
-manager availability.
+This is a draft GitHub release note for a future `ni` release. It does not
+publish a release, create a tag, upload binaries, or claim package manager
+availability. Release binary assets are only available after a tagged GitHub
+Release publishes them.
 
 ## Category
 
@@ -30,6 +31,7 @@ trust, and when execution must stop because intent changed.
 - Non-software planning demos.
 - Benchmark protocol.
 - Korean companion README.
+- Release binary pipeline for Linux, macOS, and Windows GitHub Release assets.
 
 ## Not Included
 
@@ -39,34 +41,48 @@ trust, and when execution must stop because intent changed.
 - SPEC runner.
 - Task queue.
 - Multi-agent orchestration.
-- PR/release automation.
-- Binary package distribution.
+- Product-level PR/release automation or release commands.
+- Package manager distribution.
 
-## Source-First Distribution
+## Distribution
 
-This draft assumes repository-source use only: `go run ./cmd/ni ...`, local
-builds, or local installs from the checked-out source tree. It does not claim
-hosted release assets, Homebrew support, GoReleaser support, or published
-binary packages.
+This draft keeps source, local build, and local install paths supported:
+`go run ./cmd/ni ...`, `make build`, and `make install-local`.
+
+The repository includes GoReleaser configuration for future release assets:
+
+| Platform | Architecture | Archive |
+| --- | --- | --- |
+| Linux | amd64 | `ni_<version>_linux_amd64.tar.gz` |
+| Linux | arm64 | `ni_<version>_linux_arm64.tar.gz` |
+| macOS | amd64 | `ni_<version>_darwin_amd64.tar.gz` |
+| macOS | arm64 | `ni_<version>_darwin_arm64.tar.gz` |
+| Windows | amd64 | `ni_<version>_windows_amd64.zip` |
+
+The release pipeline also generates `ni_<version>_checksums.txt`. This draft
+does not claim hosted release assets are already available, Homebrew support,
+Scoop support, or published binary packages.
 
 ## Validation Commands
 
 Run these checks before any manual tag or GitHub release step:
 
 ```bash
+goreleaser check
 go test ./...
 bash scripts/quality.sh
 bash scripts/smoke.sh
+bash scripts/release-check.sh
 ```
 
-If a demo-check script is added later, run it as an optional extra gate before
-publishing release notes.
+If GoReleaser is not installed locally, validate `.goreleaser.yaml` through the
+tag-triggered release workflow before publishing assets.
 
 ## Release Boundary
 
 `ni run` compiles a prompt only. It does not execute Codex, shells, model APIs,
 queues, adapters, SPEC workflows, or multi-agent systems.
 
-This draft does not add release automation. Any tag or GitHub release should be
-created manually after the local validation gate and CI pass for the exact
-commit being released.
+The tag-triggered repository release workflow is distribution infrastructure.
+It is not part of `ni` runtime behavior and does not add release commands inside
+the product.

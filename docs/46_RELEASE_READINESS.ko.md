@@ -12,10 +12,14 @@ availability가 있다고 claim하지 않는다.
   `bash scripts/smoke.sh`를 실행한다.
 - Security policy: `SECURITY.md`가 존재하며 early source-first scope,
   reporting limits, secret-handling guidance, runtime boundary를 문서화한다.
-- Distribution: documented usage는 source, local build, local install에
-  한정된다. 이 문서는 package distribution, Homebrew support, GoReleaser
-  support, published binary release를 claim하지 않는다.
-- Release automation: no release automation is part of release readiness.
+- Distribution: documented available usage는 source, local build, local
+  install이다. Future release assets를 위한 GoReleaser configuration과
+  tag-triggered GitHub release workflow가 있지만, 이 문서는 hosted binary
+  availability, package distribution, Homebrew support, Scoop support를
+  claim하지 않는다.
+- Repository release workflow: `.github/workflows/release.yml`은 tagged GitHub
+  Releases에 대해서만 release binaries를 build한다. 이는 distribution
+  infrastructure이지 `ni` runtime behavior가 아니다.
 - Release draft: `docs/47_RELEASE_DRAFT_v0.2.0.ko.md`는 factual GitHub release
   draft일 뿐이다. Tag `v0.2.0`을 suggest하지만 tag 생성, release publish,
   binary upload, package-manager availability claim을 하지 않는다.
@@ -39,7 +43,8 @@ availability가 있다고 claim하지 않는다.
 - [ ] no runtime execution claims are present: `ni run`은 bounded prompt만
       compile하며 agents, shells, queues, adapters를 실행하지 않는다.
 - [ ] no false release/license/CI/security claims are present:
-      - release docs는 hosted release나 package availability를 claim하지 않는다;
+      - release docs는 published release가 assets를 포함하기 전에 hosted release
+        assets availability를 claim하지 않는다;
       - license docs는 committed `LICENSE`와 일치한다;
       - CI docs는 `.github/workflows/ci.yml`과 일치한다;
       - security docs는 private reporting channels, enterprise support, runtime
@@ -54,5 +59,5 @@ bash scripts/release-check.sh
 ```
 
 This script is a readiness gate only. It does not publish packages, create a
-GitHub release, add release automation, or tag a commit. Source, local build,
-temporary local install paths는 `bash scripts/install-check.sh`로 검증한다.
+GitHub release, upload binaries, or tag a commit. Source, local build, temporary
+local install paths는 `bash scripts/install-check.sh`로 검증한다.
