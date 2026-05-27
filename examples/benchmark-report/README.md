@@ -27,6 +27,8 @@ specific request. Do not invent values for empty cells.
 ## 4. Files
 
 - `README.md`: the report template and boundary statement.
+- `sample-report.md`: a fillable sample/template report with `not_measured`
+  placeholders.
 - `../../docs/43_BENCHMARK_PROTOCOL.md`: the benchmark protocol that defines
   the scoring method.
 
@@ -36,8 +38,9 @@ From the repository root:
 
 ```bash
 test -f examples/benchmark-report/README.md
+test -f examples/benchmark-report/sample-report.md
 test -f docs/43_BENCHMARK_PROTOCOL.md
-rg -n "not_measured|must not execute downstream agents|Target prompt boundedness" examples/benchmark-report/README.md docs/43_BENCHMARK_PROTOCOL.md
+rg -n "not_measured|must not execute downstream agents|Target prompt boundedness" examples/benchmark-report/README.md examples/benchmark-report/sample-report.md docs/43_BENCHMARK_PROTOCOL.md
 ```
 
 ## 6. Expected output

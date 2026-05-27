@@ -34,8 +34,45 @@ testdata/benchmark/vague-requests/
 ```
 
 Requests may cover software, operations, research, content, internal tooling,
-or non-software product surfaces. The benchmark should not assume that every
-project is a software implementation.
+physical products, automation, or non-software product surfaces. The benchmark
+should not assume that every project is a software implementation.
+
+## Fixture Format
+
+Each vague request fixture is a directory under
+`testdata/benchmark/vague-requests/` with this shape:
+
+```text
+<fixture-slug>/
+  request.md
+  expected-hidden-assumptions.md
+  expected-readiness-gaps.md
+  suggested-ni-questions.md
+```
+
+`request.md` is the only input for the direct-to-agent path. It should contain
+the vague request text and a category label.
+
+`expected-hidden-assumptions.md` and `expected-readiness-gaps.md` are reviewer
+seed notes for manual scoring. They are not benchmark results and must not be
+reported as measured counts unless a reviewer actually applies the protocol.
+
+`suggested-ni-questions.md` lists clarification questions that a ni-start
+conversation could ask. It is not a required answer key and does not replace
+authoritative `ni status` output.
+
+The current fixture set intentionally covers:
+
+- software dashboard,
+- conversation product,
+- research protocol,
+- internal operations process,
+- education program,
+- document product,
+- API or CLI tool,
+- physical product planning,
+- Namba AI upgrade style project,
+- ambiguous automation request.
 
 ## Comparison Paths
 
@@ -83,8 +120,10 @@ Use the same rubric for both paths.
 
 ## Manual Procedure
 
-1. Select one vague request from `testdata/benchmark/vague-requests/`.
-2. Create the direct-to-agent prompt from the request text only.
+1. Select one vague request fixture from
+   `testdata/benchmark/vague-requests/`.
+2. Create the direct-to-agent prompt from that fixture's `request.md` text
+   only.
 3. Score the direct prompt with the metric table.
 4. Create a fresh `ni` workspace for the same request.
 5. Use `ni-start` conversation to capture intent into `docs/plan/**` and
@@ -95,7 +134,8 @@ Use the same rubric for both paths.
 8. If readiness passes, run `ni end`, then run `ni run` with a 4000-character
    maximum and record the target prompt size.
 9. Score the `ni` path with the same metric table.
-10. Write the results in a benchmark report without claiming aggregate results
+10. Use the fixture's expectation files as review aids, not automatic scores.
+11. Write the results in a benchmark report without claiming aggregate results
     that were not actually measured.
 
 ## Reporting Rules

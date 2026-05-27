@@ -139,6 +139,10 @@ go run ./cmd/ni run --dir <path> --target codex --max-chars 4000
 The [Benchmark Protocol](docs/43_BENCHMARK_PROTOCOL.md) describes how to
 compare direct-to-agent prompts against locked `ni` intent without running
 downstream agents.
+The fixture corpus lives in
+[`testdata/benchmark/vague-requests/`](testdata/benchmark/vague-requests/),
+and the sample report template lives in
+[`examples/benchmark-report/sample-report.md`](examples/benchmark-report/sample-report.md).
 
 ## Commands Summary
 
@@ -195,6 +199,7 @@ Start here:
 - [Neighborhood Cooling Study Protocol](examples/research-protocol/)
 - [Command Reference](docs/commands.md)
 - [Benchmark Protocol](docs/43_BENCHMARK_PROTOCOL.md)
+- [Benchmark Report Template](examples/benchmark-report/sample-report.md)
 - [Target Story](docs/45_TARGET_STORY.md)
 - [v0.2.0 Release Draft](docs/47_RELEASE_DRAFT_v0.2.0.md)
 
