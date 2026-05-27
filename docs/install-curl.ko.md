@@ -90,7 +90,7 @@ trusted unzip tool로 `.zip` archive를 풀고 `ni.exe`를 `PATH`에 둔다.
 - Help/version commands를 next steps로 출력한다.
 
 `ni init`, `ni status`, `ni end`, `ni run`, shell commands, agents, queues,
-runtime execution은 실행하지 않는다.
+runtime execution이 아니다.
 
 ## Test Release Validation
 
