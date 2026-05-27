@@ -73,3 +73,11 @@ in the hero, SVG-first visual assets, optional generated social images, factual
 distribution language for release binaries, curl, and package managers, Codex-
 and Claude-style model workspace packs as planning UX, and no-terminal mode as
 assisted rather than deterministic validation.
+
+The visual identity portion of this capability is locked as local and
+deterministic: README is a product pamphlet, the hero uses local SVG generated
+from the checked asset pipeline, important product copy remains Markdown text,
+SVG assets avoid emoji, `foreignObject`, external fonts, external references,
+and long text, README.ko does not exceed English canonical claims, remote
+capsule-style renderers are inspiration only, and visual regression checks guard
+the README and assets surface.

@@ -81,3 +81,14 @@ docs must use factual availability language. Release binaries are required for
 non-Go users before curl or package-manager paths are claimed as available;
 model packs remain planning UX rather than execution adapters; no-terminal mode
 must show CLI-produced proof before claiming deterministic validation.
+
+## RISK-014: visual identity drifts into fragile or overclaiming README surface
+
+Severity: high
+
+Mitigation: Keep primary README visuals local, deterministic, and generated
+from checked SVG sources; keep important product copy in Markdown; prohibit
+emoji, `foreignObject`, external fonts, external references, and long text in
+core SVGs; keep README.ko within English canonical claims; treat remote
+capsule-style renderers as inspiration only; and run asset plus README surface
+regression checks before relock.

@@ -79,3 +79,11 @@ docs/52_README_PAMPHLET_STRATEGY.md through docs/58_VISUAL_ASSETS.md, install
 docs, and model workspace pack docs preserve SVG-first product packaging,
 truthful distribution availability, assisted no-terminal wording, and
 non-executing Codex/Claude pack boundaries.
+
+## EVAL-020: visual identity surface stays local, deterministic, and claim-safe
+
+Method: `go test ./...`, `bash scripts/quality.sh`,
+`python3 scripts/check-assets.py`, and `python3 scripts/check-readme-surface.py`
+verify README/assets keep a local deterministic SVG hero, Markdown product copy
+fallbacks, SVG structural bans, Korean companion claim parity, remote capsule
+renderers as inspiration only, and visual regression coverage.

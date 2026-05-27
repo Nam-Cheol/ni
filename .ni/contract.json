@@ -374,10 +374,12 @@
         "REQ-017"
       ],
       "evaluations": [
-        "EVAL-019"
+        "EVAL-019",
+        "EVAL-020"
       ],
       "risks": [
-        "RISK-013"
+        "RISK-013",
+        "RISK-014"
       ],
       "artifacts": [
         "ART-022",
@@ -391,7 +393,9 @@
         "ART-037",
         "ART-038",
         "ART-039",
-        "ART-040"
+        "ART-040",
+        "ART-041",
+        "ART-042"
       ]
     }
   ],
@@ -478,7 +482,7 @@
     },
     {
       "id": "REQ-017",
-      "title": "v0.3 packaging treats README as a product pamphlet, keeps technical details in docs, uses SVG-first visuals, keeps generated social images optional, supports non-Go users through release binaries before curl or package-manager claims, and keeps Codex/Claude model packs plus no-terminal mode as assisted planning UX rather than execution adapters or deterministic validation substitutes",
+      "title": "v0.3 packaging treats README as a product pamphlet, keeps technical details in docs, uses local deterministic SVG visuals with important copy in Markdown, keeps SVGs free of emoji, foreignObject, external fonts, external references, and long text, keeps generated social images optional, keeps README.ko within English canonical claims, treats remote capsule-style renderers as inspiration only, supports non-Go users through release binaries before curl or package-manager claims, keeps Codex/Claude model packs plus no-terminal mode as assisted planning UX rather than execution adapters or deterministic validation substitutes, and guards README/assets with visual regression checks",
       "status": "accepted"
     }
   ],
@@ -536,6 +540,11 @@
     {
       "id": "DEC-011",
       "title": "v0.3 packaging is README pamphlet, truthful distribution, and model workspace UX",
+      "status": "accepted"
+    },
+    {
+      "id": "DEC-012",
+      "title": "v0.3 visual identity is local deterministic SVG plus Markdown copy",
       "status": "accepted"
     }
   ],
@@ -630,6 +639,13 @@
       "severity": "high",
       "status": "accepted",
       "mitigation": "Keep README, distribution docs, visual assets, and model workspace pack docs factual: release binaries are required for non-Go users before curl or package-manager availability claims; model packs remain planning UX; no-terminal mode requires CLI-produced proof before deterministic validation claims."
+    },
+    {
+      "id": "RISK-014",
+      "title": "Visual identity drifts into fragile or overclaiming README surface",
+      "severity": "high",
+      "status": "accepted",
+      "mitigation": "Keep primary README visuals local, deterministic, and generated from checked SVG sources; keep important product copy in Markdown; prohibit emoji, foreignObject, external fonts, external references, and long text in core SVGs; keep README.ko within English canonical claims; treat remote capsule-style renderers as inspiration only; and run asset plus README surface regression checks before relock."
     }
   ],
   "evaluations": [
@@ -727,6 +743,11 @@
       "id": "EVAL-019",
       "title": "v0.3 packaging claims stay factual and pre-runtime",
       "method": "static quality and planning review verify README.md, README.ko.md, docs/52_README_PAMPHLET_STRATEGY.md through docs/58_VISUAL_ASSETS.md, install docs, and model workspace pack docs preserve SVG-first product packaging, truthful distribution availability, assisted no-terminal wording, and non-executing Codex/Claude pack boundaries"
+    },
+    {
+      "id": "EVAL-020",
+      "title": "visual identity surface stays local, deterministic, and claim-safe",
+      "method": "go test ./..., bash scripts/quality.sh, python3 scripts/check-assets.py, and python3 scripts/check-readme-surface.py verify README/assets keep a local deterministic SVG hero, Markdown product copy fallbacks, SVG structural bans, Korean companion claim parity, remote capsule renderers as inspiration only, and visual regression coverage"
     }
   ],
   "artifacts": [
@@ -929,6 +950,16 @@
       "id": "ART-040",
       "path": "packages/claude-skills/ packages/codex-skills/ .agents/skills/",
       "kind": "model_workspace_packs"
+    },
+    {
+      "id": "ART-041",
+      "path": "docs/59_VISUAL_ASSET_AUDIT.md docs/60_VISUAL_DESIGN_SPEC.md docs/61_ASSET_PIPELINE.md docs/62_BADGE_SYSTEM.md docs/63_README_VISUAL_WIREFRAME.md docs/64_CAPSULE_STYLE_NOTES.md docs/65_SOCIAL_CARD.md",
+      "kind": "visual_identity_docs"
+    },
+    {
+      "id": "ART-042",
+      "path": "assets/source/ assets/*.svg scripts/render-assets.py scripts/check-assets.py scripts/check-readme-surface.py",
+      "kind": "visual_asset_pipeline"
     }
   ],
   "open_questions": [

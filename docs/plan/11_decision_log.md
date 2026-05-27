@@ -71,3 +71,14 @@ SVG-first, generated social imagery is optional, release binaries are required
 before non-Go curl or package-manager availability claims, Codex/Claude packs
 are planning UX rather than execution adapters, and no-terminal mode remains
 assisted unless exact CLI proof is supplied.
+
+## DEC-012: v0.3 visual identity is local deterministic SVG plus Markdown copy
+
+Status: accepted
+
+Rationale: README should work as a product pamphlet without making visual
+rendering the source of product truth. The hero and core assets use local
+deterministic SVG, important product copy remains Markdown text, SVG assets
+avoid emoji, `foreignObject`, external fonts, external references, and long
+text, README.ko stays within English canonical claims, remote capsule-style
+renderers remain inspiration only, and README/assets checks guard regressions.

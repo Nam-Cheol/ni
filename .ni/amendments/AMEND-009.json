@@ -1,0 +1,37 @@
+{
+  "schema": "ni.amendment.v0",
+  "id": "AMEND-009",
+  "title": "Lock v0.3 visual identity plan",
+  "reason": "Lock the v0.3 visual identity and README pamphlet direction explicitly in the planning contract before compiling the downstream prompt.",
+  "affected_docs": [
+    "docs/plan/00_project_brief.md",
+    "docs/plan/02_capabilities.md",
+    "docs/plan/05_constraints.md",
+    "docs/plan/06_risks_security.md",
+    "docs/plan/07_evaluation_contract.md",
+    "docs/plan/11_decision_log.md",
+    ".ni/contract.json"
+  ],
+  "affected_contract_ids": [
+    "CAP-017",
+    "REQ-017",
+    "DEC-012",
+    "RISK-014",
+    "EVAL-020",
+    "ART-041",
+    "ART-042"
+  ],
+  "proposed_changes": [
+    "Make the README pamphlet visual direction explicit: local deterministic SVG hero, Markdown product copy, and claim-safe Korean companion.",
+    "Record SVG bans for emoji, foreignObject, external fonts, external references, and long text.",
+    "Treat remote capsule-style renderers as inspiration only and link visual regression checks to README/assets."
+  ],
+  "risk_impact": "Adds an explicit high-severity visual identity risk with mitigation, strengthening rather than weakening existing packaging controls.",
+  "readiness_impact": "Expected to remain READY because CAP-017 keeps accepted requirements, evaluations, mitigated high risks, artifacts, non-goals, and no blocker questions.",
+  "created_from_feedback_refs": [],
+  "created_from_pressure_refs": [],
+  "status": "applied",
+  "created_at": "2026-05-27T14:36:06Z",
+  "applied_at": "2026-05-27T14:39:22Z",
+  "source_lock_hash": "fdd3ff0f9ced38fe8908733bae4fa53733413b9dc4a618b33bb7bcef1ba303db"
+}

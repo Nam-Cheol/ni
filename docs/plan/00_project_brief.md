@@ -11,8 +11,16 @@ turning `ni-kernel` into a runtime:
 
 - `README.md` is a product pamphlet, with detailed protocol, command,
   distribution, and target material moved to docs.
-- The README hero uses repository-local SVG first; generated image or social
-  card assets are optional marketing outputs.
+- The README hero uses repository-local deterministic SVG first; generated
+  image or social card assets are optional marketing outputs.
+- Important product copy remains Markdown text near the visual surface; SVGs
+  may carry only tested short labels and must avoid emoji, `foreignObject`,
+  external fonts, external references, and long text.
+- The Korean companion README stays synchronized with the English canonical
+  claims and must not exceed them.
+- Remote capsule-style renderers are inspiration only; primary README visuals
+  come from the local asset pipeline and are guarded by README and asset
+  regression checks.
 - README copy avoids specific harness product claims in the hero and avoids
   claiming curl, package-manager, or binary availability before those paths are
   implemented and verified.

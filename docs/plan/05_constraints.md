@@ -17,6 +17,16 @@
 - README hero copy must avoid specific downstream harness product mentions.
 - README and docs must not claim release binary, curl, Homebrew, or package-manager availability until those paths are implemented and verified.
 - The README hero uses SVG first; generated images and social cards are optional marketing assets, not kernel behavior.
+- The README hero and core visual assets must be local deterministic SVG from
+  the repository asset pipeline; remote capsule-style renderers are inspiration
+  only and not a primary README dependency.
+- Important product copy must remain Markdown text or accessible alt/link text;
+  SVGs may include only short tested labels and must avoid emoji,
+  `foreignObject`, external fonts, external references, and long text.
+- The Korean companion README must stay within the canonical English README
+  claims and must not add stronger install, package manager, runtime, or product
+  availability claims.
+- Visual regression checks must guard the README and assets surface.
 - Distribution must support non-Go users through release binaries before curl or package-manager paths are presented as available.
 - Model workspace packs may support Codex- and Claude-style planning workflows, but they must remain UX over docs and CLI proof.
 - No-terminal mode is assisted planning only unless exact CLI output from a trusted runner supplies deterministic validation.
@@ -40,3 +50,5 @@
 - Do not add primary contract editing commands that make users hand-maintain `.ni/contract.json`.
 - Do not turn model packs into execution adapters.
 - Do not falsely claim package, curl, Homebrew, or binary availability.
+- Do not replace the local README hero with a remote capsule-style renderer or
+  make essential product copy image-only.
