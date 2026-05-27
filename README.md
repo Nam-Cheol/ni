@@ -551,5 +551,5 @@ otherwise.
 
 Release readiness notes live in
 [docs/46_RELEASE_READINESS.md](docs/46_RELEASE_READINESS.md). CI is defined in
-[.github/workflows/ci.yml](.github/workflows/ci.yml). A project security policy
-has not been published yet because `SECURITY.md` does not exist.
+[.github/workflows/ci.yml](.github/workflows/ci.yml). The project security
+policy is [SECURITY.md](SECURITY.md).

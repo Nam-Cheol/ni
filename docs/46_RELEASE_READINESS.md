@@ -10,9 +10,8 @@ hosted binary availability.
 - CI: `.github/workflows/ci.yml` exists. It runs on `push` and
   `pull_request`, and it runs `go test ./...`, `bash scripts/quality.sh`, and
   `bash scripts/smoke.sh`.
-- Security policy: `SECURITY.md` does not exist yet.
-  TODO: define the vulnerability reporting policy before linking or advertising
-  a security policy.
+- Security policy: `SECURITY.md` exists and documents the early source-first
+  scope, reporting limits, secret-handling guidance, and runtime boundary.
 - Distribution: documented usage remains source, local build, and local install
   only. This document does not claim package distribution, Homebrew support,
   GoReleaser support, or a published binary release.
@@ -36,8 +35,8 @@ hosted binary availability.
       - release docs do not claim hosted release or package availability;
       - license docs match the committed `LICENSE`;
       - CI docs match `.github/workflows/ci.yml`;
-      - security docs do not claim a published policy before `SECURITY.md`
-        exists.
+      - security docs do not claim private reporting channels, enterprise
+        support, or runtime security features.
 
 ## Local Verification
 

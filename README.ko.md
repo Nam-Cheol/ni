@@ -553,4 +553,4 @@ release process가 달리 말하지 않는 한 source, local build, local instal
 Release readiness notes는
 [docs/46_RELEASE_READINESS.ko.md](docs/46_RELEASE_READINESS.ko.md)에 있다. CI는
 [.github/workflows/ci.yml](.github/workflows/ci.yml)에 정의되어 있다. Project
-security policy는 `SECURITY.md`가 존재하지 않으므로 아직 publish되지 않았다.
+security policy는 [SECURITY.md](SECURITY.md)에 있다.

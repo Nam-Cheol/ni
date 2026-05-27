@@ -10,9 +10,8 @@ availability가 있다고 claim하지 않는다.
 - CI: `.github/workflows/ci.yml`이 존재한다. 이 workflow는 `push`와
   `pull_request`에서 실행되며 `go test ./...`, `bash scripts/quality.sh`,
   `bash scripts/smoke.sh`를 실행한다.
-- Security policy: `SECURITY.md`는 아직 존재하지 않는다.
-  TODO: vulnerability reporting policy를 정의한 뒤에 security policy를 link
-  하거나 advertise한다.
+- Security policy: `SECURITY.md`가 존재하며 early source-first scope,
+  reporting limits, secret-handling guidance, runtime boundary를 문서화한다.
 - Distribution: documented usage는 source, local build, local install에
   한정된다. 이 문서는 package distribution, Homebrew support, GoReleaser
   support, published binary release를 claim하지 않는다.
@@ -36,8 +35,8 @@ availability가 있다고 claim하지 않는다.
       - release docs는 hosted release나 package availability를 claim하지 않는다;
       - license docs는 committed `LICENSE`와 일치한다;
       - CI docs는 `.github/workflows/ci.yml`과 일치한다;
-      - security docs는 `SECURITY.md`가 존재하기 전에 published policy를
-        claim하지 않는다.
+      - security docs는 private reporting channels, enterprise support, runtime
+        security features를 claim하지 않는다.
 
 ## Local Verification
 
