@@ -152,11 +152,53 @@ func TestEvaluateBlocksBlockerOpenQuestion(t *testing.T) {
 	requireIssue(t, result, StatusBlocked, "R009")
 }
 
+func TestEvaluateBlocksConflictingAcceptedDecision(t *testing.T) {
+	dir := initFixtureProject(t, "conflicting_decision.json")
+
+	result := Evaluate(dir)
+	requireIssue(t, result, StatusBlocked, "R013")
+}
+
 func TestEvaluateBlocksMissingNonGoal(t *testing.T) {
 	dir := initFixtureProject(t, "missing_non_goal.json")
 
 	result := Evaluate(dir)
 	requireIssue(t, result, StatusBlocked, "R010")
+}
+
+func TestProofFromRuleFailures(t *testing.T) {
+	for _, tt := range []struct {
+		name    string
+		fixture string
+		ruleID  string
+		want    string
+	}{
+		{"missing evaluation", "capability_without_evaluation.json", "R004", "CAP-001 is accepted but has no linked EVAL."},
+		{"high risk", "high_risk_without_mitigation.json", "R006", "RISK-001 is high severity but has no mitigation."},
+		{"blocker open question", "blocker_open_question.json", "R009", "OQ-001 is marked as blocker."},
+		{"conflicting decision", "conflicting_decision.json", "R013", "DEC-002 conflicts with DEC-001."},
+	} {
+		t.Run(tt.name, func(t *testing.T) {
+			dir := initFixtureProject(t, tt.fixture)
+
+			item := requireProof(t, Proof(Evaluate(dir)), tt.ruleID)
+			if item.Message != tt.want {
+				t.Fatalf("expected proof %q, got %#v", tt.want, item)
+			}
+		})
+	}
+}
+
+func TestProofReadyPlan(t *testing.T) {
+	dir := initFixtureProject(t, "ready.json")
+
+	proof := Proof(Evaluate(dir))
+	if len(proof) != 1 {
+		t.Fatalf("expected one ready proof item, got %#v", proof)
+	}
+	if proof[0].RuleID != "READY" || !strings.Contains(proof[0].Message, "All readiness, sync, and conflict rules passed") {
+		t.Fatalf("expected ready proof, got %#v", proof)
+	}
 }
 
 func TestNextQuestionsFromRuleFailures(t *testing.T) {
@@ -187,6 +229,13 @@ func TestNextQuestionsFromRuleFailures(t *testing.T) {
 			ruleID:    "R009",
 			reference: "OQ-001",
 			want:      "what decision resolves this blocker",
+		},
+		{
+			name:      "conflicting decision",
+			fixture:   "conflicting_decision.json",
+			ruleID:    "R013",
+			reference: "DEC-001",
+			want:      "which accepted decision should be revised",
 		},
 		{
 			name:      "missing non-goal",
@@ -405,6 +454,18 @@ func requireQuestion(t *testing.T, questions []NextQuestion, ruleID string) Next
 	}
 	t.Fatalf("expected question %s, got %#v", ruleID, questions)
 	return NextQuestion{}
+}
+
+func requireProof(t *testing.T, proof []ProofItem, ruleID string) ProofItem {
+	t.Helper()
+
+	for _, item := range proof {
+		if item.RuleID == ruleID {
+			return item
+		}
+	}
+	t.Fatalf("expected proof %s, got %#v", ruleID, proof)
+	return ProofItem{}
 }
 
 func containsString(values []string, want string) bool {

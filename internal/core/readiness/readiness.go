@@ -28,6 +28,7 @@ type Result struct {
 	InteractionMode  string          `json:"interaction_mode,omitempty"`
 	Guidance         []string        `json:"guidance,omitempty"`
 	Issues           []Issue         `json:"issues"`
+	Proof            *[]ProofItem    `json:"proof,omitempty"`
 	NextQuestions    *[]NextQuestion `json:"next_questions,omitempty"`
 }
 
@@ -35,6 +36,13 @@ type Issue struct {
 	RuleID   string `json:"rule_id"`
 	Severity string `json:"severity"`
 	Message  string `json:"message"`
+}
+
+type ProofItem struct {
+	RuleID     string   `json:"rule_id"`
+	Severity   string   `json:"severity"`
+	References []string `json:"references,omitempty"`
+	Message    string   `json:"message"`
 }
 
 type NextQuestion struct {
@@ -142,6 +150,7 @@ func evaluateContract(c contract.Contract, rules profileRules) []Issue {
 			issues = append(issues, issue(rules, c.ReadinessProfile, "D001", fmt.Sprintf("%s is deferred", decision.ID)))
 		}
 	}
+	issues = append(issues, contradictoryDecisionIssues(c, rules)...)
 
 	for _, openQuestion := range c.OpenQuestions {
 		if isClosed(openQuestion.Status) {
@@ -159,6 +168,67 @@ func evaluateContract(c contract.Contract, rules profileRules) []Issue {
 	}
 
 	return issues
+}
+
+func contradictoryDecisionIssues(c contract.Contract, rules profileRules) []Issue {
+	var issues []Issue
+	for i, left := range c.Decisions {
+		if left.Status != "accepted" {
+			continue
+		}
+		leftPolarity, leftSubject, ok := decisionPolarity(left.Title)
+		if !ok {
+			continue
+		}
+		for _, right := range c.Decisions[i+1:] {
+			if right.Status != "accepted" {
+				continue
+			}
+			rightPolarity, rightSubject, ok := decisionPolarity(right.Title)
+			if !ok {
+				continue
+			}
+			if leftSubject == rightSubject && leftPolarity != rightPolarity {
+				issues = append(issues, issue(rules, c.ReadinessProfile, "R013", fmt.Sprintf("%s conflicts with %s", right.ID, left.ID)))
+			}
+		}
+	}
+	return issues
+}
+
+func decisionPolarity(title string) (int, string, bool) {
+	text := wordText(title)
+	negativePrefixes := []string{"do not use ", "do not require ", "must not ", "disable ", "disallow ", "avoid "}
+	positivePrefixes := []string{"use ", "require ", "must ", "enable ", "allow "}
+	for _, prefix := range negativePrefixes {
+		if strings.HasPrefix(text, prefix) {
+			return -1, strings.TrimSpace(strings.TrimPrefix(text, prefix)), true
+		}
+	}
+	for _, prefix := range positivePrefixes {
+		if strings.HasPrefix(text, prefix) {
+			return 1, strings.TrimSpace(strings.TrimPrefix(text, prefix)), true
+		}
+	}
+	return 0, "", false
+}
+
+func wordText(value string) string {
+	value = strings.ToLower(value)
+	var b strings.Builder
+	lastSpace := true
+	for _, r := range value {
+		if (r >= 'a' && r <= 'z') || (r >= '0' && r <= '9') {
+			b.WriteRune(r)
+			lastSpace = false
+			continue
+		}
+		if !lastSpace {
+			b.WriteByte(' ')
+			lastSpace = true
+		}
+	}
+	return strings.TrimSpace(b.String())
 }
 
 func hasLinkedEvaluation(capability contract.Capability, evaluations map[string]contract.Evaluation) bool {
@@ -384,6 +454,7 @@ func defaultProfileRules() profileRules {
 				"R009": "blocker",
 				"R010": "deferral",
 				"R012": "blocker",
+				"R013": "blocker",
 				"D001": "deferral",
 				"D002": "deferral",
 			},
@@ -399,6 +470,7 @@ func defaultProfileRules() profileRules {
 				"R009": "blocker",
 				"R010": "blocker",
 				"R012": "blocker",
+				"R013": "blocker",
 				"D001": "deferral",
 				"D002": "deferral",
 			},
@@ -414,6 +486,7 @@ func defaultProfileRules() profileRules {
 				"R009": "blocker",
 				"R010": "blocker",
 				"R012": "blocker",
+				"R013": "blocker",
 				"D001": "deferral",
 				"D002": "deferral",
 			},
@@ -429,6 +502,7 @@ func defaultProfileRules() profileRules {
 				"R009": "blocker",
 				"R010": "blocker",
 				"R012": "blocker",
+				"R013": "blocker",
 				"D001": "deferral",
 				"D002": "deferral",
 			},
@@ -444,6 +518,7 @@ func defaultProfileRules() profileRules {
 				"R009": "blocker",
 				"R010": "blocker",
 				"R012": "blocker",
+				"R013": "blocker",
 				"D001": "blocker",
 				"D002": "blocker",
 			},

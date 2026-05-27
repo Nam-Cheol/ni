@@ -235,6 +235,58 @@ func TestStatusNextQuestionsJSONIncludesEmptyWhenReady(t *testing.T) {
 	}
 }
 
+func TestStatusProofTextWithNextQuestions(t *testing.T) {
+	dir := t.TempDir()
+	if code := run([]string{"init", "--dir", dir}, &bytes.Buffer{}, &bytes.Buffer{}); code != 0 {
+		t.Fatalf("init expected exit code 0, got %d", code)
+	}
+
+	var stdout bytes.Buffer
+	code := run([]string{"status", "--dir", dir, "--proof", "--next-questions"}, &stdout, &bytes.Buffer{})
+	if code != 0 {
+		t.Fatalf("expected exit code 0, got %d", code)
+	}
+	out := stdout.String()
+	for _, want := range []string{
+		"NI Intent Readiness: BLOCKED",
+		"Proof:",
+		"OQ-001 is marked as blocker.",
+		"Execution must not start.",
+		"Next questions:",
+		"1. ",
+	} {
+		if !strings.Contains(out, want) {
+			t.Fatalf("expected %q in proof output, got %q", want, out)
+		}
+	}
+}
+
+func TestStatusProofJSON(t *testing.T) {
+	dir := t.TempDir()
+	if code := run([]string{"init", "--dir", dir}, &bytes.Buffer{}, &bytes.Buffer{}); code != 0 {
+		t.Fatalf("init expected exit code 0, got %d", code)
+	}
+	writeReadyContractForCLI(t, dir)
+
+	var stdout bytes.Buffer
+	code := run([]string{"status", "--dir", dir, "--proof", "--json"}, &stdout, &bytes.Buffer{})
+	if code != 0 {
+		t.Fatalf("expected exit code 0, got %d", code)
+	}
+	var payload struct {
+		Proof []struct {
+			RuleID  string `json:"rule_id"`
+			Message string `json:"message"`
+		} `json:"proof"`
+	}
+	if err := json.Unmarshal(stdout.Bytes(), &payload); err != nil {
+		t.Fatalf("decoding status proof JSON: %v\n%s", err, stdout.String())
+	}
+	if len(payload.Proof) != 1 || payload.Proof[0].RuleID != "READY" {
+		t.Fatalf("expected ready proof item, got %#v in %q", payload.Proof, stdout.String())
+	}
+}
+
 func TestStatusJSONInvalidContractStructuredError(t *testing.T) {
 	dir := t.TempDir()
 	if code := run([]string{"init", "--dir", dir}, &bytes.Buffer{}, &bytes.Buffer{}); code != 0 {

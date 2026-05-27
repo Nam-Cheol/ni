@@ -17,6 +17,7 @@
         "R009": "blocker",
         "R010": "deferral",
         "R012": "blocker",
+        "R013": "blocker",
         "D001": "deferral",
         "D002": "deferral"
       }
@@ -36,6 +37,7 @@
         "R009": "blocker",
         "R010": "blocker",
         "R012": "blocker",
+        "R013": "blocker",
         "D001": "deferral",
         "D002": "deferral"
       }
@@ -55,6 +57,7 @@
         "R009": "blocker",
         "R010": "blocker",
         "R012": "blocker",
+        "R013": "blocker",
         "D001": "deferral",
         "D002": "deferral"
       }
@@ -74,6 +77,7 @@
         "R009": "blocker",
         "R010": "blocker",
         "R012": "blocker",
+        "R013": "blocker",
         "D001": "deferral",
         "D002": "deferral"
       }
@@ -93,6 +97,7 @@
         "R009": "blocker",
         "R010": "blocker",
         "R012": "blocker",
+        "R013": "blocker",
         "D001": "blocker",
         "D002": "blocker"
       }

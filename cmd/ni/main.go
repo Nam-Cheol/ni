@@ -1085,6 +1085,7 @@ func runStatus(args []string, stdout io.Writer, stderr io.Writer) int {
 	dir := "."
 	jsonOutput := jsonRequested(args)
 	nextQuestions := false
+	proofOutput := false
 	for i := 0; i < len(args); i++ {
 		switch args[i] {
 		case "--dir":
@@ -1097,6 +1098,8 @@ func runStatus(args []string, stdout io.Writer, stderr io.Writer) int {
 			jsonOutput = true
 		case "--next-questions":
 			nextQuestions = true
+		case "--proof":
+			proofOutput = true
 		default:
 			return failStructured(stdout, stderr, usageErrorf("unknown status option: %s", args[i]), jsonOutput)
 		}
@@ -1105,6 +1108,10 @@ func runStatus(args []string, stdout io.Writer, stderr io.Writer) int {
 	result := readiness.Evaluate(dir)
 	if err := invalidContractFromStatus(result); err != nil {
 		return failCommand(stdout, stderr, "status", err, jsonOutput)
+	}
+	if proofOutput {
+		proof := readiness.Proof(result)
+		result.Proof = &proof
 	}
 	if nextQuestions {
 		questions := readiness.NextQuestions(result)
@@ -1116,6 +1123,11 @@ func runStatus(args []string, stdout io.Writer, stderr io.Writer) int {
 		if err := encoder.Encode(result); err != nil {
 			return failCommand(stdout, stderr, "status", err, jsonOutput)
 		}
+		return exitOK
+	}
+
+	if proofOutput {
+		printStatusProof(stdout, result, nextQuestions)
 		return exitOK
 	}
 
@@ -1146,6 +1158,32 @@ func runStatus(args []string, stdout io.Writer, stderr io.Writer) int {
 		}
 	}
 	return exitOK
+}
+
+func printStatusProof(stdout io.Writer, result readiness.Result, nextQuestions bool) {
+	fmt.Fprintf(stdout, "NI Intent Readiness: %s\n\n", result.Status)
+	fmt.Fprintln(stdout, "Proof:")
+	if result.Proof != nil {
+		for _, item := range *result.Proof {
+			fmt.Fprintf(stdout, "- %s\n", item.Message)
+		}
+	}
+
+	switch result.Status {
+	case readiness.StatusBlocked:
+		fmt.Fprintln(stdout, "\nExecution must not start.")
+	case readiness.StatusReadyWithDeferrals:
+		fmt.Fprintln(stdout, "\nExecution may proceed only after lock; deferrals remain explicit.")
+	default:
+		fmt.Fprintln(stdout, "\nExecution may proceed only after lock.")
+	}
+
+	if nextQuestions && result.NextQuestions != nil && len(*result.NextQuestions) > 0 {
+		fmt.Fprintln(stdout, "\nNext questions:")
+		for i, question := range *result.NextQuestions {
+			fmt.Fprintf(stdout, "%d. %s\n", i+1, question.Question)
+		}
+	}
 }
 
 func invalidContractFromStatus(result readiness.Result) error {
@@ -1185,7 +1223,7 @@ Usage:
   ni pressure retire <id> [--dir <path>]
   ni relock --dir <path>
   ni run --dir <path> [--target <target>] [--out <path>] [--max-chars N]
-  ni status --dir <path> [--json] [--next-questions]
+  ni status --dir <path> [--json] [--proof] [--next-questions]
   ni targets [--json]
   ni version
 

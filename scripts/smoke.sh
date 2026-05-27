@@ -193,6 +193,12 @@ require_output "initialized ni planning workspace"
 run_cmd "ni status" "$NI_BIN" status --dir "$init_ws"
 require_output "BLOCKED"
 
+run_cmd "ni status proof" "$NI_BIN" status --dir "$init_ws" --proof --next-questions
+require_output "NI Intent Readiness: BLOCKED"
+require_output "Proof:"
+require_output "Execution must not start."
+require_output "Next questions:"
+
 ready_ws="$(make_ready_workspace "ready")"
 run_cmd "ni end on ready fixture" "$NI_BIN" end --dir "$ready_ws"
 require_output "locked plan"

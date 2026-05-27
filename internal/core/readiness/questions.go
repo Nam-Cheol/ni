@@ -51,6 +51,8 @@ func questionForIssue(issue Issue) NextQuestion {
 		question.Question = "For R011, what readiness profile correction is needed before the gate can be trusted?"
 	case "R012":
 		question.Question = "For " + ref + ", which source should be corrected so docs and contract agree?"
+	case "R013":
+		question.Question = "For " + ref + ", which accepted decision should be revised, rejected, or split to remove the conflict?"
 	case "D001":
 		question.Question = "For " + ref + ", should this deferred decision remain deferred, become accepted or rejected, or be not_applicable?"
 	case "D002":

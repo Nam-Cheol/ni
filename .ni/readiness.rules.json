@@ -53,6 +53,10 @@
     {
       "id": "R012",
       "title": "planning docs and contract are synchronized"
+    },
+    {
+      "id": "R013",
+      "title": "accepted decisions do not contradict each other"
     }
   ],
   "required_docs": [

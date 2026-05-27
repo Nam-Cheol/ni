@@ -38,7 +38,23 @@ R009 blocker open questions prevent lock
 R010 at least one non-goal exists
 R011 readiness profile definitions are valid
 R012 planning docs and contract are synchronized
+R013 accepted decisions do not contradict each other
 ```
+
+## Proof report
+
+`ni status --proof` prints a deterministic proof of the readiness status from
+the same rule failures that produce readiness issues. It does not call a model,
+does not edit docs, and does not start execution.
+
+Use proof output when a person or downstream tool needs rule-level evidence:
+
+```bash
+ni status --dir . --proof
+ni status --dir . --proof --json
+```
+
+See `docs/44_STATUS_PROOF.md` for the output contract.
 
 ## Next questions
 

@@ -274,6 +274,8 @@ stages or execution behavior.
 ```bash
 go run ./cmd/ni status --dir <path>
 go run ./cmd/ni status --dir <path> --json
+go run ./cmd/ni status --dir <path> --proof
+go run ./cmd/ni status --dir <path> --proof --json
 go run ./cmd/ni status --dir <path> --next-questions
 go run ./cmd/ni status --dir <path> --json --next-questions
 ```
@@ -287,6 +289,21 @@ READY
 ```
 
 A model may explain the status, but it may not override it.
+When `--proof` is present, `ni status` prints rule-level evidence from the
+readiness, docs/contract sync, and accepted-decision conflict checks:
+
+```text
+NI Intent Readiness: BLOCKED
+
+Proof:
+- CAP-003 is accepted but has no linked EVAL.
+- RISK-002 is high severity but has no mitigation.
+- OQ-001 is marked as blocker.
+- DEC-004 conflicts with DEC-002.
+
+Execution must not start.
+```
+
 When `--next-questions` is present, `ni status` derives concise planning
 questions from readiness rule failures so `ni-start` can ask about the next
 specific gap.
