@@ -201,6 +201,26 @@ def render_hero(out_dir: Path) -> Path:
     return path
 
 
+def render_social_card(out_dir: Path) -> Path:
+    template = load_template("social-card.template.svg")
+    content = template.substitute(
+        title=xml_text("ni social card"),
+        desc=xml_text(
+            "Don't run the agent yet. Compile the intent first. "
+            "ni — Project Intent Compiler for AI Agents."
+        ),
+        font_family=xml_attr(FONT_FAMILY),
+        headline_line_1=xml_text("Don't run the"),
+        headline_line_2=xml_text("agent yet."),
+        headline_line_3=xml_text("Compile the"),
+        headline_line_4=xml_text("intent first."),
+        subcopy=xml_text("ni — Project Intent Compiler for AI Agents."),
+    ).rstrip("\n")
+    path = out_dir / "social-card.svg"
+    path.write_text(content + "\n", encoding="utf-8")
+    return path
+
+
 def render_card(out_dir: Path, data: dict[str, str | list[str]], index: int) -> Path:
     template = load_template("card.template.svg")
     labels = data["labels"]
@@ -250,7 +270,7 @@ def render_badge(out_dir: Path, data: dict[str, str], index: int) -> Path:
 
 def render_assets(out_dir: Path) -> list[Path]:
     out_dir.mkdir(parents=True, exist_ok=True)
-    rendered = [render_hero(out_dir)]
+    rendered = [render_hero(out_dir), render_social_card(out_dir)]
     for index, data in enumerate(CARD_DATA, start=1):
         rendered.append(render_card(out_dir, data, index))
     for index, data in enumerate(BADGE_DATA, start=1):

@@ -11,6 +11,7 @@ The asset source of truth is under `assets/source/`:
 | File | Role |
 | --- | --- |
 | `assets/source/hero.template.svg` | Template for the README hero. |
+| `assets/source/social-card.template.svg` | Template for the optional social card. |
 | `assets/source/card.template.svg` | Shared template for small README cards. |
 | `assets/source/badge.template.svg` | Shared template for local README language chips. |
 | `scripts/render-assets.py` | Deterministic renderer for generated SVG output. |
@@ -32,11 +33,18 @@ It writes these generated files:
 
 ```text
 assets/hero.svg
-assets/badge-english.svg
-assets/badge-korean.svg
+assets/social-card.svg
 assets/card-start.svg
 assets/card-contract.svg
 assets/card-handoff.svg
+assets/card-pain-vague-intent.svg
+assets/card-pain-early-execution.svg
+assets/card-pain-rework.svg
+assets/card-payoff-capture-intent.svg
+assets/card-payoff-lock-contract.svg
+assets/card-payoff-handoff-safely.svg
+assets/badge-english.svg
+assets/badge-korean.svg
 ```
 
 The generated files are committed because GitHub README rendering consumes SVG
@@ -71,6 +79,8 @@ fail the normal quality gate.
 - Edit `assets/source/*.template.svg` or `scripts/render-assets.py`, then run
   the renderer.
 - Keep text inside SVG short and duplicated by nearby Markdown or alt text.
+- Keep `assets/social-card.svg` English-only for v1 unless a localized variant
+  is separately validated.
 - Use simple SVG primitives such as `rect`, `path`, `circle`,
   `linearGradient`, and tested short `text`.
 - Do not add `foreignObject`, emoji, remote image references, external CSS, or

@@ -11,6 +11,7 @@ Asset source of truth는 `assets/source/` 아래에 둔다:
 | File | Role |
 | --- | --- |
 | `assets/source/hero.template.svg` | README hero template. |
+| `assets/source/social-card.template.svg` | Optional social card template. |
 | `assets/source/card.template.svg` | Small README cards shared template. |
 | `assets/source/badge.template.svg` | Local README language chips shared template. |
 | `scripts/render-assets.py` | Generated SVG output을 만드는 deterministic renderer. |
@@ -32,11 +33,18 @@ Renderer는 다음 generated files를 쓴다:
 
 ```text
 assets/hero.svg
-assets/badge-english.svg
-assets/badge-korean.svg
+assets/social-card.svg
 assets/card-start.svg
 assets/card-contract.svg
 assets/card-handoff.svg
+assets/card-pain-vague-intent.svg
+assets/card-pain-early-execution.svg
+assets/card-pain-rework.svg
+assets/card-payoff-capture-intent.svg
+assets/card-payoff-lock-contract.svg
+assets/card-payoff-handoff-safely.svg
+assets/badge-english.svg
+assets/badge-korean.svg
 ```
 
 Generated files는 GitHub README rendering이 `assets/`의 SVG를 직접 소비하기
@@ -71,6 +79,8 @@ SVG는 normal quality gate에서 실패한다.
 - `assets/source/*.template.svg` 또는 `scripts/render-assets.py`를 수정한 뒤
   renderer를 실행한다.
 - SVG 안의 text는 짧게 유지하고 nearby Markdown이나 alt text로 의미를 반복한다.
+- `assets/social-card.svg`는 localized variant를 별도로 검증하기 전까지
+  v1에서는 English-only로 유지한다.
 - `rect`, `path`, `circle`, `linearGradient`, tested short `text` 같은 simple
   SVG primitives를 사용한다.
 - `foreignObject`, emoji, remote image references, external CSS, external font

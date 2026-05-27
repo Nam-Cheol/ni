@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630" role="img" aria-labelledby="title desc">
-  <title id="title">ni social card</title>
-  <desc id="desc">Don't run the agent yet. Compile the intent first. ni — Project Intent Compiler for AI Agents.</desc>
+  <title id="title">${title}</title>
+  <desc id="desc">${desc}</desc>
   <defs>
     <linearGradient id="social-bg" x1="0" x2="1" y1="0" y2="1">
       <stop offset="0" stop-color="#15243A"/>
@@ -20,19 +20,19 @@
   <path d="M64 474 C202 346 300 520 444 376 S680 314 792 206 S1018 92 1142 180" fill="none" stroke="#FFFFFF" stroke-opacity="0.11" stroke-width="34" stroke-linecap="round"/>
   <path d="M66 478 C204 350 302 524 446 380 S682 318 794 210 S1020 96 1144 184" fill="none" stroke="url(#social-accent)" stroke-opacity="0.95" stroke-width="7" stroke-linecap="round"/>
 
-  <g transform="translate(76 70)" font-family="-apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Helvetica, Arial, sans-serif">
+  <g transform="translate(76 70)" font-family="${font_family}">
     <rect x="0" y="0" width="158" height="44" rx="22" fill="#FFFFFF" fill-opacity="0.13"/>
     <text x="28" y="29" fill="#E9F4F0" font-size="18" font-weight="800">ni-kernel</text>
 
-    <text x="0" y="154" fill="#FFFFFF" font-size="66" font-weight="850">Don't run the</text>
-    <text x="0" y="232" fill="#FFFFFF" font-size="66" font-weight="850">agent yet.</text>
-    <text x="0" y="324" fill="#FFFFFF" font-size="66" font-weight="850">Compile the</text>
-    <text x="0" y="402" fill="#FFFFFF" font-size="66" font-weight="850">intent first.</text>
+    <text x="0" y="154" fill="#FFFFFF" font-size="66" font-weight="850">${headline_line_1}</text>
+    <text x="0" y="232" fill="#FFFFFF" font-size="66" font-weight="850">${headline_line_2}</text>
+    <text x="0" y="324" fill="#FFFFFF" font-size="66" font-weight="850">${headline_line_3}</text>
+    <text x="0" y="402" fill="#FFFFFF" font-size="66" font-weight="850">${headline_line_4}</text>
 
-    <text x="4" y="482" fill="#D9E7E2" font-size="30" font-weight="650">ni — Project Intent Compiler for AI Agents.</text>
+    <text x="4" y="482" fill="#D9E7E2" font-size="30" font-weight="650">${subcopy}</text>
   </g>
 
-  <g transform="translate(758 126)" filter="url(#social-shadow)" font-family="-apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Helvetica, Arial, sans-serif">
+  <g transform="translate(758 126)" filter="url(#social-shadow)" font-family="${font_family}">
     <rect x="0" y="0" width="352" height="352" rx="28" fill="#F7FBF8"/>
     <rect x="36" y="44" width="126" height="44" rx="22" fill="#E8F0EB"/>
     <text x="60" y="72" fill="#243044" font-size="16" font-weight="800">conversation</text>

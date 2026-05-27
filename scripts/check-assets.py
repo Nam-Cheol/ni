@@ -21,6 +21,7 @@ README_FILES = [
 ]
 REQUIRED_ASSETS = [
     ASSETS / "hero.svg",
+    ASSETS / "social-card.svg",
     ASSETS / "badge-english.svg",
     ASSETS / "badge-korean.svg",
     ASSETS / "card-pain-vague-intent.svg",
