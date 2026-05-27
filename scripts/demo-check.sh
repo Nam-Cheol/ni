@@ -104,6 +104,15 @@ require_first_line "READY" "$DEMO_TMP/conversation-status.out"
 run_demo "conversation product human-team prompt compiles if locked" \
   run_if_locked "examples/conversation-product" "human-team" "$DEMO_TMP/ni-conversation-human-team.prompt.md"
 
+run_demo "ni-start dogfood status matches docs" bash -c '
+  go run ./cmd/ni status --dir examples/ni-start-dogfood/workspace >"$1/ni-start-dogfood-status.out"
+' bash "$DEMO_TMP"
+require_doc_status "examples/ni-start-dogfood" "READY_WITH_DEFERRALS"
+require_first_line "READY_WITH_DEFERRALS" "$DEMO_TMP/ni-start-dogfood-status.out"
+
+run_demo "ni-start dogfood human-team prompt compiles if locked" \
+  run_if_locked "examples/ni-start-dogfood/workspace" "human-team" "$DEMO_TMP/ni-start-dogfood-human-team.prompt.md"
+
 for export_target in hyper-run namba-ai ouroboros spec-kit; do
   run_demo "conversation product $export_target export stays seed-only if locked" \
     export_if_locked "examples/conversation-product" "$export_target" "$DEMO_TMP/conversation-product-export-$export_target"

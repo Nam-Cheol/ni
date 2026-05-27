@@ -1,0 +1,96 @@
+{
+  "schema": "ni.readiness.profiles.v0",
+  "default_profile": "prototype",
+  "profiles": [
+    {
+      "name": "concept",
+      "description": "A planning profile for early intent, audience, and uncertainty discovery before full traceability is required.",
+      "issue_severity": {
+        "R001": "blocker",
+        "R002": "blocker",
+        "R003": "deferral",
+        "R004": "deferral",
+        "R005": "deferral",
+        "R006": "blocker",
+        "R007": "deferral",
+        "R008": "blocker",
+        "R009": "blocker",
+        "R010": "deferral",
+        "D001": "deferral",
+        "D002": "deferral"
+      }
+    },
+    {
+      "name": "prototype",
+      "description": "The default planning profile for a small validated plan with capability, risk, evaluation, and boundary traceability.",
+      "issue_severity": {
+        "R001": "blocker",
+        "R002": "blocker",
+        "R003": "blocker",
+        "R004": "blocker",
+        "R005": "blocker",
+        "R006": "blocker",
+        "R007": "blocker",
+        "R008": "blocker",
+        "R009": "blocker",
+        "R010": "blocker",
+        "D001": "deferral",
+        "D002": "deferral"
+      }
+    },
+    {
+      "name": "mvp",
+      "description": "A planning profile for a usable first release plan with the same blocking traceability as prototype readiness.",
+      "issue_severity": {
+        "R001": "blocker",
+        "R002": "blocker",
+        "R003": "blocker",
+        "R004": "blocker",
+        "R005": "blocker",
+        "R006": "blocker",
+        "R007": "blocker",
+        "R008": "blocker",
+        "R009": "blocker",
+        "R010": "blocker",
+        "D001": "deferral",
+        "D002": "deferral"
+      }
+    },
+    {
+      "name": "beta",
+      "description": "A planning profile for broader validation where core traceability blocks lock and unresolved non-blocking questions remain explicit deferrals.",
+      "issue_severity": {
+        "R001": "blocker",
+        "R002": "blocker",
+        "R003": "blocker",
+        "R004": "blocker",
+        "R005": "blocker",
+        "R006": "blocker",
+        "R007": "blocker",
+        "R008": "blocker",
+        "R009": "blocker",
+        "R010": "blocker",
+        "D001": "deferral",
+        "D002": "deferral"
+      }
+    },
+    {
+      "name": "production",
+      "description": "A planning profile for high-confidence lock readiness where deferred decisions and open questions block the plan.",
+      "issue_severity": {
+        "R001": "blocker",
+        "R002": "blocker",
+        "R003": "blocker",
+        "R004": "blocker",
+        "R005": "blocker",
+        "R006": "blocker",
+        "R007": "blocker",
+        "R008": "blocker",
+        "R009": "blocker",
+        "R010": "blocker",
+        "D001": "blocker",
+        "D002": "blocker"
+      }
+    }
+  ]
+}
