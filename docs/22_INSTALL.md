@@ -106,6 +106,24 @@ Expand-Archive ni_<version>_windows_amd64.zip -DestinationPath ni_<version>_wind
 .\ni_<version>_windows_amd64\ni.exe version
 ```
 
+## Curl installer after first assets exist
+
+`install.sh` can install a release archive without requiring Go, but it remains
+release-gated: use it only after the GitHub Release contains the matching archive
+and checksum file.
+
+Download and inspect the script before running it:
+
+```bash
+curl -fsSLO https://raw.githubusercontent.com/Nam-Cheol/ni/main/install.sh
+sed -n '1,320p' install.sh
+sh install.sh --dry-run
+sh install.sh --version 0.2.0
+```
+
+See [Curl Installer](install-curl.md) for `BINDIR`, checksum behavior, and the
+manual verification path.
+
 Do not use package manager instructions for `ni` yet; Homebrew and Scoop
 packages are not published.
 

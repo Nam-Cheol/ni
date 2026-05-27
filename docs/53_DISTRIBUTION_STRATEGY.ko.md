@@ -25,7 +25,7 @@ execution service, multi-agent execution layer로 바꾸면 안 된다.
 | --- | --- | --- | --- | --- | --- |
 | Source mode | Available | Developers, early evaluators, contributors, Go에 익숙한 users | Go 1.22 이상; version metadata에는 Git optional | Checked-out source, local Go toolchain, repository tests, quality checks를 trust한다 | `go run`, `make build`, `make test`, `make quality`가 계속 documented and working 상태여야 한다 |
 | Release binary mode | Next | Terminal은 편하지만 Go는 모르는 users | Terminal; OS별 downloaded `ni` binary | 구현된 뒤 GitHub Releases assets와 published checksums 또는 signatures를 trust한다 | Manual release asset process 정의, OS/arch별 build, checksums publish, verification과 rollback 문서화 |
-| Curl installer mode | Planned | Go setup 없이 one command를 원하는 terminal users | `curl` 또는 equivalent downloader; supported platforms의 POSIX shell | Installer script가 downloaded release assets를 published checksums 또는 signatures로 verify할 때만 trust한다 | Release binaries 이후에만 `install.sh` 추가; script는 작고 auditable해야 하며 installer checks로 보호해야 한다 |
+| Curl installer mode | Script added, release-gated | Go setup 없이 one command를 원하는 terminal users | `curl` 또는 equivalent downloader; supported platforms의 POSIX shell | Installer script가 downloaded release assets를 published checksums 또는 signatures로 verify할 때만 trust한다 | `install.sh`를 작고 auditable하게 유지하고 installer checks로 보호한다; release assets 전에는 usable path라고 설명하지 않는다 |
 | Package manager mode | Planned | Platform package managers를 선호하는 users | Homebrew first; Windows demand가 있으면 Scoop later | Official release assets를 가리키는 package manager metadata, formulas/manifests, checksums를 trust한다 | Release binaries가 안정화된 뒤 Homebrew tap 또는 formula 생성; Scoop은 later; publishing은 `ni-kernel` 밖에 둔다 |
 | Model workspace mode | Available in repo-local form; portable packs planned | Model workspace에서 planning을 author하는 Codex/Claude users | Repository docs를 읽고 authority로 `ni` CLI를 호출할 수 있는 model workspace | Model이 아니라 CLI gates를 trust한다; skills는 docs와 `.ni/contract.json` 위의 UX다 | Portable skill packs packaging과 docs; skill behavior는 `ni status`, `ni end`, `ni run`과 aligned해야 한다 |
 | No-terminal mode | Planned | Direct terminal use 없이 docs-first planning을 원하는 non-technical users, product leads, researchers, teams | Downloadable model pack과 docs-first workflow; trusted runner가 뒤에서 `ni` gates를 호출해야 한다 | Visible docs, lockfile hashes, CLI-generated status/lock/run outputs를 trust한다; model은 readiness를 단독 선언할 수 없다 | Downloadable model pack, guided docs workflow, proof display 설계; 이 task에서는 hosted service나 terminal-less web runtime을 추가하지 않는다 |
@@ -69,15 +69,16 @@ automation을 추가하면 안 되며, `ni run`을 executor로 바꾸면 안 된
 
 ### 3. Curl installer mode
 
-Curl installer mode는 planned이며, 아직 available하지 않다.
+Curl installer mode는 script-ready지만, public use는 아직 release-gated다.
 
-Installer는 verified release asset을 download하는 작은 `install.sh`여야 한다.
+Installer는 verified release asset을 download하는 작은 `install.sh`다.
 기본적으로 source build를 하거나 downstream work를 실행하거나 trust boundary를
-숨기면 안 된다. Script는 무엇을 download하는지, 어디에 `ni`를 install하는지,
-asset을 어떻게 verify하는지 설명해야 한다.
+숨기지 않는다. Script는 무엇을 download하는지, 어디에 `ni`를 install하는지,
+asset을 어떻게 verify하는지 설명한다.
 
-이 track은 release binary mode에 의존한다. Release assets와 verification
-metadata가 있기 전에는 추가하지 않는다.
+이 track은 release binary mode에 의존한다. Script는 local fake release assets로
+test되지만, real release assets와 verification metadata가 있기 전에는 working
+public install path로 표현하면 안 된다.
 
 ### 4. Package manager mode
 
@@ -133,8 +134,8 @@ planning conversation -> docs contract -> readiness gate -> lockfile -> prompt
   usage만 오늘 available하다고 설명할 수 있다.
 - Release binaries는 supported platforms용 GitHub Releases assets가 있기 전까지
   available하다고 설명하면 안 된다.
-- Curl install은 `install.sh`가 존재하고 release assets를 verify하기 전까지
-  available하다고 설명하면 안 된다.
+- Curl install은 real release assets가 존재하고 `install.sh`가 이를 verify하기
+  전까지 available하다고 설명하면 안 된다.
 - Package manager install은 packages 또는 formulas가 published되기 전까지
   available하다고 설명하면 안 된다.
 - No-terminal mode는 downloadable model pack과 proof-oriented workflow가 있기
