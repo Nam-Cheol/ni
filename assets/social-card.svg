@@ -1,0 +1,63 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630" role="img" aria-labelledby="title desc">
+  <title id="title">ni social card</title>
+  <desc id="desc">Don't run the agent yet. Compile the intent first. ni is a Project Intent Compiler for AI Agents.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0" stop-color="#15243a"/>
+      <stop offset="0.58" stop-color="#243044"/>
+      <stop offset="1" stop-color="#2d5a52"/>
+    </linearGradient>
+    <linearGradient id="accent" x1="0" x2="1">
+      <stop offset="0" stop-color="#f4b860"/>
+      <stop offset="1" stop-color="#70d6c7"/>
+    </linearGradient>
+    <filter id="soft-shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="16" stdDeviation="20" flood-color="#07111f" flood-opacity="0.25"/>
+    </filter>
+  </defs>
+
+  <rect width="1200" height="630" rx="0" fill="url(#bg)"/>
+  <path d="M64 474 C202 346 300 520 444 376 S680 314 792 206 S1018 92 1142 180" fill="none" stroke="#ffffff" stroke-opacity="0.11" stroke-width="34" stroke-linecap="round"/>
+  <path d="M66 478 C204 350 302 524 446 380 S682 318 794 210 S1020 96 1144 184" fill="none" stroke="url(#accent)" stroke-opacity="0.95" stroke-width="7" stroke-linecap="round"/>
+
+  <g transform="translate(76 70)" font-family="Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif">
+    <rect x="0" y="0" width="158" height="44" rx="22" fill="#ffffff" fill-opacity="0.13"/>
+    <text x="28" y="29" fill="#e9f4f0" font-size="18" font-weight="800">ni-kernel</text>
+
+    <text x="0" y="154" fill="#ffffff" font-size="66" font-weight="850">Don't run the</text>
+    <text x="0" y="232" fill="#ffffff" font-size="66" font-weight="850">agent yet.</text>
+    <text x="0" y="324" fill="#ffffff" font-size="66" font-weight="850">Compile the</text>
+    <text x="0" y="402" fill="#ffffff" font-size="66" font-weight="850">intent first.</text>
+
+    <text x="4" y="482" fill="#d9e7e2" font-size="30" font-weight="650">Project Intent Compiler for AI Agents.</text>
+  </g>
+
+  <g transform="translate(758 126)" filter="url(#soft-shadow)" font-family="Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif">
+    <rect x="0" y="0" width="352" height="352" rx="28" fill="#f7fbf8"/>
+    <rect x="36" y="44" width="126" height="44" rx="22" fill="#e8f0eb"/>
+    <text x="60" y="72" fill="#243044" font-size="16" font-weight="800">conversation</text>
+    <path d="M174 66 H222" stroke="#8aa096" stroke-width="3" stroke-linecap="round"/>
+    <path d="M212 57 L224 66 L212 75" fill="none" stroke="#8aa096" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+    <rect x="236" y="44" width="80" height="44" rx="22" fill="#fff2d8"/>
+    <text x="258" y="72" fill="#243044" font-size="16" font-weight="800">plan</text>
+
+    <path d="M276 92 V132" stroke="#8aa096" stroke-width="3" stroke-linecap="round"/>
+    <path d="M267 122 L276 134 L285 122" fill="none" stroke="#8aa096" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+    <rect x="196" y="136" width="120" height="44" rx="22" fill="#dff5ef"/>
+    <text x="232" y="164" fill="#243044" font-size="16" font-weight="800">status</text>
+
+    <path d="M196 158 H132" stroke="#8aa096" stroke-width="3" stroke-linecap="round"/>
+    <path d="M142 149 L130 158 L142 167" fill="none" stroke="#8aa096" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+    <rect x="40" y="136" width="88" height="44" rx="22" fill="#25334a"/>
+    <text x="66" y="164" fill="#ffffff" font-size="16" font-weight="800">lock</text>
+
+    <path d="M84 180 V226 H144" stroke="#8aa096" stroke-width="3" stroke-linecap="round"/>
+    <path d="M134 217 L146 226 L134 235" fill="none" stroke="#8aa096" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+    <rect x="148" y="204" width="168" height="44" rx="22" fill="#edf1ff"/>
+    <text x="178" y="232" fill="#243044" font-size="16" font-weight="800">compile prompt</text>
+
+    <circle cx="78" cy="286" r="22" fill="#70d6c7"/>
+    <path d="M68 286 L76 294 L90 276" fill="none" stroke="#142236" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+    <text x="114" y="293" fill="#385064" font-size="18" font-weight="700">pre-runtime control layer</text>
+  </g>
+</svg>
