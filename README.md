@@ -66,6 +66,25 @@ go run ./cmd/ni run --dir ./my-plan --target generic --max-chars 4000
 `ni run` compiles a prompt. It does not execute shell commands, queues, agents,
 or downstream work.
 
+## No terminal? Start with the model pack.
+
+You can use the Intent Lock method before installing the CLI by copying the
+Claude/Codex skill instructions into a model workspace and asking the model to
+draft `docs/plan/**` plus a `.ni/contract.json` draft. This is useful for
+learning the method, surfacing blockers, and preparing a plan with a teammate.
+
+There are three levels:
+
+| Level | What you get | Authority |
+| --- | --- | --- |
+| Full `ni` | CLI installed; deterministic `status`, `end`, and `run` are available. | Authoritative readiness, lock, hash verification, and prompt compilation. |
+| Model pack assisted | Skills guide docs authoring and contract drafting in Claude/Codex-style workspaces. | Helpful drafting; run CLI validation before lock. |
+| Read-only method | Copy the Intent Lock checklist into a model session. | Useful for learning; not authoritative. |
+
+The honest boundary: no-terminal mode is not equivalent to validated `ni`.
+Deterministic readiness and locking require the CLI. See
+[No-Terminal Planning](docs/no-terminal.md) for the manual flow.
+
 ## Install and use
 
 | Path | Status | What it means |
@@ -77,7 +96,7 @@ or downstream work.
 | Curl installer mode | Script added, release-gated | `install.sh` supports dry-run and verified release-asset installs, but use it only after a GitHub Release contains the matching archive and checksum. |
 | Package manager mode | Planned | Homebrew is planned, but no tap or formula is published yet. |
 | Model workspace mode | Available in repo-local form | Codex/Claude-style skills can help author plans, but the CLI remains the authority. Portable packs are planned. |
-| No-terminal mode | Planned | A downloadable model pack and docs-first workflow are not available yet. |
+| No-terminal mode | Docs-first workflow available | Start with model-pack instructions or a copied checklist, then validate with the CLI or a teammate before lock. |
 
 See [Install ni](docs/22_INSTALL.md) for supported local paths and
 [Curl Installer](docs/install-curl.md) for release-asset installs with manual
@@ -117,6 +136,7 @@ authority.
 | --- | --- |
 | [Why ni](docs/why-ni.md) | The product argument and positioning. |
 | [Intent Lock Protocol](docs/42_INTENT_LOCK_PROTOCOL.md) | The rules for readiness, locking, hash trust, and blocked handoff. |
+| [No-Terminal Planning](docs/no-terminal.md) | How to use the method before installing the CLI, without claiming validation. |
 | [Command reference](docs/commands.md) | The implemented CLI surface. |
 | [Ambiguous Prompt Blocked](examples/ambiguous-prompt-blocked/) | A small demo where vague intent correctly stops execution. |
 

@@ -66,6 +66,25 @@ go run ./cmd/ni run --dir ./my-plan --target generic --max-chars 4000
 `ni run`은 prompt를 compile한다. Shell commands, queues, agents, downstream
 work를 실행하지 않는다.
 
+## 터미널이 없나? Model pack으로 시작하라.
+
+CLI를 설치하기 전에도 Claude/Codex skill instructions를 model workspace에
+copy하고, model에게 `docs/plan/**`과 `.ni/contract.json` draft를 만들게 하면서
+Intent Lock method를 사용할 수 있다. 이 방식은 method를 배우고, blocker를
+드러내고, teammate와 함께 plan을 준비하는 데 유용하다.
+
+세 가지 수준이 있다:
+
+| Level | 얻는 것 | Authority |
+| --- | --- | --- |
+| Full `ni` | CLI installed; deterministic `status`, `end`, `run`을 사용할 수 있다. | Authoritative readiness, lock, hash verification, prompt compilation. |
+| Model pack assisted | Skills가 Claude/Codex-style workspaces에서 docs authoring과 contract drafting을 안내한다. | Helpful drafting; lock 전에는 CLI validation을 실행한다. |
+| Read-only method | Intent Lock checklist를 model session에 copy한다. | Learning에는 유용하지만 authoritative하지 않다. |
+
+정직한 boundary: no-terminal mode는 validated `ni`와 equivalent하지 않다.
+Deterministic readiness와 locking에는 CLI가 필요하다. Manual flow는
+[터미널 없이 계획하기](docs/no-terminal.ko.md)를 참고하라.
+
 ## Install and use
 
 | Path | Status | Meaning |
@@ -77,7 +96,7 @@ work를 실행하지 않는다.
 | Curl installer mode | Script added, release-gated | `install.sh`는 dry-run과 verified release-asset install을 지원하지만, matching archive와 checksum이 있는 GitHub Release 이후에만 사용한다. |
 | Package manager mode | Planned | Homebrew는 planned 상태이며, tap이나 formula는 아직 publish되지 않았다. |
 | Model workspace mode | Available in repo-local form | Codex/Claude-style skills는 plan authoring을 도울 수 있지만 CLI가 계속 authority다. Portable packs는 planned다. |
-| No-terminal mode | Planned | Downloadable model pack과 docs-first workflow는 아직 available하지 않다. |
+| No-terminal mode | Docs-first workflow available | Model-pack instructions나 copied checklist로 시작하고, lock 전에는 CLI 또는 teammate로 validate한다. |
 
 지원되는 local path는 [Install ni](docs/22_INSTALL.md)를 참고하라. Release-asset
 install과 manual verification은 [Curl Installer](docs/install-curl.ko.md)를
@@ -117,6 +136,7 @@ authority다.
 | --- | --- |
 | [Why ni](docs/why-ni.md) | Product argument와 positioning. |
 | [Intent Lock Protocol](docs/42_INTENT_LOCK_PROTOCOL.md) | Readiness, locking, hash trust, blocked handoff 규칙. |
+| [터미널 없이 계획하기](docs/no-terminal.ko.md) | CLI 설치 전 method를 사용하되 validation claim을 하지 않는 방법. |
 | [Command reference](docs/commands.ko.md) | Implemented CLI surface. |
 | [Ambiguous Prompt Blocked](examples/ambiguous-prompt-blocked/) | Vague intent가 execution을 올바르게 멈추는 small demo. |
 
