@@ -169,7 +169,11 @@ def check_yaml() -> None:
 
 def check_shell_syntax() -> None:
     for path in SHELL_FILES:
-        run_check(["sh", "-n", path], f"shell syntax check for {path}")
+        first_line = read_lines(path)[0]
+        shell = "sh"
+        if first_line == "#!/usr/bin/env bash":
+            shell = "bash"
+        run_check([shell, "-n", path], f"shell syntax check for {path}")
 
 
 def main() -> None:
