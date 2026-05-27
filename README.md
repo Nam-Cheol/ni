@@ -16,6 +16,9 @@
 
 <p align="center"><sub>Trust signals: MIT license; CI workflow; security policy; docs index.</sub></p>
 
+Trust signals: [MIT License](LICENSE); [.github/workflows/ci.yml](.github/workflows/ci.yml);
+[SECURITY.md](SECURITY.md); [docs index](docs/00_START_HERE.md).
+
 <h1 align="center">Don't run the agent yet. Compile the intent first.</h1>
 
 <p align="center"><strong>ni turns planning conversations into locked project contracts before implementation work starts.</strong></p>
@@ -97,6 +100,10 @@ go run ./cmd/ni run --dir ./my-plan --target generic --max-chars 4000
 | Release binary | Planned | You want `ni` without Go from a published release. | Wait for public release assets and checksums. |
 | Curl installer | Release-gated | You want one-command install after release assets exist. | `install.sh` exists, but public install waits on release assets. |
 | Homebrew | Planned | You prefer a package manager. | No tap or formula is published. |
+
+Release status: `ni` does not claim package distribution or a published binary release.
+Use source, local build, or local install mode until a GitHub Release actually
+publishes assets and checksums.
 
 See [Install ni](docs/22_INSTALL.md), [No-Terminal Planning](docs/no-terminal.md),
 and [Model Workspace Packs](docs/55_MODEL_WORKSPACE_PACKS.md) for details.

@@ -16,6 +16,9 @@
 
 <p align="center"><sub>신뢰 신호: MIT license; CI workflow; security policy; docs index.</sub></p>
 
+신뢰 신호: [MIT License](LICENSE); [.github/workflows/ci.yml](.github/workflows/ci.yml);
+[SECURITY.md](SECURITY.md); [docs index](docs/00_START_HERE.md).
+
 <h1 align="center">agent를 아직 실행하지 마세요. 먼저 의도를 컴파일하세요.</h1>
 
 <p align="center"><strong>ni는 implementation work가 시작되기 전에 planning conversation을 locked project contract로 바꿉니다.</strong></p>
@@ -97,6 +100,9 @@ go run ./cmd/ni run --dir ./my-plan --target generic --max-chars 4000
 | Release binary | Planned | Published release에서 Go 없이 `ni`를 받고 싶을 때 사용합니다. | Public release assets와 checksums를 기다립니다. |
 | Curl installer | Release-gated | Release assets가 생긴 뒤 one-command install을 원할 때 사용합니다. | `install.sh`는 있지만 public install은 release assets를 기다립니다. |
 | Homebrew | Planned | Package manager를 선호할 때 사용합니다. | Published tap이나 formula가 없습니다. |
+
+Release status: `ni`는 package distribution이나 published binary release를 claim하지 않는다.
+GitHub Release가 실제로 assets와 checksums를 publish할 때까지 source, local build, local install mode를 사용합니다.
 
 자세한 내용은 [Install ni](docs/22_INSTALL.md),
 [터미널 없이 계획하기](docs/no-terminal.ko.md),

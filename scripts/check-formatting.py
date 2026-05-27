@@ -21,7 +21,10 @@ MARKDOWN_TABLES = {
 }
 
 YAML_FILES = [
-    ".github/workflows/release.yml",
+    *[
+        str(path.relative_to(ROOT))
+        for path in sorted((ROOT / ".github" / "workflows").glob("*.yml"))
+    ],
     ".goreleaser.yaml",
 ]
 
@@ -33,10 +36,20 @@ SHELL_FILES = [
 MIN_LINE_COUNTS = {
     "README.md": 80,
     "README.ko.md": 80,
+    "scripts/quality.sh": 20,
     ".github/workflows/release.yml": 30,
     ".goreleaser.yaml": 35,
     "install.sh": 120,
 }
+
+KEY_MARKDOWN_FILES = [
+    "README.md",
+    "README.ko.md",
+    "packages/codex-skills/README.md",
+    "packages/codex-skills/README.ko.md",
+    "packages/claude-skills/README.md",
+    "packages/claude-skills/README.ko.md",
+]
 
 
 def fail(message: str) -> None:
@@ -133,6 +146,34 @@ def check_min_line_counts() -> None:
             fail(f"{path} has only {line_count} lines; possible line-collapsed formatting")
 
 
+def check_no_collapsed_markdown_blocks() -> None:
+    for path in KEY_MARKDOWN_FILES:
+        in_fence = False
+        for line_number, line in enumerate(read_lines(path), start=1):
+            if line.strip().startswith("```"):
+                in_fence = not in_fence
+                continue
+            if in_fence:
+                continue
+
+            heading_markers = re.findall(r"(^|\s)#{1,6}\s+\S", line)
+            if len(heading_markers) > 1:
+                fail(f"{path}:{line_number} contains multiple headings on one line")
+
+            stripped = line.strip()
+            if stripped.startswith("#") and "|" in stripped:
+                fail(f"{path}:{line_number} appears to contain a collapsed heading and table row")
+
+            if stripped.startswith("|") and " | | " in line:
+                fail(f"{path}:{line_number} appears to contain collapsed Markdown table rows")
+
+
+def check_quality_script_header() -> None:
+    lines = read_lines("scripts/quality.sh")
+    if lines[:2] != ["#!/usr/bin/env bash", "set -euo pipefail"]:
+        fail("scripts/quality.sh must start with '#!/usr/bin/env bash' and 'set -euo pipefail'")
+
+
 def check_install_script_header() -> None:
     lines = read_lines("install.sh")
     if lines[:2] != ["#!/usr/bin/env sh", "set -eu"]:
@@ -180,6 +221,8 @@ def main() -> None:
     check_duplicate_readmes()
     check_markdown_tables()
     check_min_line_counts()
+    check_no_collapsed_markdown_blocks()
+    check_quality_script_header()
     check_install_script_header()
     check_yaml()
     check_shell_syntax()
