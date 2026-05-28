@@ -45,3 +45,6 @@ surface concrete and auditable.
   unclear memory, interaction quality, and evaluation boundaries.
 - [`weekly-status-automation/`](weekly-status-automation/): ambiguous automation
   request with unclear source access, review flow, and distribution rules.
+- [`refund-triage-assistant/`](refund-triage-assistant/): conversation product
+  with unclear refund authority, policy source, escalation behavior, and
+  runtime boundary.
