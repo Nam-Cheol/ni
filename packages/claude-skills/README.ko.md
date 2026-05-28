@@ -59,3 +59,16 @@ bash scripts/install-claude-skills.sh --target /path/to/skills
 Installer는 target이 명시된 경우에만 skill directories를 copy한다. Existing skill
 directory는 `--force` 없이는 preserve한다.
 
+Manual copy는 이 source tree 또는 unpacked zip archive에서 Available이다. 현재
+Claude-compatible host에 대해 user가 verify한 target folder로 skill directories만
+copy한다. 그 target을 global Claude install path로 설명하지 않는다.
+
+다음 command로 pack을 verify한다:
+
+```bash
+bash scripts/check-skill-packs.sh
+bash scripts/package-claude-skills.sh
+```
+
+Full installation과 verification status는
+`docs/75_MODEL_PACK_INSTALL_VERIFICATION.ko.md`를 참고한다.

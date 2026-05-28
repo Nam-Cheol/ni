@@ -84,8 +84,14 @@ report `BLOCKED`.
 
 ## Validation
 
-The repository quality check validates skill metadata for both repo-local Codex
-skills and this Claude skill pack:
+The dedicated skill-pack check validates source layout, metadata, authority
+boundaries, package-script contents, and the guarded dry-run installer:
+
+```bash
+bash scripts/check-skill-packs.sh
+```
+
+The repository quality check also runs the skill-pack check:
 
 ```bash
 bash scripts/quality.sh
@@ -97,3 +103,5 @@ The packaging check verifies the archive can be produced:
 bash scripts/package-claude-skills.sh
 ```
 
+See [Model Pack Install Verification](75_MODEL_PACK_INSTALL_VERIFICATION.md)
+for manual copy, zip package, and dry-run install status.

@@ -90,7 +90,7 @@ go run ./cmd/ni run --dir ./my-plan --target generic --max-chars 4000
 | --- | --- | --- | --- |
 | Source | Available | You can run `go run ./cmd/ni ...`. | Full deterministic `status`, `end`, and `run`. |
 | Local binary | Available | You want `./bin/ni` or a local install from this checkout. | Build or install locally from source; independent of release assets. |
-| Model workspaces | Experimental | You want Codex or Claude to help draft docs and contract records. | Skills are UX; the CLI remains readiness and lock authority. |
+| Model workspaces | Experimental | You want verified Codex or Claude source/zip skill packs to help draft docs and contract records. | Repo-local, manual-copy, and zip paths are available; global discovery remains unverified and the CLI remains authority. |
 | No-terminal method | Experimental | You want to learn or draft the Intent Lock method before a CLI run. | Assisted drafting only; it is not deterministic validation. |
 | Release binary | Available | You want `ni` without Go from a published release. | Use the verified v0.3.0 GitHub Release archives and checksums. |
 | Curl installer | Available | You want a small shell installer for release assets. | Inspect the script first; it downloads the verified v0.3.0 archive and checksum file. |
@@ -128,7 +128,9 @@ is not available yet.
 License: `ni` is licensed under the [MIT License](LICENSE).
 
 See [Install ni](docs/22_INSTALL.md), [No-Terminal Planning](docs/no-terminal.md),
-and [Model Workspace Packs](docs/55_MODEL_WORKSPACE_PACKS.md) for details.
+[Model Workspace Packs](docs/55_MODEL_WORKSPACE_PACKS.md), and
+[Model Pack Install Verification](docs/75_MODEL_PACK_INSTALL_VERIFICATION.md)
+for details.
 
 ## Demo
 

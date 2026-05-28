@@ -61,3 +61,20 @@ Skill이 authority를 요구하면 project workspace에서 relevant `ni` CLI com
 Global Codex skill installation과 discovery path는 이 package에서 claim하지
 않는다. 특정 Codex environment에서 verify되기 전까지 global usage는 experimental
 또는 planned로 취급한다.
+
+## Manual Copy And Zip Usage
+
+Manual copy는 이 source tree 또는 unpacked zip archive에서 Available이다. 현재
+model host에 대해 user가 verify한 target folder로 skill directories만 copy한다.
+Host-specific path와 loading behavior가 verify되지 않았다면 그 target을 global
+Codex install path로 설명하지 않는다.
+
+Codex dry-run install support는 Planned다. 지금은 다음 command로 pack을 verify한다:
+
+```bash
+bash scripts/check-skill-packs.sh
+bash scripts/package-codex-skills.sh
+```
+
+Full installation과 verification status는
+`docs/75_MODEL_PACK_INSTALL_VERIFICATION.ko.md`를 참고한다.

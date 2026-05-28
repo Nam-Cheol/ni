@@ -90,7 +90,7 @@ go run ./cmd/ni run --dir ./my-plan --target generic --max-chars 4000
 | --- | --- | --- | --- |
 | Source | Available | `go run ./cmd/ni ...`를 실행할 수 있습니다. | Full deterministic `status`, `end`, `run`. |
 | Local binary | Available | 이 checkout에서 `./bin/ni` 또는 local install을 원할 때 사용합니다. | Source에서 local build/install하며 release assets와 독립적입니다. |
-| Model workspaces | Experimental | Codex 또는 Claude가 docs와 contract records draft를 돕게 하고 싶을 때 사용합니다. | Skills are UX; readiness와 lock authority는 CLI입니다. |
+| Model workspaces | Experimental | Verified Codex 또는 Claude source/zip skill packs로 docs와 contract records draft를 돕게 하고 싶을 때 사용합니다. | Repo-local, manual-copy, zip paths는 Available입니다; global discovery는 unverified이며 CLI가 authority입니다. |
 | No-terminal method | Experimental | CLI run 전 Intent Lock method를 배우거나 draft하고 싶을 때 사용합니다. | Assisted drafting일 뿐 deterministic validation은 아닙니다. |
 | Release binary | Available | Published release에서 Go 없이 `ni`를 받고 싶을 때 사용합니다. | 검증된 v0.3.0 GitHub Release archives와 checksums를 사용합니다. |
 | Curl installer | Available | Release assets용 작은 shell installer를 원할 때 사용합니다. | Script를 먼저 inspect합니다. Installer는 검증된 v0.3.0 archive와 checksum file을 download합니다. |
@@ -128,7 +128,9 @@ License: `ni`는 [MIT License](LICENSE)로 배포됩니다.
 
 자세한 내용은 [Install ni](docs/22_INSTALL.md),
 [터미널 없이 계획하기](docs/no-terminal.ko.md),
-[Model Workspace Packs](docs/55_MODEL_WORKSPACE_PACKS.md)를 참고하세요.
+[Model Workspace Packs](docs/55_MODEL_WORKSPACE_PACKS.md),
+[Model Pack Install Verification](docs/75_MODEL_PACK_INSTALL_VERIFICATION.ko.md)를
+참고하세요.
 
 ## Demo
 

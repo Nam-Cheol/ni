@@ -59,3 +59,16 @@ bash scripts/install-claude-skills.sh --target /path/to/skills
 The installer copies skill directories only after the target is supplied. It
 preserves existing skill directories unless `--force` is passed.
 
+Manual copy from this source tree or from the unpacked zip archive is also
+available when the user has verified the target folder for the current Claude
+compatible host. Do not describe that target as a global Claude install path.
+
+Verify the pack with:
+
+```bash
+bash scripts/check-skill-packs.sh
+bash scripts/package-claude-skills.sh
+```
+
+See `docs/75_MODEL_PACK_INSTALL_VERIFICATION.md` for the full installation and
+verification status.

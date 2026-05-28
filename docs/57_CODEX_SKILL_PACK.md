@@ -85,8 +85,14 @@ report `BLOCKED`.
 
 ## Validation
 
-The repository quality check validates skill metadata for repo-local skills and
-packaged skill distributions:
+The dedicated skill-pack check validates source layout, metadata, authority
+boundaries, and package-script contents:
+
+```bash
+bash scripts/check-skill-packs.sh
+```
+
+The repository quality check also runs the skill-pack check:
 
 ```bash
 bash scripts/quality.sh
@@ -97,3 +103,7 @@ The packaging check verifies the archive can be produced:
 ```bash
 bash scripts/package-codex-skills.sh
 ```
+
+Codex dry-run install support is planned. Repo-local usage, manual copy, and zip
+packaging are the verified paths. See
+[Model Pack Install Verification](75_MODEL_PACK_INSTALL_VERIFICATION.md).

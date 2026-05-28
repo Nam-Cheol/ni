@@ -61,3 +61,21 @@ asks for authority.
 Global Codex skill installation and discovery paths are not claimed by this
 package. Treat global usage as experimental or planned until verified in a
 specific Codex environment.
+
+## Manual Copy And Zip Usage
+
+Manual copy is available from this source tree or from the zip archive after it
+is unpacked. Copy only the skill directories into a target folder that the user
+has verified for the current model host. Do not describe that target as a
+global Codex install path unless that host-specific path and loading behavior
+have been verified.
+
+Codex dry-run install support is planned. For now, verify the pack with:
+
+```bash
+bash scripts/check-skill-packs.sh
+bash scripts/package-codex-skills.sh
+```
+
+See `docs/75_MODEL_PACK_INSTALL_VERIFICATION.md` for the full installation and
+verification status.

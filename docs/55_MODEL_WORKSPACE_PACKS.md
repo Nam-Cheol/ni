@@ -32,7 +32,7 @@ result, it must report `BLOCKED` instead of substituting model judgment.
 | --- | --- | --- | --- |
 | Repo-local `ni` skills | Use skill files checked into the current project workspace. | Available for Codex-style repo-local skills only. | The model may edit planning docs and `.ni/contract.json`; `ni status`, `ni end`, and `ni run` remain authority. |
 | User-global skill pack | Install the same `ni` UX into a user's global model workspace skill folder. | Available only through a user-provided, verified target directory for the Claude pack; Codex global installation is not claimed because it has not been verified here. | Must not imply the CLI is bundled, installed, or bypassed. |
-| Downloadable zip skill pack | Provide a portable archive with skills, prompts, and README instructions. | Available for the Claude skill pack. | The archive packages UX only; users still need a trusted way to invoke the CLI gates. |
+| Downloadable zip skill pack | Provide a portable archive with skills, prompts, and README instructions. | Available for the Codex and Claude skill packs after `scripts/check-skill-packs.sh` and the package scripts pass. | The archive packages UX only; users still need a trusted way to invoke the CLI gates. |
 | Manual copy-paste workflow | Let no-terminal users copy planning text into a model workspace and paste CLI-produced proofs back into the conversation. | Experimental as a workflow pattern; not a supported no-terminal product path. | A model may not declare readiness, lock, or handoff from copied text unless the copied result came from the CLI. |
 | Future package installer | Install or update model workspace packs through a future package mechanism. | Planned. | Installer work is distribution infrastructure, not `ni-kernel` execution behavior. |
 
@@ -40,7 +40,7 @@ result, it must report `BLOCKED` instead of substituting model judgment.
 
 | Environment | Repo-local skills | User-global pack | Downloadable zip pack | Manual copy-paste | Future package installer |
 | --- | --- | --- | --- | --- | --- |
-| Codex-style skill folders | Available: `.agents/skills/ni-start`, `.agents/skills/ni-end`, and `.agents/skills/ni-run` exist in this repo. | Unverified: no global Codex install path is verified or documented as available. | Planned: can reuse the repo-local skill shape after packaging is defined. | Experimental: users can paste docs and CLI outputs, but repo-local skills are the preferred current path. | Planned. |
+| Codex-style skill folders | Available: `.agents/skills/ni-start`, `.agents/skills/ni-end`, and `.agents/skills/ni-run` exist in this repo; `packages/codex-skills` also includes `ni-status-review`. | Unverified: no global Codex install path is verified or documented as available. | Available: `scripts/package-codex-skills.sh` creates `dist/ni-codex-skills.zip`. | Experimental: users can paste docs and CLI outputs, but repo-local skills are the preferred current path. | Planned. |
 | Claude Skills / slash commands | Available as repository files under `packages/claude-skills`; slash-command behavior is not claimed. | Available only through `scripts/install-claude-skills.sh --target <verified-dir>`; no global Claude path is assumed. | Available: `scripts/package-claude-skills.sh` creates `dist/ni-claude-skills.zip`. | Experimental: generic instructions can still be copied when the host does not load skills. | Planned. |
 | Generic model instruction packs | Experimental: a model can read repository docs, but `.agents/skills` is a Codex-style convention. | Planned. | Planned. | Experimental: use visible instructions plus pasted CLI proofs. | Planned. |
 
@@ -57,7 +57,7 @@ The model workspace pack should cover these UX actions.
 | `ni-start` | Continue planning conversation and update `docs/plan/**`, `.ni/contract.json`, and session continuity from user intent. | `.agents/skills/ni-start/SKILL.md` exists. | Available for repo-local Codex-style skills. |
 | `ni-end` | Review CLI readiness, ask for explicit user confirmation, then let the CLI write `.ni/plan.lock.json`. | `.agents/skills/ni-end/SKILL.md` exists. | Available for repo-local Codex-style skills. |
 | `ni-run` | Compile a 4000-character-or-less handoff prompt from a valid lock. | `.agents/skills/ni-run/SKILL.md` exists. | Available for repo-local Codex-style skills. |
-| `ni-status-review` | Explain `ni status` or `ni status --proof` output, identify blockers, and suggest the next planning question. | `packages/claude-skills/ni-status-review/SKILL.md` exists. | Available for the Claude skill pack. |
+| `ni-status-review` | Explain `ni status` or `ni status --proof` output, identify blockers, and suggest the next planning question. | `packages/claude-skills/ni-status-review/SKILL.md` and `packages/codex-skills/ni-status-review/SKILL.md` exist. | Available for the Claude and Codex skill packs. |
 | `ni-readme-pamphlet-review` | Review README changes against the pamphlet strategy in `docs/52_README_PAMPHLET_STRATEGY.md`. | No standalone skill file exists yet. | Planned and optional. |
 
 `ni-status-review` is useful because status output is the main proof that a
@@ -87,6 +87,18 @@ docs/36_NI_RUN_HANDOFF.md
 The pack assumes the model workspace can read repository files and can either
 run the CLI or ask the user to provide exact CLI output.
 
+The packaged Codex skill source is:
+
+```text
+packages/codex-skills/
+  README.md
+  README.ko.md
+  ni-start/SKILL.md
+  ni-status-review/SKILL.md
+  ni-end/SKILL.md
+  ni-run/SKILL.md
+```
+
 ### User-global skill pack
 
 A user-global pack should mirror the repo-local behavior but live outside a
@@ -105,7 +117,31 @@ It must include:
 ### Downloadable zip skill pack
 
 A zip pack is a portable archive, not an installer that changes kernel
-behavior. The Claude archive shape is:
+behavior. The Codex archive shape is:
+
+```text
+ni-codex-skills/
+  README.md
+  README.ko.md
+  ni-start/SKILL.md
+  ni-status-review/SKILL.md
+  ni-end/SKILL.md
+  ni-run/SKILL.md
+```
+
+It is produced by:
+
+```bash
+bash scripts/package-codex-skills.sh
+```
+
+The output path is:
+
+```text
+dist/ni-codex-skills.zip
+```
+
+The Claude archive shape is:
 
 ```text
 ni-claude-skills/
@@ -208,3 +244,6 @@ If a lock hash mismatch exists, every pack must stop and report `BLOCKED`.
   complete no-terminal product.
 - Future package installer work must stay planned until there is a real
   implementation and validation path.
+
+See [Model Pack Install Verification](75_MODEL_PACK_INSTALL_VERIFICATION.md)
+for the current verification command, install paths, and status language.

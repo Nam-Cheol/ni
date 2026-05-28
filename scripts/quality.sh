@@ -11,6 +11,7 @@ python3 scripts/check-formatting.py
 python3 scripts/check-readme-surface.py
 python3 scripts/check-install-docs.py
 python3 scripts/check-skill-metadata.py
+bash scripts/check-skill-packs.sh
 python3 scripts/check-prompt-budget.py
 python3 scripts/check-core-boundary.py --self-test
 python3 scripts/check-assets.py

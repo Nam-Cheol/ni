@@ -82,8 +82,14 @@ report해야 한다.
 
 ## Validation
 
-Repository quality check는 repo-local Codex skills와 Claude skill pack의 metadata를
-검사한다:
+Dedicated skill-pack check는 source layout, metadata, authority boundaries,
+package-script contents, guarded dry-run installer를 검증한다:
+
+```bash
+bash scripts/check-skill-packs.sh
+```
+
+Repository quality check도 skill-pack check를 실행한다:
 
 ```bash
 bash scripts/quality.sh
@@ -94,3 +100,7 @@ Packaging check는 archive 생성 여부를 검증한다:
 ```bash
 bash scripts/package-claude-skills.sh
 ```
+
+Manual copy, zip package, dry-run install status는
+[Model Pack Install Verification](75_MODEL_PACK_INSTALL_VERIFICATION.ko.md)를
+참고한다.

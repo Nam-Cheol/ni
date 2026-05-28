@@ -84,8 +84,14 @@ report해야 한다.
 
 ## Validation
 
-Repository quality check는 repo-local skills와 packaged skill distributions의
-metadata를 검사한다:
+Dedicated skill-pack check는 source layout, metadata, authority boundaries,
+package-script contents를 검증한다:
+
+```bash
+bash scripts/check-skill-packs.sh
+```
+
+Repository quality check도 skill-pack check를 실행한다:
 
 ```bash
 bash scripts/quality.sh
@@ -96,3 +102,8 @@ Packaging check는 archive 생성 여부를 검증한다:
 ```bash
 bash scripts/package-codex-skills.sh
 ```
+
+Codex dry-run install support는 Planned다. Repo-local usage, manual copy, zip
+packaging이 verified paths다. 자세한 내용은
+[Model Pack Install Verification](75_MODEL_PACK_INSTALL_VERIFICATION.ko.md)를
+참고한다.
