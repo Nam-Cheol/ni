@@ -3,13 +3,14 @@
 
 from __future__ import annotations
 
+import os
 import re
 import shutil
 import subprocess
 from pathlib import Path
 
 
-ROOT = Path(__file__).resolve().parents[1]
+ROOT = Path(os.environ.get("NI_FORMAT_ROOT", Path(__file__).resolve().parents[1]))
 
 MARKDOWN_TABLES = {
     "README.md": ["## Choose your path", "## Read next"],
@@ -33,6 +34,16 @@ SHELL_FILES = [
     *[str(path.relative_to(ROOT)) for path in sorted((ROOT / "scripts").glob("*.sh"))],
 ]
 
+MARKDOWN_FILES = [
+    "README.md",
+    "README.ko.md",
+    *[
+        str(path.relative_to(ROOT))
+        for base in ("docs", "packages")
+        for path in sorted((ROOT / base).rglob("*.md"))
+    ],
+]
+
 MIN_LINE_COUNTS = {
     "README.md": 80,
     "README.ko.md": 80,
@@ -42,14 +53,15 @@ MIN_LINE_COUNTS = {
     "install.sh": 120,
 }
 
-KEY_MARKDOWN_FILES = [
-    "README.md",
-    "README.ko.md",
-    "packages/codex-skills/README.md",
-    "packages/codex-skills/README.ko.md",
-    "packages/claude-skills/README.md",
-    "packages/claude-skills/README.ko.md",
-]
+SHELL_SHEBANGS = {
+    "install.sh": "#!/usr/bin/env sh",
+}
+
+YAML_COLLAPSE_KEYS = {
+    ".github/workflows/release.yml": ("name", "on", "permissions", "jobs", "steps"),
+    ".github/workflows/ci.yml": ("name", "on", "jobs", "steps"),
+    ".goreleaser.yaml": ("version", "project_name", "builds", "archives", "checksum"),
+}
 
 
 def fail(message: str) -> None:
@@ -146,26 +158,44 @@ def check_min_line_counts() -> None:
             fail(f"{path} has only {line_count} lines; possible line-collapsed formatting")
 
 
-def check_no_collapsed_markdown_blocks() -> None:
-    for path in KEY_MARKDOWN_FILES:
-        in_fence = False
-        for line_number, line in enumerate(read_lines(path), start=1):
-            if line.strip().startswith("```"):
-                in_fence = not in_fence
-                continue
-            if in_fence:
-                continue
+def check_markdown_file_shape(path: str) -> None:
+    in_fence = False
+    for line_number, line in enumerate(read_lines(path), start=1):
+        stripped = line.strip()
 
-            heading_markers = re.findall(r"(^|\s)#{1,6}\s+\S", line)
-            if len(heading_markers) > 1:
-                fail(f"{path}:{line_number} contains multiple headings on one line")
+        if "```" in line:
+            if not stripped.startswith("```"):
+                fail(f"{path}:{line_number} contains an inline fenced code marker")
+            if stripped.count("```") > 1:
+                fail(f"{path}:{line_number} opens and closes a fenced code block inline")
+            if not re.fullmatch(r"```[A-Za-z0-9_.+-]*", stripped):
+                fail(f"{path}:{line_number} has code fence content on the fence line")
+            in_fence = not in_fence
+            continue
 
-            stripped = line.strip()
-            if stripped.startswith("#") and "|" in stripped:
+        if in_fence:
+            continue
+
+        if stripped.startswith("#"):
+            if re.search(r"\S\s+#{1,6}\s+\S", stripped):
+                fail(f"{path}:{line_number} contains more than one heading on one line")
+            if "|" in stripped:
                 fail(f"{path}:{line_number} appears to contain a collapsed heading and table row")
+            continue
 
-            if stripped.startswith("|") and " | | " in line:
+        if re.search(r"\S\s+#{1,6}\s+\S", line):
+            fail(f"{path}:{line_number} contains a heading after prose on the same line")
+
+        if stripped.startswith("|"):
+            if re.search(r"\|\s*\|\s*\|", line):
                 fail(f"{path}:{line_number} appears to contain collapsed Markdown table rows")
+            if re.search(r"\|\s*(?:#{1,6}\s|```)", line):
+                fail(f"{path}:{line_number} appears to contain collapsed Markdown after a table row")
+
+
+def check_no_collapsed_markdown_blocks() -> None:
+    for path in MARKDOWN_FILES:
+        check_markdown_file_shape(path)
 
 
 def check_quality_script_header() -> None:
@@ -180,6 +210,14 @@ def check_install_script_header() -> None:
         fail("install.sh must start with '#!/usr/bin/env sh' and 'set -eu'")
 
 
+def check_shell_shebang_lines() -> None:
+    for path in SHELL_FILES:
+        first_line = read_lines(path)[0]
+        expected = SHELL_SHEBANGS.get(path, "#!/usr/bin/env bash")
+        if first_line != expected:
+            fail(f"{path}:1 must be exactly {expected!r}; possible collapsed shell script")
+
+
 def run_check(command: list[str], label: str) -> None:
     result = subprocess.run(command, cwd=ROOT, text=True, capture_output=True)
     if result.returncode != 0:
@@ -187,7 +225,30 @@ def run_check(command: list[str], label: str) -> None:
         fail(f"{label} failed: {details}")
 
 
+def check_yaml_not_collapsed() -> None:
+    for path in YAML_FILES:
+        lines = read_lines(path)
+        if len(lines) < 10:
+            fail(f"{path} has only {len(lines)} lines; possible line-collapsed YAML")
+
+        expected_keys = YAML_COLLAPSE_KEYS.get(path, ())
+        for line_number, line in enumerate(lines, start=1):
+            key_hits = [
+                key for key in expected_keys if re.search(rf"(^|\s){re.escape(key)}:", line)
+            ]
+            if len(key_hits) >= 3:
+                fail(
+                    f"{path}:{line_number} contains multiple YAML sections on one line: "
+                    + ", ".join(key_hits)
+                )
+
+            if len(line) > 240 and len(re.findall(r"(^|\s)[A-Za-z0-9_-]+:", line)) >= 3:
+                fail(f"{path}:{line_number} is suspiciously long YAML with multiple keys")
+
+
 def check_yaml() -> None:
+    check_yaml_not_collapsed()
+
     if shutil.which("ruby"):
         run_check(
             [
@@ -224,6 +285,7 @@ def main() -> None:
     check_no_collapsed_markdown_blocks()
     check_quality_script_header()
     check_install_script_header()
+    check_shell_shebang_lines()
     check_yaml()
     check_shell_syntax()
     print("formatting checks passed")
