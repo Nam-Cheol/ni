@@ -94,7 +94,7 @@ go run ./cmd/ni run --dir ./my-plan --target generic --max-chars 4000
 | No-terminal method | Experimental | CLI run 전 Intent Lock method를 배우거나 draft하고 싶을 때 사용합니다. | Assisted drafting일 뿐 deterministic validation은 아닙니다. |
 | Release binary | Available | Published release에서 Go 없이 `ni`를 받고 싶을 때 사용합니다. | 검증된 v0.3.0 GitHub Release archives와 checksums를 사용합니다. |
 | Curl installer | Available | Release assets용 작은 shell installer를 원할 때 사용합니다. | Script를 먼저 inspect합니다. Installer는 검증된 v0.3.0 archive와 checksum file을 download합니다. |
-| Homebrew | Planned | Package manager를 선호할 때 사용합니다. | Published tap이나 formula가 없습니다. |
+| Homebrew | Planned | Package manager를 선호할 때 사용합니다. | Published tap이나 formula가 없습니다; tap plan을 참고하세요. |
 
 Release binary 설치:
 
@@ -160,5 +160,6 @@ checks, prompt compilation을 소유합니다.
 | [Why ni exists](docs/product-story.ko.md) | Compile-before-run 뒤의 짧은 product story. |
 | [Intent Lock Protocol](docs/42_INTENT_LOCK_PROTOCOL.md) | Readiness, locking, hash trust, blocked handoff의 깊은 규칙. |
 | [Install ni](docs/22_INSTALL.md) | Source, local build, release binary, curl installer details. |
+| [Homebrew Tap Plan](docs/72_HOMEBREW_TAP_PLAN.ko.md) | Planned Homebrew route; package-manager availability claim 없음. |
 | [Command reference](docs/commands.ko.md) | Implemented CLI surface. |
 | [README Visual Wireframe](docs/63_README_VISUAL_WIREFRAME.ko.md) | 이 README의 visual layout contract. |

@@ -3,6 +3,9 @@
 This document plans Homebrew distribution for `ni` without claiming that
 Homebrew installation works today.
 
+See [Homebrew Tap Plan](72_HOMEBREW_TAP_PLAN.md) for the current tap route
+decision and creation checklist.
+
 Current status: Planned. There is no published Homebrew formula for `ni`, no
 verified `brew install` path, and no package-manager release automation enabled
 for Homebrew.
@@ -16,6 +19,11 @@ available tap.
 
 Use `Nam-Cheol/homebrew-tap` as the first planned Homebrew path, after the tap
 repository exists and ownership is confirmed.
+
+Start with a manual formula in the external tap. Keep the repository-local
+[Homebrew Formula Draft](71_HOMEBREW_FORMULA_DRAFT.md) as a non-published draft
+only. Defer GoReleaser-generated formula updates until the tap exists and the
+owner explicitly confirms that GoReleaser should maintain the tap.
 
 Do not use a repository-local Formula as the user-facing install path. A
 repository-local formula may be useful later as a review fixture or temporary

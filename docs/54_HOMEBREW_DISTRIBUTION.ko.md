@@ -3,6 +3,9 @@
 이 문서는 `ni`의 Homebrew distribution을 계획한다. 아직 Homebrew installation이
 동작한다고 claim하지 않는다.
 
+Current tap route decision과 creation checklist는
+[Homebrew Tap Plan](72_HOMEBREW_TAP_PLAN.ko.md)을 참고한다.
+
 현재 상태: Planned. `ni`용 published Homebrew formula는 없고, verified
 `brew install` path도 없다. Homebrew package-manager release automation은 아니다.
 
@@ -14,6 +17,11 @@ direct repository check는 "Repository not found."를 반환했다. 따라서
 
 첫 Homebrew path는 `Nam-Cheol/homebrew-tap`을 사용한다. 단, tap repository가
 실제로 존재하고 ownership이 확인된 뒤에만 그렇게 한다.
+
+External tap 안의 manual formula로 시작한다. Repository-local
+[Homebrew Formula Draft](71_HOMEBREW_FORMULA_DRAFT.md)는 non-published draft로만
+유지한다. GoReleaser-generated formula update는 tap이 존재하고 owner가
+GoReleaser로 tap을 관리하기를 명시적으로 confirm할 때까지 defer한다.
 
 Repository-local Formula를 user-facing install path로 쓰지 않는다.
 Repository-local formula는 나중에 review fixture나 temporary test artifact로는

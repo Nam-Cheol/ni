@@ -94,7 +94,7 @@ go run ./cmd/ni run --dir ./my-plan --target generic --max-chars 4000
 | No-terminal method | Experimental | You want to learn or draft the Intent Lock method before a CLI run. | Assisted drafting only; it is not deterministic validation. |
 | Release binary | Available | You want `ni` without Go from a published release. | Use the verified v0.3.0 GitHub Release archives and checksums. |
 | Curl installer | Available | You want a small shell installer for release assets. | Inspect the script first; it downloads the verified v0.3.0 archive and checksum file. |
-| Homebrew | Planned | You prefer a package manager. | No tap or formula is published. |
+| Homebrew | Planned | You prefer a package manager. | No tap or formula is published; see the tap plan. |
 
 Release binary install:
 
@@ -159,5 +159,6 @@ checks, and prompt compilation.
 | [Why ni exists](docs/product-story.md) | The short product story behind compile-before-run. |
 | [Intent Lock Protocol](docs/42_INTENT_LOCK_PROTOCOL.md) | The deeper rules for readiness, locking, hash trust, and blocked handoff. |
 | [Install ni](docs/22_INSTALL.md) | Source, local build, release binary, and curl installer details. |
+| [Homebrew Tap Plan](docs/72_HOMEBREW_TAP_PLAN.md) | Planned Homebrew route; no package-manager availability claim. |
 | [Command reference](docs/commands.md) | The implemented CLI surface. |
 | [README Visual Wireframe](docs/63_README_VISUAL_WIREFRAME.md) | The visual layout contract for this README. |
