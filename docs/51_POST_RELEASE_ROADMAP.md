@@ -1,6 +1,7 @@
 # Post-Release Roadmap
 
-This roadmap defines the next phase after the v0.2.0 launch work. It preserves
+This roadmap defines the next phase after the v0.3.0 release and installer
+verification work. It preserves
 `ni` as `ni-kernel`: a Project Intent Compiler for AI Agents and a
 deterministic pre-runtime control layer for accepted project intent.
 
@@ -24,22 +25,24 @@ queues, adapters, evidence collection loops, or release workflows.
 
 ## Phases
 
-### v0.2.x: launch stabilization
+### v0.3.x: release distribution stabilization
 
-Focus on small post-launch fixes that make the current kernel easier to trust:
+Focus on small post-release fixes that make the current kernel easier to trust:
 
-- fix launch issues found by source-first users;
+- fix launch issues found by source, local binary, release binary, or curl
+  installer users;
 - polish documentation around the Intent Lock Protocol, source-of-truth rules,
   and target boundaries;
 - expand examples, especially non-software examples and locked handoff samples;
 - fix bugs in validation, locking, prompt compilation, target export, and
   command output;
-- keep release notes, README links, examples, and public launch docs aligned.
+- keep release notes, README links, examples, public launch docs, install docs,
+  release verification docs, and distribution docs aligned.
 
 This phase must not add runtime execution behavior. `ni run` remains prompt
 compilation only.
 
-### v0.3: conversation authoring UX hardening
+### v0.4: conversation authoring UX hardening
 
 Focus on making sustained model-user planning safer and more auditable:
 
@@ -55,7 +58,7 @@ Focus on making sustained model-user planning safer and more auditable:
 
 The CLI remains the authority. Skills and models remain UX.
 
-### v0.4: target seed quality and conformance
+### v0.5: target seed quality and conformance
 
 Focus on making locked-plan seed material more useful while keeping it inert:
 
@@ -71,7 +74,7 @@ Focus on making locked-plan seed material more useful while keeping it inert:
 This phase may improve seed quality. It must not make targets into executable
 adapters inside `ni-kernel`.
 
-### v0.5: benchmark data and case studies
+### v0.6: benchmark data and case studies
 
 Focus on evidence about planning quality without running downstream agents:
 

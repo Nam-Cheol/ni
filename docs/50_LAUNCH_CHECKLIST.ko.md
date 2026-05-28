@@ -29,7 +29,8 @@ bash scripts/launch-check.sh
       `bash scripts/quality.sh`, 또는 `bash scripts/install-check.sh`를 사용한다.
 - [ ] README가 install, security, release-readiness, benchmark, target story,
       launch checklist docs로 link한다.
-- [ ] README는 published GitHub Release에 존재하는 hosted binaries만 claim하고,
+- [ ] README는 published GitHub Release에 존재하는 release binaries만 claim하고,
+      curl installer availability는 verification 이후에만 claim하며,
       package-manager distribution이나 package publishing은 claim하지 않는다.
 
 ## README.ko Parity
@@ -100,8 +101,9 @@ bash scripts/launch-check.sh
 - [ ] [docs/22_INSTALL.md](22_INSTALL.md)가 존재한다.
 - [ ] `bash scripts/install-check.sh`가 pass한다.
 - [ ] Source, local build, temporary local install commands가 작동한다.
-- [ ] Install docs가 Homebrew, GoReleaser, package-manager, hosted binary
-      availability를 claim하지 않는다.
+- [ ] Install docs는 source, local binary, verified release binary, verified curl
+      installer availability만 claim한다. Homebrew, GoReleaser, package-manager,
+      hosted service availability는 claim하지 않는다.
 
 ## Issue Templates
 
@@ -115,7 +117,8 @@ bash scripts/launch-check.sh
 
 ## No False Claims
 
-- [ ] Public docs는 존재하는 published binary release assets만 claim한다.
+- [ ] Public docs는 존재하는 published binary release assets와 해당 assets에 대해
+      verified된 curl installer path만 claim한다.
 - [ ] Public docs가 package publishing, package-manager support, Homebrew
       support를 claim하지 않는다.
 - [ ] Public docs가 hosted service availability를 claim하지 않는다.

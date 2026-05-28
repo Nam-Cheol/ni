@@ -3,8 +3,9 @@
 Date: 2026-05-28
 
 Scope: Verify the published GitHub Release assets for `v0.3.0` before marking
-release binaries as available. This verification does not mark the curl
-installer, Homebrew, Scoop, or any package-manager distribution as available.
+release binaries as available. This release-asset verification alone does not
+mark the curl installer, Homebrew, Scoop, or any package-manager distribution as
+available.
 
 Repository release:
 `https://github.com/Nam-Cheol/ni/releases/tag/v0.3.0`
@@ -134,5 +135,9 @@ Release binaries can now be marked as available.
 This verification is the evidence used by the README and install documentation
 to mark release binary installation as Available.
 
-The curl installer, Homebrew, Scoop, and package-manager distribution remain
-not available until separately verified.
+The curl installer is covered by
+[v0.3.0 Curl Installer Verification](71_CURL_INSTALLER_VERIFICATION_v0.3.0.md)
+and is Available for the verified v0.3.0 release assets.
+
+Homebrew, Scoop, and package-manager distribution remain Planned or unavailable
+until separately published and verified.

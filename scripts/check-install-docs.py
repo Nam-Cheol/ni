@@ -29,6 +29,8 @@ DISTRIBUTION_EXPECTED = {
     "No-terminal mode": "Experimental",
 }
 
+INSTALL_EXPECTED = README_EXPECTED
+
 REQUIRED_MARKERS = {
     "README.md": [
         "v0.3.0 release binaries are available",
@@ -41,6 +43,7 @@ REQUIRED_MARKERS = {
         "Homebrew를 포함한 package-manager distribution은 아직 Available이 아닙니다",
     ],
     "docs/22_INSTALL.md": [
+        "Every public install path has exactly one status:",
         "Release binary status: Available.",
         "Curl installer status: Available for verified v0.3.0 release assets.",
         "Package manager status: Planned.",
@@ -62,6 +65,58 @@ REQUIRED_MARKERS = {
         "현재 상태: Planned.",
         "published Homebrew formula는 없고",
     ],
+    "docs/70_RELEASE_VERIFICATION_v0.3.0.md": [
+        "This release-asset verification alone does not",
+        "v0.3.0 Curl Installer Verification",
+        "Available for the verified v0.3.0 release assets",
+        "Homebrew, Scoop, and package-manager distribution remain Planned or unavailable",
+    ],
+    "docs/70_RELEASE_VERIFICATION_v0.3.0.ko.md": [
+        "이 release-asset verification만으로는 curl 설치",
+        "v0.3.0 Curl Installer Verification",
+        "verified v0.3.0 release assets에 대해 Available",
+        "Homebrew, Scoop, 패키지 매니저 배포는 별도 publish와 verification 전까지",
+    ],
+    "docs/71_CURL_INSTALLER_VERIFICATION_v0.3.0.md": [
+        "Curl installer status: Available for the verified v0.3.0 release assets.",
+        "Homebrew status: Planned.",
+        "No package-manager availability is claimed by this verification.",
+    ],
+    "docs/71_CURL_INSTALLER_VERIFICATION_v0.3.0.ko.md": [
+        "Curl installer status: verified v0.3.0 release assets에 대해 Available.",
+        "Homebrew status: Planned.",
+        "이 검증은 package-manager availability를 claim하지 않는다.",
+    ],
+    "docs/72_HOMEBREW_TAP_PLAN.md": [
+        "Current Homebrew status: Planned.",
+        "There is no owner-confirmed tap",
+        "Homebrew remains Planned until all of these are true:",
+    ],
+    "docs/72_HOMEBREW_TAP_PLAN.ko.md": [
+        "Current Homebrew status: Planned.",
+        "Owner-confirmed tap",
+        "Homebrew는 다음이 모두 true가 될 때까지 Planned로 남는다:",
+    ],
+    "docs/50_LAUNCH_CHECKLIST.md": [
+        "only claims curl installer availability after verification",
+        "verified release binary, and",
+        "verified curl installer availability",
+        "curl installer path that has been verified against those assets",
+    ],
+    "docs/50_LAUNCH_CHECKLIST.ko.md": [
+        "curl installer availability는 verification 이후에만 claim",
+        "verified release binary, verified curl",
+        "installer availability만 claim",
+        "verified된 curl installer path만 claim",
+    ],
+    "docs/51_POST_RELEASE_ROADMAP.md": [
+        "after the v0.3.0 release and installer",
+        "release verification docs, and distribution docs aligned",
+    ],
+    "docs/51_POST_RELEASE_ROADMAP.ko.md": [
+        "v0.3.0 release와 installer verification work 이후",
+        "release verification docs, distribution docs 정렬 유지",
+    ],
     "docs/68_RELEASE_NOTES_v0.3.0.md": [
         "Tag suggestion: `v0.3.0`",
         "do not publish a release",
@@ -80,8 +135,12 @@ FORBIDDEN_AFFIRMATIVE = [
     "Status: available. `install.sh`",
     "| Homebrew | Available |",
     "| Package manager mode | Available |",
+    "| Homebrew | 사용 가능 |",
+    "| Package manager mode | 사용 가능 |",
     "Homebrew is available",
     "Package manager mode is available",
+    "The curl installer, Homebrew, Scoop, and package-manager distribution remain\nnot available until separately verified.",
+    "curl 설치 스크립트, Homebrew, Scoop, 패키지 매니저 배포는 별도 검증 전까지\nAvailable 상태가 아니다.",
 ]
 
 
@@ -139,6 +198,18 @@ def check_forbidden_claims() -> None:
         "docs/install-curl.ko.md",
         "docs/53_DISTRIBUTION_STRATEGY.md",
         "docs/53_DISTRIBUTION_STRATEGY.ko.md",
+        "docs/54_HOMEBREW_DISTRIBUTION.md",
+        "docs/54_HOMEBREW_DISTRIBUTION.ko.md",
+        "docs/70_RELEASE_VERIFICATION_v0.3.0.md",
+        "docs/70_RELEASE_VERIFICATION_v0.3.0.ko.md",
+        "docs/71_CURL_INSTALLER_VERIFICATION_v0.3.0.md",
+        "docs/71_CURL_INSTALLER_VERIFICATION_v0.3.0.ko.md",
+        "docs/72_HOMEBREW_TAP_PLAN.md",
+        "docs/72_HOMEBREW_TAP_PLAN.ko.md",
+        "docs/50_LAUNCH_CHECKLIST.md",
+        "docs/50_LAUNCH_CHECKLIST.ko.md",
+        "docs/51_POST_RELEASE_ROADMAP.md",
+        "docs/51_POST_RELEASE_ROADMAP.ko.md",
         "docs/68_RELEASE_NOTES_v0.3.0.md",
         "docs/68_RELEASE_NOTES_v0.3.0.ko.md",
     ]
@@ -152,6 +223,7 @@ def check_forbidden_claims() -> None:
 def main() -> None:
     for path in ["README.md", "README.ko.md"]:
         check_expected_rows(path, README_EXPECTED)
+    check_expected_rows("docs/22_INSTALL.md", INSTALL_EXPECTED)
     for path in ["docs/53_DISTRIBUTION_STRATEGY.md", "docs/53_DISTRIBUTION_STRATEGY.ko.md"]:
         check_expected_rows(path, DISTRIBUTION_EXPECTED)
     check_required_markers()

@@ -30,9 +30,9 @@ bash scripts/launch-check.sh
       `bash scripts/quality.sh`, or `bash scripts/install-check.sh`.
 - [ ] README links to install, security, release-readiness, benchmark, target
       story, and launch checklist docs.
-- [ ] README only claims hosted binaries that exist in the published GitHub
-      Release, and does not claim package-manager distribution or package
-      publishing.
+- [ ] README only claims release binaries that exist in the published GitHub
+      Release, only claims curl installer availability after verification, and
+      does not claim package-manager distribution or package publishing.
 
 ## README.ko Parity
 
@@ -103,8 +103,9 @@ bash scripts/launch-check.sh
 - [ ] [docs/22_INSTALL.md](22_INSTALL.md) exists.
 - [ ] `bash scripts/install-check.sh` passes.
 - [ ] Source, local build, and temporary local install commands work.
-- [ ] Install docs do not claim Homebrew, GoReleaser, package-manager, or hosted
-      binary availability.
+- [ ] Install docs only claim source, local binary, verified release binary, and
+      verified curl installer availability; they do not claim Homebrew,
+      GoReleaser, package-manager, or hosted service availability.
 
 ## Issue Templates
 
@@ -117,7 +118,8 @@ bash scripts/launch-check.sh
 
 ## No False Claims
 
-- [ ] Public docs only claim published binary release assets that exist.
+- [ ] Public docs only claim published binary release assets that exist and the
+      curl installer path that has been verified against those assets.
 - [ ] Public docs do not claim package publishing, package-manager support, or
       Homebrew support.
 - [ ] Public docs do not claim hosted service availability.

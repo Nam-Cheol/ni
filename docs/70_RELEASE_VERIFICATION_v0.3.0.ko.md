@@ -3,8 +3,8 @@
 날짜: 2026-05-28
 
 범위: 릴리스 바이너리를 Available로 표시하기 전에 게시된 GitHub Release
-`v0.3.0`의 자산을 검증한다. 이 검증은 curl 설치 스크립트, Homebrew,
-Scoop 또는 패키지 매니저 배포를 Available로 표시하지 않는다.
+`v0.3.0`의 자산을 검증한다. 이 release-asset verification만으로는 curl 설치
+스크립트, Homebrew, Scoop 또는 패키지 매니저 배포를 Available로 표시하지 않는다.
 
 저장소 릴리스:
 `https://github.com/Nam-Cheol/ni/releases/tag/v0.3.0`
@@ -134,5 +134,9 @@ ni_0.3.0_darwin_arm64.tar.gz
 이 검증은 README와 install 문서에서 release binary install을 Available로
 표시하는 근거다.
 
-curl 설치 스크립트, Homebrew, Scoop, 패키지 매니저 배포는 별도 검증 전까지
-Available 상태가 아니다.
+curl 설치 스크립트는
+[v0.3.0 Curl Installer Verification](71_CURL_INSTALLER_VERIFICATION_v0.3.0.ko.md)에서
+다루며, verified v0.3.0 release assets에 대해 Available이다.
+
+Homebrew, Scoop, 패키지 매니저 배포는 별도 publish와 verification 전까지
+Planned이거나 unavailable 상태로 남는다.

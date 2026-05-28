@@ -8,6 +8,20 @@ v0.3.0 GitHub Release archives, or through the verified curl installer.
 - Go 1.22 or newer.
 - Git, if you want builds to include a git-derived version string.
 
+## Install Path Status
+
+Every public install path has exactly one status:
+
+| Path | Status | Notes |
+| --- | --- | --- |
+| Source | Available | Run `go run ./cmd/ni ...` from this checkout. |
+| Local binary | Available | Build or install locally from this checkout. |
+| Release binary | Available | Use the verified v0.3.0 GitHub Release archives and checksums. |
+| Curl installer | Available | Use the verified v0.3.0 `install.sh` path after inspecting the script. |
+| Homebrew | Planned | No tap or formula is published or tested. |
+| Model workspaces | Experimental | Repo-local model assistance can draft docs; the CLI remains authority. |
+| No-terminal method | Experimental | Assisted planning only; deterministic validation still requires CLI proof. |
+
 ## Run from source
 
 Use this mode when developing `ni` or trying the CLI without creating a binary:
