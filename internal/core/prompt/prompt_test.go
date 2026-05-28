@@ -190,6 +190,9 @@ func readyLockedProject(t *testing.T) string {
 	if err := os.WriteFile(filepath.Join(dir, ".ni", "contract.json"), data, 0o644); err != nil {
 		t.Fatalf("writing ready contract: %v", err)
 	}
+	if err := os.WriteFile(filepath.Join(dir, "docs", "plan", "10_open_questions.md"), []byte("# Open questions\n\nNo open questions are listed in this fixture.\n"), 0o644); err != nil {
+		t.Fatalf("writing ready open question doc: %v", err)
+	}
 	if _, err := lock.CreateAt(dir, time.Date(2026, 5, 26, 1, 2, 3, 0, time.UTC)); err != nil {
 		t.Fatalf("creating lock: %v", err)
 	}

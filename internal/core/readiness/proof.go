@@ -16,16 +16,20 @@ func Proof(result Result) []ProofItem {
 	items := make([]ProofItem, 0, len(result.Issues))
 	for _, issue := range result.Issues {
 		items = append(items, ProofItem{
-			RuleID:     issue.RuleID,
-			Severity:   issue.Severity,
-			References: issueReferences(issue),
-			Message:    proofMessage(issue),
+			RuleID:         issue.RuleID,
+			Severity:       issue.Severity,
+			References:     issueReferences(issue),
+			Message:        proofMessage(issue),
+			SyncDiagnostic: issue.SyncDiagnostic,
 		})
 	}
 	return items
 }
 
 func proofMessage(issue Issue) string {
+	if issue.SyncDiagnostic != nil {
+		return ensureSentence(issue.SyncDiagnostic.Problem)
+	}
 	references := issueReferences(issue)
 	ref := issue.RuleID
 	if len(references) > 0 {

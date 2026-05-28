@@ -109,6 +109,11 @@ write_ready_contract() {
   "open_questions": []
 }
 JSON
+  cat >"$dir/docs/plan/10_open_questions.md" <<'MD'
+# Open questions
+
+No open questions are listed in this fixture.
+MD
 }
 
 complete_amendment() {

@@ -1,0 +1,75 @@
+{
+  "schema": "ni.contract.v0",
+  "readiness_profile": "prototype",
+  "product_type": "software",
+  "delivery_surfaces": ["cli"],
+  "interaction_mode": "human_to_system",
+  "project": {
+    "id": "docsync-fixture",
+    "name": "Docsync Fixture",
+    "purpose": "Exercise docs-contract sync validation.",
+    "status": "draft"
+  },
+  "non_goals": [
+    {
+      "id": "NG-001",
+      "title": "Do not auto-fix sync drift."
+    }
+  ],
+  "capabilities": [
+    {
+      "id": "CAP-001",
+      "title": "Sync docs and contract",
+      "status": "accepted",
+      "requirements": ["REQ-001"],
+      "evaluations": ["EVAL-001"],
+      "risks": ["RISK-001"],
+      "artifacts": ["ART-001"]
+    }
+  ],
+  "requirements": [
+    {
+      "id": "REQ-001",
+      "title": "Sync validation is deterministic.",
+      "status": "accepted"
+    }
+  ],
+  "decisions": [
+    {
+      "id": "DEC-001",
+      "title": "Docs and contract must stay synchronized",
+      "status": "accepted"
+    }
+  ],
+  "risks": [
+    {
+      "id": "RISK-001",
+      "title": "Planning drift",
+      "severity": "high",
+      "status": "accepted",
+      "mitigation": "Block readiness when docs and contract drift."
+    }
+  ],
+  "evaluations": [
+    {
+      "id": "EVAL-001",
+      "title": "Consistent fixture passes",
+      "method": "unit fixture test"
+    }
+  ],
+  "artifacts": [
+    {
+      "id": "ART-001",
+      "path": "docs/plan/",
+      "kind": "planning_docs"
+    }
+  ],
+  "open_questions": [
+    {
+      "id": "OQ-001",
+      "title": "Resolved planning question",
+      "blocker": false,
+      "status": "resolved"
+    }
+  ]
+}

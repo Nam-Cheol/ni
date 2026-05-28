@@ -332,6 +332,36 @@ func TestStatusProofJSON(t *testing.T) {
 	}
 }
 
+func TestStatusProofTextShowsSyncDiagnosticFields(t *testing.T) {
+	dir := t.TempDir()
+	if code := run([]string{"init", "--dir", dir}, &bytes.Buffer{}, &bytes.Buffer{}); code != 0 {
+		t.Fatalf("init expected exit code 0, got %d", code)
+	}
+	writeReadyContractForCLI(t, dir)
+	decisionDoc := "# Decision log\n\n## DEC-001: Decision\n\nStatus: rejected\n"
+	if err := os.WriteFile(filepath.Join(dir, "docs", "plan", "11_decision_log.md"), []byte(decisionDoc), 0o644); err != nil {
+		t.Fatalf("writing conflicting decision doc: %v", err)
+	}
+
+	var stdout bytes.Buffer
+	code := run([]string{"status", "--dir", dir, "--proof"}, &stdout, &bytes.Buffer{})
+	if code != 0 {
+		t.Fatalf("expected exit code 0, got %d", code)
+	}
+	out := stdout.String()
+	for _, want := range []string{
+		"ID: DEC-001",
+		"Location: docs/plan/11_decision_log.md:3",
+		"Problem: DEC-001 status is \"rejected\" but .ni/contract.json says \"accepted\".",
+		"Suggested repair: Update the stale source so the docs status and contract status match.",
+		"Blocks ni-end: true",
+	} {
+		if !strings.Contains(out, want) {
+			t.Fatalf("expected %q in proof output, got %q", want, out)
+		}
+	}
+}
+
 func TestStatusJSONInvalidContractStructuredError(t *testing.T) {
 	dir := t.TempDir()
 	if code := run([]string{"init", "--dir", dir}, &bytes.Buffer{}, &bytes.Buffer{}); code != 0 {
@@ -1887,6 +1917,9 @@ func writeReadyContractForCLI(t *testing.T, dir string) {
 	if err := os.WriteFile(filepath.Join(dir, "docs", "plan", "06_risks_security.md"), []byte("# Risks and security\n\nNo accepted risks are listed in this fixture.\n"), 0o644); err != nil {
 		t.Fatalf("writing ready risk doc: %v", err)
 	}
+	if err := os.WriteFile(filepath.Join(dir, "docs", "plan", "10_open_questions.md"), []byte("# Open questions\n\nNo open questions are listed in this fixture.\n"), 0o644); err != nil {
+		t.Fatalf("writing ready open question doc: %v", err)
+	}
 }
 
 func writeReadyWithDeferralsContractForCLI(t *testing.T, dir string) {
@@ -1920,6 +1953,10 @@ func writeReadyWithDeferralsContractForCLI(t *testing.T, dir string) {
 	decisionDoc := "# Decision log\n\n## DEC-001: Decision\n\nStatus: deferred\n"
 	if err := os.WriteFile(filepath.Join(dir, "docs", "plan", "11_decision_log.md"), []byte(decisionDoc), 0o644); err != nil {
 		t.Fatalf("writing ready-with-deferrals decision doc: %v", err)
+	}
+	openQuestionDoc := "# Open questions\n\n## OQ-001: Non-blocking question\n\nBlocker: false\n\nStatus: open\n"
+	if err := os.WriteFile(filepath.Join(dir, "docs", "plan", "10_open_questions.md"), []byte(openQuestionDoc), 0o644); err != nil {
+		t.Fatalf("writing ready-with-deferrals open question doc: %v", err)
 	}
 }
 

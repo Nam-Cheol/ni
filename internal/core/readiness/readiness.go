@@ -33,16 +33,18 @@ type Result struct {
 }
 
 type Issue struct {
-	RuleID   string `json:"rule_id"`
-	Severity string `json:"severity"`
-	Message  string `json:"message"`
+	RuleID         string              `json:"rule_id"`
+	Severity       string              `json:"severity"`
+	Message        string              `json:"message"`
+	SyncDiagnostic *docsync.Diagnostic `json:"sync_diagnostic,omitempty"`
 }
 
 type ProofItem struct {
-	RuleID     string   `json:"rule_id"`
-	Severity   string   `json:"severity"`
-	References []string `json:"references,omitempty"`
-	Message    string   `json:"message"`
+	RuleID         string              `json:"rule_id"`
+	Severity       string              `json:"severity"`
+	References     []string            `json:"references,omitempty"`
+	Message        string              `json:"message"`
+	SyncDiagnostic *docsync.Diagnostic `json:"sync_diagnostic,omitempty"`
 }
 
 type NextQuestion struct {
@@ -100,7 +102,7 @@ func Evaluate(dir string) Result {
 
 	issues = append(issues, evaluateContract(c, rules)...)
 	for _, finding := range docsync.Check(root, c) {
-		issues = append(issues, issue(rules, activeProfile, "R012", finding.Message))
+		issues = append(issues, syncIssue(rules, activeProfile, finding))
 	}
 	result := resultFromIssues(activeProfile, issues)
 	result.ProductType = c.ProductType
@@ -325,6 +327,12 @@ func issue(rules profileRules, activeProfile string, ruleID string, message stri
 		return block(ruleID, message)
 	}
 	return deferIssue(ruleID, message)
+}
+
+func syncIssue(rules profileRules, activeProfile string, finding docsync.Finding) Issue {
+	item := issue(rules, activeProfile, "R012", finding.Message)
+	item.SyncDiagnostic = &finding.Diagnostic
+	return item
 }
 
 func (rules profileRules) severity(activeProfile string, ruleID string) string {

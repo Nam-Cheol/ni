@@ -1,0 +1,25 @@
+{
+  "schema": "ni.amendment.v0",
+  "id": "AMEND-001",
+  "title": "Synchronize open question records",
+  "reason": "The stronger docs-contract sync diagnostics require resolved and open question IDs to be represented consistently in docs and contract.",
+  "affected_docs": [
+    "docs/plan/10_open_questions.md"
+  ],
+  "affected_contract_ids": [
+    "OQ-001",
+    "OQ-002"
+  ],
+  "proposed_changes": [
+    "Represent OQ-001 as resolved in both docs and contract.",
+    "Represent OQ-002 as an open non-blocking question in canonical docs section format."
+  ],
+  "risk_impact": "No readiness weakening or runtime behavior is introduced; the change repairs example sync drift.",
+  "readiness_impact": "The example remains READY_WITH_DEFERRALS with OQ-002 as a non-blocking deferral.",
+  "created_from_feedback_refs": [],
+  "created_from_pressure_refs": [],
+  "status": "applied",
+  "created_at": "2026-05-28T08:40:44Z",
+  "applied_at": "2026-05-28T08:40:59Z",
+  "source_lock_hash": "68fd8a518858d2a14b74e811d0ad0ec5a7f3861932ffcf001de548ad99a576ff"
+}

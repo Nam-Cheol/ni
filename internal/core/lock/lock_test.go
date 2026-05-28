@@ -95,5 +95,8 @@ func readyProject(t *testing.T) string {
 	if err := os.WriteFile(filepath.Join(dir, ".ni", "contract.json"), data, 0o644); err != nil {
 		t.Fatalf("writing ready contract: %v", err)
 	}
+	if err := os.WriteFile(filepath.Join(dir, "docs", "plan", "10_open_questions.md"), []byte("# Open questions\n\nNo open questions are listed in this fixture.\n"), 0o644); err != nil {
+		t.Fatalf("writing ready open question doc: %v", err)
+	}
 	return dir
 }

@@ -1,11 +1,6 @@
 {
   "schema": "ni.lock.v0",
-  "locked_at": "2026-05-28T08:41:03Z",
-  "previous_lock": {
-    "path": ".ni/locks/20260528T084103Z-plan.lock.json",
-    "sha256": "68fd8a518858d2a14b74e811d0ad0ec5a7f3861932ffcf001de548ad99a576ff",
-    "locked_at": "2026-05-26T13:48:04Z"
-  },
+  "locked_at": "2026-05-26T13:48:04Z",
   "source_of_truth": [
     ".ni/plan.lock.json",
     ".ni/contract.json",
@@ -19,7 +14,7 @@
   "files": [
     {
       "path": ".ni/contract.json",
-      "sha256": "b6ed46f906f7360af1afe27f55d77900c108552b85d1a3e333b84c75c54366ca"
+      "sha256": "988d4485dbdfb6cc1d41268313376019a556363bd1f43d9f2036dc1aeeef3049"
     },
     {
       "path": "docs/plan/00_project_brief.md",
@@ -63,7 +58,7 @@
     },
     {
       "path": "docs/plan/10_open_questions.md",
-      "sha256": "a7cbd1ba49e212a2cea4ff79ac501d2f7d2bbc8c643b72808a2ce5f259bae5f7"
+      "sha256": "dcc1fd0bf0058cbff112899d7082c8713130236dc3c9f30d225843e4edefd6b2"
     },
     {
       "path": "docs/plan/11_decision_log.md",

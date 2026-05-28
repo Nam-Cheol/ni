@@ -1,6 +1,7 @@
 package readiness
 
 import (
+	"fmt"
 	"os"
 	"path/filepath"
 	"strings"
@@ -196,8 +197,11 @@ func TestProofFromDocsContractSyncMismatch(t *testing.T) {
 	if item.Severity != "blocker" {
 		t.Fatalf("expected blocker sync proof, got %#v", item)
 	}
-	if !strings.Contains(item.Message, "docs/plan/11_decision_log.md status for DEC-001") {
+	if !strings.Contains(item.Message, "DEC-001 status") {
 		t.Fatalf("expected docs/contract mismatch proof, got %#v", item)
+	}
+	if item.SyncDiagnostic == nil || item.SyncDiagnostic.ID != "DEC-001" || item.SyncDiagnostic.Location == "" || item.SyncDiagnostic.SuggestedRepair == "" || !item.SyncDiagnostic.BlocksEnd {
+		t.Fatalf("expected stable sync diagnostic fields, got %#v", item.SyncDiagnostic)
 	}
 }
 
@@ -330,6 +334,11 @@ func initSyncFixtureProject(t *testing.T, fixture string) string {
 	copyFixtureFile(t, root, dir, "docs/plan/06_risks_security.md")
 	copyFixtureFile(t, root, dir, "docs/plan/07_evaluation_contract.md")
 	copyFixtureFile(t, root, dir, "docs/plan/11_decision_log.md")
+	c, err := contract.LoadFile(filepath.Join(dir, ".ni", "contract.json"))
+	if err != nil {
+		t.Fatalf("loading sync fixture contract: %v", err)
+	}
+	writeOpenQuestionDocForContract(t, dir, c)
 	return dir
 }
 
@@ -408,6 +417,27 @@ func writePlanDocsForContract(t *testing.T, dir string, c contract.Contract) {
 		decisions.WriteString("\n\n")
 	}
 	writePlanDoc(t, dir, "11_decision_log.md", decisions.String())
+
+	writeOpenQuestionDocForContract(t, dir, c)
+}
+
+func writeOpenQuestionDocForContract(t *testing.T, dir string, c contract.Contract) {
+	t.Helper()
+
+	var openQuestions strings.Builder
+	openQuestions.WriteString("# Open questions\n\n")
+	for _, openQuestion := range c.OpenQuestions {
+		openQuestions.WriteString("## ")
+		openQuestions.WriteString(openQuestion.ID)
+		openQuestions.WriteString(": ")
+		openQuestions.WriteString(openQuestion.Title)
+		openQuestions.WriteString("\n\nBlocker: ")
+		openQuestions.WriteString(strings.ToLower(fmt.Sprint(openQuestion.Blocker)))
+		openQuestions.WriteString("\n\nStatus: ")
+		openQuestions.WriteString(openQuestion.Status)
+		openQuestions.WriteString("\n\n")
+	}
+	writePlanDoc(t, dir, "10_open_questions.md", openQuestions.String())
 }
 
 func writePlanDoc(t *testing.T, dir string, name string, content string) {

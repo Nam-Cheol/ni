@@ -210,6 +210,7 @@ func writeHarnessDocs(t *testing.T, dir string) {
 	writeHarnessDoc(t, dir, "02_capabilities.md", "# Capabilities\n\n## CAP-001: First capability\n\nFirst harness capability.\n\n## CAP-002: Second capability\n\nSecond harness capability.\n")
 	writeHarnessDoc(t, dir, "06_risks_security.md", "# Risks and security\n\n## RISK-001: Risk\n\nSeverity: high\n\nMitigation: Keep generated harness read-only.\n")
 	writeHarnessDoc(t, dir, "07_evaluation_contract.md", "# Evaluation contract\n\n## EVAL-001: Evaluation one\n\nMethod: go test ./...\n\n## EVAL-002: Evaluation two\n\nMethod: bash scripts/quality.sh\n")
+	writeHarnessDoc(t, dir, "10_open_questions.md", "# Open questions\n\nNo open questions are listed in this fixture.\n")
 	writeHarnessDoc(t, dir, "11_decision_log.md", "# Decision log\n\n## DEC-001: Decision\n\nStatus: accepted\n")
 }
 

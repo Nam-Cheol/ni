@@ -1218,6 +1218,15 @@ func printProofItems(stdout io.Writer, title string, items []readiness.ProofItem
 	}
 	for _, item := range items {
 		fmt.Fprintf(stdout, "- %s\n", item.Message)
+		if item.SyncDiagnostic != nil {
+			fmt.Fprintf(stdout, "  ID: %s\n", item.SyncDiagnostic.ID)
+			fmt.Fprintf(stdout, "  Location: %s\n", item.SyncDiagnostic.Location)
+			fmt.Fprintf(stdout, "  Problem: %s\n", item.SyncDiagnostic.Problem)
+			fmt.Fprintf(stdout, "  Why it matters: %s\n", item.SyncDiagnostic.WhyItMatters)
+			fmt.Fprintf(stdout, "  Suggested repair: %s\n", item.SyncDiagnostic.SuggestedRepair)
+			fmt.Fprintf(stdout, "  Blocks ni-end: %t\n", item.SyncDiagnostic.BlocksEnd)
+			continue
+		}
 		fmt.Fprintf(stdout, "  Why it matters: %s\n", proofWhy(item.RuleID))
 		if includeNext {
 			fmt.Fprintf(stdout, "  Next: %s\n", proofNext(item.RuleID))

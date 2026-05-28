@@ -205,6 +205,12 @@
   ],
   "open_questions": [
     {
+      "id": "OQ-001",
+      "title": "Which refund policy source is authoritative for refund eligibility?",
+      "status": "resolved",
+      "blocker": false
+    },
+    {
       "id": "OQ-002",
       "title": "Which support dashboard will eventually display the recommendation draft?",
       "status": "open",
