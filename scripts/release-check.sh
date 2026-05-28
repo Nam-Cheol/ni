@@ -242,10 +242,17 @@ for label, text in {"README.md": readme, "README.ko.md": readme_ko}.items():
 
 release_config = Path(".goreleaser.yaml")
 release_workflow = Path(".github/workflows/release.yml")
+release_pipeline_docs = [
+    Path("docs/67_RELEASE_PIPELINE.md"),
+    Path("docs/67_RELEASE_PIPELINE.ko.md"),
+]
 if not release_config.exists():
     raise SystemExit(".goreleaser.yaml is missing")
 if not release_workflow.exists():
     raise SystemExit(".github/workflows/release.yml is missing")
+for path in release_pipeline_docs:
+    if not path.exists():
+        raise SystemExit(f"{path} is missing")
 
 config = release_config.read_text(encoding="utf-8")
 workflow = release_workflow.read_text(encoding="utf-8")
@@ -289,6 +296,52 @@ required_workflow = [
 missing = [item for item in required_workflow if item not in workflow]
 if missing:
     raise SystemExit(f".github/workflows/release.yml is missing workflow markers: {missing}")
+
+for forbidden_trigger in ["pull_request:", "workflow_dispatch:", "schedule:", "branches:"]:
+    if forbidden_trigger in workflow:
+        raise SystemExit(
+            f".github/workflows/release.yml must run only on v* tags, "
+            f"but found {forbidden_trigger}"
+        )
+
+pipeline_required = [
+    "bash scripts/release-dry-run.sh",
+    "go test ./...",
+    "bash scripts/quality.sh",
+    "bash scripts/smoke.sh",
+    "bash scripts/demo-check.sh",
+    "bash scripts/install-check.sh",
+    "bash scripts/release-check.sh",
+    "goreleaser check",
+    "goreleaser release --snapshot --clean",
+    "GoReleaser Archive Matrix",
+    "ni_<version>_linux_amd64.tar.gz",
+    "ni_<version>_linux_arm64.tar.gz",
+    "ni_<version>_darwin_amd64.tar.gz",
+    "ni_<version>_darwin_arm64.tar.gz",
+    "ni_<version>_windows_amd64.zip",
+    "ni_<version>_checksums.txt",
+]
+
+availability_guards = [
+    ("Release binary availability",),
+    ("Curl installer availability",),
+    ("Homebrew availability",),
+    ("not available", "available하지"),
+]
+
+for path in release_pipeline_docs:
+    text = path.read_text(encoding="utf-8")
+    missing = [item for item in pipeline_required if item not in text]
+    if missing:
+        raise SystemExit(f"{path} is missing release pipeline markers: {missing}")
+    missing_guards = [
+        " or ".join(options)
+        for options in availability_guards
+        if not any(option in text for option in options)
+    ]
+    if missing_guards:
+        raise SystemExit(f"{path} is missing availability guard markers: {missing_guards}")
 PY
 
 run_step "examples and benchmark protocol exist" python3 - <<'PY'

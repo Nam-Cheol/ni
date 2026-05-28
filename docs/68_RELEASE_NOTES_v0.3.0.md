@@ -6,8 +6,8 @@ Summary: Don't run the agent yet. Compile the intent first.
 
 These notes are draft release notes for a future public `ni` GitHub Release.
 They do not publish a release, create a tag, upload binaries, or claim package
-manager availability. Hosted release binaries and curl installer availability
-are only available after a tagged GitHub Release contains assets and checksums.
+manager availability. Release binaries and curl installer availability:
+available only after a tagged GitHub Release contains assets and checksums.
 
 ## Why v0.3.0
 

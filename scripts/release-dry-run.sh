@@ -15,7 +15,12 @@ run_step() {
 
 echo "release-dry-run: planned release version $RELEASE_VERSION" >&2
 
-run_step "validate release readiness gate" bash scripts/release-check.sh
+run_step "go tests" go test ./...
+run_step "quality checks" bash scripts/quality.sh
+run_step "smoke checks" bash scripts/smoke.sh
+run_step "public demo checks" bash scripts/demo-check.sh
+run_step "source, build, and local install checks" bash scripts/install-check.sh
+run_step "release readiness gate" bash scripts/release-check.sh
 
 run_step "verify release notes and manual steps exist" python3 - <<'PY'
 from pathlib import Path
@@ -89,9 +94,16 @@ for claim in forbidden_claims:
 PY
 
 if command -v goreleaser >/dev/null 2>&1; then
-  run_step "check GoReleaser config" goreleaser check
+  run_step "GoReleaser config check" goreleaser check
+  run_step "GoReleaser snapshot release" goreleaser release --snapshot --clean
 else
-  echo "release-dry-run: goreleaser not installed; skipping goreleaser check" >&2
+  cat >&2 <<'EOF'
+release-dry-run: GoReleaser is not installed, so the GoReleaser check and
+release-dry-run: snapshot archive build were NOT RUN.
+release-dry-run: install GoReleaser, then rerun:
+release-dry-run:   brew install goreleaser
+release-dry-run:   bash scripts/release-dry-run.sh
+EOF
 fi
 
 echo "release-dry-run: completed without creating tags, pushing, or publishing"

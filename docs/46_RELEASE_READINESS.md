@@ -12,10 +12,11 @@ manager or hosted service availability.
   `bash scripts/smoke.sh`.
 - Security policy: `SECURITY.md` exists and documents the early source-first
   scope, reporting limits, secret-handling guidance, and runtime boundary.
-- Distribution: documented available usage includes source, local build, local
-  install, GitHub Release binaries, and the curl installer. Package manager
-  distribution, Homebrew support, Scoop support, and hosted service
-  availability are not available.
+- Distribution: documented available usage includes source, local build, and
+  local install. GitHub Release binaries and the curl installer are
+  release-gated and not available until real release assets and checksums are
+  published and verified. Package manager distribution, Homebrew support, Scoop
+  support, and hosted service availability are not available.
 - Repository release workflow: `.github/workflows/release.yml` builds release
   binaries only for tagged GitHub Releases. It is distribution infrastructure,
   not `ni` runtime behavior.
