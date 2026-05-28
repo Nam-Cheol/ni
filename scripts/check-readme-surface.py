@@ -30,6 +30,7 @@ TOP_SECTIONS = {
         ("one-line product description", "<p align=\"center\"><strong>"),
         ("why ni", "## Why ni"),
         ("start in 60 seconds", "## Start in 60 seconds"),
+        ("choose your path", "## Choose your path"),
     ],
     "README.ko.md": [
         ("hero image", "assets/hero.svg"),
@@ -39,6 +40,7 @@ TOP_SECTIONS = {
         ("one-line product description", "<p align=\"center\"><strong>"),
         ("why ni", "## 왜 ni인가"),
         ("start in 60 seconds", "## 60초 시작"),
+        ("choose your path", "## Choose your path"),
     ],
 }
 
@@ -253,12 +255,10 @@ def check_product_claim_surface() -> None:
             if product in hero_sales:
                 fail(f"{path} mentions {product} in the hero or sales pitch")
 
-        model_path = section_text(lines, "## Choose your path", "## Demo")
-        full_text = "\n".join(lines)
-        outside_model_path = full_text.replace(model_path, "")
         for product in ["Codex", "Claude"]:
-            if product in outside_model_path:
-                fail(f"{path} mentions {product} outside the model-workspace usage path")
+            for line_number, line in enumerate(lines, start=1):
+                if product in line and "Model workspaces" not in line:
+                    fail(f"{path}:{line_number} mentions {product} outside the model-workspace usage path")
 
 
 def check_install_shell_syntax() -> None:

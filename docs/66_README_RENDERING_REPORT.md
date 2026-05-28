@@ -1,6 +1,6 @@
 # README Rendering Report
 
-Task 112 validates `README.md` and `README.ko.md` as public GitHub product
+Task 122 validates `README.md` and `README.ko.md` as public GitHub product
 pamphlets. This report records rendering facts only. It does not add product
 claims, install paths, release-binary claims, or runtime behavior.
 
@@ -15,10 +15,14 @@ The top README surface now renders in this order in both languages:
 5. One-line product description
 6. Why ni
 7. Start in 60 seconds
+8. Choose your path
 
 The duplicate visible trust-signal text that appeared between the badge row and
 the slogan was removed. The slogan and one-line product description remain
 Markdown/HTML text, not image-only content.
+
+`scripts/check-readme-surface.py` now treats `Choose your path` as part of the
+top-section order regression check.
 
 ## Badge Rendering
 
@@ -83,8 +87,11 @@ The Korean README keeps Korean companion links where maintained, including
 ## Product Claim Audit
 
 The hero and sales pitch do not mention specific harness or runtime products.
-`Codex` and `Claude` appear only in the `Model workspaces` usage path, where
-they describe assisted planning and not kernel authority.
+`Codex` and `Claude` appear only in the `Model workspaces` usage row, where they
+describe assisted planning and not kernel authority.
+
+The surface checker now rejects `Codex` or `Claude` if either name appears
+outside the `Model workspaces` row.
 
 The README continues to state that `ni run` compiles a bounded prompt or seed
 and does not execute shell commands, queues, agents, or downstream work.
@@ -99,4 +106,3 @@ Known non-blocking visual constraints remain:
 - The local SVGs contain live text and rely on renderer font fallback.
 - The Korean README intentionally reuses English-text SVG assets for this
   version.
-

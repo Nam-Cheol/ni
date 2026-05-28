@@ -1,6 +1,6 @@
 # README Rendering Report
 
-Task 112는 `README.md`와 `README.ko.md`가 GitHub에서 public product pamphlet로
+Task 122는 `README.md`와 `README.ko.md`가 GitHub에서 public product pamphlet로
 깨끗하게 보이는지 검증한다. 이 문서는 rendering fact만 기록하며, product claim,
 install path, release binary claim, runtime behavior를 추가하지 않는다.
 
@@ -15,10 +15,14 @@ install path, release binary claim, runtime behavior를 추가하지 않는다.
 5. One-line product description
 6. Why ni
 7. Start in 60 seconds
+8. Choose your path
 
 Badge row와 slogan 사이에 보이던 duplicate trust-signal text는 제거했다.
 Slogan과 one-line product description은 image-only content가 아니라
 Markdown/HTML text로 남아 있다.
+
+`scripts/check-readme-surface.py`는 이제 `Choose your path`도 top-section order
+regression check에 포함한다.
 
 ## Badge Rendering
 
@@ -83,8 +87,11 @@ Korean README는 companion Korean docs가 maintained되는 곳에서 Korean link
 ## Product Claim Audit
 
 Hero와 sales pitch는 specific harness 또는 runtime product를 언급하지 않는다.
-`Codex`와 `Claude`는 `Model workspaces` usage path에서만 등장하며, 이는 assisted
+`Codex`와 `Claude`는 `Model workspaces` usage row에서만 등장하며, 이는 assisted
 planning을 설명할 뿐 kernel authority를 뜻하지 않는다.
+
+Surface checker는 이제 `Codex` 또는 `Claude`가 `Model workspaces` row 밖에서
+등장하면 실패한다.
 
 README는 계속 `ni run`이 bounded prompt 또는 seed를 compile하며 shell commands,
 queues, agents, downstream work를 실행하지 않는다고 말한다.
@@ -98,4 +105,3 @@ Known non-blocking visual constraints는 남아 있다:
 - Trust badges는 remote shields.io image rendering에 의존한다.
 - Local SVGs는 live text를 포함하고 renderer font fallback에 의존한다.
 - Korean README는 이번 version에서 English-text SVG assets를 의도적으로 재사용한다.
-
