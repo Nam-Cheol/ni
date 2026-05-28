@@ -5,6 +5,10 @@ v0.3.0 GitHub Release archives, or through the verified curl installer.
 
 ## Prerequisites
 
+Release binary and curl installer paths do not require Go.
+
+Source and local build paths require:
+
 - Go 1.22 or newer.
 - Git, if you want builds to include a git-derived version string.
 
