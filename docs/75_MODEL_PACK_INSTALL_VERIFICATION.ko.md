@@ -5,7 +5,7 @@
 
 Model workspace pack은 UX layer다. Model과 user가 planning docs를 유지하고, CLI
 proof를 review하고, CLI로 lock하고, CLI로 bounded handoff prompt를 compile하도록
-돕는다. Pack 자체는 authority가 아니며 runtime execution을 추가하지 않는다.
+돕는다. Pack 자체는 authority가 아니며 실행 기능을 추가하지 않는다.
 
 ## Current Status
 

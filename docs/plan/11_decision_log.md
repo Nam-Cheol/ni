@@ -95,3 +95,18 @@ after `install.sh` verification; Homebrew remains planned with no published tap
 or formula; no-terminal mode is assisted unless exact CLI proof is supplied by
 a trusted runner; model workspace packs are UX rather than authority; and
 `ni-kernel` remains pre-runtime.
+
+## DEC-014: v0.4 adoption roadmap is evidence-gated and pre-runtime
+
+Status: accepted
+
+Rationale: After v0.3.0 release binaries, curl installer verification, and
+model workspace pack packaging, the next useful roadmap is adoption proof
+rather than runtime expansion. v0.4 should verify a fresh-user install path,
+advance Homebrew only while preserving Planned status until the tap/formula is
+published and tested, verify model workspace packs, clarify README
+use-anywhere paths, prepare announcement copy, publish one qualitative
+benchmark case study, and optionally add a lightweight static landing page.
+These surfaces help people try and trust `ni`; they do not make `ni-kernel` a
+task runner, package publisher, Codex executor, shell adapter, hosted service,
+or downstream runtime.

@@ -96,3 +96,15 @@ emoji, `foreignObject`, external fonts, external references, and long text in
 core SVGs; keep README.ko within English canonical claims; treat remote
 capsule-style renderers as inspiration only; and run asset plus README surface
 regression checks before relock.
+
+## RISK-015: adoption roadmap turns distribution or promotion into kernel runtime
+
+Severity: high
+
+Mitigation: Keep v0.4 adoption work as documentation, packaging verification,
+announcement copy, qualitative benchmark evidence, and optional static landing
+page work outside `ni-kernel` runtime behavior. Homebrew stays Planned until the
+tap and formula are published and `brew install Nam-Cheol/tap/ni`, `ni --help`,
+and `ni version` pass. `ni run` remains a prompt compiler only and must not call
+Codex, shell adapters, package publishing, queues, PR automation, or downstream
+execution.

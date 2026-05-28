@@ -156,7 +156,7 @@ README는 canonical quick entry로 남고, landing page는 public doorway일 뿐
 - Analytics를 추가하지 않는다.
 - Hosted service를 추가하지 않는다.
 - Website를 `ni` 사용의 필수 경로로 만들지 않는다.
-- Runtime execution behavior를 추가하지 않는다.
+- 실행 동작을 추가하지 않는다.
 - Contract authoring CLI commands를 추가하지 않는다.
 - GitHub Pages를 commands, install status, protocol rules의 source of truth로
   만들지 않는다.
@@ -175,7 +175,7 @@ Scope:
 - README copy와 existing visual assets를 적절히 재사용한다;
 - README를 canonical quick entry로 link한다;
 - hero, why ni, start in 60 seconds, install paths, demo, docs links를 포함한다;
-- framework, analytics, hosted service, runtime execution behavior를 추가하지
+- framework, analytics, hosted service, 실행 동작을 추가하지
   않는다.
 
 Validation:

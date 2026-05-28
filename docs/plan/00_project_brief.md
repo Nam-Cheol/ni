@@ -2,7 +2,33 @@
 
 ## Purpose
 
-`ni` is the Project Intent Compiler for AI Agents. In v0.3, it packages the product direction around a README pamphlet, lightweight visual identity, truthful distribution paths, and model workspace packs while preserving the same deterministic readiness, lockfile, and bounded prompt compiler boundary before any execution harness runs.
+`ni` is the Project Intent Compiler for AI Agents. In v0.4, it turns the verified v0.3.0 release, release binary, curl installer, and model workspace pack work into an adoption roadmap while preserving the same deterministic readiness, lockfile, and bounded prompt compiler boundary before any execution harness runs.
+
+## v0.4 adoption focus
+
+The v0.4 adoption roadmap makes the existing product easier to try and share
+without turning `ni-kernel` into runtime execution:
+
+- verify a fresh-user install path from the public v0.3.0 release and curl
+  installer evidence;
+- advance the Homebrew route from Planned only after tap, formula, checksum,
+  audit, install, `ni --help`, and `ni version` evidence exists;
+- verify model workspace packs as portable planning UX, including source,
+  manual copy, zip packaging, and host-specific dry-run or install evidence
+  where available;
+- keep README and README.ko clear that `ni` can be used from source, local
+  binary, verified release binaries, verified curl installer, and model
+  workspaces, while avoiding false Homebrew or package-manager availability
+  claims;
+- prepare the announcement kit around the Project Intent Compiler message and
+  verified install paths;
+- publish a first benchmark case study as qualitative intent-readiness evidence,
+  not a runtime or statistical performance claim;
+- treat a lightweight static landing page as optional public doorway work, with
+  README remaining the canonical quick entry;
+- preserve the pre-runtime boundary: `ni run` compiles prompts only and does
+  not execute Codex, shell commands, package publishing, adapters, queues, PR
+  automation, or downstream work.
 
 ## v0.3 focus
 

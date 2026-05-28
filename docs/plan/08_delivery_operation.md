@@ -11,6 +11,13 @@ identity, source-first plus release-binary distribution planning, and Codex- and
 Claude-style model workspace packs. These surfaces help users understand and
 adopt the kernel; they do not add `ni-kernel` runtime execution.
 
+The v0.4 adoption surface builds on verified v0.3.0 release binaries, the
+verified curl installer, and model workspace pack work. It prioritizes
+fresh-user install verification, Homebrew as a planned package-manager path,
+model workspace pack verification, README use-anywhere clarity, announcement
+copy, one qualitative benchmark case study, and an optional lightweight static
+landing page. These are adoption and proof surfaces, not kernel runtime state.
+
 Tracked planning state:
 
 - `docs/plan/**`
@@ -41,6 +48,13 @@ Packaging and distribution references:
 - `docs/56_CLAUDE_SKILL_PACK.md`
 - `docs/57_CODEX_SKILL_PACK.md`
 - `docs/58_VISUAL_ASSETS.md`
+- `docs/70_RELEASE_VERIFICATION_v0.3.0.md`
+- `docs/71_CURL_INSTALLER_VERIFICATION_v0.3.0.md`
+- `docs/72_HOMEBREW_TAP_PLAN.md`
+- `docs/75_MODEL_PACK_INSTALL_VERIFICATION.md`
+- `docs/76_ANNOUNCEMENT_KIT.md`
+- `docs/77_BENCHMARK_CASE_STUDY.md`
+- `docs/78_LANDING_PAGE_PLAN.md`
 
 ## Operating model
 
@@ -57,6 +71,9 @@ Packaging and distribution references:
    availability stays planned until published and tested, model workspace packs
    remain UX, and no-terminal mode remains assisted unless CLI proof is
    supplied.
+10. For v0.4 adoption, compile a locked Codex handoff prompt only after
+    readiness passes and the amended plan is relocked. Do not execute the
+    generated prompt or add downstream runtime behavior.
 
 ## Validation
 

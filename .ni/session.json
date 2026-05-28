@@ -1,19 +1,19 @@
 {
   "schema": "ni.session.v0",
-  "active_planning_focus": "Lock v0.3 distribution release state.",
-  "last_planning_summary": "Task 130 locked the post-release v0.3.0 distribution state: README.md, README.ko.md, install docs, distribution strategy, release verification, curl installer verification, Homebrew planning, and roadmap evidence support release binaries as Available for verified v0.3.0 GitHub Release archives and checksums; curl installer as Available for verified v0.3.0 release assets after install.sh verification; Homebrew as Planned with no published tap or formula; no-terminal mode as assisted unless trusted CLI proof is supplied; model workspace packs as UX rather than CLI authority; and ni-kernel as pre-runtime with no downstream execution. The CLI readiness gate reported READY, AMEND-011 was applied, ni relock wrote .ni/plan.lock.json, ni run compiled .ni/generated/v0.3-distribution-release.prompt.txt at 4000 characters, and all requested validation commands passed.",
+  "active_planning_focus": "Lock v0.4 adoption roadmap.",
+  "last_planning_summary": "Task 138 locked the next adoption-focused roadmap after v0.3.0 release binaries, curl installer verification, and model workspace pack work. CAP-018 records fresh-user install verification, Homebrew as Planned until a published tap/formula is tested, model workspace pack verification, README use-anywhere clarity, announcement kit, first qualitative benchmark case study, optional lightweight static landing page, and the pre-runtime ni-kernel boundary. The CLI readiness gate reported READY after AMEND-012 was applied, ni relock wrote .ni/plan.lock.json, and ni run compiled .ni/generated/v0.4-adoption-roadmap.prompt.txt at 4000 characters.",
   "pending_questions": [],
   "recent_decisions": [
     {
-      "id": "DEC-013",
-      "title": "v0.3 distribution release state is factual and evidence-gated",
+      "id": "DEC-014",
+      "title": "v0.4 adoption roadmap is evidence-gated and pre-runtime",
       "status": "accepted"
     }
   ],
   "recent_risks": [
     {
-      "id": "RISK-013",
-      "title": "Packaging claims outrun implemented distribution",
+      "id": "RISK-015",
+      "title": "Adoption roadmap turns distribution or promotion into kernel runtime",
       "severity": "high",
       "status": "accepted"
     }
@@ -28,9 +28,9 @@
     "docs/plan/08_delivery_operation.md",
     "docs/plan/11_decision_log.md",
     ".ni/contract.json",
-    ".ni/amendments/AMEND-011.json",
+    ".ni/amendments/AMEND-012.json",
     ".ni/plan.lock.json",
-    ".ni/generated/v0.3-distribution-release.prompt.txt",
+    ".ni/generated/v0.4-adoption-roadmap.prompt.txt",
     ".ni/session.json"
   ],
   "authority_order": [

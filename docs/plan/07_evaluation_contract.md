@@ -107,3 +107,19 @@ public visual README positioning, verified v0.3.0 release binary availability,
 verified v0.3.0 curl installer availability, planned Homebrew status, assisted
 no-terminal wording, model-pack UX boundaries, and the pre-runtime
 `ni-kernel` boundary.
+
+## EVAL-022: v0.4 adoption roadmap is evidence-gated and pre-runtime
+
+Method: `go test ./...`, `bash scripts/quality.sh`,
+`bash scripts/smoke.sh`, `bash scripts/demo-check.sh`,
+`bash scripts/install-check.sh`, `bash scripts/release-check.sh`, and
+`ni run --target codex --max-chars 4000` verify the roadmap is locked from
+README.md, README.ko.md, docs/22_INSTALL.md,
+docs/53_DISTRIBUTION_STRATEGY.md, docs/70_RELEASE_VERIFICATION_v0.3.0.md,
+docs/71_CURL_INSTALLER_VERIFICATION_v0.3.0.md,
+docs/72_HOMEBREW_TAP_PLAN.md,
+docs/75_MODEL_PACK_INSTALL_VERIFICATION.md, docs/76_ANNOUNCEMENT_KIT.md,
+docs/77_BENCHMARK_CASE_STUDY.md, and docs/78_LANDING_PAGE_PLAN.md while
+preserving verified install claims, Planned Homebrew status, model workspace
+pack boundaries, benchmark limits, optional static landing-page scope, and the
+pre-runtime `ni-kernel` boundary.

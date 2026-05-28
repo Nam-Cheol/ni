@@ -48,6 +48,10 @@
     {
       "id": "NG-009",
       "title": "Do not present no-terminal mode as full deterministic validation without exact CLI output from a trusted runner."
+    },
+    {
+      "id": "NG-010",
+      "title": "Do not execute the v0.4 adoption roadmap prompt, call codex exec, add runtime execution behavior, or mark Homebrew Available before the published tap command is tested."
     }
   ],
   "capabilities": [
@@ -399,6 +403,40 @@
         "ART-042",
         "ART-043"
       ]
+    },
+    {
+      "id": "CAP-018",
+      "title": "Lock v0.4 adoption roadmap",
+      "status": "accepted",
+      "dependencies": [
+        "CAP-002",
+        "CAP-003",
+        "CAP-004",
+        "CAP-005",
+        "CAP-017"
+      ],
+      "requirements": [
+        "REQ-018"
+      ],
+      "evaluations": [
+        "EVAL-022"
+      ],
+      "risks": [
+        "RISK-013",
+        "RISK-015"
+      ],
+      "artifacts": [
+        "ART-022",
+        "ART-023",
+        "ART-032",
+        "ART-043",
+        "ART-044",
+        "ART-045",
+        "ART-046",
+        "ART-047",
+        "ART-048",
+        "ART-049"
+      ]
     }
   ],
   "requirements": [
@@ -486,6 +524,11 @@
       "id": "REQ-017",
       "title": "v0.3 packaging treats README as a public-facing visual product pamphlet, keeps technical details in docs, uses local deterministic SVG visuals with important copy in Markdown, keeps SVGs free of emoji, foreignObject, external fonts, external references, and long text, keeps generated social images optional, keeps README.ko within English canonical claims, treats remote capsule-style renderers as inspiration only, records source and local binary paths as available from this checkout, records release binaries as Available for verified v0.3.0 GitHub Release archives and checksums, records the curl installer as Available for verified v0.3.0 release assets after install.sh verification, keeps Homebrew planned until a tap/formula is published and tested, keeps Codex/Claude model packs plus no-terminal mode as assisted planning UX rather than execution adapters or deterministic validation substitutes, preserves ni-kernel as pre-runtime, and guards README/assets/distribution claims with regression checks",
       "status": "accepted"
+    },
+    {
+      "id": "REQ-018",
+      "title": "v0.4 adoption roadmap must cover fresh-user install verification, Homebrew as Planned until a published tap/formula is tested, model workspace pack verification, README use-anywhere clarity, announcement kit, first qualitative benchmark case study, optional lightweight static landing page, generated codex prompt budget at 4000 characters or less, and preservation of ni-kernel as pre-runtime with no generated prompt execution or codex exec",
+      "status": "accepted"
     }
   ],
   "decisions": [
@@ -552,6 +595,11 @@
     {
       "id": "DEC-013",
       "title": "v0.3 distribution release state is factual and evidence-gated",
+      "status": "accepted"
+    },
+    {
+      "id": "DEC-014",
+      "title": "v0.4 adoption roadmap is evidence-gated and pre-runtime",
       "status": "accepted"
     }
   ],
@@ -653,6 +701,13 @@
       "severity": "high",
       "status": "accepted",
       "mitigation": "Keep primary README visuals local, deterministic, and generated from checked SVG sources; keep important product copy in Markdown; prohibit emoji, foreignObject, external fonts, external references, and long text in core SVGs; keep README.ko within English canonical claims; treat remote capsule-style renderers as inspiration only; and run asset plus README surface regression checks before relock."
+    },
+    {
+      "id": "RISK-015",
+      "title": "Adoption roadmap turns distribution or promotion into kernel runtime",
+      "severity": "high",
+      "status": "accepted",
+      "mitigation": "Keep v0.4 adoption work as documentation, packaging verification, announcement copy, qualitative benchmark evidence, and optional static landing page work outside ni-kernel runtime behavior. Homebrew stays Planned until the tap and formula are published and brew install Nam-Cheol/tap/ni, ni --help, and ni version pass. ni run remains a prompt compiler only and must not call Codex, shell adapters, package publishing, queues, PR automation, or downstream execution."
     }
   ],
   "evaluations": [
@@ -760,6 +815,11 @@
       "id": "EVAL-021",
       "title": "v0.3 distribution release state stays factual",
       "method": "go test ./..., python3 scripts/check-formatting.py, bash scripts/quality.sh, bash scripts/demo-check.sh, bash scripts/install-check.sh, and bash scripts/release-check.sh verify README.md, README.ko.md, docs/22_INSTALL.md, docs/53_DISTRIBUTION_STRATEGY.md, docs/54_HOMEBREW_DISTRIBUTION.md, docs/70_RELEASE_VERIFICATION_v0.3.0.md, docs/71_CURL_INSTALLER_VERIFICATION_v0.3.0.md, docs/72_HOMEBREW_TAP_PLAN.md, and docs/51_POST_RELEASE_ROADMAP.md preserve public visual README positioning, verified v0.3.0 release binary availability, verified v0.3.0 curl installer availability, planned Homebrew status, assisted no-terminal wording, model-pack UX boundaries, and the pre-runtime ni-kernel boundary"
+    },
+    {
+      "id": "EVAL-022",
+      "title": "v0.4 adoption roadmap is evidence-gated and pre-runtime",
+      "method": "go test ./..., bash scripts/quality.sh, bash scripts/smoke.sh, bash scripts/demo-check.sh, bash scripts/install-check.sh, bash scripts/release-check.sh, and ni run --target codex --max-chars 4000 verify README.md, README.ko.md, docs/22_INSTALL.md, docs/53_DISTRIBUTION_STRATEGY.md, docs/70_RELEASE_VERIFICATION_v0.3.0.md, docs/71_CURL_INSTALLER_VERIFICATION_v0.3.0.md, docs/72_HOMEBREW_TAP_PLAN.md, docs/75_MODEL_PACK_INSTALL_VERIFICATION.md, docs/76_ANNOUNCEMENT_KIT.md, docs/77_BENCHMARK_CASE_STUDY.md, and docs/78_LANDING_PAGE_PLAN.md preserve verified install claims, Planned Homebrew status, model workspace pack boundaries, benchmark limits, optional static landing-page scope, and the pre-runtime ni-kernel boundary"
     }
   ],
   "artifacts": [
@@ -977,6 +1037,36 @@
       "id": "ART-043",
       "path": "docs/22_INSTALL.md docs/53_DISTRIBUTION_STRATEGY.md docs/54_HOMEBREW_DISTRIBUTION.md docs/70_RELEASE_VERIFICATION_v0.3.0.md docs/71_CURL_INSTALLER_VERIFICATION_v0.3.0.md docs/72_HOMEBREW_TAP_PLAN.md docs/51_POST_RELEASE_ROADMAP.md scripts/demo-check.sh scripts/install-check.sh scripts/release-check.sh",
       "kind": "distribution_release_state"
+    },
+    {
+      "id": "ART-044",
+      "path": "docs/75_MODEL_PACK_INSTALL_VERIFICATION.md",
+      "kind": "model_workspace_pack_verification"
+    },
+    {
+      "id": "ART-045",
+      "path": "docs/76_ANNOUNCEMENT_KIT.md",
+      "kind": "announcement_kit"
+    },
+    {
+      "id": "ART-046",
+      "path": "docs/77_BENCHMARK_CASE_STUDY.md",
+      "kind": "benchmark_case_study"
+    },
+    {
+      "id": "ART-047",
+      "path": "docs/78_LANDING_PAGE_PLAN.md",
+      "kind": "landing_page_plan"
+    },
+    {
+      "id": "ART-048",
+      "path": ".ni/generated/v0.4-adoption-roadmap.prompt.txt",
+      "kind": "generated_prompt"
+    },
+    {
+      "id": "ART-049",
+      "path": ".ni/amendments/AMEND-012.json",
+      "kind": "amendment"
     }
   ],
   "open_questions": [

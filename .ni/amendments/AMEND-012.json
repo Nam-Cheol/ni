@@ -1,0 +1,42 @@
+{
+  "schema": "ni.amendment.v0",
+  "id": "AMEND-012",
+  "title": "Lock v0.4 adoption roadmap",
+  "reason": "Lock the next adoption-focused roadmap after v0.3.0 release binaries, curl installer verification, and model workspace pack work, while preserving factual install claims, planned Homebrew status, and the pre-runtime ni-kernel boundary.",
+  "affected_docs": [
+    "docs/plan/00_project_brief.md",
+    "docs/plan/02_capabilities.md",
+    "docs/plan/06_risks_security.md",
+    "docs/plan/07_evaluation_contract.md",
+    "docs/plan/08_delivery_operation.md",
+    "docs/plan/11_decision_log.md",
+    ".ni/contract.json"
+  ],
+  "affected_contract_ids": [
+    "CAP-018",
+    "REQ-018",
+    "DEC-014",
+    "RISK-015",
+    "EVAL-022",
+    "NG-010",
+    "ART-044",
+    "ART-045",
+    "ART-046",
+    "ART-047",
+    "ART-048",
+    "ART-049"
+  ],
+  "proposed_changes": [
+    "Add CAP-018 for the v0.4 adoption roadmap after v0.3.0 release binaries, curl installer, and model workspace pack work.",
+    "Record fresh-user install verification, Homebrew as Planned until tested, model workspace pack verification, README use-anywhere clarity, announcement kit, first qualitative benchmark case study, and optional lightweight static landing page as the adoption focus.",
+    "Add REQ-018, EVAL-022, RISK-015, DEC-014, NG-010, and adoption artifacts while preserving the pre-runtime ni-kernel boundary and prompt-only ni run behavior."
+  ],
+  "risk_impact": "Adds a high-severity adoption roadmap risk so public distribution, promotion, model workspace, benchmark, and landing-page work cannot drift into false availability claims or kernel runtime execution.",
+  "readiness_impact": "Expected to remain READY because CAP-018 is accepted with a linked requirement, evaluation, mitigated high-severity risk, artifacts, non-goals, and no blocker questions.",
+  "created_from_feedback_refs": [],
+  "created_from_pressure_refs": [],
+  "status": "applied",
+  "created_at": "2026-05-28T06:40:40Z",
+  "applied_at": "2026-05-28T06:42:56Z",
+  "source_lock_hash": "c8e57836733bb788cfcf4c08e73e57bdac85e1a6da546923427c86a34d1ff40c"
+}

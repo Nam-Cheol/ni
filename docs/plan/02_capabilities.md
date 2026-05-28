@@ -91,3 +91,18 @@ Homebrew remains planned with no published tap or formula; no-terminal mode is
 assisted planning rather than deterministic validation without CLI proof; model
 workspace packs are UX over docs and CLI gates; and `ni-kernel` does not execute
 downstream work.
+
+## CAP-018: lock v0.4 adoption roadmap
+
+After the v0.3.0 release, verified release binaries, verified curl installer,
+and model workspace pack packaging work, lock the next roadmap around adoption
+evidence instead of new runtime behavior. The roadmap covers fresh-user install
+verification, the Homebrew path while still Planned until tested, model
+workspace pack verification, README use-anywhere clarity, public announcement
+copy, a first qualitative benchmark case study, and an optional lightweight
+landing page.
+
+This capability is accepted only as planning and packaging direction. It must
+not execute the generated prompt, call `codex exec`, add runtime execution
+behavior, claim untested install availability, or mark Homebrew Available before
+the published tap command is verified.
