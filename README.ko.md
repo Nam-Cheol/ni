@@ -86,39 +86,39 @@ go run ./cmd/ni run --dir ./my-plan --target generic --max-chars 4000
 
 ## Choose your path
 
-| Path | Status | Use it when | Boundary |
+| Path | Status | Start with | Use it when |
 | --- | --- | --- | --- |
-| Source | Available | `go run ./cmd/ni ...`를 실행할 수 있습니다. | Full deterministic `status`, `end`, `run`. |
-| Local binary | Available | 이 checkout에서 `./bin/ni` 또는 local install을 원할 때 사용합니다. | Source에서 local build/install하며 release assets와 독립적입니다. |
-| Model workspaces | Experimental | Verified Codex 또는 Claude source/zip skill packs로 docs와 contract records draft를 돕게 하고 싶을 때 사용합니다. | Repo-local, manual-copy, zip paths는 Available입니다; global discovery는 unverified이며 CLI가 authority입니다. |
-| No-terminal method | Experimental | CLI run 전 Intent Lock method를 배우거나 draft하고 싶을 때 사용합니다. | Assisted drafting일 뿐 deterministic validation은 아닙니다. |
-| Release binary | Available | Published release에서 Go 없이 `ni`를 받고 싶을 때 사용합니다. | 검증된 v0.3.0 GitHub Release archives와 checksums를 사용합니다. |
-| Curl installer | Available | Release assets용 작은 shell installer를 원할 때 사용합니다. | Script를 먼저 inspect합니다. Installer는 검증된 v0.3.0 archive와 checksum file을 download합니다. |
-| Homebrew | Planned | Package manager를 선호할 때 사용합니다. | Published tap이나 formula가 없습니다; tap plan을 참고하세요. |
+| Source | Available | `go run ./cmd/ni --help` | Go가 있고 development 또는 evaluation을 가장 투명하게 시작하고 싶을 때. |
+| Local binary | Available | `make build && ./bin/ni --help` | 이 checkout에서 `./bin/ni` 또는 local install을 원할 때. |
+| Release binary | Available | [v0.3.0 release](https://github.com/Nam-Cheol/ni/releases/tag/v0.3.0) | Go 없이 설치하고 checksum을 직접 검증하고 싶을 때. |
+| Curl installer | Available | `sh install.sh --dry-run --version 0.3.0` | Script를 먼저 inspect한 뒤 작은 shell installer를 쓰고 싶을 때. |
+| Model workspaces | Experimental | [Model Workspace Packs](docs/55_MODEL_WORKSPACE_PACKS.md) | Verified Codex 또는 Claude source/zip skill packs로 docs와 contract records draft를 돕게 하고 싶을 때; CLI가 authority입니다. |
+| No-terminal method | Experimental | [터미널 없이 계획하기](docs/no-terminal.ko.md) | Trusted runner가 CLI proof를 만들기 전 assisted drafting을 하고 싶을 때. |
+| Homebrew | Planned | [Homebrew Tap Plan](docs/72_HOMEBREW_TAP_PLAN.ko.md) | Package manager를 선호할 때; published 또는 tested tap/formula는 없습니다. |
 
-Release binary 설치:
+### Which path should I choose?
 
-1. [v0.3.0 GitHub Release](https://github.com/Nam-Cheol/ni/releases/tag/v0.3.0)를 엽니다.
-2. OS/arch archive와 `ni_0.3.0_checksums.txt`를 다운로드합니다.
-3. checksum을 검증합니다.
-4. archive를 압축 해제합니다.
-5. `ni --help`와 `ni version`을 실행합니다.
+Go가 있으면 Source를 고르세요. 이 checkout에서 반복 가능한 binary를 원하면
+Local binary가 맞습니다. Go 없이 직접 checksum을 검증하고 싶으면 Release
+binary를, shell script를 먼저 inspect할 수 있으면 Curl installer를 고르세요.
+Model-assisted planning에는 Model workspaces를 사용하고, No-terminal method는
+CLI proof가 생기기 전 assisted drafting 용도로만 사용하세요. Package-manager
+install이 필수라면 Homebrew를 기다려야 합니다.
 
-Curl installer:
+Minimal curl installer check:
 
 ```bash
 VERSION="0.3.0"
 curl -fsSLO https://raw.githubusercontent.com/Nam-Cheol/ni/main/install.sh
 sed -n '1,320p' install.sh
 sh install.sh --dry-run --version "$VERSION"
-BINDIR="$HOME/.local/bin" sh install.sh --version "$VERSION"
-"$HOME/.local/bin/ni" --help
-"$HOME/.local/bin/ni" version
 ```
 
-Manual verification path는 같은 v0.3.0 release에서 matching archive와
-`ni_0.3.0_checksums.txt`를 download하고, archive checksum을 verify하고,
-압축을 해제한 뒤 `ni --help`와 `ni version`을 실행하는 것이다.
+Source, local binary, release binary, curl installer의 전체 절차는
+[Install ni](docs/22_INSTALL.md)를 참고하세요. Manual release path는 같은
+v0.3.0 release에서 matching archive와 `ni_0.3.0_checksums.txt`를 download하고,
+archive checksum을 verify하고, 압축을 해제한 뒤 `ni --help`와 `ni version`을
+실행하는 것이다.
 
 Release status: v0.3.0 release binaries는 asset과 checksum 검증 후 Available입니다.
 Curl installer는 실제 v0.3.0 release assets에 대해 검증된 뒤 Available입니다.

@@ -86,39 +86,39 @@ go run ./cmd/ni run --dir ./my-plan --target generic --max-chars 4000
 
 ## Choose your path
 
-| Path | Status | Use it when | Boundary |
+| Path | Status | Start with | Use it when |
 | --- | --- | --- | --- |
-| Source | Available | You can run `go run ./cmd/ni ...`. | Full deterministic `status`, `end`, and `run`. |
-| Local binary | Available | You want `./bin/ni` or a local install from this checkout. | Build or install locally from source; independent of release assets. |
-| Model workspaces | Experimental | You want verified Codex or Claude source/zip skill packs to help draft docs and contract records. | Repo-local, manual-copy, and zip paths are available; global discovery remains unverified and the CLI remains authority. |
-| No-terminal method | Experimental | You want to learn or draft the Intent Lock method before a CLI run. | Assisted drafting only; it is not deterministic validation. |
-| Release binary | Available | You want `ni` without Go from a published release. | Use the verified v0.3.0 GitHub Release archives and checksums. |
-| Curl installer | Available | You want a small shell installer for release assets. | Inspect the script first; it downloads the verified v0.3.0 archive and checksum file. |
-| Homebrew | Planned | You prefer a package manager. | No tap or formula is published; see the tap plan. |
+| Source | Available | `go run ./cmd/ni --help` | You have Go and want the clearest development or evaluation path. |
+| Local binary | Available | `make build && ./bin/ni --help` | You want `./bin/ni` or a local install from this checkout. |
+| Release binary | Available | [v0.3.0 release](https://github.com/Nam-Cheol/ni/releases/tag/v0.3.0) | You want `ni` without Go and prefer manual checksum verification. |
+| Curl installer | Available | `sh install.sh --dry-run --version 0.3.0` | You want a small shell installer after inspecting the script. |
+| Model workspaces | Experimental | [Model Workspace Packs](docs/55_MODEL_WORKSPACE_PACKS.md) | You want verified Codex or Claude source/zip skill packs to help draft docs and contract records; the CLI remains authority. |
+| No-terminal method | Experimental | [No-Terminal Planning](docs/no-terminal.md) | You want assisted drafting before a trusted runner produces CLI proof. |
+| Homebrew | Planned | [Homebrew Tap Plan](docs/72_HOMEBREW_TAP_PLAN.md) | You prefer a package manager; no tap or formula is published or tested. |
 
-Release binary install:
+### Which path should I choose?
 
-1. Open the [v0.3.0 GitHub Release](https://github.com/Nam-Cheol/ni/releases/tag/v0.3.0).
-2. Download the OS/arch archive and `ni_0.3.0_checksums.txt`.
-3. Verify the checksum.
-4. Extract the archive.
-5. Run `ni --help` and `ni version`.
+Use Source if you have Go. Use Local binary if you want a repeatable binary
+from this checkout. Use Release binary if you want no-Go installation with
+manual checksum verification. Use Curl installer if you are comfortable
+inspecting a shell script first. Use Model workspaces for model-assisted
+planning, and No-terminal method only for assisted drafting until CLI proof
+exists. Wait for Homebrew if you require package-manager installation.
 
-Curl installer:
+Minimal curl installer check:
 
 ```bash
 VERSION="0.3.0"
 curl -fsSLO https://raw.githubusercontent.com/Nam-Cheol/ni/main/install.sh
 sed -n '1,320p' install.sh
 sh install.sh --dry-run --version "$VERSION"
-BINDIR="$HOME/.local/bin" sh install.sh --version "$VERSION"
-"$HOME/.local/bin/ni" --help
-"$HOME/.local/bin/ni" version
 ```
 
-For the manual verification path, download the matching release archive and
-`ni_0.3.0_checksums.txt` from the same v0.3.0 release, verify the archive
-checksum, extract it, and then run `ni --help` and `ni version`.
+For complete source, local binary, release binary, and curl installer steps,
+see [Install ni](docs/22_INSTALL.md). For the manual release path, download
+the matching archive and `ni_0.3.0_checksums.txt` from the same v0.3.0 release,
+verify the archive checksum, extract it, and then run `ni --help` and
+`ni version`.
 
 Release status: v0.3.0 release binaries are available after asset and checksum
 verification. The curl installer is available after verification against the
