@@ -83,14 +83,15 @@ avoid emoji, `foreignObject`, external fonts, external references, and long
 text, README.ko stays within English canonical claims, remote capsule-style
 renderers remain inspiration only, and README/assets checks guard regressions.
 
-## DEC-013: v0.3 distribution release state is factual and release-gated where needed
+## DEC-013: v0.3 distribution release state is factual and evidence-gated
 
 Status: accepted
 
 Rationale: The public README and install docs must not claim more distribution
 than exists. Source and local binary paths are available from this checkout;
-hosted release binaries require real GitHub Release archives and checksums;
-curl install remains gated until `install.sh` is verified against those assets;
-Homebrew remains planned with no published tap or formula; no-terminal mode is
-assisted unless exact CLI proof is supplied by a trusted runner; model workspace
-packs are UX rather than authority; and `ni-kernel` remains pre-runtime.
+release binaries are Available for the verified v0.3.0 GitHub Release archives
+and checksums; curl install is Available for verified v0.3.0 release assets
+after `install.sh` verification; Homebrew remains planned with no published tap
+or formula; no-terminal mode is assisted unless exact CLI proof is supplied by
+a trusted runner; model workspace packs are UX rather than authority; and
+`ni-kernel` remains pre-runtime.

@@ -52,9 +52,11 @@ Packaging and distribution references:
 6. Run `ni run --target <target> --max-chars 4000` to compile a bounded handoff prompt.
 7. Treat downstream feedback as inert until it becomes an explicit amendment.
 8. Use the differentiation proof assets to show why locked intent should precede downstream agent, human-team, or harness work.
-9. Keep public packaging claims factual: release binaries come before non-Go
-   curl and package-manager availability, model workspace packs remain UX, and
-   no-terminal mode remains assisted unless CLI proof is supplied.
+9. Keep public packaging claims factual: release binaries and curl installer
+   availability stay tied to verified v0.3.0 release evidence, package-manager
+   availability stays planned until published and tested, model workspace packs
+   remain UX, and no-terminal mode remains assisted unless CLI proof is
+   supplied.
 
 ## Validation
 

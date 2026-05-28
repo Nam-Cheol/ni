@@ -24,14 +24,14 @@ turning `ni-kernel` into a runtime:
 - README copy avoids specific harness product claims in the hero and avoids
   claiming curl, package-manager, or binary availability before those paths are
   implemented and verified.
-- The v0.3 distribution release state is factual: release binaries are
-  release-gated until GitHub Release archives and checksums exist, the curl
-  installer is release-gated until verified against those real assets,
-  Homebrew is planned with no published tap or formula, model workspace packs
-  are UX rather than authority, and no-terminal mode is assisted unless a
-  trusted runner supplies exact CLI proof.
-- Distribution must support non-Go users through release binaries before curl
-  or package-manager paths are presented as available.
+- The v0.3.0 distribution release state is factual: release binaries are
+  Available for the verified v0.3.0 GitHub Release archives and checksums, the
+  curl installer is Available for verified v0.3.0 release assets after
+  `install.sh` verification, Homebrew is Planned with no published tap or
+  formula, model workspace packs are UX rather than authority, and no-terminal
+  mode is assisted unless a trusted runner supplies exact CLI proof.
+- Distribution must keep release binaries as the trust base for curl installer
+  availability; package-manager paths stay planned until published and tested.
 - Model workspace packs support Codex- and Claude-style planning workflows as
   UX over docs and CLI proof, not execution adapters.
 - No-terminal mode is an assisted planning workflow; it is not full

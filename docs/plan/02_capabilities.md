@@ -84,10 +84,10 @@ the README and assets surface.
 
 The distribution release-state portion is locked as factual and pre-runtime:
 README.md and README.ko.md are public-facing visual pamphlets; source and local
-binary paths are available from the checkout; hosted release binaries are
-release-gated until GitHub Release archives and checksums exist; `install.sh`
-and curl install language are release-gated until verified against those real
-assets; Homebrew remains planned with no published tap or formula; no-terminal
-mode is assisted planning rather than deterministic validation without CLI
-proof; model workspace packs are UX over docs and CLI gates; and `ni-kernel`
-does not execute downstream work.
+binary paths are available from the checkout; release binaries are Available
+for the verified v0.3.0 GitHub Release archives and checksums; `install.sh` and
+curl install language are Available only for the verified v0.3.0 release assets;
+Homebrew remains planned with no published tap or formula; no-terminal mode is
+assisted planning rather than deterministic validation without CLI proof; model
+workspace packs are UX over docs and CLI gates; and `ni-kernel` does not execute
+downstream work.

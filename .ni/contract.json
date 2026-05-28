@@ -484,7 +484,7 @@
     },
     {
       "id": "REQ-017",
-      "title": "v0.3 packaging treats README as a public-facing visual product pamphlet, keeps technical details in docs, uses local deterministic SVG visuals with important copy in Markdown, keeps SVGs free of emoji, foreignObject, external fonts, external references, and long text, keeps generated social images optional, keeps README.ko within English canonical claims, treats remote capsule-style renderers as inspiration only, records source and local binary paths as available from this checkout, keeps hosted release binaries release-gated until GitHub Release archives and checksums exist, keeps curl installer availability release-gated until install.sh is verified against real release assets, keeps Homebrew planned until a tap/formula is published and tested, keeps Codex/Claude model packs plus no-terminal mode as assisted planning UX rather than execution adapters or deterministic validation substitutes, preserves ni-kernel as pre-runtime, and guards README/assets/distribution claims with regression checks",
+      "title": "v0.3 packaging treats README as a public-facing visual product pamphlet, keeps technical details in docs, uses local deterministic SVG visuals with important copy in Markdown, keeps SVGs free of emoji, foreignObject, external fonts, external references, and long text, keeps generated social images optional, keeps README.ko within English canonical claims, treats remote capsule-style renderers as inspiration only, records source and local binary paths as available from this checkout, records release binaries as Available for verified v0.3.0 GitHub Release archives and checksums, records the curl installer as Available for verified v0.3.0 release assets after install.sh verification, keeps Homebrew planned until a tap/formula is published and tested, keeps Codex/Claude model packs plus no-terminal mode as assisted planning UX rather than execution adapters or deterministic validation substitutes, preserves ni-kernel as pre-runtime, and guards README/assets/distribution claims with regression checks",
       "status": "accepted"
     }
   ],
@@ -551,7 +551,7 @@
     },
     {
       "id": "DEC-013",
-      "title": "v0.3 distribution release state is factual and release-gated where needed",
+      "title": "v0.3 distribution release state is factual and evidence-gated",
       "status": "accepted"
     }
   ],
@@ -645,7 +645,7 @@
       "title": "Packaging claims outrun implemented distribution",
       "severity": "high",
       "status": "accepted",
-      "mitigation": "Keep README, install, distribution, Homebrew, manual release, visual asset, and model workspace pack docs factual: source and local binary paths are available from the checkout; hosted release binaries require real GitHub Release archives and checksums; curl install remains gated until install.sh is verified against those assets; package-manager and Homebrew language remains planned until a tap/formula is published and tested; model packs remain planning UX; no-terminal mode requires CLI-produced proof before deterministic validation claims."
+      "mitigation": "Keep README, install, distribution, Homebrew, manual release, visual asset, and model workspace pack docs factual: source and local binary paths are available from the checkout; release binaries are Available only for verified v0.3.0 GitHub Release archives and checksums; curl install is Available only for verified v0.3.0 release assets after install.sh verification; package-manager and Homebrew language remains planned until a tap/formula is published and tested; model packs remain planning UX; no-terminal mode requires CLI-produced proof before deterministic validation claims."
     },
     {
       "id": "RISK-014",
@@ -749,7 +749,7 @@
     {
       "id": "EVAL-019",
       "title": "v0.3 packaging claims stay factual and pre-runtime",
-      "method": "static quality and planning review verify README.md, README.ko.md, docs/52_README_PAMPHLET_STRATEGY.md through docs/58_VISUAL_ASSETS.md, install docs, and model workspace pack docs preserve SVG-first product packaging, truthful distribution availability, assisted no-terminal wording, and non-executing Codex/Claude pack boundaries"
+      "method": "static quality and planning review verify README.md, README.ko.md, docs/52_README_PAMPHLET_STRATEGY.md through docs/58_VISUAL_ASSETS.md, install docs, release verification docs, Homebrew planning docs, and model workspace pack docs preserve SVG-first product packaging, truthful distribution availability, assisted no-terminal wording, and non-executing Codex/Claude pack boundaries"
     },
     {
       "id": "EVAL-020",
@@ -759,7 +759,7 @@
     {
       "id": "EVAL-021",
       "title": "v0.3 distribution release state stays factual",
-      "method": "go test ./..., bash scripts/quality.sh, bash scripts/demo-check.sh, bash scripts/install-check.sh, and bash scripts/release-check.sh verify README.md, README.ko.md, docs/22_INSTALL.md, docs/53_DISTRIBUTION_STRATEGY.md, docs/54_HOMEBREW_DISTRIBUTION.md, docs/69_MANUAL_RELEASE_STEPS.md, and docs/51_POST_RELEASE_ROADMAP.md preserve public visual README positioning, factual release binary and curl gating, planned Homebrew status, assisted no-terminal wording, model-pack UX boundaries, and the pre-runtime ni-kernel boundary"
+      "method": "go test ./..., python3 scripts/check-formatting.py, bash scripts/quality.sh, bash scripts/demo-check.sh, bash scripts/install-check.sh, and bash scripts/release-check.sh verify README.md, README.ko.md, docs/22_INSTALL.md, docs/53_DISTRIBUTION_STRATEGY.md, docs/54_HOMEBREW_DISTRIBUTION.md, docs/70_RELEASE_VERIFICATION_v0.3.0.md, docs/71_CURL_INSTALLER_VERIFICATION_v0.3.0.md, docs/72_HOMEBREW_TAP_PLAN.md, and docs/51_POST_RELEASE_ROADMAP.md preserve public visual README positioning, verified v0.3.0 release binary availability, verified v0.3.0 curl installer availability, planned Homebrew status, assisted no-terminal wording, model-pack UX boundaries, and the pre-runtime ni-kernel boundary"
     }
   ],
   "artifacts": [
@@ -975,7 +975,7 @@
     },
     {
       "id": "ART-043",
-      "path": "docs/22_INSTALL.md docs/69_MANUAL_RELEASE_STEPS.md scripts/demo-check.sh scripts/install-check.sh scripts/release-check.sh",
+      "path": "docs/22_INSTALL.md docs/53_DISTRIBUTION_STRATEGY.md docs/54_HOMEBREW_DISTRIBUTION.md docs/70_RELEASE_VERIFICATION_v0.3.0.md docs/71_CURL_INSTALLER_VERIFICATION_v0.3.0.md docs/72_HOMEBREW_TAP_PLAN.md docs/51_POST_RELEASE_ROADMAP.md scripts/demo-check.sh scripts/install-check.sh scripts/release-check.sh",
       "kind": "distribution_release_state"
     }
   ],

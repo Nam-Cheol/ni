@@ -95,12 +95,15 @@ renderers as inspiration only, and visual regression coverage.
 
 ## EVAL-021: v0.3 distribution release state stays factual
 
-Method: `go test ./...`, `bash scripts/quality.sh`,
-`bash scripts/demo-check.sh`, `bash scripts/install-check.sh`, and
-`bash scripts/release-check.sh` verify README.md, README.ko.md,
-docs/22_INSTALL.md, docs/53_DISTRIBUTION_STRATEGY.md,
-docs/54_HOMEBREW_DISTRIBUTION.md, docs/69_MANUAL_RELEASE_STEPS.md, and
-docs/51_POST_RELEASE_ROADMAP.md preserve public visual README positioning,
-factual release binary and curl gating, planned Homebrew status, assisted
+Method: `go test ./...`, `python3 scripts/check-formatting.py`,
+`bash scripts/quality.sh`, `bash scripts/demo-check.sh`,
+`bash scripts/install-check.sh`, and `bash scripts/release-check.sh` verify
+README.md, README.ko.md, docs/22_INSTALL.md,
+docs/53_DISTRIBUTION_STRATEGY.md, docs/54_HOMEBREW_DISTRIBUTION.md,
+docs/70_RELEASE_VERIFICATION_v0.3.0.md,
+docs/71_CURL_INSTALLER_VERIFICATION_v0.3.0.md,
+docs/72_HOMEBREW_TAP_PLAN.md, and docs/51_POST_RELEASE_ROADMAP.md preserve
+public visual README positioning, verified v0.3.0 release binary availability,
+verified v0.3.0 curl installer availability, planned Homebrew status, assisted
 no-terminal wording, model-pack UX boundaries, and the pre-runtime
 `ni-kernel` boundary.

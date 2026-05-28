@@ -1,0 +1,37 @@
+{
+  "schema": "ni.amendment.v0",
+  "id": "AMEND-011",
+  "title": "Lock v0.3.0 post-release distribution state",
+  "reason": "Lock the factual post-release distribution state after v0.3.0 release asset verification, README install status update, curl installer verification, and Homebrew tap planning, without claiming unavailable package-manager support or adding runtime behavior.",
+  "affected_docs": [
+    "docs/plan/00_project_brief.md",
+    "docs/plan/02_capabilities.md",
+    "docs/plan/06_risks_security.md",
+    "docs/plan/07_evaluation_contract.md",
+    "docs/plan/08_delivery_operation.md",
+    "docs/plan/11_decision_log.md",
+    ".ni/contract.json"
+  ],
+  "affected_contract_ids": [
+    "CAP-017",
+    "REQ-017",
+    "DEC-013",
+    "RISK-013",
+    "EVAL-019",
+    "EVAL-021",
+    "ART-043"
+  ],
+  "proposed_changes": [
+    "Record that v0.3.0 release binaries are Available only for verified GitHub Release archives and checksums.",
+    "Record that the curl installer is Available only for verified v0.3.0 release assets after install.sh verification.",
+    "Keep Homebrew Planned until a tap/formula is published and tested, keep no-terminal mode assisted rather than deterministic validation without CLI proof, keep model workspace packs as UX, and preserve ni-kernel as pre-runtime."
+  ],
+  "risk_impact": "Strengthens the existing high-severity packaging-claim risk by replacing older release-gated wording with evidence-bound availability for release binaries and curl while preserving planned Homebrew status and pre-runtime boundaries.",
+  "readiness_impact": "Expected to remain READY because accepted CAP-017 keeps requirements, evaluations, mitigated high risks, artifacts, non-goals, and no blocker questions while aligning the contract with verified v0.3.0 distribution evidence.",
+  "created_from_feedback_refs": [],
+  "created_from_pressure_refs": [],
+  "status": "applied",
+  "created_at": "2026-05-28T05:13:46Z",
+  "applied_at": "2026-05-28T05:15:37Z",
+  "source_lock_hash": "129afffefbbc0e78b1167f4ee971e524d2fc698fae22a73834cec4f9094787b4"
+}
