@@ -7,10 +7,10 @@ multi-agent execution layer, adapter, queue, or project execution harness.
 
 ## Current Status
 
-- Release binary availability: not available until a tagged GitHub Release has
-  completed and the uploaded assets and checksums have been verified.
-- Curl installer availability: not available until it has been verified against
-  published release assets.
+- Release binary availability: available for verified v0.3.0 GitHub Release
+  assets and checksums.
+- Curl installer availability: available for the verified v0.3.0 installer path
+  against published release assets.
 - Homebrew availability: not available.
 - Local release validation: available through
   `bash scripts/release-dry-run.sh`.
@@ -78,4 +78,5 @@ passed when it was not executed.
 Stop before tagging if any validation fails, if the workflow no longer runs only
 on `v*` tags, if the GoReleaser matrix changes without an explicit release
 decision, or if documentation claims release binary, curl installer, or Homebrew
-availability before those paths are verified.
+availability before those paths are verified. Homebrew remains planned until an
+external package exists and is verified.

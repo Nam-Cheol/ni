@@ -93,7 +93,7 @@ go run ./cmd/ni run --dir ./my-plan --target generic --max-chars 4000
 | Model workspaces | Experimental | You want Codex or Claude to help draft docs and contract records. | Skills are UX; the CLI remains readiness and lock authority. |
 | No-terminal method | Experimental | You want to learn or draft the Intent Lock method before a CLI run. | Assisted drafting only; it is not deterministic validation. |
 | Release binary | Available | You want `ni` without Go from a published release. | Use the verified v0.3.0 GitHub Release archives and checksums. |
-| Curl installer | Release-gated | You want a small shell installer for release assets. | Use only after `install.sh` has been verified against the real release assets. |
+| Curl installer | Available | You want a small shell installer for release assets. | Inspect the script first; it downloads the verified v0.3.0 archive and checksum file. |
 | Homebrew | Planned | You prefer a package manager. | No tap or formula is published. |
 
 Release binary install:
@@ -104,10 +104,26 @@ Release binary install:
 4. Extract the archive.
 5. Run `ni --help` and `ni version`.
 
+Curl installer:
+
+```bash
+VERSION="0.3.0"
+curl -fsSLO https://raw.githubusercontent.com/Nam-Cheol/ni/main/install.sh
+sed -n '1,320p' install.sh
+sh install.sh --dry-run --version "$VERSION"
+BINDIR="$HOME/.local/bin" sh install.sh --version "$VERSION"
+"$HOME/.local/bin/ni" --help
+"$HOME/.local/bin/ni" version
+```
+
+For the manual verification path, download the matching release archive and
+`ni_0.3.0_checksums.txt` from the same v0.3.0 release, verify the archive
+checksum, extract it, and then run `ni --help` and `ni version`.
+
 Release status: v0.3.0 release binaries are available after asset and checksum
-verification. The curl installer remains release-gated until `install.sh` is
-verified against the real release assets. Package-manager distribution,
-including Homebrew, is not available yet.
+verification. The curl installer is available after verification against the
+real v0.3.0 release assets. Package-manager distribution, including Homebrew,
+is not available yet.
 
 License: `ni` is licensed under the [MIT License](LICENSE).
 

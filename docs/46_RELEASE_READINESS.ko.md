@@ -12,10 +12,9 @@ availability는 claim하지 않는다.
   `bash scripts/smoke.sh`를 실행한다.
 - Security policy: `SECURITY.md`가 존재하며 early source-first scope,
   reporting limits, secret-handling guidance, runtime boundary를 문서화한다.
-- Distribution: documented available usage는 source, local build, local
-  install이다. GitHub Release binaries와 curl installer는 real release assets와
-  checksums가 publish되고 verify되기 전까지 release-gated이며 available하지
-  않다. Package manager distribution, Homebrew support, Scoop support, hosted
+- Distribution: documented available usage는 source, local build, local install,
+  verified v0.3.0 GitHub Release binaries, verified v0.3.0 curl installer
+  path다. Package manager distribution, Homebrew support, Scoop support, hosted
   service availability는 available하지 않다.
 - Repository release workflow: `.github/workflows/release.yml`은 tagged GitHub
   Releases에 대해서만 release binaries를 build한다. 이는 distribution

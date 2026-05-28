@@ -15,7 +15,7 @@ README_EXPECTED = {
     "Model workspaces": "Experimental",
     "No-terminal method": "Experimental",
     "Release binary": "Available",
-    "Curl installer": "Release-gated",
+    "Curl installer": "Available",
     "Homebrew": "Planned",
 }
 
@@ -23,7 +23,7 @@ DISTRIBUTION_EXPECTED = {
     "Source mode": "Available",
     "Local binary mode": "Available",
     "Release binary mode": "Available",
-    "Curl installer mode": "Release-gated",
+    "Curl installer mode": "Available",
     "Package manager mode": "Planned",
     "Model workspace mode": "Experimental",
     "No-terminal mode": "Experimental",
@@ -32,27 +32,27 @@ DISTRIBUTION_EXPECTED = {
 REQUIRED_MARKERS = {
     "README.md": [
         "v0.3.0 release binaries are available",
-        "The curl installer remains release-gated",
+        "The curl installer is available after verification against the",
         "including Homebrew, is not available yet",
     ],
     "README.ko.md": [
         "v0.3.0 release binaries는 asset과 checksum 검증 후 Available입니다",
-        "Curl installer는 `install.sh`가 실제 release assets에 대해 검증될 때까지 release-gated입니다",
+        "Curl installer는 실제 v0.3.0 release assets에 대해 검증된 뒤 Available입니다",
         "Homebrew를 포함한 package-manager distribution은 아직 Available이 아닙니다",
     ],
     "docs/22_INSTALL.md": [
         "Release binary status: Available.",
-        "Curl installer status: Release-gated.",
+        "Curl installer status: Available for verified v0.3.0 release assets.",
         "Package manager status: Planned.",
-        "claims release binary availability only for the verified",
+        "curl installer availability only for the verified v0.3.0 installer path",
     ],
     "docs/install-curl.md": [
-        "Status: Release-gated.",
-        "must not be presented as an available public install path",
+        "Status: Available for the verified v0.3.0 GitHub Release assets.",
+        "The v0.3.0 verification passed on 2026-05-28.",
     ],
     "docs/install-curl.ko.md": [
-        "Status: Release-gated.",
-        "public available install path로 설명하면 안 된다",
+        "Status: verified v0.3.0 GitHub Release assets에 대해 Available이다.",
+        "v0.3.0 verification은 2026-05-28에 통과했다.",
     ],
     "docs/54_HOMEBREW_DISTRIBUTION.md": [
         "Current status: Planned.",
@@ -78,10 +78,6 @@ REQUIRED_MARKERS = {
 
 FORBIDDEN_AFFIRMATIVE = [
     "Status: available. `install.sh`",
-    "has been verified against the published `v0.3.0` GitHub Release",
-    "| Curl installer | Available |",
-    "| Curl installer mode | Available |",
-    "Curl installer mode is available",
     "| Homebrew | Available |",
     "| Package manager mode | Available |",
     "Homebrew is available",

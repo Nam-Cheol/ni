@@ -93,7 +93,7 @@ go run ./cmd/ni run --dir ./my-plan --target generic --max-chars 4000
 | Model workspaces | Experimental | Codex 또는 Claude가 docs와 contract records draft를 돕게 하고 싶을 때 사용합니다. | Skills are UX; readiness와 lock authority는 CLI입니다. |
 | No-terminal method | Experimental | CLI run 전 Intent Lock method를 배우거나 draft하고 싶을 때 사용합니다. | Assisted drafting일 뿐 deterministic validation은 아닙니다. |
 | Release binary | Available | Published release에서 Go 없이 `ni`를 받고 싶을 때 사용합니다. | 검증된 v0.3.0 GitHub Release archives와 checksums를 사용합니다. |
-| Curl installer | Release-gated | Release assets용 작은 shell installer를 원할 때 사용합니다. | `install.sh`가 실제 release assets에 대해 verified된 뒤에만 사용합니다. |
+| Curl installer | Available | Release assets용 작은 shell installer를 원할 때 사용합니다. | Script를 먼저 inspect합니다. Installer는 검증된 v0.3.0 archive와 checksum file을 download합니다. |
 | Homebrew | Planned | Package manager를 선호할 때 사용합니다. | Published tap이나 formula가 없습니다. |
 
 Release binary 설치:
@@ -104,8 +104,24 @@ Release binary 설치:
 4. archive를 압축 해제합니다.
 5. `ni --help`와 `ni version`을 실행합니다.
 
+Curl installer:
+
+```bash
+VERSION="0.3.0"
+curl -fsSLO https://raw.githubusercontent.com/Nam-Cheol/ni/main/install.sh
+sed -n '1,320p' install.sh
+sh install.sh --dry-run --version "$VERSION"
+BINDIR="$HOME/.local/bin" sh install.sh --version "$VERSION"
+"$HOME/.local/bin/ni" --help
+"$HOME/.local/bin/ni" version
+```
+
+Manual verification path는 같은 v0.3.0 release에서 matching archive와
+`ni_0.3.0_checksums.txt`를 download하고, archive checksum을 verify하고,
+압축을 해제한 뒤 `ni --help`와 `ni version`을 실행하는 것이다.
+
 Release status: v0.3.0 release binaries는 asset과 checksum 검증 후 Available입니다.
-Curl installer는 `install.sh`가 실제 release assets에 대해 검증될 때까지 release-gated입니다.
+Curl installer는 실제 v0.3.0 release assets에 대해 검증된 뒤 Available입니다.
 Homebrew를 포함한 package-manager distribution은 아직 Available이 아닙니다.
 
 License: `ni`는 [MIT License](LICENSE)로 배포됩니다.

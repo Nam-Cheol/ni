@@ -5,20 +5,23 @@ binary without requiring Go. It downloads an archive, verifies the checksum when
 the release provides one, copies `ni` into a local bin directory, and prints next
 steps. It does not install model skills or run downstream work.
 
-Status: Release-gated. `install.sh` must not be presented as an available
-public install path until a GitHub Release publishes the expected archives and
-checksum file, and the script has been verified against those real assets.
+Status: Available for the verified v0.3.0 GitHub Release assets. `install.sh`
+downloads the selected archive and `ni_0.3.0_checksums.txt`, verifies the
+archive when a local sha256 tool is available, installs only the `ni` binary,
+and does not run downstream work.
 
 ## Safer Script Path
 
-After the release gate is satisfied, download and inspect the installer first:
+Download and inspect the installer before any local install:
 
 ```bash
-VERSION="<published-version-without-v>"
+VERSION="0.3.0"
 curl -fsSLO https://raw.githubusercontent.com/Nam-Cheol/ni/main/install.sh
 sed -n '1,320p' install.sh
 sh install.sh --dry-run --version "$VERSION"
 BINDIR="$HOME/.local/bin" sh install.sh --version "$VERSION"
+"$HOME/.local/bin/ni" --help
+"$HOME/.local/bin/ni" version
 ```
 
 By default, the script installs to `~/.local/bin/ni`. Override the destination
@@ -28,9 +31,10 @@ with `BINDIR`:
 BINDIR="$HOME/bin" sh install.sh --dry-run --version "$VERSION"
 ```
 
-If you omit `--version`, the installer asks GitHub for the latest release tag;
-that requires at least one published release. The installed CLI should only be
-checked with help or version commands:
+If you omit `--version`, the installer asks GitHub for the latest release tag.
+Pin `VERSION="0.3.0"` when you want the verified release covered by
+[v0.3.0 Curl Installer Verification](71_CURL_INSTALLER_VERIFICATION_v0.3.0.md).
+The installed CLI should only be checked with help or version commands:
 
 ```bash
 ~/.local/bin/ni --help
@@ -108,10 +112,16 @@ tested without network access and without Go:
 bash scripts/test-install-sh.sh
 ```
 
-Before changing public availability language, also verify a real release asset:
+For future releases, repeat the real release verification before changing
+public availability language:
 
 ```bash
-VERSION="<published-version-without-v>"
+VERSION="0.3.0"
 sh install.sh --dry-run --version "$VERSION"
 BINDIR="$(mktemp -d)" sh install.sh --version "$VERSION"
 ```
+
+The v0.3.0 verification passed on 2026-05-28. The installer printed
+`Verified checksum for ni_0.3.0_darwin_arm64.tar.gz`, installed the binary into
+a temporary `BINDIR`, and the installed binary returned `0.3.0` for
+`ni version`.

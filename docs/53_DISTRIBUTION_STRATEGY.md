@@ -5,12 +5,11 @@ before they use a terminal directly.
 
 The strategy is directional. It must not be read as a claim that all paths are
 available today. Current availability includes source, local builds, local
-installs, verified v0.3.0 release archives, and repo-local model workspace
-assistance. The curl installer remains release-gated until `install.sh` is
-verified against real release assets, and package managers remain planned until
-their external assets exist and are verified. Future package-manager and
-installer work belongs to repository infrastructure, packaging, and
-documentation. It is not `ni-kernel` runtime execution behavior.
+installs, verified v0.3.0 release archives, the verified v0.3.0 curl installer
+path, and repo-local model workspace assistance. Package managers remain
+planned until their external assets exist and are verified. Future
+package-manager and installer work belongs to repository infrastructure,
+packaging, and documentation. It is not `ni-kernel` runtime execution behavior.
 
 `ni-kernel` remains the authority for:
 
@@ -30,7 +29,7 @@ execution service, or multi-agent execution layer.
 | Source mode | Available | Developers, early evaluators, contributors, Go-comfortable users | Go 1.22 or newer; Git optional for version metadata | Trust the checked-out source, local Go toolchain, repository tests, and quality checks | Keep `go run`, `make build`, `make test`, and `make quality` documented and working |
 | Local binary mode | Available | Users who want `./bin/ni` or a local install from this checkout | Go 1.22 or newer; local shell | Trust the checked-out source, local build, and temporary install checks | Keep `make build`, `make install-local`, and `bash scripts/install-check.sh` working |
 | Release binary mode | Available | Users comfortable with a terminal but not with Go | Terminal; OS-specific downloaded `ni` binary from the verified v0.3.0 release | Trust GitHub Release assets plus published checksums after verification | Keep manual release asset process, OS/arch builds, checksums, verification docs, and rollback notes current |
-| Curl installer mode | Release-gated | Terminal users who want one command and no Go setup | `curl` or equivalent downloader; POSIX shell on supported platforms | Trust the installer script after inspecting it; it verifies real release assets with published checksums when available | Keep `install.sh` small, auditable, covered by installer checks, and verify it against real release assets before availability claims |
+| Curl installer mode | Available | Terminal users who want one command and no Go setup | `curl` or equivalent downloader; POSIX shell on supported platforms | Trust the installer script after inspecting it; it verifies real release assets with published checksums when available | Keep `install.sh` small, auditable, covered by installer checks, and reverify it against real release assets before new availability claims |
 | Package manager mode | Planned | Users who prefer platform package managers | Homebrew first; Scoop later if Windows demand appears | Trust package manager metadata, formulas/manifests, and checksums that point to official release assets | Create a Homebrew tap or formula after release binaries stabilize; consider Scoop later; keep publishing outside `ni-kernel` |
 | Model workspace mode | Experimental | Codex/Claude users who author plans through a model workspace | A model workspace that can read the repository docs and invoke the `ni` CLI as authority | Trust the CLI gates, not the model; skills are UX over docs and `.ni/contract.json` | Package and document portable skill packs; keep skill behavior aligned with `ni status`, `ni end`, and `ni run` |
 | No-terminal mode | Experimental | Non-technical users, product leads, researchers, and teams who want docs-first planning without direct terminal use | Assisted docs-first workflow; a trusted runner still invokes `ni` gates for deterministic validation | Trust visible docs, lockfile hashes, and CLI-generated status/lock/run outputs; the model may not declare readiness on its own | Keep assisted no-terminal docs factual; do not claim deterministic validation without CLI proof |
@@ -87,7 +86,7 @@ automation to `ni-kernel`, and it must not change `ni run` into an executor.
 
 ### 4. Curl installer mode
 
-Curl installer mode is release-gated.
+Curl installer mode is available for the verified v0.3.0 release assets.
 
 The installer is a small `install.sh` that downloads a verified release asset.
 It does not build from source by default, execute downstream work, or hide the
@@ -95,8 +94,8 @@ trust boundary. The script explains what it downloads, where it installs `ni`,
 and how it verifies the asset.
 
 This track depends on release binary mode. The script is tested with local fake
-release assets, but public availability requires verification against real
-published release assets and their checksum file.
+release assets, including checksum mismatch behavior, and was verified against
+the real v0.3.0 darwin/arm64 release archive and checksum file on 2026-05-28.
 
 ### 5. Package manager mode
 
@@ -155,8 +154,8 @@ planning conversation -> docs contract -> readiness gate -> lockfile -> prompt
   workspace assistance may be described as available or experimental today.
 - Release binaries may be described as available for verified GitHub Release
   assets and checksums, currently v0.3.0.
-- Curl install may be described as available only while `install.sh` remains
-  verified against real release assets and checksums.
+- Curl install may be described as available for real release assets and
+  checksums that have been verified with `install.sh`, currently v0.3.0.
 - Package manager install must not be described as available until packages or
   formulas are published.
 - No-terminal mode may be described only as assisted or experimental until a

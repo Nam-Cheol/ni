@@ -5,11 +5,10 @@
 
 이 strategy는 방향성 문서다. 모든 경로가 오늘 available하다는 claim이 아니다.
 현재 availability는 source, local build, local install, verified v0.3.0 release
-archives, repo-local model workspace assistance다. Curl installer는 `install.sh`가
-real release assets에 대해 verified되기 전까지 release-gated이며, package
-managers는 external assets가 존재하고 verified되기 전까지 planned다. Future
-distribution work는 repository infrastructure, packaging, documentation에 속한다.
-`ni-kernel` runtime execution behavior가 아니다.
+archives, verified v0.3.0 curl installer path, repo-local model workspace
+assistance다. Package managers는 external assets가 존재하고 verified되기 전까지
+planned다. Future distribution work는 repository infrastructure, packaging,
+documentation에 속한다. `ni-kernel` runtime execution behavior가 아니다.
 
 `ni-kernel`의 authority는 계속 다음에 있다:
 
@@ -29,7 +28,7 @@ execution service, multi-agent execution layer로 바꾸면 안 된다.
 | Source mode | Available | Developers, early evaluators, contributors, Go에 익숙한 users | Go 1.22 이상; version metadata에는 Git optional | Checked-out source, local Go toolchain, repository tests, quality checks를 trust한다 | `go run`, `make build`, `make test`, `make quality`가 계속 documented and working 상태여야 한다 |
 | Local binary mode | Available | 이 checkout에서 `./bin/ni` 또는 local install을 원하는 users | Go 1.22 이상; local shell | Checked-out source, local build, temporary install checks를 trust한다 | `make build`, `make install-local`, `bash scripts/install-check.sh`가 계속 working 상태여야 한다 |
 | Release binary mode | Available | Terminal은 편하지만 Go는 모르는 users | Verified v0.3.0 release에서 OS별 downloaded `ni` binary | Verification 뒤 GitHub Releases assets와 published checksums를 trust한다 | Manual release asset process, OS/arch별 build, checksums, verification과 rollback docs를 최신으로 유지한다 |
-| Curl installer mode | Release-gated | One command를 원하는 terminal users | `curl` 또는 equivalent downloader; supported platforms의 POSIX shell | Installer script를 inspect한 뒤 trust한다. Installer는 checksum이 있으면 real release asset을 verify한다 | `install.sh`를 작고 auditable하게 유지하고, availability claim 전에 real release assets에 대해 verify한다 |
+| Curl installer mode | Available | One command를 원하는 terminal users | `curl` 또는 equivalent downloader; supported platforms의 POSIX shell | Installer script를 inspect한 뒤 trust한다. Installer는 checksum이 있으면 real release asset을 verify한다 | `install.sh`를 작고 auditable하게 유지하고, 새로운 availability claim 전에는 real release assets에 대해 다시 verify한다 |
 | Package manager mode | Planned | Platform package managers를 선호하는 users | Homebrew first; Windows demand가 있으면 Scoop later | Official release assets를 가리키는 package manager metadata, formulas/manifests, checksums를 trust한다 | Release binaries가 안정화된 뒤 Homebrew tap 또는 formula 생성; Scoop은 later; publishing은 `ni-kernel` 밖에 둔다 |
 | Model workspace mode | Experimental | Model workspace에서 planning을 author하는 Codex/Claude users | Repository docs를 읽고 authority로 `ni` CLI를 호출할 수 있는 model workspace | Model이 아니라 CLI gates를 trust한다; skills는 docs와 `.ni/contract.json` 위의 UX다 | Portable skill packs packaging과 docs; skill behavior는 `ni status`, `ni end`, `ni run`과 aligned해야 한다 |
 | No-terminal mode | Experimental | Direct terminal use 없이 docs-first planning을 원하는 non-technical users, product leads, researchers, teams | Assisted docs-first workflow; trusted runner가 deterministic validation을 위해 `ni` gates를 호출해야 한다 | Visible docs, lockfile hashes, CLI-generated status/lock/run outputs를 trust한다; model은 readiness를 단독 선언할 수 없다 | Assisted no-terminal docs를 factual하게 유지한다; CLI proof 없이 deterministic validation을 claim하지 않는다 |
@@ -86,7 +85,7 @@ automation을 추가하면 안 되며, `ni run`을 executor로 바꾸면 안 된
 
 ### 4. Curl installer mode
 
-Curl installer mode는 release-gated다.
+Curl installer mode는 verified v0.3.0 release assets에 대해 available이다.
 
 Installer는 verified release asset을 download하는 작은 `install.sh`다.
 기본적으로 source build를 하거나 downstream work를 실행하거나 trust boundary를
@@ -94,8 +93,8 @@ Installer는 verified release asset을 download하는 작은 `install.sh`다.
 asset을 어떻게 verify하는지 설명한다.
 
 이 track은 release binary mode에 의존한다. Script는 local fake release assets로
-test되지만, public availability는 real published release assets와 checksum file에
-대한 verification이 필요하다.
+test되며 checksum mismatch behavior도 확인한다. 또한 2026-05-28에 real v0.3.0
+darwin/arm64 release archive와 checksum file에 대해 verified되었다.
 
 ### 5. Package manager mode
 
@@ -152,8 +151,8 @@ planning conversation -> docs contract -> readiness gate -> lockfile -> prompt
   assistance는 오늘 available 또는 experimental이라고 설명할 수 있다.
 - Release binaries는 verified GitHub Release assets와 checksums에 대해
   available하다고 설명할 수 있으며, 현재 대상은 v0.3.0이다.
-- Curl install은 `install.sh`가 real release assets와 checksums에 대해 verified
-  상태일 때만 available하다고 설명할 수 있다.
+- Curl install은 `install.sh`로 real release assets와 checksums를 verify한
+  대상에 대해 available하다고 설명할 수 있으며, 현재 대상은 v0.3.0이다.
 - Package manager install은 packages 또는 formulas가 published되기 전까지
   available하다고 설명하면 안 된다.
 - No-terminal mode는 downloadable model pack과 proof-oriented workflow가 있기

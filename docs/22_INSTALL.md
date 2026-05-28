@@ -1,8 +1,7 @@
 # Install ni
 
-`ni` is usable from source, from a locally built binary, or from the verified
-v0.3.0 GitHub Release archives. The curl installer remains release-gated until
-`install.sh` is verified against the real release assets.
+`ni` is usable from source, from a locally built binary, from the verified
+v0.3.0 GitHub Release archives, or through the verified curl installer.
 
 ## Prerequisites
 
@@ -132,14 +131,15 @@ Compare the `Get-FileHash` output with the checksum line printed by
 
 ## Curl installer
 
-Curl installer status: Release-gated.
+Curl installer status: Available for verified v0.3.0 release assets.
 
-`install.sh` can install a release archive without requiring Go, but it depends
-on hosted release archives. Do not present it as available until the script has
-been verified against the real v0.3.0 archives and checksum file.
+`install.sh` can install a release archive without requiring Go. It was
+verified against the real v0.3.0 darwin/arm64 archive and checksum file on
+2026-05-28. The installer downloads the selected archive and checksum file,
+verifies the checksum when a local sha256 tool is available, installs only the
+`ni` binary, and does not install model skills or run downstream work.
 
-After that gate is satisfied, download and inspect the script before any local
-trial:
+Download and inspect the script before any local install:
 
 ```bash
 VERSION="0.3.0"
@@ -152,7 +152,9 @@ BINDIR="$HOME/.local/bin" sh install.sh --version "$VERSION"
 ```
 
 See [Curl Installer](install-curl.md) for `BINDIR`, checksum behavior, and the
-manual verification path.
+manual verification path. The manual verification path is to download the
+matching archive and `ni_0.3.0_checksums.txt` from the same release, verify the
+archive checksum, extract it, and then run `ni --help` and `ni version`.
 
 Package manager status: Planned. Do not use package manager instructions for
 `ni` yet; Homebrew and Scoop packages are not published.
@@ -186,7 +188,7 @@ bash scripts/release-check.sh
 `ni` is licensed under the [MIT License](../LICENSE).
 
 This install document claims release binary availability only for the verified
-v0.3.0 GitHub Release assets. It does not claim curl installer availability,
-package distribution, Homebrew support, Scoop support, no-terminal
-deterministic validation, runtime execution behavior, or global model-pack
-installation.
+v0.3.0 GitHub Release assets and curl installer availability only for the
+verified v0.3.0 installer path. It does not claim package distribution,
+Homebrew support, Scoop support, no-terminal deterministic validation, runtime
+execution behavior, or global model-pack installation.
