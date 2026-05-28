@@ -176,7 +176,7 @@ func TestStatusNextQuestionsText(t *testing.T) {
 	if !strings.Contains(stdout.String(), "question R009 OQ-001:") {
 		t.Fatalf("expected blocker open question prompt, got %q", stdout.String())
 	}
-	if !strings.Contains(stdout.String(), "what decision resolves this blocker") {
+	if !strings.Contains(stdout.String(), "What answer would resolve it") {
 		t.Fatalf("expected deterministic next question, got %q", stdout.String())
 	}
 }
@@ -205,8 +205,15 @@ func TestStatusNextQuestionsJSON(t *testing.T) {
 	if len(payload.NextQuestions) == 0 {
 		t.Fatalf("expected next questions, got %q", stdout.String())
 	}
-	if payload.NextQuestions[0].RuleID != "R009" || !contains(payload.NextQuestions[0].References, "OQ-001") {
-		t.Fatalf("expected R009 question for OQ-001, got %#v", payload.NextQuestions[0])
+	found := false
+	for _, question := range payload.NextQuestions {
+		if question.RuleID == "R009" && contains(question.References, "OQ-001") {
+			found = true
+			break
+		}
+	}
+	if !found {
+		t.Fatalf("expected R009 question for OQ-001, got %#v", payload.NextQuestions)
 	}
 }
 
@@ -1914,8 +1921,17 @@ func writeReadyContractForCLI(t *testing.T, dir string) {
 	if err := os.WriteFile(filepath.Join(dir, ".ni", "contract.json"), append(data, '\n'), 0o644); err != nil {
 		t.Fatalf("writing ready contract: %v", err)
 	}
+	if err := os.WriteFile(filepath.Join(dir, "docs", "plan", "00_project_brief.md"), []byte("# Project brief\n\n## Product type\n\nsoftware\n\n## Delivery surfaces\n\n- cli\n\n## Purpose\n\nExercise ni end.\n"), 0o644); err != nil {
+		t.Fatalf("writing ready project brief: %v", err)
+	}
+	if err := os.WriteFile(filepath.Join(dir, "docs", "plan", "01_actors_outcomes.md"), []byte("# Actors and outcomes\n\n## Actors\n\n- User: reviews the CLI fixture.\n- CLI: validates readiness.\n\n## Outcomes\n\n- Exercise ni end.\n"), 0o644); err != nil {
+		t.Fatalf("writing ready actors doc: %v", err)
+	}
 	if err := os.WriteFile(filepath.Join(dir, "docs", "plan", "06_risks_security.md"), []byte("# Risks and security\n\nNo accepted risks are listed in this fixture.\n"), 0o644); err != nil {
 		t.Fatalf("writing ready risk doc: %v", err)
+	}
+	if err := os.WriteFile(filepath.Join(dir, "docs", "plan", "08_delivery_operation.md"), []byte("# Delivery and operation\n\n## Delivery surfaces\n\n- cli\n\n## Initial delivery\n\nThe CLI fixture is reviewed before lock.\n"), 0o644); err != nil {
+		t.Fatalf("writing ready delivery doc: %v", err)
 	}
 	if err := os.WriteFile(filepath.Join(dir, "docs", "plan", "10_open_questions.md"), []byte("# Open questions\n\nNo open questions are listed in this fixture.\n"), 0o644); err != nil {
 		t.Fatalf("writing ready open question doc: %v", err)

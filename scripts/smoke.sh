@@ -109,6 +109,44 @@ write_ready_contract() {
   "open_questions": []
 }
 JSON
+  cat >"$dir/docs/plan/00_project_brief.md" <<'MD'
+# Project brief
+
+## Product type
+
+software
+
+## Delivery surfaces
+
+- cli
+
+## Purpose
+
+Exercise public ni commands.
+MD
+  cat >"$dir/docs/plan/01_actors_outcomes.md" <<'MD'
+# Actors and outcomes
+
+## Actors
+
+- User: reviews public command smoke coverage.
+- CLI: validates readiness and lock state.
+
+## Outcomes
+
+- Public ni commands have success-path smoke coverage.
+MD
+  cat >"$dir/docs/plan/08_delivery_operation.md" <<'MD'
+# Delivery and operation
+
+## Delivery surfaces
+
+- cli
+
+## Initial delivery
+
+The smoke fixture is reviewed before lock.
+MD
   cat >"$dir/docs/plan/10_open_questions.md" <<'MD'
 # Open questions
 

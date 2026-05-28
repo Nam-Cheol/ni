@@ -80,12 +80,13 @@ of asking "What else should the plan include?", ask a concrete question such
 as:
 
 ```text
-For CAP-002, what evidence proves this capability works, or should that evidence be deferred?
+CAP-002 has no evaluation. What evidence would prove this capability is complete: a test, review checklist, demo condition, user approval, or an explicit deferral?
 ```
 
 Questions must preserve the relevant IDs, avoid implying implementation work,
-avoid pressuring acceptance, and allow `deferred` or `not_applicable` where
-those are appropriate planning outcomes.
+avoid pressuring acceptance, and preserve the CLI answer shapes. Valid answer
+shapes may include evidence, an accepted decision, an explicit deferral,
+`not_applicable`, a mitigation, or an explicit non-goal.
 
 ## Persistence Rules
 

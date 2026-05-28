@@ -12,9 +12,24 @@
   ],
   "issues": [
     {
+      "rule_id": "R014",
+      "severity": "blocker",
+      "message": "project.purpose is missing purpose"
+    },
+    {
       "rule_id": "R009",
       "severity": "blocker",
       "message": "OQ-001 is a blocker open question"
+    },
+    {
+      "rule_id": "R015",
+      "severity": "blocker",
+      "message": "docs/plan/01_actors_outcomes.md has missing actor or outcome"
+    },
+    {
+      "rule_id": "R016",
+      "severity": "blocker",
+      "message": "docs/plan/08_delivery_operation.md has missing delivery surface"
     }
   ]
 }

@@ -207,9 +207,12 @@ func lockedHarnessProject(t *testing.T) string {
 
 func writeHarnessDocs(t *testing.T, dir string) {
 	t.Helper()
+	writeHarnessDoc(t, dir, "00_project_brief.md", "# Project brief\n\n## Product type\n\nsoftware\n\n## Delivery surfaces\n\n- cli\n\n## Purpose\n\nExercise generated harness planning.\n")
+	writeHarnessDoc(t, dir, "01_actors_outcomes.md", "# Actors and outcomes\n\n## Actors\n\n- User: reviews generated harness proposals.\n- CLI: validates readiness.\n\n## Outcomes\n\n- Exercise generated harness planning.\n")
 	writeHarnessDoc(t, dir, "02_capabilities.md", "# Capabilities\n\n## CAP-001: First capability\n\nFirst harness capability.\n\n## CAP-002: Second capability\n\nSecond harness capability.\n")
 	writeHarnessDoc(t, dir, "06_risks_security.md", "# Risks and security\n\n## RISK-001: Risk\n\nSeverity: high\n\nMitigation: Keep generated harness read-only.\n")
 	writeHarnessDoc(t, dir, "07_evaluation_contract.md", "# Evaluation contract\n\n## EVAL-001: Evaluation one\n\nMethod: go test ./...\n\n## EVAL-002: Evaluation two\n\nMethod: bash scripts/quality.sh\n")
+	writeHarnessDoc(t, dir, "08_delivery_operation.md", "# Delivery and operation\n\n## Delivery surfaces\n\n- cli\n\n## Initial delivery\n\nThe harness fixture is reviewed before lock.\n")
 	writeHarnessDoc(t, dir, "10_open_questions.md", "# Open questions\n\nNo open questions are listed in this fixture.\n")
 	writeHarnessDoc(t, dir, "11_decision_log.md", "# Decision log\n\n## DEC-001: Decision\n\nStatus: accepted\n")
 }

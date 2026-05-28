@@ -67,8 +67,10 @@ If a lock hash mismatch exists, stop and report `BLOCKED`.
    - next recommended planning focus.
 7. Ask focused questions about the highest-impact readiness gaps. Ask at most
    one to three questions per turn. Prefer questions from the CLI
-   `next_questions` result, preserving the referenced IDs and readiness gap.
-   Avoid broad generic brainstorming unless the project is still empty.
+   `next_questions` result, preserving the referenced IDs, readiness gap, and
+   allowed answer shapes such as evidence, decision, deferral, not_applicable,
+   mitigation, or explicit non-goal. Avoid broad generic brainstorming unless
+   the project is still empty.
 
 ## Authoring Loop
 
@@ -108,6 +110,8 @@ When responding during planning:
 - Ask only the next focused questions needed to unblock readiness.
 - Ask at most one to three questions per turn.
 - Prefer deterministic next questions from `ni status --proof --next-questions`.
+- Preserve the CLI answer shapes: evidence, decision, deferral,
+  not_applicable, mitigation, or explicit non-goal.
 - If `ni status` reports `BLOCKED`, state the blockers plainly and keep
   planning open.
 

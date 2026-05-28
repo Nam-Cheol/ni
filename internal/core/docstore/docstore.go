@@ -342,6 +342,18 @@ const readinessRulesJSON = `{
     {
       "id": "R013",
       "title": "accepted decisions do not contradict each other"
+    },
+    {
+      "id": "R014",
+      "title": "project purpose is concrete"
+    },
+    {
+      "id": "R015",
+      "title": "actors and outcomes are specified"
+    },
+    {
+      "id": "R016",
+      "title": "delivery surface is specified"
     }
   ],
   "required_docs": [
@@ -381,6 +393,9 @@ const readinessProfilesJSON = `{
         "R010": "deferral",
         "R012": "blocker",
         "R013": "blocker",
+        "R014": "blocker",
+        "R015": "blocker",
+        "R016": "blocker",
         "D001": "deferral",
         "D002": "deferral"
       }
@@ -401,6 +416,9 @@ const readinessProfilesJSON = `{
         "R010": "blocker",
         "R012": "blocker",
         "R013": "blocker",
+        "R014": "blocker",
+        "R015": "blocker",
+        "R016": "blocker",
         "D001": "deferral",
         "D002": "deferral"
       }
@@ -421,6 +439,9 @@ const readinessProfilesJSON = `{
         "R010": "blocker",
         "R012": "blocker",
         "R013": "blocker",
+        "R014": "blocker",
+        "R015": "blocker",
+        "R016": "blocker",
         "D001": "deferral",
         "D002": "deferral"
       }
@@ -441,6 +462,9 @@ const readinessProfilesJSON = `{
         "R010": "blocker",
         "R012": "blocker",
         "R013": "blocker",
+        "R014": "blocker",
+        "R015": "blocker",
+        "R016": "blocker",
         "D001": "deferral",
         "D002": "deferral"
       }
@@ -461,6 +485,9 @@ const readinessProfilesJSON = `{
         "R010": "blocker",
         "R012": "blocker",
         "R013": "blocker",
+        "R014": "blocker",
+        "R015": "blocker",
+        "R016": "blocker",
         "D001": "blocker",
         "D002": "blocker"
       }

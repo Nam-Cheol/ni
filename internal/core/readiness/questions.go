@@ -18,6 +18,9 @@ func NextQuestions(result Result) []NextQuestion {
 
 func questionForIssue(issue Issue) NextQuestion {
 	references := issueReferences(issue)
+	if issue.SyncDiagnostic != nil && issue.SyncDiagnostic.ID != "" {
+		references = prioritizeReference(references, issue.SyncDiagnostic.ID)
+	}
 	question := NextQuestion{
 		RuleID:     issue.RuleID,
 		Severity:   issue.Severity,
@@ -30,33 +33,39 @@ func questionForIssue(issue Issue) NextQuestion {
 
 	switch issue.RuleID {
 	case "R001":
-		question.Question = "For " + ref + ", what planning content is needed for the missing required doc, or should this remain a blocker?"
+		question.Question = ref + " is missing. What planning content belongs in this required doc, or should the missing doc remain a blocker?"
 	case "R003":
-		question.Question = "For R003, what capability should this plan accept first, or should capability definition be deferred?"
+		question.Question = "No capability is accepted yet. What user-visible capability should be recorded first, or should capability definition be explicitly deferred?"
 	case "R004":
-		question.Question = "For " + ref + ", what evidence proves this capability works, or should that evidence be deferred?"
+		question.Question = ref + " has no evaluation. What evidence would prove this capability is complete: a test, review checklist, demo condition, user approval, or an explicit deferral?"
 	case "R005":
-		question.Question = "For " + ref + ", what deterministic method should evaluate this evidence, or should the evaluation be deferred?"
+		question.Question = ref + " has no evaluation method. What deterministic method should check the evidence, or should the method be deferred with a reason?"
 	case "R006":
-		question.Question = "For " + ref + ", what mitigation, owner, or explicit accepted-risk decision is required?"
+		question.Question = ref + " is high severity and has no mitigation. What mitigation would reduce or monitor it, who owns it, or should this become an explicit accepted-risk decision?"
 	case "R007":
-		question.Question = "For " + ref + ", what requirement or artifact should this capability trace to, or should that trace be deferred?"
+		question.Question = ref + " has no requirement or artifact trace. Which requirement or artifact anchors it, or should the trace be deferred with a reason?"
 	case "R008":
-		question.Question = "For " + ref + ", should the decision be accepted, deferred, rejected, or not_applicable?"
+		question.Question = ref + " has an invalid decision status. Should it be accepted, deferred, rejected, or marked not_applicable?"
 	case "R009":
-		question.Question = "For " + ref + ", what decision resolves this blocker, should it be deferred, or why must it remain blocking?"
+		question.Question = ref + " is blocking readiness. What answer would resolve it: an accepted decision, a deferral with reason, not_applicable, or keeping it blocking with the missing information named?"
 	case "R010":
-		question.Question = "For R010, what must this project explicitly avoid?"
+		question.Question = "No non-goal is recorded. What explicit non-goal should bound the plan, or why is this boundary not_applicable?"
 	case "R011":
-		question.Question = "For R011, what readiness profile correction is needed before the gate can be trusted?"
+		question.Question = "The readiness profile cannot be trusted. What profile file correction is needed before status output should guide planning?"
 	case "R012":
-		question.Question = "For " + ref + ", which source should be corrected so docs and contract agree?"
+		question.Question = ref + " differs between docs and contract. Which source is correct, and should the repair update docs, update the contract, defer the record, or mark it not_applicable?"
 	case "R013":
-		question.Question = "For " + ref + ", which accepted decision should be revised, rejected, or split to remove the conflict?"
+		question.Question = ref + " is part of a decision conflict. Which accepted decision should be revised, rejected, split, or marked not_applicable?"
+	case "R014":
+		question.Question = ref + " is missing a concrete purpose. What purpose should be recorded: a user outcome, evidence-backed assumption, accepted decision, or explicit deferral?"
+	case "R015":
+		question.Question = ref + " is missing an actor or outcome. Which actor needs what outcome, and should that record be accepted, kept as evidence, deferred, or marked not_applicable?"
+	case "R016":
+		question.Question = ref + " is missing a delivery surface. Which surface should the plan target: cli, web, api, conversation, document, workflow, human_service, physical, or a deferral with reason?"
 	case "D001":
-		question.Question = "For " + ref + ", should this deferred decision remain deferred, become accepted or rejected, or be not_applicable?"
+		question.Question = ref + " is deferred. Should it remain deferred with a reason, become an accepted or rejected decision, or be marked not_applicable?"
 	case "D002":
-		question.Question = "For " + ref + ", should this open question be resolved, deferred, or left open with a reason?"
+		question.Question = ref + " remains open. Should it be answered, deferred with a reason, marked not_applicable, or left open with the missing information named?"
 	default:
 		question.Question = "For " + ref + ", what planning decision is needed to address " + issue.RuleID + "?"
 	}
@@ -81,6 +90,16 @@ func issueReferences(issue Issue) []string {
 	return refs
 }
 
+func prioritizeReference(references []string, preferred string) []string {
+	ordered := []string{preferred}
+	for _, ref := range references {
+		if ref != preferred {
+			ordered = append(ordered, ref)
+		}
+	}
+	return ordered
+}
+
 func trimReference(token string) string {
 	return strings.TrimFunc(token, func(r rune) bool {
 		return !(unicode.IsLetter(r) || unicode.IsDigit(r) || r == '-' || r == '_' || r == '/' || r == '.')
@@ -88,7 +107,7 @@ func trimReference(token string) string {
 }
 
 func looksLikeReference(value string) bool {
-	if strings.Contains(value, "/") || strings.Contains(value, ".md") || strings.Contains(value, ".json") {
+	if strings.Contains(value, "/") || strings.Contains(value, ".md") || strings.Contains(value, ".json") || strings.HasPrefix(value, "project.") {
 		return true
 	}
 	parts := strings.Split(value, "-")

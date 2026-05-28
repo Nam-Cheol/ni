@@ -101,6 +101,7 @@ func Evaluate(dir string) Result {
 	}
 
 	issues = append(issues, evaluateContract(c, rules)...)
+	issues = append(issues, evaluatePlanningDocs(root, c, rules)...)
 	for _, finding := range docsync.Check(root, c) {
 		issues = append(issues, syncIssue(rules, activeProfile, finding))
 	}
@@ -114,6 +115,10 @@ func Evaluate(dir string) Result {
 
 func evaluateContract(c contract.Contract, rules profileRules) []Issue {
 	var issues []Issue
+
+	if isPlaceholder(c.Project.Purpose) {
+		issues = append(issues, issue(rules, c.ReadinessProfile, "R014", "project.purpose is missing purpose"))
+	}
 
 	evaluations := make(map[string]contract.Evaluation, len(c.Evaluations))
 	for _, evaluation := range c.Evaluations {
@@ -170,6 +175,42 @@ func evaluateContract(c contract.Contract, rules profileRules) []Issue {
 	}
 
 	return issues
+}
+
+func evaluatePlanningDocs(root string, c contract.Contract, rules profileRules) []Issue {
+	var issues []Issue
+	if docContainsPlaceholder(root, "docs/plan/01_actors_outcomes.md") {
+		issues = append(issues, issue(rules, c.ReadinessProfile, "R015", "docs/plan/01_actors_outcomes.md has missing actor or outcome"))
+	}
+	if docContainsPlaceholder(root, "docs/plan/08_delivery_operation.md") || deliverySurfaceDocMissing(root, "docs/plan/00_project_brief.md") {
+		issues = append(issues, issue(rules, c.ReadinessProfile, "R016", "docs/plan/08_delivery_operation.md has missing delivery surface"))
+	}
+	return issues
+}
+
+func docContainsPlaceholder(root string, relPath string) bool {
+	data, err := os.ReadFile(filepath.Join(root, relPath))
+	if err != nil {
+		return false
+	}
+	return strings.Contains(wordText(string(data)), "todo")
+}
+
+func deliverySurfaceDocMissing(root string, relPath string) bool {
+	data, err := os.ReadFile(filepath.Join(root, relPath))
+	if err != nil {
+		return false
+	}
+	text := strings.ToLower(string(data))
+	if !strings.Contains(text, "delivery surface") {
+		return false
+	}
+	return strings.Contains(wordText(text), "delivery surfaces todo") || strings.Contains(wordText(text), "delivery surface todo")
+}
+
+func isPlaceholder(value string) bool {
+	text := wordText(value)
+	return text == "" || text == "todo" || text == "tbd" || text == "to do"
 }
 
 func contradictoryDecisionIssues(c contract.Contract, rules profileRules) []Issue {
@@ -463,6 +504,9 @@ func defaultProfileRules() profileRules {
 				"R010": "deferral",
 				"R012": "blocker",
 				"R013": "blocker",
+				"R014": "blocker",
+				"R015": "blocker",
+				"R016": "blocker",
 				"D001": "deferral",
 				"D002": "deferral",
 			},
@@ -479,6 +523,9 @@ func defaultProfileRules() profileRules {
 				"R010": "blocker",
 				"R012": "blocker",
 				"R013": "blocker",
+				"R014": "blocker",
+				"R015": "blocker",
+				"R016": "blocker",
 				"D001": "deferral",
 				"D002": "deferral",
 			},
@@ -495,6 +542,9 @@ func defaultProfileRules() profileRules {
 				"R010": "blocker",
 				"R012": "blocker",
 				"R013": "blocker",
+				"R014": "blocker",
+				"R015": "blocker",
+				"R016": "blocker",
 				"D001": "deferral",
 				"D002": "deferral",
 			},
@@ -511,6 +561,9 @@ func defaultProfileRules() profileRules {
 				"R010": "blocker",
 				"R012": "blocker",
 				"R013": "blocker",
+				"R014": "blocker",
+				"R015": "blocker",
+				"R016": "blocker",
 				"D001": "deferral",
 				"D002": "deferral",
 			},
@@ -527,6 +580,9 @@ func defaultProfileRules() profileRules {
 				"R010": "blocker",
 				"R012": "blocker",
 				"R013": "blocker",
+				"R014": "blocker",
+				"R015": "blocker",
+				"R016": "blocker",
 				"D001": "blocker",
 				"D002": "blocker",
 			},

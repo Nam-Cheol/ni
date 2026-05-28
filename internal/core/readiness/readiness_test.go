@@ -238,35 +238,35 @@ func TestNextQuestionsFromRuleFailures(t *testing.T) {
 			fixture:   "capability_without_evaluation.json",
 			ruleID:    "R004",
 			reference: "CAP-001",
-			want:      "what evidence proves this capability works",
+			want:      "What evidence would prove this capability is complete",
 		},
 		{
 			name:      "high risk mitigation",
 			fixture:   "high_risk_without_mitigation.json",
 			ruleID:    "R006",
 			reference: "RISK-001",
-			want:      "what mitigation, owner, or explicit accepted-risk decision is required",
+			want:      "What mitigation would reduce or monitor it",
 		},
 		{
 			name:      "blocker open question",
 			fixture:   "blocker_open_question.json",
 			ruleID:    "R009",
 			reference: "OQ-001",
-			want:      "what decision resolves this blocker",
+			want:      "What answer would resolve it",
 		},
 		{
 			name:      "conflicting decision",
 			fixture:   "conflicting_decision.json",
 			ruleID:    "R013",
 			reference: "DEC-001",
-			want:      "which accepted decision should be revised",
+			want:      "Which accepted decision should be revised",
 		},
 		{
 			name:      "missing non-goal",
 			fixture:   "missing_non_goal.json",
 			ruleID:    "R010",
 			reference: "",
-			want:      "what must this project explicitly avoid",
+			want:      "What explicit non-goal should bound the plan",
 		},
 	} {
 		t.Run(tt.name, func(t *testing.T) {
@@ -284,6 +284,45 @@ func TestNextQuestionsFromRuleFailures(t *testing.T) {
 				t.Fatalf("question should not imply implementation, got %#v", question)
 			}
 		})
+	}
+}
+
+func TestNextQuestionsFocusedOutputFixture(t *testing.T) {
+	dir := initFixtureProject(t, "question_output.json")
+	writePlanDoc(t, dir, "01_actors_outcomes.md", "# Actors and outcomes\n\n## Actors\n\n- User: TODO\n\n## Outcomes\n\n- TODO\n")
+	writePlanDoc(t, dir, "08_delivery_operation.md", "# Delivery and operation\n\n## Delivery surfaces\n\n- TODO\n")
+
+	questions := NextQuestions(Evaluate(dir))
+	want := map[string]string{
+		"R014": "project.purpose is missing a concrete purpose. What purpose should be recorded: a user outcome, evidence-backed assumption, accepted decision, or explicit deferral?",
+		"R004": "CAP-001 has no evaluation. What evidence would prove this capability is complete: a test, review checklist, demo condition, user approval, or an explicit deferral?",
+		"R006": "RISK-001 is high severity and has no mitigation. What mitigation would reduce or monitor it, who owns it, or should this become an explicit accepted-risk decision?",
+		"D001": "DEC-001 is deferred. Should it remain deferred with a reason, become an accepted or rejected decision, or be marked not_applicable?",
+		"R009": "OQ-001 is blocking readiness. What answer would resolve it: an accepted decision, a deferral with reason, not_applicable, or keeping it blocking with the missing information named?",
+		"R010": "No non-goal is recorded. What explicit non-goal should bound the plan, or why is this boundary not_applicable?",
+		"R015": "docs/plan/01_actors_outcomes.md is missing an actor or outcome. Which actor needs what outcome, and should that record be accepted, kept as evidence, deferred, or marked not_applicable?",
+		"R016": "docs/plan/08_delivery_operation.md is missing a delivery surface. Which surface should the plan target: cli, web, api, conversation, document, workflow, human_service, physical, or a deferral with reason?",
+	}
+	for ruleID, question := range want {
+		got := requireQuestion(t, questions, ruleID)
+		if got.Question != question {
+			t.Fatalf("expected %s question %q, got %#v", ruleID, question, got)
+		}
+		if strings.Contains(strings.ToLower(got.Question), "implement") {
+			t.Fatalf("question should not imply implementation, got %#v", got)
+		}
+	}
+}
+
+func TestNextQuestionsDocsContractMismatchIncludesRepairChoices(t *testing.T) {
+	dir := initSyncFixtureProject(t, "decision_conflicts_contract")
+
+	question := requireQuestion(t, NextQuestions(Evaluate(dir)), "R012")
+	if !containsString(question.References, "DEC-001") {
+		t.Fatalf("expected DEC-001 reference, got %#v", question)
+	}
+	if !strings.Contains(question.Question, "Which source is correct") || !strings.Contains(question.Question, "update docs") || !strings.Contains(question.Question, "update the contract") {
+		t.Fatalf("expected docs/contract repair choices, got %#v", question)
 	}
 }
 
@@ -338,6 +377,9 @@ func initSyncFixtureProject(t *testing.T, fixture string) string {
 	if err != nil {
 		t.Fatalf("loading sync fixture contract: %v", err)
 	}
+	writePlanDoc(t, dir, "00_project_brief.md", "# Project brief\n\n## Product type\n\n"+c.ProductType+"\n\n## Delivery surfaces\n\n- "+strings.Join(c.DeliverySurfaces, "\n- ")+"\n\n## Purpose\n\n"+c.Project.Purpose+"\n")
+	writePlanDoc(t, dir, "01_actors_outcomes.md", "# Actors and outcomes\n\n## Actors\n\n- User: reviews sync fixtures.\n- CLI: validates readiness.\n\n## Outcomes\n\n- "+c.Project.Purpose+"\n")
+	writePlanDoc(t, dir, "08_delivery_operation.md", "# Delivery and operation\n\n## Delivery surfaces\n\n- "+strings.Join(c.DeliverySurfaces, "\n- ")+"\n\n## Initial delivery\n\nPlanning docs and contract records are reviewed before lock.\n")
 	writeOpenQuestionDocForContract(t, dir, c)
 	return dir
 }
@@ -365,6 +407,10 @@ func writeContract(t *testing.T, dir string, data []byte) {
 
 func writePlanDocsForContract(t *testing.T, dir string, c contract.Contract) {
 	t.Helper()
+
+	writePlanDoc(t, dir, "00_project_brief.md", "# Project brief\n\n## Product type\n\n"+c.ProductType+"\n\n## Delivery surfaces\n\n- "+strings.Join(c.DeliverySurfaces, "\n- ")+"\n\n## Purpose\n\n"+c.Project.Purpose+"\n")
+
+	writePlanDoc(t, dir, "01_actors_outcomes.md", "# Actors and outcomes\n\n## Actors\n\n- User: reviews and accepts the planning contract.\n- CLI: validates deterministic readiness.\n\n## Outcomes\n\n- "+c.Project.Purpose+"\n")
 
 	var capabilities strings.Builder
 	capabilities.WriteString("# Capabilities\n\n")
@@ -419,6 +465,8 @@ func writePlanDocsForContract(t *testing.T, dir string, c contract.Contract) {
 	writePlanDoc(t, dir, "11_decision_log.md", decisions.String())
 
 	writeOpenQuestionDocForContract(t, dir, c)
+
+	writePlanDoc(t, dir, "08_delivery_operation.md", "# Delivery and operation\n\n## Delivery surfaces\n\n- "+strings.Join(c.DeliverySurfaces, "\n- ")+"\n\n## Initial delivery\n\nPlanning docs and contract records are reviewed before lock.\n")
 }
 
 func writeOpenQuestionDocForContract(t *testing.T, dir string, c contract.Contract) {

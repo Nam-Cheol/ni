@@ -137,8 +137,10 @@ The resumed summary should name:
 6. Ask focused questions about the highest-impact gaps. Ask at most one to
    three questions per turn. Prefer questions from the CLI `next_questions`
    result. You may lightly rephrase for clarity, but preserve the referenced
-   IDs, readiness gap, and allowed outcomes. Do not ask broad generic
-   brainstorming questions unless the project is still empty.
+   IDs, readiness gap, and allowed outcomes. Preserve concrete answer shapes
+   such as evidence, decision, deferral, not_applicable, mitigation, or
+   explicit non-goal. Do not ask broad generic brainstorming questions unless
+   the project is still empty.
 
 ## Authoring loop
 
@@ -195,6 +197,8 @@ When responding during planning:
 - Ask at most one to three questions per turn.
 - Avoid broad generic brainstorming unless the project is still empty.
 - Prefer deterministic next questions from `ni status --proof --next-questions`.
+- Preserve the CLI answer shapes: evidence, decision, deferral,
+  not_applicable, mitigation, or explicit non-goal.
 - If `ni status` reports `BLOCKED`, state the blockers plainly and keep
   planning open.
 - If a lock hash mismatch exists, stop and report `BLOCKED`.

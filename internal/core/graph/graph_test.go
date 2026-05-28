@@ -71,9 +71,12 @@ func graphProject(t *testing.T) string {
 	if err := os.WriteFile(filepath.Join(dir, ".ni", "contract.json"), []byte(graphContract), 0o644); err != nil {
 		t.Fatalf("writing graph contract: %v", err)
 	}
+	writeGraphDoc(t, dir, "00_project_brief.md", "# Project brief\n\n## Product type\n\nsoftware\n\n## Delivery surfaces\n\n- cli\n\n## Purpose\n\nExercise work graph proposal planning.\n")
+	writeGraphDoc(t, dir, "01_actors_outcomes.md", "# Actors and outcomes\n\n## Actors\n\n- User: reviews graph proposals.\n- CLI: validates readiness.\n\n## Outcomes\n\n- Exercise work graph proposal planning.\n")
 	writeGraphDoc(t, dir, "02_capabilities.md", "# Capabilities\n\n## CAP-001: First capability\n\nFirst graph node.\n\n## CAP-002: Second capability\n\nSecond graph node.\n")
 	writeGraphDoc(t, dir, "06_risks_security.md", "# Risks and security\n\nNo accepted risks are listed in this fixture.\n")
 	writeGraphDoc(t, dir, "07_evaluation_contract.md", "# Evaluation contract\n\n## EVAL-001: Evaluation\n\nMethod: fixture\n")
+	writeGraphDoc(t, dir, "08_delivery_operation.md", "# Delivery and operation\n\n## Delivery surfaces\n\n- cli\n\n## Initial delivery\n\nThe graph fixture is reviewed before lock.\n")
 	writeGraphDoc(t, dir, "10_open_questions.md", "# Open questions\n\nNo open questions are listed in this fixture.\n")
 	writeGraphDoc(t, dir, "11_decision_log.md", "# Decision log\n\n## DEC-001: Decision\n\nStatus: accepted\n")
 	return dir

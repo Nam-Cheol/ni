@@ -29,40 +29,73 @@ Each question includes:
   "rule_id": "R004",
   "severity": "blocker",
   "references": ["CAP-001"],
-  "question": "For CAP-001, what evidence proves this capability works, or should that evidence be deferred?"
+  "question": "CAP-001 has no evaluation. What evidence would prove this capability is complete: a test, review checklist, demo condition, user approval, or an explicit deferral?"
 }
 ```
 
 Questions are concise, specific, and tied to readiness rule failures. They
 reference the relevant contract ID or planning path when the failure message
-contains one. Some questions explicitly allow `deferred` or `not_applicable`
-answers where that is a valid planning status or a useful way to record that the
-gap should remain visible.
+contains one. They are deterministic templates, not generated prose.
+
+Each question should give the user a concrete answer shape, such as evidence,
+an accepted decision, an explicit deferral, `not_applicable`, a mitigation, or
+an explicit non-goal. The question must not imply implementation should begin
+and must not pressure the user to accept uncertain planning state.
 
 ## Rule Examples
 
 `R004` accepted capability without evaluation:
 
 ```text
-For CAP-001, what evidence proves this capability works, or should that evidence be deferred?
+CAP-001 has no evaluation. What evidence would prove this capability is complete: a test, review checklist, demo condition, user approval, or an explicit deferral?
 ```
 
 `R006` high-severity risk without mitigation:
 
 ```text
-For RISK-001, what mitigation, owner, or explicit accepted-risk decision is required?
+RISK-001 is high severity and has no mitigation. What mitigation would reduce or monitor it, who owns it, or should this become an explicit accepted-risk decision?
 ```
 
 `R010` missing non-goal:
 
 ```text
-For R010, what must this project explicitly avoid?
+No non-goal is recorded. What explicit non-goal should bound the plan, or why is this boundary not_applicable?
 ```
 
 `R009` blocker open question:
 
 ```text
-For OQ-001, what decision resolves this blocker, should it be deferred, or why must it remain blocking?
+OQ-001 is blocking readiness. What answer would resolve it: an accepted decision, a deferral with reason, not_applicable, or keeping it blocking with the missing information named?
+```
+
+`R014` missing purpose:
+
+```text
+project.purpose is missing a concrete purpose. What purpose should be recorded: a user outcome, evidence-backed assumption, accepted decision, or explicit deferral?
+```
+
+`R015` missing actor or outcome:
+
+```text
+docs/plan/01_actors_outcomes.md is missing an actor or outcome. Which actor needs what outcome, and should that record be accepted, kept as evidence, deferred, or marked not_applicable?
+```
+
+`R016` missing delivery surface:
+
+```text
+docs/plan/08_delivery_operation.md is missing a delivery surface. Which surface should the plan target: cli, web, api, conversation, document, workflow, human_service, physical, or a deferral with reason?
+```
+
+`D001` deferred decision:
+
+```text
+DEC-001 is deferred. Should it remain deferred with a reason, become an accepted or rejected decision, or be marked not_applicable?
+```
+
+`R012` docs/contract mismatch:
+
+```text
+DEC-001 differs between docs and contract. Which source is correct, and should the repair update docs, update the contract, defer the record, or mark it not_applicable?
 ```
 
 ## ni-start Usage

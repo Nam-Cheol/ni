@@ -190,6 +190,15 @@ func readyLockedProject(t *testing.T) string {
 	if err := os.WriteFile(filepath.Join(dir, ".ni", "contract.json"), data, 0o644); err != nil {
 		t.Fatalf("writing ready contract: %v", err)
 	}
+	if err := os.WriteFile(filepath.Join(dir, "docs", "plan", "00_project_brief.md"), []byte("# Project brief\n\n## Product type\n\nsoftware\n\n## Delivery surfaces\n\n- cli\n\n## Purpose\n\nExercise readiness rules.\n"), 0o644); err != nil {
+		t.Fatalf("writing ready project brief: %v", err)
+	}
+	if err := os.WriteFile(filepath.Join(dir, "docs", "plan", "01_actors_outcomes.md"), []byte("# Actors and outcomes\n\n## Actors\n\n- User: reviews the prompt fixture.\n- CLI: validates readiness.\n\n## Outcomes\n\n- Exercise readiness rules.\n"), 0o644); err != nil {
+		t.Fatalf("writing ready actors doc: %v", err)
+	}
+	if err := os.WriteFile(filepath.Join(dir, "docs", "plan", "08_delivery_operation.md"), []byte("# Delivery and operation\n\n## Delivery surfaces\n\n- cli\n\n## Initial delivery\n\nThe prompt fixture is reviewed before lock.\n"), 0o644); err != nil {
+		t.Fatalf("writing ready delivery doc: %v", err)
+	}
 	if err := os.WriteFile(filepath.Join(dir, "docs", "plan", "10_open_questions.md"), []byte("# Open questions\n\nNo open questions are listed in this fixture.\n"), 0o644); err != nil {
 		t.Fatalf("writing ready open question doc: %v", err)
 	}
