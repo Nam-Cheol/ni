@@ -249,11 +249,48 @@ func TestStatusProofTextWithNextQuestions(t *testing.T) {
 	out := stdout.String()
 	for _, want := range []string{
 		"NI Intent Readiness: BLOCKED",
-		"Proof:",
+		"Blockers:",
 		"OQ-001 is marked as blocker.",
+		"Why it matters: open blocker questions mean required intent is still unresolved.",
+		"Next: answer or defer the blocker question, or keep it blocking with an explicit reason.",
+		"Deferrals:",
+		"Warnings:",
+		"Passed checks:",
 		"Execution must not start.",
 		"Next questions:",
 		"1. ",
+	} {
+		if !strings.Contains(out, want) {
+			t.Fatalf("expected %q in proof output, got %q", want, out)
+		}
+	}
+}
+
+func TestStatusProofTextGroupsDeferralsWarningsAndPassedChecks(t *testing.T) {
+	dir := t.TempDir()
+	if code := run([]string{"init", "--dir", dir}, &bytes.Buffer{}, &bytes.Buffer{}); code != 0 {
+		t.Fatalf("init expected exit code 0, got %d", code)
+	}
+	writeReadyWithDeferralsContractForCLI(t, dir)
+
+	var stdout bytes.Buffer
+	code := run([]string{"status", "--dir", dir, "--proof"}, &stdout, &bytes.Buffer{})
+	if code != 0 {
+		t.Fatalf("expected exit code 0, got %d", code)
+	}
+	out := stdout.String()
+	for _, want := range []string{
+		"NI Intent Readiness: READY_WITH_DEFERRALS",
+		"Blockers:\n- None.",
+		"Deferrals:",
+		"OQ-001 remains open.",
+		"Warnings:",
+		"DEC-001 is deferred.",
+		"Why it matters: downstream work must avoid depending on this decision.",
+		"Passed checks:",
+		"Required docs exist.",
+		"Docs and contract are synchronized.",
+		"Execution may proceed only after lock; deferrals remain explicit.",
 	} {
 		if !strings.Contains(out, want) {
 			t.Fatalf("expected %q in proof output, got %q", want, out)
@@ -274,16 +311,24 @@ func TestStatusProofJSON(t *testing.T) {
 		t.Fatalf("expected exit code 0, got %d", code)
 	}
 	var payload struct {
-		Proof []struct {
-			RuleID  string `json:"rule_id"`
-			Message string `json:"message"`
-		} `json:"proof"`
+		Proof []map[string]json.RawMessage `json:"proof"`
 	}
 	if err := json.Unmarshal(stdout.Bytes(), &payload); err != nil {
 		t.Fatalf("decoding status proof JSON: %v\n%s", err, stdout.String())
 	}
-	if len(payload.Proof) != 1 || payload.Proof[0].RuleID != "READY" {
+	var ruleID string
+	if len(payload.Proof) == 1 {
+		if err := json.Unmarshal(payload.Proof[0]["rule_id"], &ruleID); err != nil {
+			t.Fatalf("decoding proof rule id: %v\n%#v", err, payload.Proof[0])
+		}
+	}
+	if len(payload.Proof) != 1 || ruleID != "READY" {
 		t.Fatalf("expected ready proof item, got %#v in %q", payload.Proof, stdout.String())
+	}
+	for _, unstable := range []string{"category", "why", "next"} {
+		if _, ok := payload.Proof[0][unstable]; ok {
+			t.Fatalf("proof JSON should stay stable without %q, got %#v", unstable, payload.Proof[0])
+		}
 	}
 }
 
@@ -1841,6 +1886,40 @@ func writeReadyContractForCLI(t *testing.T, dir string) {
 	}
 	if err := os.WriteFile(filepath.Join(dir, "docs", "plan", "06_risks_security.md"), []byte("# Risks and security\n\nNo accepted risks are listed in this fixture.\n"), 0o644); err != nil {
 		t.Fatalf("writing ready risk doc: %v", err)
+	}
+}
+
+func writeReadyWithDeferralsContractForCLI(t *testing.T, dir string) {
+	t.Helper()
+
+	writeReadyContractForCLI(t, dir)
+	path := filepath.Join(dir, ".ni", "contract.json")
+	data := readFileForCLI(t, path)
+	var payload map[string]any
+	if err := json.Unmarshal(data, &payload); err != nil {
+		t.Fatalf("parsing contract: %v", err)
+	}
+	payload["decisions"] = []any{
+		map[string]any{"id": "DEC-001", "title": "Decision", "status": "deferred"},
+	}
+	payload["open_questions"] = []any{
+		map[string]any{
+			"id":      "OQ-001",
+			"title":   "Non-blocking question",
+			"blocker": false,
+			"status":  "open",
+		},
+	}
+	updated, err := json.MarshalIndent(payload, "", "  ")
+	if err != nil {
+		t.Fatalf("marshaling ready-with-deferrals contract: %v", err)
+	}
+	if err := os.WriteFile(path, append(updated, '\n'), 0o644); err != nil {
+		t.Fatalf("writing ready-with-deferrals contract: %v", err)
+	}
+	decisionDoc := "# Decision log\n\n## DEC-001: Decision\n\nStatus: deferred\n"
+	if err := os.WriteFile(filepath.Join(dir, "docs", "plan", "11_decision_log.md"), []byte(decisionDoc), 0o644); err != nil {
+		t.Fatalf("writing ready-with-deferrals decision doc: %v", err)
 	}
 }
 

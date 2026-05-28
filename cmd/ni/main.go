@@ -1162,12 +1162,14 @@ func runStatus(args []string, stdout io.Writer, stderr io.Writer) int {
 
 func printStatusProof(stdout io.Writer, result readiness.Result, nextQuestions bool) {
 	fmt.Fprintf(stdout, "NI Intent Readiness: %s\n\n", result.Status)
-	fmt.Fprintln(stdout, "Proof:")
-	if result.Proof != nil {
-		for _, item := range *result.Proof {
-			fmt.Fprintf(stdout, "- %s\n", item.Message)
-		}
-	}
+	blockers, deferrals, warnings := groupProofItems(result)
+	printProofItems(stdout, "Blockers", blockers, true)
+	fmt.Fprintln(stdout)
+	printProofItems(stdout, "Deferrals", deferrals, false)
+	fmt.Fprintln(stdout)
+	printProofItems(stdout, "Warnings", warnings, false)
+	fmt.Fprintln(stdout)
+	printPassedChecks(stdout, result)
 
 	switch result.Status {
 	case readiness.StatusBlocked:
@@ -1183,6 +1185,160 @@ func printStatusProof(stdout io.Writer, result readiness.Result, nextQuestions b
 		for i, question := range *result.NextQuestions {
 			fmt.Fprintf(stdout, "%d. %s\n", i+1, question.Question)
 		}
+	}
+}
+
+func groupProofItems(result readiness.Result) ([]readiness.ProofItem, []readiness.ProofItem, []readiness.ProofItem) {
+	var blockers []readiness.ProofItem
+	var deferrals []readiness.ProofItem
+	var warnings []readiness.ProofItem
+	if result.Proof == nil {
+		return blockers, deferrals, warnings
+	}
+	for _, item := range *result.Proof {
+		switch item.Severity {
+		case "blocker":
+			blockers = append(blockers, item)
+		case "deferral":
+			if item.RuleID == "D001" {
+				warnings = append(warnings, item)
+			} else {
+				deferrals = append(deferrals, item)
+			}
+		}
+	}
+	return blockers, deferrals, warnings
+}
+
+func printProofItems(stdout io.Writer, title string, items []readiness.ProofItem, includeNext bool) {
+	fmt.Fprintf(stdout, "%s:\n", title)
+	if len(items) == 0 {
+		fmt.Fprintln(stdout, "- None.")
+		return
+	}
+	for _, item := range items {
+		fmt.Fprintf(stdout, "- %s\n", item.Message)
+		fmt.Fprintf(stdout, "  Why it matters: %s\n", proofWhy(item.RuleID))
+		if includeNext {
+			fmt.Fprintf(stdout, "  Next: %s\n", proofNext(item.RuleID))
+		}
+	}
+}
+
+func printPassedChecks(stdout io.Writer, result readiness.Result) {
+	fmt.Fprintln(stdout, "Passed checks:")
+	for _, message := range passedCheckMessages(result) {
+		fmt.Fprintf(stdout, "- %s\n", message)
+	}
+}
+
+func passedCheckMessages(result readiness.Result) []string {
+	hasIssue := map[string]bool{}
+	for _, issue := range result.Issues {
+		hasIssue[issue.RuleID] = true
+	}
+
+	var passed []string
+	if !hasIssue["R001"] {
+		passed = append(passed, "Required docs exist.")
+	}
+	if !hasIssue["R002"] {
+		passed = append(passed, "Contract JSON is valid.")
+	}
+	if !hasIssue["R011"] {
+		passed = append(passed, "Readiness profile definitions are valid.")
+	}
+	if !hasIssue["R002"] && !hasIssue["R003"] && !hasIssue["R004"] && !hasIssue["R005"] && !hasIssue["R007"] {
+		passed = append(passed, "Capability and evaluation traceability rules passed.")
+	}
+	if !hasIssue["R002"] && !hasIssue["R006"] {
+		passed = append(passed, "High-severity risks have mitigation.")
+	}
+	if !hasIssue["R002"] && !hasIssue["R008"] && !hasIssue["R013"] {
+		passed = append(passed, "Decision statuses are valid and accepted decisions do not conflict.")
+	}
+	if !hasIssue["R002"] && !hasIssue["R009"] {
+		passed = append(passed, "No blocker open questions are present.")
+	}
+	if !hasIssue["R002"] && !hasIssue["R010"] {
+		passed = append(passed, "At least one non-goal is recorded.")
+	}
+	if !hasIssue["R002"] && !hasIssue["R012"] {
+		passed = append(passed, "Docs and contract are synchronized.")
+	}
+	if len(passed) == 0 {
+		return []string{"No checks passed before the blocking error."}
+	}
+	return passed
+}
+
+func proofWhy(ruleID string) string {
+	switch ruleID {
+	case "R001":
+		return "the kernel cannot hash or trust a plan whose required source docs are absent."
+	case "R002":
+		return "the readiness gate cannot evaluate intent without a parseable contract."
+	case "R003":
+		return "a plan with no capability has no deliverable behavior to verify."
+	case "R004":
+		return "ni cannot prove this capability is verifiable."
+	case "R005":
+		return "evidence is not trustworthy unless the evaluation method is explicit."
+	case "R006":
+		return "high-severity risks can invalidate downstream work unless mitigation is explicit."
+	case "R007":
+		return "capabilities must trace to requirements or artifacts before downstream actors can rely on them."
+	case "R008":
+		return "decision status controls whether downstream actors may depend on the decision."
+	case "R009":
+		return "open blocker questions mean required intent is still unresolved."
+	case "R010":
+		return "non-goals keep downstream work inside the accepted boundary."
+	case "R011":
+		return "readiness severity rules must be trustworthy before status can be trusted."
+	case "R012":
+		return "docs and contract are both lock sources, so drift makes the plan ambiguous."
+	case "R013":
+		return "conflicting accepted decisions give downstream actors incompatible instructions."
+	case "D001":
+		return "downstream work must avoid depending on this decision."
+	case "D002":
+		return "the question is non-blocking but still unresolved intent."
+	default:
+		return "this deterministic readiness rule affects whether the plan can be trusted."
+	}
+}
+
+func proofNext(ruleID string) string {
+	switch ruleID {
+	case "R001":
+		return "create the missing required planning doc or restore it from the template."
+	case "R002":
+		return "fix .ni/contract.json so it is valid contract JSON."
+	case "R003":
+		return "define at least one accepted capability."
+	case "R004":
+		return "define evidence and link an evaluation."
+	case "R005":
+		return "add a deterministic Method to the evaluation."
+	case "R006":
+		return "add mitigation, an owner, or an explicit accepted-risk decision."
+	case "R007":
+		return "link the capability to at least one requirement or artifact."
+	case "R008":
+		return "set the decision status to accepted, deferred, rejected, or not_applicable."
+	case "R009":
+		return "answer or defer the blocker question, or keep it blocking with an explicit reason."
+	case "R010":
+		return "add at least one explicit non-goal."
+	case "R011":
+		return "fix .ni/readiness.profiles.json so every required profile and rule severity is valid."
+	case "R012":
+		return "update docs/plan/** and .ni/contract.json together so the referenced record matches."
+	case "R013":
+		return "revise, reject, or split one conflicting accepted decision."
+	default:
+		return "update planning docs and .ni/contract.json together to resolve this rule."
 	}
 }
 

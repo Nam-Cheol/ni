@@ -195,7 +195,9 @@ require_output "BLOCKED"
 
 run_cmd "ni status proof" "$NI_BIN" status --dir "$init_ws" --proof --next-questions
 require_output "NI Intent Readiness: BLOCKED"
-require_output "Proof:"
+require_output "Blockers:"
+require_output "Next: answer or defer the blocker question"
+require_output "Passed checks:"
 require_output "Execution must not start."
 require_output "Next questions:"
 

@@ -189,6 +189,26 @@ func TestProofFromRuleFailures(t *testing.T) {
 	}
 }
 
+func TestProofFromDocsContractSyncMismatch(t *testing.T) {
+	dir := initSyncFixtureProject(t, "decision_conflicts_contract")
+
+	item := requireProof(t, Proof(Evaluate(dir)), "R012")
+	if item.Severity != "blocker" {
+		t.Fatalf("expected blocker sync proof, got %#v", item)
+	}
+	if !strings.Contains(item.Message, "docs/plan/11_decision_log.md status for DEC-001") {
+		t.Fatalf("expected docs/contract mismatch proof, got %#v", item)
+	}
+}
+
+func TestProofReadyWithDeferralsPlan(t *testing.T) {
+	dir := initFixtureProject(t, "ready_with_deferrals.json")
+
+	proof := Proof(Evaluate(dir))
+	requireProof(t, proof, "D001")
+	requireProof(t, proof, "D002")
+}
+
 func TestProofReadyPlan(t *testing.T) {
 	dir := initFixtureProject(t, "ready.json")
 
