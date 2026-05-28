@@ -227,12 +227,14 @@ else:
 
 release_claim_markers = {
     "README.md": [
-        "does not claim package distribution or a published binary release",
-        "source, local build, or local install mode until a GitHub Release actually",
+        "v0.3.0 release binaries are available",
+        "The curl installer remains release-gated",
+        "including Homebrew, is not available yet",
     ],
     "README.ko.md": [
-        "package distribution이나 published binary release를 claim하지 않는다",
-        "source, local build, local install mode",
+        "v0.3.0 release binaries는 asset과 checksum 검증 후 Available입니다",
+        "Curl installer는 `install.sh`가 실제 release assets에 대해 검증될 때까지 release-gated입니다",
+        "Homebrew를 포함한 package-manager distribution은 아직 Available이 아닙니다",
     ],
 }
 for label, text in {"README.md": readme, "README.ko.md": readme_ko}.items():

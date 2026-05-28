@@ -89,16 +89,24 @@ go run ./cmd/ni run --dir ./my-plan --target generic --max-chars 4000
 | Path | Status | Use it when | Boundary |
 | --- | --- | --- | --- |
 | Source | Available | `go run ./cmd/ni ...`를 실행할 수 있습니다. | Full deterministic `status`, `end`, `run`. |
-| Local binary | Available | 이 checkout에서 `./bin/ni` 또는 local install을 원할 때 사용합니다. | Source에서 local build/install만 말하며 hosted binary는 주장하지 않습니다. |
+| Local binary | Available | 이 checkout에서 `./bin/ni` 또는 local install을 원할 때 사용합니다. | Source에서 local build/install하며 release assets와 독립적입니다. |
 | Model workspaces | Experimental | Codex 또는 Claude가 docs와 contract records draft를 돕게 하고 싶을 때 사용합니다. | Skills are UX; readiness와 lock authority는 CLI입니다. |
 | No-terminal method | Experimental | CLI run 전 Intent Lock method를 배우거나 draft하고 싶을 때 사용합니다. | Assisted drafting일 뿐 deterministic validation은 아닙니다. |
-| Release binary | Release-gated | Published release에서 Go 없이 `ni`를 받고 싶을 때 사용합니다. | GitHub Release에 OS/arch archives와 checksums가 publish된 뒤 verify하고 사용합니다. |
-| Curl installer | Release-gated | Release assets용 작은 shell installer를 원할 때 사용합니다. | Release assets가 존재하고 `install.sh`가 그 assets에 대해 verified된 뒤에만 사용합니다. |
+| Release binary | Available | Published release에서 Go 없이 `ni`를 받고 싶을 때 사용합니다. | 검증된 v0.3.0 GitHub Release archives와 checksums를 사용합니다. |
+| Curl installer | Release-gated | Release assets용 작은 shell installer를 원할 때 사용합니다. | `install.sh`가 실제 release assets에 대해 verified된 뒤에만 사용합니다. |
 | Homebrew | Planned | Package manager를 선호할 때 사용합니다. | Published tap이나 formula가 없습니다. |
 
-Release status: 이 repository는 package distribution이나 published binary release를 claim하지 않는다.
-GitHub Release가 실제 binary archives와 checksums를 publish하기 전까지는 source, local build, local install mode를 사용한다.
-Curl installer도 같은 이유로 release-gated다.
+Release binary 설치:
+
+1. [v0.3.0 GitHub Release](https://github.com/Nam-Cheol/ni/releases/tag/v0.3.0)를 엽니다.
+2. OS/arch archive와 `ni_0.3.0_checksums.txt`를 다운로드합니다.
+3. checksum을 검증합니다.
+4. archive를 압축 해제합니다.
+5. `ni --help`와 `ni version`을 실행합니다.
+
+Release status: v0.3.0 release binaries는 asset과 checksum 검증 후 Available입니다.
+Curl installer는 `install.sh`가 실제 release assets에 대해 검증될 때까지 release-gated입니다.
+Homebrew를 포함한 package-manager distribution은 아직 Available이 아닙니다.
 
 License: `ni`는 [MIT License](LICENSE)로 배포됩니다.
 

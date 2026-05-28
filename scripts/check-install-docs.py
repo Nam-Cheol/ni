@@ -14,7 +14,7 @@ README_EXPECTED = {
     "Local binary": "Available",
     "Model workspaces": "Experimental",
     "No-terminal method": "Experimental",
-    "Release binary": "Release-gated",
+    "Release binary": "Available",
     "Curl installer": "Release-gated",
     "Homebrew": "Planned",
 }
@@ -22,27 +22,29 @@ README_EXPECTED = {
 DISTRIBUTION_EXPECTED = {
     "Source mode": "Available",
     "Local binary mode": "Available",
-    "Release binary mode": "Release-gated",
+    "Release binary mode": "Available",
     "Curl installer mode": "Release-gated",
     "Package manager mode": "Planned",
     "Model workspace mode": "Experimental",
-    "No-terminal mode": "Planned",
+    "No-terminal mode": "Experimental",
 }
 
 REQUIRED_MARKERS = {
     "README.md": [
-        "does not claim package distribution or a published binary release",
-        "The curl installer is release-gated",
+        "v0.3.0 release binaries are available",
+        "The curl installer remains release-gated",
+        "including Homebrew, is not available yet",
     ],
     "README.ko.md": [
-        "package distribution이나 published binary release를 claim하지 않는다",
-        "Curl installer도 같은 이유로 release-gated다",
+        "v0.3.0 release binaries는 asset과 checksum 검증 후 Available입니다",
+        "Curl installer는 `install.sh`가 실제 release assets에 대해 검증될 때까지 release-gated입니다",
+        "Homebrew를 포함한 package-manager distribution은 아직 Available이 아닙니다",
     ],
     "docs/22_INSTALL.md": [
-        "Release binary status: Release-gated.",
+        "Release binary status: Available.",
         "Curl installer status: Release-gated.",
         "Package manager status: Planned.",
-        "does not claim published GitHub Release binary assets",
+        "claims release binary availability only for the verified",
     ],
     "docs/install-curl.md": [
         "Status: Release-gated.",
@@ -75,18 +77,15 @@ REQUIRED_MARKERS = {
 }
 
 FORBIDDEN_AFFIRMATIVE = [
-    "GitHub Release binaries and checksums are available",
-    "Release binaries are available from GitHub Releases",
     "Status: available. `install.sh`",
     "has been verified against the published `v0.3.0` GitHub Release",
-    "| Release binary | Available |",
     "| Curl installer | Available |",
-    "| Release binary mode | Available |",
     "| Curl installer mode | Available |",
-    "Release binary mode is available.",
     "Curl installer mode is available",
-    "The release includes OS/architecture binary archives",
-    "The release also includes `ni_0.3.0_checksums.txt`",
+    "| Homebrew | Available |",
+    "| Package manager mode | Available |",
+    "Homebrew is available",
+    "Package manager mode is available",
 ]
 
 

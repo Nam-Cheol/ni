@@ -9,6 +9,10 @@ publish a release, create a tag, upload binaries, or claim package manager
 availability. Release binary assets are only available after a tagged GitHub
 Release publishes them.
 
+Current install status is tracked in [Install ni](22_INSTALL.md). This v0.2.0
+draft is historical and does not override the verified v0.3.0 release binary
+availability.
+
 ## Category
 
 `ni` is a Project Intent Compiler for AI Agents. It turns planning
@@ -60,8 +64,8 @@ The repository includes GoReleaser configuration for future release assets:
 | Windows | amd64 | `ni_<version>_windows_amd64.zip` |
 
 The release pipeline also generates `ni_<version>_checksums.txt`. This draft
-does not claim hosted release assets are already available, Homebrew support,
-Scoop support, or published binary packages.
+does not claim Homebrew support, Scoop support, or published binary packages;
+see [Install ni](22_INSTALL.md) for current release binary availability.
 
 ## Validation Commands
 

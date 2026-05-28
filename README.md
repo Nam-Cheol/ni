@@ -89,17 +89,25 @@ go run ./cmd/ni run --dir ./my-plan --target generic --max-chars 4000
 | Path | Status | Use it when | Boundary |
 | --- | --- | --- | --- |
 | Source | Available | You can run `go run ./cmd/ni ...`. | Full deterministic `status`, `end`, and `run`. |
-| Local binary | Available | You want `./bin/ni` or a local install from this checkout. | Build or install locally from source; no hosted binary is claimed. |
+| Local binary | Available | You want `./bin/ni` or a local install from this checkout. | Build or install locally from source; independent of release assets. |
 | Model workspaces | Experimental | You want Codex or Claude to help draft docs and contract records. | Skills are UX; the CLI remains readiness and lock authority. |
 | No-terminal method | Experimental | You want to learn or draft the Intent Lock method before a CLI run. | Assisted drafting only; it is not deterministic validation. |
-| Release binary | Release-gated | You want `ni` without Go from a published release. | Wait for a GitHub Release with OS/arch archives and checksums, then verify before use. |
-| Curl installer | Release-gated | You want a small shell installer for release assets. | Use only after release assets exist and `install.sh` has been verified against them. |
+| Release binary | Available | You want `ni` without Go from a published release. | Use the verified v0.3.0 GitHub Release archives and checksums. |
+| Curl installer | Release-gated | You want a small shell installer for release assets. | Use only after `install.sh` has been verified against the real release assets. |
 | Homebrew | Planned | You prefer a package manager. | No tap or formula is published. |
 
-Release status: this repository does not claim package distribution or a published binary release.
-Use source, local build, or local install mode until a GitHub Release actually
-publishes binary archives and checksums. The curl installer is release-gated for
-the same reason.
+Release binary install:
+
+1. Open the [v0.3.0 GitHub Release](https://github.com/Nam-Cheol/ni/releases/tag/v0.3.0).
+2. Download the OS/arch archive and `ni_0.3.0_checksums.txt`.
+3. Verify the checksum.
+4. Extract the archive.
+5. Run `ni --help` and `ni version`.
+
+Release status: v0.3.0 release binaries are available after asset and checksum
+verification. The curl installer remains release-gated until `install.sh` is
+verified against the real release assets. Package-manager distribution,
+including Homebrew, is not available yet.
 
 License: `ni` is licensed under the [MIT License](LICENSE).
 

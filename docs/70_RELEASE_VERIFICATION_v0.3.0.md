@@ -131,5 +131,8 @@ runs successfully.
 
 Release binaries can now be marked as available.
 
+This verification is the evidence used by the README and install documentation
+to mark release binary installation as Available.
+
 The curl installer, Homebrew, Scoop, and package-manager distribution remain
 not available until separately verified.

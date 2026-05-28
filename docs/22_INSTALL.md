@@ -1,9 +1,8 @@
 # Install ni
 
-`ni` is usable from source or from a locally built binary. Hosted release
-archives and the curl installer are release-gated until a GitHub Release
-actually publishes binary assets and checksums, and the installer is verified
-against those assets.
+`ni` is usable from source, from a locally built binary, or from the verified
+v0.3.0 GitHub Release archives. The curl installer remains release-gated until
+`install.sh` is verified against the real release assets.
 
 ## Prerequisites
 
@@ -70,15 +69,14 @@ make install-local BINDIR="$tmpdir/bin"
 
 ## Release binary
 
-Release binary status: Release-gated.
+Release binary status: Available.
 
-Do not treat GitHub Release downloads as an available install path until the
-release page contains the expected archives and `ni_<version>_checksums.txt`:
+The v0.3.0 GitHub Release contains the expected OS/arch archives and
+`ni_0.3.0_checksums.txt`:
 
-<https://github.com/Nam-Cheol/ni/releases>
+<https://github.com/Nam-Cheol/ni/releases/tag/v0.3.0>
 
-When a release exists, use this matrix to choose the archive for your OS and
-architecture:
+Use this matrix to choose the archive for your OS and architecture:
 
 | Platform | Architecture | Archive |
 | --- | --- | --- |
@@ -88,14 +86,14 @@ architecture:
 | macOS | arm64 | `ni_<version>_darwin_arm64.tar.gz` |
 | Windows | amd64 | `ni_<version>_windows_amd64.zip` |
 
-Each valid release must include `ni_<version>_checksums.txt`. Download the
-archive and checksum file from the same release, verify the archive, unpack the
-binary, and then run `ni --help` and `ni version`.
+Each valid release must include `ni_<version>_checksums.txt`. For v0.3.0,
+download the archive and checksum file from the same release, verify the
+archive, unpack the binary, and then run `ni --help` and `ni version`.
 
-Linux example after a release exists:
+Linux example:
 
 ```bash
-VERSION="<published-version-without-v>"
+VERSION="0.3.0"
 curl -fSLO "https://github.com/Nam-Cheol/ni/releases/download/v${VERSION}/ni_${VERSION}_linux_amd64.tar.gz"
 curl -fSLO "https://github.com/Nam-Cheol/ni/releases/download/v${VERSION}/ni_${VERSION}_checksums.txt"
 grep " ni_${VERSION}_linux_amd64.tar.gz$" "ni_${VERSION}_checksums.txt" | sha256sum -c -
@@ -104,10 +102,10 @@ tar -xzf "ni_${VERSION}_linux_amd64.tar.gz"
 ./ni version
 ```
 
-macOS example after a release exists:
+macOS example:
 
 ```bash
-VERSION="<published-version-without-v>"
+VERSION="0.3.0"
 curl -fSLO "https://github.com/Nam-Cheol/ni/releases/download/v${VERSION}/ni_${VERSION}_darwin_arm64.tar.gz"
 curl -fSLO "https://github.com/Nam-Cheol/ni/releases/download/v${VERSION}/ni_${VERSION}_checksums.txt"
 grep " ni_${VERSION}_darwin_arm64.tar.gz$" "ni_${VERSION}_checksums.txt" | shasum -a 256 -c -
@@ -116,10 +114,10 @@ tar -xzf "ni_${VERSION}_darwin_arm64.tar.gz"
 ./ni version
 ```
 
-Windows PowerShell after a release exists:
+Windows PowerShell:
 
 ```powershell
-$Version = "<published-version-without-v>"
+$Version = "0.3.0"
 Invoke-WebRequest "https://github.com/Nam-Cheol/ni/releases/download/v$Version/ni_$($Version)_windows_amd64.zip" -OutFile "ni_$($Version)_windows_amd64.zip"
 Invoke-WebRequest "https://github.com/Nam-Cheol/ni/releases/download/v$Version/ni_$($Version)_checksums.txt" -OutFile "ni_$($Version)_checksums.txt"
 Get-FileHash "ni_$($Version)_windows_amd64.zip" -Algorithm SHA256
@@ -137,15 +135,14 @@ Compare the `Get-FileHash` output with the checksum line printed by
 Curl installer status: Release-gated.
 
 `install.sh` can install a release archive without requiring Go, but it depends
-on hosted release archives. Do not present it as available until release assets
-exist and the script has been verified against the real archives and checksum
-file.
+on hosted release archives. Do not present it as available until the script has
+been verified against the real v0.3.0 archives and checksum file.
 
 After that gate is satisfied, download and inspect the script before any local
 trial:
 
 ```bash
-VERSION="<published-version-without-v>"
+VERSION="0.3.0"
 curl -fsSLO https://raw.githubusercontent.com/Nam-Cheol/ni/main/install.sh
 sed -n '1,320p' install.sh
 sh install.sh --dry-run --version "$VERSION"
@@ -188,7 +185,8 @@ bash scripts/release-check.sh
 
 `ni` is licensed under the [MIT License](../LICENSE).
 
-This install document does not claim published GitHub Release binary assets,
-curl installer availability, package distribution, Homebrew support, Scoop
-support, no-terminal deterministic validation, runtime execution behavior, or
-global model-pack installation.
+This install document claims release binary availability only for the verified
+v0.3.0 GitHub Release assets. It does not claim curl installer availability,
+package distribution, Homebrew support, Scoop support, no-terminal
+deterministic validation, runtime execution behavior, or global model-pack
+installation.

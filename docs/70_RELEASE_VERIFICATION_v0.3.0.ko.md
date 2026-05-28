@@ -131,5 +131,8 @@ ni_0.3.0_darwin_arm64.tar.gz
 
 릴리스 바이너리는 이제 Available로 표시할 수 있다.
 
+이 검증은 README와 install 문서에서 release binary install을 Available로
+표시하는 근거다.
+
 curl 설치 스크립트, Homebrew, Scoop, 패키지 매니저 배포는 별도 검증 전까지
 Available 상태가 아니다.
