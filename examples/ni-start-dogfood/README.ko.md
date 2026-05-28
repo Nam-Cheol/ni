@@ -17,6 +17,9 @@
 - `ni end`는 CLI 준비 상태와 사용자의 명시적 확인 뒤에만 lockfile을 쓴다.
 - `ni run`은 제한된 handoff 프롬프트만 컴파일하며 downstream 실행을 하지
   않는다.
+- `ni-start`는 시작 시 purpose, active readiness profile, product type /
+  delivery surface, accepted capability, unresolved blocker question, recent
+  decision, next planning focus를 요약하고 1개에서 3개의 집중 질문만 묻는다.
 
 ## 3. 제품 유형 / 표면
 
@@ -40,7 +43,15 @@
 - `08-ni-end-confirmation.md`: `ni-end`가 lock 전에 CLI 준비 상태를 확인한다.
 - `09-ni-run-handoff.md`: `ni-run`이 lock에서 handoff 프롬프트를 컴파일한다.
 
-## 5. 실행하지 않는 경계
+## 5. 명령
+
+Repository root에서:
+
+```bash
+go run ./cmd/ni status --dir examples/ni-start-dogfood/workspace --proof --next-questions
+```
+
+## 6. 실행하지 않는 경계
 
 이 예시는 support assistant를 실행하지 않고, model API를 호출하지 않으며,
 Codex 실행, 고객 연락, 환불 승인, adapter, queue를 만들지 않는다. 커널의

@@ -26,10 +26,18 @@ At the start of a planning turn, `ni-start` reads the current planning source:
 - `.ni/plan.lock.json` if present, to detect locked-plan authority.
 
 It then summarizes the current state before asking for more input. A useful
-summary names the active planning focus, purpose, accepted capabilities,
-delivery surface, decisions, non-goals, open questions, and known readiness
-blockers. Claims from `.ni/session.json` should be checked against the contract,
-docs, and `ni status`.
+start summary must name:
+
+1. current purpose,
+2. active readiness profile,
+3. product type and delivery surfaces,
+4. accepted capabilities,
+5. unresolved blocker questions,
+6. recent decisions,
+7. next recommended planning focus.
+
+Claims from `.ni/session.json` should be checked against the contract, docs,
+and `ni status --dir . --proof --next-questions`.
 
 ## Resume mode
 
@@ -39,10 +47,11 @@ the file for active focus, last summary, pending questions, recent decisions and
 risks, last readiness status, and recently updated docs.
 
 Every session claim must be verified against `.ni/contract.json`,
-`docs/plan/**`, lock state, and `ni status --dir . --next-questions` when
-available. If the session file conflicts with a contract record, the contract
-wins and the conflict is reported. If it conflicts with a locked plan, the lock
-and locked docs win. A lock hash mismatch stops the turn with `BLOCKED`.
+`docs/plan/**`, lock state, and `ni status --dir . --proof --next-questions`
+when available. If the session file conflicts with a contract record, the
+contract wins and the conflict is reported. If it conflicts with a locked plan,
+the lock and locked docs win. A lock hash mismatch stops the turn with
+`BLOCKED`.
 
 If `.ni/session.json` is missing, invalid, empty, or stale, `ni-start`
 reconstructs a resumed summary from `docs/plan/**`, `.ni/contract.json`, and
@@ -53,8 +62,8 @@ full raw transcript by default.
 ## Gap detection
 
 `ni-start` should identify missing required planning areas from the current
-contract and docs, with `ni status --next-questions` as the first source for
-readiness-blocking interview prompts. Common gaps include:
+contract and docs, with `ni status --proof --next-questions` as the first
+source for readiness-blocking interview prompts. Common gaps include:
 
 - purpose, actors, outcomes, or delivery surface still marked TODO,
 - capabilities without requirements or evaluations,
@@ -64,9 +73,11 @@ readiness-blocking interview prompts. Common gaps include:
 - constraints or non-goals that conflict with requested behavior,
 - docs and `.ni/contract.json` disagreeing about the same record.
 
-Questions should be focused on the gaps that block readiness. Prefer questions
-returned by the CLI. Instead of asking "What else should the plan include?",
-ask a concrete question such as:
+Questions should be focused on the gaps that block readiness. Ask at most one
+to three focused questions per turn and prefer questions returned by the CLI.
+Avoid broad generic brainstorming unless the project is still empty. Instead
+of asking "What else should the plan include?", ask a concrete question such
+as:
 
 ```text
 For CAP-002, what evidence proves this capability works, or should that evidence be deferred?
@@ -83,8 +94,9 @@ authoring pass and refreshes session state:
 
 - `docs/plan/**` explains the plan for humans,
 - `.ni/contract.json` stores stable IDs, statuses, and trace links for the CLI.
-- `.ni/session.json` stores the latest focus, short summary, pending questions,
-  recent decisions, recent risks, readiness status, readiness blockers, and docs
+- `.ni/session.json` stores the latest focus, short summary, active readiness
+  profile, product type and delivery surfaces, pending questions, recent
+  decisions, recent risks, readiness status, readiness blockers, and docs
   changed in the turn.
 
 The skill records purpose, actors, capabilities, requirements, decisions,
@@ -103,7 +115,7 @@ when preserving history matters.
 After meaningful updates, `ni-start` runs or requests:
 
 ```bash
-ni status --dir . --next-questions
+ni status --dir . --proof --next-questions
 ```
 
 The status result is authoritative. If it reports `BLOCKED`, `ni-start` keeps

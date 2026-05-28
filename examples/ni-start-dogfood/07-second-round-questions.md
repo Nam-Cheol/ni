@@ -27,19 +27,23 @@ Changed records:
 - `OQ-002`: support dashboard target remains open but non-blocking.
 
 ```bash
-ni status --dir ./refund-triage-plan --next-questions
+ni status --dir ./refund-triage-plan --proof --next-questions
 ```
 
 ## CLI result
 
 ```text
-READY_WITH_DEFERRALS
-profile: prototype
-product type: conversation_product
-delivery surfaces: conversation, document
+NI Intent Readiness: READY_WITH_DEFERRALS
 
-deferral D001: DEC-004 is deferred
-deferral D002: OQ-002 remains open
+Proof:
+- DEC-004 is deferred.
+- OQ-002 remains open.
+
+Execution may proceed only after lock; deferrals remain explicit.
+
+Next questions:
+1. For DEC-004, should this deferred decision remain deferred, become accepted or rejected, or be not_applicable?
+2. For OQ-002, should this open question be resolved, deferred, or left open with a reason?
 ```
 
 ## Boundary shown

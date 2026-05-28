@@ -56,6 +56,7 @@ From the repository root:
 
 ```bash
 go run ./cmd/ni status --dir examples/ni-start-dogfood/workspace
+go run ./cmd/ni status --dir examples/ni-start-dogfood/workspace --proof --next-questions
 tmpdir="$(mktemp -d)"
 go run ./cmd/ni run --dir examples/ni-start-dogfood/workspace --target human-team --max-chars 4000 --out "$tmpdir/human-team.prompt.txt"
 wc -m "$tmpdir/human-team.prompt.txt"
@@ -64,7 +65,9 @@ rm -rf "$tmpdir"
 
 ## 7. Expected output
 
-Expected status: `READY_WITH_DEFERRALS`.
+Expected status: `READY_WITH_DEFERRALS`. The `--proof --next-questions`
+variant should also show the readiness proof and any remaining non-blocking
+questions without letting the model override the gate.
 
 The status command should start with:
 

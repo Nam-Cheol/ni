@@ -23,7 +23,8 @@ Changed planning files:
 - `.ni/contract.json`: add matching `CAP`, `REQ`, `EVAL`, `RISK`, `ART`,
   `NG`, and `OQ` records.
 - `.ni/session.json`: refresh bounded continuity state below contract
-  authority.
+  authority, including active readiness profile, product type, delivery
+  surfaces, recent decisions, pending questions, and last readiness status.
 
 ## Example synchronized records
 

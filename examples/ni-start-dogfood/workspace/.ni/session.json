@@ -1,6 +1,12 @@
 {
   "schema": "ni.session.v0",
   "active_planning_focus": "Ready for ni-end confirmation after conversation resolved the blocker policy-source question.",
+  "active_readiness_profile": "prototype",
+  "product_type": "conversation_product",
+  "delivery_surfaces": [
+    "conversation",
+    "document"
+  ],
   "last_planning_summary": "The model-maintained docs and contract describe a refund triage assistant that drafts recommendations only, escalates ambiguity, and uses the internal refund policy page as authority. ni status reports READY_WITH_DEFERRALS because DEC-004 and OQ-002 remain visible but non-blocking under the prototype profile.",
   "pending_questions": [
     {

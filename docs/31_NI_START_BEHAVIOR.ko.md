@@ -1,0 +1,140 @@
+# ni-start 동작
+
+`ni-start`는 NI 계획을 지속 대화로 작성하는 모드다. `ni init` 이후 사용자가
+`.ni/contract.json`을 직접 편집하지 않아도, 모델이 대화를 바탕으로 계획
+상태를 유지하도록 돕는다.
+
+이 skill은 CLI gate를 대체하지 않는다. skill은 계획 상태를 쓰고, CLI는
+검증, 잠금, 컴파일의 권한이다.
+
+장기 계획을 이어가기 위한 resume mode도 지원한다. resume mode는 숨겨진
+chat memory가 아니라 저장된 project file에서 계획 연속성을 재구성하거나
+검증한다.
+
+```text
+ni init -> ni-start conversation -> docs/plan + .ni/contract.json -> ni status
+```
+
+## 책임
+
+계획 turn을 시작할 때 `ni-start`는 현재 계획 source를 읽는다.
+
+- `AGENTS.md`: repository authority rule,
+- `docs/plan/**`: 사람이 읽는 계획 상태,
+- `.ni/contract.json`: machine-readable 계획 상태,
+- `.ni/session.json`: 권한이 없는 carryover context,
+- `.ni/plan.lock.json`: 있을 경우 locked-plan authority 확인.
+
+그 다음 추가 입력을 요청하기 전에 현재 상태를 요약한다. 시작 요약에는 반드시
+다음 항목이 포함되어야 한다.
+
+1. 현재 목적,
+2. 활성 readiness profile,
+3. product type과 delivery surface,
+4. accepted capability,
+5. unresolved blocker question,
+6. 최근 decision,
+7. 다음으로 권장하는 planning focus.
+
+`.ni/session.json`의 주장은 contract, docs, 그리고
+`ni status --dir . --proof --next-questions` 결과와 대조해야 한다.
+
+## Resume mode
+
+나중의 model session이 계획을 이어갈 때, `ni-start`는 일반 turn과 같은
+authoritative input에서 시작한다. `.ni/session.json`이 있으면 active focus,
+last summary, pending question, recent decision과 risk, last readiness status,
+최근 변경 docs를 planning aid로 사용할 수 있다.
+
+모든 session claim은 `.ni/contract.json`, `docs/plan/**`, lock state, 그리고
+가능하면 `ni status --dir . --proof --next-questions`로 검증해야 한다. session
+file이 contract record와 충돌하면 contract가 우선이고 충돌을 보고한다.
+locked plan과 충돌하면 lock과 locked docs가 우선이다. lock hash mismatch는
+turn을 `BLOCKED`로 중단한다.
+
+`.ni/session.json`이 없거나, invalid, empty, stale이면 `ni-start`는
+`docs/plan/**`, `.ni/contract.json`, CLI readiness output에서 resume summary를
+재구성한다. 다음 의미 있는 planning edit은 `.ni/session.json`을 bounded
+continuity state로 다시 만들거나 갱신해야 한다. 기본적으로 raw transcript
+전체를 저장하지 않는다.
+
+## Gap detection
+
+`ni-start`는 현재 contract와 docs에서 필요한 계획 영역이 빠졌는지 확인해야
+한다. readiness-blocking interview prompt의 첫 source는
+`ni status --proof --next-questions`다. 흔한 gap은 다음과 같다.
+
+- purpose, actor, outcome, delivery surface가 아직 TODO인 경우,
+- capability에 requirement나 evaluation이 없는 경우,
+- accepted capability의 artifact가 없는 경우,
+- high-severity risk에 mitigation이 없는 경우,
+- scope나 acceptance criteria에 영향을 주는 blocker question,
+- constraint나 non-goal이 요청된 behavior와 충돌하는 경우,
+- docs와 `.ni/contract.json`이 같은 record에 대해 불일치하는 경우.
+
+질문은 readiness를 막는 gap에 집중해야 한다. turn마다 1개에서 3개까지만
+묻고, CLI가 반환한 질문을 우선한다. project가 아직 비어 있을 때가 아니라면
+넓고 일반적인 brainstorming 질문은 피한다. 예를 들어 "계획에 또 무엇을
+넣을까요?" 대신 다음처럼 묻는다.
+
+```text
+For CAP-002, what evidence proves this capability works, or should that evidence be deferred?
+```
+
+질문은 관련 ID를 보존하고, implementation work를 암시하지 않으며, acceptance를
+압박하지 않아야 한다. 적절한 planning outcome이면 `deferred`나
+`not_applicable`도 허용해야 한다.
+
+## Persistence Rules
+
+사용자가 답한 뒤 `ni-start`는 같은 authoring pass에서 두 planning form을
+갱신하고 session state를 새로 고친다.
+
+- `docs/plan/**`: 사람이 읽는 계획 설명,
+- `.ni/contract.json`: CLI가 검증하는 stable ID, status, trace link,
+- `.ni/session.json`: latest focus, short summary, active readiness profile,
+  product type과 delivery surface, pending question, recent decision, recent
+  risk, readiness status, readiness blocker, 이 turn에서 바뀐 docs.
+
+대화가 변경한 purpose, actor, capability, requirement, decision, risk,
+evaluation, non-goal, constraint, artifact, assumption, open question을 기록한다.
+tentative 또는 inferred statement는 사용자가 확인할 때까지 assumption이나
+open question으로 남긴다. session state는 planning aid일 뿐이다. locked docs를
+override하거나 docs complete를 표시하거나 raw chat log 전체를 기본 저장하면 안
+된다.
+
+기존 ID는 안정적으로 유지한다. 구분되는 record가 필요할 때만 새 ID를 붙인다.
+obsolete record는 history 보존이 중요하면 rejected, deferred, not applicable로
+표시한다.
+
+## Readiness Handoff
+
+의미 있는 update 뒤 `ni-start`는 다음 명령을 실행하거나 요청한다.
+
+```bash
+ni status --dir . --proof --next-questions
+```
+
+status 결과가 권한이다. `BLOCKED`면 `ni-start`는 planning을 열어 두고
+`next_questions`에서 가장 영향이 큰 1개에서 3개 질문을 묻는다. CLI가 다음
+질문을 반환하지 않으면 readiness issue를 직접 보여준다. `READY` 또는
+`READY_WITH_DEFERRALS`면 `ni-end`로 이동하자고 제안할 수 있다.
+
+`ni-start`는 model judgment만으로 completion을 선언하면 안 된다.
+
+## Boundaries
+
+`ni-start`가 하면 안 되는 일:
+
+- user-facing contract `add`, `list`, `set` command 추가,
+- implementation work 실행,
+<!-- ni-boundary-allow: explicit negative boundary list item. -->
+- SPEC runner behavior 생성,
+- shell, Codex, queue, evidence-runner, downstream runtime adapter 생성,
+- downstream runtime 직접 호출,
+- `.ni/plan.lock.json` 생성 또는 편집,
+- validation을 통과시키려고 accepted requirement나 evaluation 약화.
+
+skill은 downstream seed idea를 planning content로 제안할 수만 있다. downstream
+harness material은 derived and mutable 상태이며 kernel-owned execution state가
+아니다.

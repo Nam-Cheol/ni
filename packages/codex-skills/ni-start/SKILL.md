@@ -8,8 +8,8 @@ description: Continue NI planning by updating docs/plan and .ni/contract.json wh
 Use this skill when the user says `ni-start` or asks to continue planning a project with NI.
 
 `ni-start` is the primary authoring UX after `ni init`. It turns a sustained
-model-user planning conversation into synchronized updates to `docs/plan/**`
-and `.ni/contract.json`.
+model-user planning conversation into synchronized updates to `docs/plan/**`,
+`.ni/contract.json`, and `.ni/session.json`.
 
 It also supports resume mode for long-running planning. A later model session
 must resume from persisted docs, `.ni/contract.json`, and bounded
@@ -79,7 +79,7 @@ Resume mode starts from persisted files:
 
 - If `.ni/session.json` exists, read it as a planning aid and verify every
   important claim against `.ni/contract.json`, `docs/plan/**`, lock state, and
-  `ni status --dir . --next-questions` when available.
+  `ni status --dir . --proof --next-questions` when available.
 - If `.ni/session.json` is missing, invalid, empty, or too stale to trust,
   reconstruct the planning summary from `.ni/contract.json`, `docs/plan/**`,
   lock state, and CLI readiness output.
@@ -97,6 +97,8 @@ The resumed summary should name:
 - the active focus from `.ni/session.json`, or that focus was reconstructed,
 - which session claims were confirmed against docs and contract,
 - which session claims were stale or conflicted,
+- the active readiness profile,
+- product type and delivery surfaces,
 - accepted and draft capabilities,
 - decisions, non-goals, risks, and assumptions that affect readiness,
 - open blocker questions and the CLI readiness status.
@@ -109,15 +111,22 @@ The resumed summary should name:
    docs, and lock state. Report conflicts, use the contract or locked docs as
    authority, and reconstruct from docs and contract if session state is
    missing or unusable.
-3. Summarize current planning state in a few concrete bullets:
-   - active planning focus from `.ni/session.json`, verified against docs and contract,
-   - whether the focus came from session state or was reconstructed,
-   - purpose and delivery surface,
+3. Run or request `ni status --dir . --proof --next-questions` when available.
+   The CLI output is the source for readiness status, active profile, proof,
+   blockers, and deterministic next questions. If command execution is not
+   available, ask the user to run it and paste the exact output.
+4. Summarize current planning state in a few concrete bullets before asking for
+   more input. The start summary must include:
+   - current purpose,
+   - active readiness profile,
+   - product type and delivery surfaces,
    - accepted capabilities,
-   - known decisions and non-goals,
-   - open blocker questions,
-   - readiness state if `ni status --dir .` has already been run.
-4. Identify missing required planning areas from the current docs, contract,
+   - unresolved blocker questions,
+   - recent decisions,
+   - next recommended planning focus.
+   You may also mention whether focus came from `.ni/session.json` or was
+   reconstructed, and any session conflicts discovered during resume.
+5. Identify missing required planning areas from the current docs, contract,
    and readiness profile. Check for:
    - missing or TODO purpose, actors, capabilities, requirements, risks,
      evaluations, artifacts, constraints, delivery expectations, non-goals, or
@@ -125,11 +134,11 @@ The resumed summary should name:
    - accepted capabilities without linked requirements or evaluations,
    - high-severity risks without mitigation,
    - blocker questions that still affect acceptance criteria or scope.
-5. Run or request `ni status --dir . --next-questions` when available.
-6. Ask focused questions about the highest-impact gaps. Prefer one to three
-   questions from the CLI `next_questions` result. You may lightly rephrase for
-   clarity, but preserve the referenced IDs, readiness gap, and allowed outcomes.
-   Do not ask broad generic questions such as "What else should we add?"
+6. Ask focused questions about the highest-impact gaps. Ask at most one to
+   three questions per turn. Prefer questions from the CLI `next_questions`
+   result. You may lightly rephrase for clarity, but preserve the referenced
+   IDs, readiness gap, and allowed outcomes. Do not ask broad generic
+   brainstorming questions unless the project is still empty.
 
 ## Authoring loop
 
@@ -146,6 +155,8 @@ After the user answers:
 5. Update `.ni/session.json` as bounded continuity state:
    - active planning focus,
    - last planning summary,
+   - active readiness profile,
+   - product type and delivery surfaces,
    - pending questions,
    - recent decisions,
    - recent risks,
@@ -161,7 +172,7 @@ After the user answers:
    the relevant plan docs and contract fields when they affect readiness.
 10. Preserve existing risks, mitigations, requirements, evaluations, and
     non-goals unless the user explicitly changes them.
-11. Run or report `ni status --dir . --next-questions` at the end when available.
+11. Run or report `ni status --dir . --proof --next-questions` at the end when available.
 12. Show a short change summary with changed files and affected IDs.
 13. Show readiness gaps and next questions from the CLI result.
 14. Reflect the CLI readiness status and blockers back into `.ni/session.json`
@@ -181,7 +192,9 @@ When responding during planning:
 - Name affected IDs and whether they are accepted, draft, assumption, rejected,
   deferred, resolved, or blockers.
 - Ask only the next focused questions needed to unblock readiness.
-- Prefer deterministic next questions from `ni status --next-questions`.
+- Ask at most one to three questions per turn.
+- Avoid broad generic brainstorming unless the project is still empty.
+- Prefer deterministic next questions from `ni status --proof --next-questions`.
 - If `ni status` reports `BLOCKED`, state the blockers plainly and keep
   planning open.
 - If a lock hash mismatch exists, stop and report `BLOCKED`.
@@ -201,12 +214,13 @@ Focused questions:
    why must it remain blocking?
 
 After you answer, I will update docs/plan/** and .ni/contract.json, then run
-ni status --dir . --next-questions
+ni status --dir . --proof --next-questions
 ```
 
 ## Do not
 
 - Do not create `.ni/plan.lock.json`.
+- Do not edit `.ni/plan.lock.json` manually.
 - Do not run implementation work.
 - Do not create a shell or Codex adapter.
 - Do not write generated harness files.
