@@ -55,6 +55,11 @@ check_benchmark_report_docs() {
   require_file examples/benchmark-report/README.md
   require_file examples/benchmark-report/README.ko.md
   require_file examples/benchmark-report/sample-report.md
+  require_file examples/benchmark-report/cases/internal-dashboard/01-original-request.md
+  require_file examples/benchmark-report/cases/internal-dashboard/02-direct-to-agent-risk.md
+  require_file examples/benchmark-report/cases/internal-dashboard/03-ni-path.md
+  require_file examples/benchmark-report/cases/internal-dashboard/04-measurement-table.md
+  require_file examples/benchmark-report/cases/internal-dashboard/05-not-measured.md
   require_file docs/43_BENCHMARK_PROTOCOL.md
 }
 
@@ -177,6 +182,8 @@ require_output "Expected \`ni status\`: not applicable" "examples/benchmark-repo
 require_output "not_measured" "examples/benchmark-report/README.md"
 require_output "not_measured" "examples/benchmark-report/README.ko.md"
 require_output "not_measured" "examples/benchmark-report/sample-report.md"
+require_output "not_measured" "examples/benchmark-report/cases/internal-dashboard/04-measurement-table.md"
+require_output "No downstream agent was executed" "examples/benchmark-report/cases/internal-dashboard/05-not-measured.md"
 require_output "must not execute downstream agents" "docs/43_BENCHMARK_PROTOCOL.md"
 require_output "Target prompt boundedness" "docs/43_BENCHMARK_PROTOCOL.md"
 

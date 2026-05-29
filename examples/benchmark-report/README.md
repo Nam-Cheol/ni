@@ -2,11 +2,14 @@
 
 ## 1. Purpose
 
-This directory is a deterministic template for manually reporting the Project
-Intent Compiler benchmark method defined in `docs/43_BENCHMARK_PROTOCOL.md`.
+This directory is a deterministic template and small docs-only case library for
+manually reporting the Project Intent Compiler benchmark method defined in
+`docs/43_BENCHMARK_PROTOCOL.md`.
 
-It contains no empirical results. Fill it only after running the protocol on a
-specific request. Do not invent values for empty cells.
+The template contains no empirical results. Fill it only after running the
+protocol on a specific request. Do not invent values for empty cells. Case
+directories may include manual qualitative readiness drills, but unavailable
+lock, status, run, and prompt-count evidence must remain `not_measured`.
 
 ## 2. What this proves
 
@@ -18,6 +21,9 @@ specific request. Do not invent values for empty cells.
   notes auditable.
 - It is a case-study method, not a claim of empirical results or statistical
   significance.
+- The internal-dashboard case shows how a plausible dashboard request hides
+  users, success criteria, data boundaries, risks, non-goals, and handoff
+  evidence before any downstream work starts.
 
 ## 3. Product type / surface
 
@@ -32,6 +38,8 @@ specific request. Do not invent values for empty cells.
 - `README.ko.md`: Korean companion guide.
 - `sample-report.md`: a fillable sample/template report with `not_measured`
   placeholders.
+- `cases/internal-dashboard/`: manual qualitative readiness drill for a vague
+  dashboard request; docs-only and not a locked ni workspace.
 - `../../docs/43_BENCHMARK_PROTOCOL.md`: the benchmark protocol that defines
   the scoring method.
 
@@ -42,8 +50,9 @@ From the repository root:
 ```bash
 test -f examples/benchmark-report/README.md
 test -f examples/benchmark-report/sample-report.md
+test -f examples/benchmark-report/cases/internal-dashboard/04-measurement-table.md
 test -f docs/43_BENCHMARK_PROTOCOL.md
-rg -n "not_measured|must not execute downstream agents|Target prompt boundedness" examples/benchmark-report/README.md examples/benchmark-report/sample-report.md docs/43_BENCHMARK_PROTOCOL.md
+rg -n "not_measured|must not execute downstream agents|Target prompt boundedness|internal-dashboard" examples/benchmark-report/README.md examples/benchmark-report/sample-report.md examples/benchmark-report/cases/internal-dashboard/*.md docs/43_BENCHMARK_PROTOCOL.md
 ```
 
 ## 6. Expected output
@@ -51,7 +60,8 @@ rg -n "not_measured|must not execute downstream agents|Target prompt boundedness
 The `test` commands should exit successfully.
 
 The `rg` command should show `not_measured` markers in this template and
-non-execution plus prompt-boundedness markers in the benchmark protocol.
+dashboard case, plus non-execution and prompt-boundedness markers in the
+benchmark protocol.
 
 ## 7. demo-check coverage
 
@@ -69,6 +79,10 @@ Korean companion docs exist: `README.ko.md`.
 This report must remain intent-focused. It must not include downstream
 execution traces, implementation results, telemetry, model API outputs, or
 invented aggregate claims. It must not claim statistical significance.
+
+The internal-dashboard case is not a product demo. It must not become a
+dashboard scaffold, runtime harness, queue, shell adapter, model call, or
+downstream-agent run.
 
 ## Run Metadata
 

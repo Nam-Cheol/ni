@@ -1,9 +1,9 @@
 # 벤치마크 사례 연구: 의도 준비도
 
-이 문서는 수동 정성 사례 연구 보고서다. 두 개의 모호한 요청과 저장소에
-포함된 ni 계획 예제를 `docs/43_BENCHMARK_PROTOCOL.md`의 루브릭으로
-비교한다. 반복 실험이 아니며, 외부 모델 API를 호출하지 않고, 다운스트림
-작업을 실행하지 않으며, 통계적 유의성을 주장하지 않는다.
+이 문서는 수동 정성 사례 연구 보고서다. 저장소에 포함된 모호한 요청과
+ni 계획 예제를 `docs/43_BENCHMARK_PROTOCOL.md`의 루브릭으로 비교한다.
+반복 실험이 아니며, 외부 모델 API를 호출하지 않고, 다운스트림 작업을
+실행하지 않으며, 통계적 유의성을 주장하지 않는다.
 
 ## 사례 1: 환불 분류 어시스턴트
 
@@ -37,6 +37,10 @@
 측정하지 않는 것은 구현 품질, 모델 품질, 다운스트림 에이전트 성능,
 사용자 만족도, 런타임 안전성, 비용, 지연 시간, 통계적 효과 크기,
 프로덕션 결과다.
+
+사례 3은 사례 1과 2보다 의도적으로 가볍다. 완료된 lock/run 측정이
+아니라 docs-only 수동 readiness drill이다. 사용할 수 없는 cell은
+`not_measured`로 남긴다.
 
 ## 사례 1 산출물: A. 직접 에이전트 프롬프트
 
@@ -375,20 +379,174 @@ Accepted requirements:
 | Non-goal coverage | 없음 | 명시적: ni가 fieldwork, participant data collection, sensor deployment, analysis runtime, ethics approval을 수행하지 않음 |
 | Bounded target prompt availability | 없음; 직접 프롬프트에는 lock 검증된 compiled target prompt가 없음 | 통과; `ni run --max-chars 4000`이 3,621자 `human-team` prompt를 생성 |
 
+## 사례 3: 모호한 내부 대시보드 요청
+
+- 픽스처:
+  `testdata/benchmark/vague-requests/customer-dashboard/`
+- 사례 산출물:
+  `examples/benchmark-report/cases/internal-dashboard/`
+- 리뷰어 역할: 저장소 관리자가
+  `docs/43_BENCHMARK_PROTOCOL.md` 루브릭을 적용
+- 채점일: 2026-05-29
+- 비교 대상:
+  - A. 직접 에이전트에 전달하는 프롬프트 준비도
+  - B. 예상 `ni-start -> ni status -> ni-end -> ni-run` 준비도 경로
+
+세 번째 사례는 software dashboard request에 대한 수동 정성 readiness
+drill이다. Internal dashboard는 downstream actor가 너무 일찍 만들기 쉬운
+예시다. web surface가 뻔해 보여도 users, decisions, account signals,
+privacy constraints, data freshness, success criteria, risks, non-goals가
+빠져 있을 수 있다.
+
+사례 1과 2와 달리 이 사례는 checked-in locked ni workspace, 실제
+`ni status` 출력, 실제 `ni end` 출력, 실제 `ni run` prompt 글자 수를
+주장하지 않는다. 실행 전에 benchmark report가 무엇을 드러내야 하는지
+보여주고, 사용할 수 없는 evidence는 `not_measured`로 남긴다.
+
+## 사례 3 산출물: A. 직접 에이전트 프롬프트
+
+출처:
+`testdata/benchmark/vague-requests/customer-dashboard/request.md`
+
+```text
+Category: software dashboard
+
+Build a dashboard for the customer team so they can see what is going on with
+accounts and know who needs attention. It should be easy to use and ready for
+the next planning meeting.
+```
+
+픽스처의 수동 리뷰 노트:
+
+```text
+Expected hidden assumptions include:
+- The dashboard is for customer success managers, not executives, support, or
+  sales.
+- "Needs attention" means renewal risk, support escalation, product usage drop,
+  or unpaid invoice status.
+- Required account data already exists in a trusted system and can be accessed
+  safely.
+- The dashboard can expose customer health signals without additional privacy
+  review.
+- The next planning meeting defines the delivery deadline and minimum useful
+  scope.
+- A simple table or chart view is enough to satisfy "easy to use."
+- Historical trends are either required or out of scope.
+```
+
+## 사례 3 산출물: B. ni Intent-Lock 경로
+
+체크인된 case artifact는 예상되는 pre-runtime ni path를 기록한다.
+
+- original request:
+  `examples/benchmark-report/cases/internal-dashboard/01-original-request.md`
+- direct risk analysis:
+  `examples/benchmark-report/cases/internal-dashboard/02-direct-to-agent-risk.md`
+- ni path expectations:
+  `examples/benchmark-report/cases/internal-dashboard/03-ni-path.md`
+- measurement table:
+  `examples/benchmark-report/cases/internal-dashboard/04-measurement-table.md`
+- not-measured boundary:
+  `examples/benchmark-report/cases/internal-dashboard/05-not-measured.md`
+
+픽스처의 suggested ni-start questions:
+
+```text
+- Who are the primary users, and what decision should the dashboard help them
+  make?
+- Which account signals and source systems are allowed for the first version?
+- What does "needs attention" mean in observable terms?
+- What acceptance checks must pass before the planning meeting?
+- Which dashboard behaviors are explicitly out of scope for this iteration?
+- What privacy, access-control, or data-freshness constraints apply?
+```
+
+lock 전 예상 readiness blocker:
+
+- primary users와 actor outcomes가 아직 accepted 상태가 아니다;
+- account signals, source systems, required fields, freshness constraints가
+  아직 accepted 상태가 아니다;
+- privacy, access-control, customer-data handling risk가 아직 mitigation을
+  갖지 않는다;
+- prioritization, usability, performance, planning review의 acceptance
+  criteria가 빠져 있다;
+- CRM replacement, forecasting, workflow automation, write-back behavior 같은
+  non-goal이 명시되지 않았다.
+
+`READY` 또는 `READY_WITH_DEFERRALS` 전 예상 docs/contract records:
+
+- `docs/plan/01_actors_outcomes.md`는 customer-team actor와 각 actor가 내려야
+  하는 decision을 기록한다.
+- `docs/plan/02_capabilities.md`와 `.ni/contract.json`은 dashboard capability를
+  accepted 상태로 기록하고 requirement/evaluation에 연결한다.
+- `docs/plan/06_risks_security.md`와 `.ni/contract.json`은 customer data,
+  incorrect prioritization, stale signal high-severity risk와 mitigation을
+  기록한다.
+- `docs/plan/07_evaluation_contract.md`는 account-health correctness,
+  freshness, access control, usability review, planning-meeting acceptance
+  evidence를 기록한다.
+- `docs/plan/08_delivery_operation.md`는 delivery surface와 handoff boundary를
+  기록한다.
+- `docs/plan/10_open_questions.md`에는 blocker open question이 없다.
+
+## 사례 3 수동 측정표
+
+이 표는 dashboard request에 대한 한 리뷰어의 수동 정성 평가다. 반복
+benchmark data가 아니다. ni path evidence는 예상 readiness evidence이며,
+완료된 lock/run 측정이 아니다.
+
+| Criterion | Direct-to-agent risk | ni path evidence | Improved? |
+| --- | --- | --- | --- |
+| Missing acceptance criteria | account health, priority ranking, freshness, performance, usability, meeting acceptance의 pass/fail check가 빠져 있다. | dashboard capability에 연결된 REQ/EVAL record가 lock 전에 필요하다. | Yes, readiness visibility 기준. |
+| Unmitigated high-risk items | customer data exposure, incorrect prioritization, stale account signal risk가 보이지만 mitigation이 없다. | high-severity RISK record는 readiness 통과 전에 mitigation 또는 accepted rationale을 가져야 한다. | Yes, gate expectation 기준. |
+| Unresolved blockers | primary users, source systems, required fields, meeting date, launch surface가 unknown이다. | ni-start 질문이 blocker question으로 바꾸며, 답변되거나 명시적으로 defer되기 전 `ni status`는 `BLOCKED`여야 한다. | Yes. |
+| Hidden assumptions | users, metrics, source systems, privacy review, deadline, visualization format을 downstream actor가 발명해야 한다. | assumption은 open question, accepted decision, requirement, risk, non-goal이 되어야 한다. | Yes. |
+| Non-goal coverage | CRM replacement, workflow automation, forecasting, write-back behavior 제외가 없다. | non-goal은 lock 전 contract record로 기대된다. | Yes. |
+| Delivery surface clarity | web dashboard라고 가정하지만 prototype, report, embedded CRM view, planning document가 구분되지 않는다. | readiness interview guidance는 delivery surface를 묻고 docs와 contract가 일치해야 한다. | Yes. |
+| Actor/outcome clarity | "Customer team"과 "who needs attention"은 implementation을 이끌기엔 너무 넓다. | actor/outcome record는 누가 dashboard를 쓰고 어떤 decision을 지원하는지 기록해야 한다. | Yes. |
+| Evaluation evidence clarity | correctness, freshness, access, meeting readiness evidence가 없다. | evaluation record는 data check, prioritization review, usability review, planning acceptance를 기대한다. | Yes. |
+| Bounded handoff prompt availability | 없음; 직접 프롬프트에는 lock 검증된 compiled target prompt가 없다. | `not_measured`; 이 사례에는 실제 lock 또는 `ni run` output이 없다. | 측정하지 않음. |
+
+## 사례 3에서 개선된 것
+
+개선은 dashboard가 설계되거나 구현되었다는 뜻이 아니다. 개선은 benchmark가
+왜 실행을 기다려야 하는지 드러낸다는 뜻이다. 직접 요청은 users, outcomes,
+data boundaries, risks, evaluation evidence, non-goals를 숨긴다. ni path는
+그 항목들을 docs와 contract record로 만들거나 plan을 blocked 상태로 남겨야
+한다.
+
+## 사례 3에서 측정하지 않은 것
+
+이 사례는 실제 `ni status` output, lockfile, compiled prompt, agent behavior,
+dashboard quality, development time, user adoption, reduced rework,
+statistical effect를 측정하지 않았다. `ni end`, `ni run`, model API, dashboard
+implementation, downstream agent를 실행하지 않았다.
+
+## 사례 3 실행하지 않는 경계
+
+Dashboard case는 benchmark-report documentation으로만 남는다. Runtime demo,
+shell adapter, dashboard scaffold, queue, telemetry collector, downstream
+agent harness가 되면 안 된다. 이 사례의 역할은 누군가 dashboard를 만들기
+전에 intent를 compile해야 하는 이유를 보여주는 것이다.
+
 ## 관찰
 
-두 직접 프롬프트는 그럴듯하지만 다운스트림 액터에게 넘길 준비가 되지
+세 직접 프롬프트는 그럴듯하지만 다운스트림 액터에게 넘길 준비가 되지
 않았다. 환불 사례에서는 다운스트림 액터가 시작 전에 환불 권한 경계,
 정책 출처, escalation 동작, 평가 증거, non-goal을 스스로 발명해야 한다.
 research-protocol 사례에서는 sampling, consent, field safety, ethics,
-evidence, review boundary를 스스로 발명해야 한다.
+evidence, review boundary를 스스로 발명해야 한다. dashboard 사례에서는
+users, account signals, data boundaries, prioritization criteria, delivery
+surface, meeting acceptance, non-goals를 스스로 발명해야 한다.
 
 ni 경로가 프로덕션 작업을 완성한 것은 아니다. 실행 전에 의도를 감사
 가능하게 만들었다. 환불 사례의 readiness check는 authoritative policy
 source에서 멈춘 뒤 `READY_WITH_DEFERRALS`에 도달했고, research-protocol
 사례는 `READY`에 도달했다. 두 accepted plan은 명시적인 requirement,
 high-risk mitigation, evaluation, non-goal을 포함했으며, 두 target
-handoff prompt 모두 설정된 4,000자 한도 안에 있었다.
+handoff prompt 모두 설정된 4,000자 한도 안에 있었다. dashboard drill은
+측정된 lock/run 결과를 추가하지 않는다. 같은 readiness gap을 더 일찍
+보여주고 bounded prompt availability를 `not_measured`로 남긴다.
 
 ## 한계
 
@@ -396,4 +554,5 @@ handoff prompt 모두 설정된 4,000자 한도 안에 있었다.
 다운스트림 구현이 성공한다는 것, 또는 어떤 프로세스가 통계적으로 더
 낫다는 것을 증명하지 않는다. 이 문서는 Intent Lock Protocol이 두 개의
 모호한 prompt를 다운스트림 실행 없이 bounded, lock-verified handoff로
-바꾸는 투명한 before/after 사례를 보여준다.
+바꾸는 투명한 before/after 사례와 fake lock/run evidence를 피하는 docs-only
+dashboard readiness drill을 보여준다.
