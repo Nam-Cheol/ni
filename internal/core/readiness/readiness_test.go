@@ -401,6 +401,52 @@ func TestNextQuestionsFirstRunSyncDiagnostics(t *testing.T) {
 	}
 }
 
+func TestNextQuestionsMixedFirstRunAndSyncDeduplicateOnlyMatchingQuestion(t *testing.T) {
+	dir := t.TempDir()
+	if _, err := docstore.Init(dir); err != nil {
+		t.Fatalf("initializing fixture project: %v", err)
+	}
+	writePlanDoc(t, dir, "01_actors_outcomes.md", "# Actors and outcomes\n\n## Actors\n\n- Planner: turns conversation into a planning contract.\n\n## Outcomes\n\n- The user gets a locked intent contract before implementation.\n")
+
+	result := Evaluate(dir)
+	questions := NextQuestions(result)
+	if len(questions) != 3 {
+		t.Fatalf("expected top three mixed first-run questions, got %#v", questions)
+	}
+	if questions[0].RuleID != "R012" || !containsString(questions[0].References, "SYNC-015") {
+		t.Fatalf("expected SYNC-015 repair first, got %#v", questions)
+	}
+	if questions[1].RuleID != "R014" || questions[2].RuleID != "R016" {
+		t.Fatalf("expected non-shadowed first-run questions after sync repair, got %#v", questions)
+	}
+	if requireQuestionMaybe(questions, "R015") != nil {
+		t.Fatalf("SYNC-015 should deduplicate generic R015 question, got %#v", questions)
+	}
+	for _, question := range questions {
+		if question.RuleID == "R003" || question.RuleID == "R009" || question.RuleID == "R010" {
+			t.Fatalf("mixed first-run sync output should not displace first-run intent with unrelated lower-priority question, got %#v", questions)
+		}
+	}
+}
+
+func TestNextQuestionsDeterministicOrdering(t *testing.T) {
+	dir := initFixtureProject(t, "question_output.json")
+	writePlanDoc(t, dir, "01_actors_outcomes.md", "# Actors and outcomes\n\n## Actors\n\n- User: reviews the fixture.\n- CLI: validates deterministic readiness.\n\n## Outcomes\n\n- User receives a focused readiness interview.\n")
+	writePlanDoc(t, dir, "06_risks_security.md", "# Risks and security\n\n## RISK-001: Risk\n\nSeverity: high\n\nMitigation: Pending user answer.\n")
+
+	first, err := json.Marshal(NextQuestions(Evaluate(dir)))
+	if err != nil {
+		t.Fatalf("marshaling first questions: %v", err)
+	}
+	second, err := json.Marshal(NextQuestions(Evaluate(dir)))
+	if err != nil {
+		t.Fatalf("marshaling second questions: %v", err)
+	}
+	if string(first) != string(second) {
+		t.Fatalf("expected deterministic question output\nfirst:  %s\nsecond: %s", first, second)
+	}
+}
+
 func TestEvaluateConsistentDocsContractSyncFixture(t *testing.T) {
 	dir := initSyncFixtureProject(t, "consistent")
 

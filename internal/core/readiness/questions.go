@@ -39,30 +39,36 @@ func OmittedNextQuestionCount(result Result) int {
 
 func prioritizedQuestionCandidates(result Result) []questionCandidate {
 	raw := make([]questionCandidate, 0, len(result.Issues))
-	hasFirstRunSync := false
 	firstRunRules := map[string]bool{}
-	for idx, issue := range result.Issues {
+	firstRunSyncRules := map[string]bool{}
+	for _, issue := range result.Issues {
 		if isFirstRunRule(issue.RuleID) {
 			firstRunRules[issue.RuleID] = true
 		}
-		if isFirstRunSyncIssue(issue) {
-			hasFirstRunSync = true
+		if shadowedRule := firstRunRuleShadowedBySync(issue); shadowedRule != "" {
+			firstRunSyncRules[shadowedRule] = true
 		}
+	}
+
+	if len(firstRunSyncRules) == 0 && firstRunRules["R014"] && firstRunRules["R015"] && firstRunRules["R016"] {
+		return firstRunCardCandidates(result.Issues)
+	}
+
+	for idx, issue := range result.Issues {
 		if result.Status == StatusBlocked && issue.Severity != "blocker" {
 			continue
 		}
 		if question := questionForIssue(issue); question.Question != "" {
+			if isFirstRunRule(question.RuleID) && firstRunSyncRules[question.RuleID] {
+				continue
+			}
 			raw = append(raw, questionCandidate{
 				question: question,
-				priority: questionPriority(issue),
+				priority: questionPriority(issue, len(firstRunSyncRules) > 0),
 				index:    idx,
 				key:      questionKey(question),
 			})
 		}
-	}
-
-	if !hasFirstRunSync && firstRunRules["R014"] && firstRunRules["R015"] && firstRunRules["R016"] {
-		return firstRunCardCandidates(result.Issues)
 	}
 
 	sort.SliceStable(raw, func(i, j int) bool {
@@ -79,9 +85,6 @@ func prioritizedQuestionCandidates(result Result) []questionCandidate {
 			candidate.key = questionKey(candidate.question)
 		}
 		if seen[candidate.key] {
-			continue
-		}
-		if hasFirstRunSync && isFirstRunRule(candidate.question.RuleID) {
 			continue
 		}
 		seen[candidate.key] = true
@@ -254,11 +257,16 @@ func firstRunSyncQuestion(diag *docsync.Diagnostic, field string) string {
 	return problem + ". Should the stale side be updated, revised, or kept blocking with a reason?"
 }
 
-func questionPriority(issue Issue) int {
+func questionPriority(issue Issue, hasFirstRunSync bool) int {
 	if isFirstRunSyncIssue(issue) {
 		return 10
 	}
 	switch issue.RuleID {
+	case "R014", "R015", "R016":
+		if hasFirstRunSync {
+			return 15
+		}
+		return 70
 	case "R012":
 		return 20
 	case "R006":
@@ -269,8 +277,6 @@ func questionPriority(issue Issue) int {
 		return 50
 	case "R009":
 		return 60
-	case "R014", "R015", "R016":
-		return 70
 	case "R003", "R007":
 		return 80
 	case "R008", "R013":
@@ -287,14 +293,22 @@ func isFirstRunRule(ruleID string) bool {
 }
 
 func isFirstRunSyncIssue(issue Issue) bool {
+	return firstRunRuleShadowedBySync(issue) != ""
+}
+
+func firstRunRuleShadowedBySync(issue Issue) string {
 	if issue.RuleID != "R012" || issue.SyncDiagnostic == nil {
-		return false
+		return ""
 	}
 	switch issue.SyncDiagnostic.ID {
-	case "SYNC-014", "SYNC-015", "SYNC-016":
-		return true
+	case "SYNC-014":
+		return "R014"
+	case "SYNC-015":
+		return "R015"
+	case "SYNC-016":
+		return "R016"
 	default:
-		return false
+		return ""
 	}
 }
 

@@ -70,8 +70,11 @@ Question groups are ordered by readiness impact:
 
 If first-run blockers and first-run sync diagnostics appear together,
 `ni status --next-questions` prioritizes sync repair because one side already
-contains useful content. If neither side contains useful content, the first-run
-card wins.
+contains useful content. A first-run sync diagnostic shadows only its matching
+generic first-run question: `SYNC-014` shadows `R014`, `SYNC-015` shadows
+`R015`, and `SYNC-016` shadows `R016`. Other first-run gaps remain eligible and
+are asked before unrelated lower-priority blockers. If neither side contains
+useful content, the first-run card wins.
 
 ## Rule Examples
 
@@ -165,7 +168,7 @@ The next readiness state still comes from the CLI.
 `D001` deferred decision:
 
 ```text
-DEC-001 is deferred. Should it remain deferred with a reason, become an accepted or rejected decision, or be marked not_applicable?
+DEC-001 is deferred. Does this deferred decision affect the next handoff, or should it remain visible without blocking?
 ```
 
 `R012` docs/contract mismatch:
