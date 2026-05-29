@@ -2,7 +2,7 @@
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-RELEASE_VERSION="v0.3.0"
+RELEASE_VERSION="v0.4.0"
 
 cd "$ROOT"
 
@@ -22,75 +22,71 @@ run_step "public demo checks" bash scripts/demo-check.sh
 run_step "source, build, and local install checks" bash scripts/install-check.sh
 run_step "release readiness gate" bash scripts/release-check.sh
 
-run_step "verify release notes and manual steps exist" python3 - <<'PY'
+run_step "verify release plan, preflight, and manual steps exist" python3 - <<'PY'
 from pathlib import Path
 
-version = "v0.3.0"
+version = "v0.4.0"
 required = [
-    Path("docs/68_RELEASE_NOTES_v0.3.0.md"),
-    Path("docs/68_RELEASE_NOTES_v0.3.0.ko.md"),
-    Path("docs/69_MANUAL_RELEASE_STEPS.md"),
-    Path("docs/69_MANUAL_RELEASE_STEPS.ko.md"),
+    Path("docs/84_RELEASE_PLAN_v0.4.0.md"),
+    Path("docs/84_RELEASE_PLAN_v0.4.0.ko.md"),
+    Path("docs/85_RELEASE_PREFLIGHT_v0.4.0.md"),
+    Path("docs/85_RELEASE_PREFLIGHT_v0.4.0.ko.md"),
 ]
 
 for path in required:
     if not path.exists():
         raise SystemExit(f"{path} is missing")
 
-notes = Path("docs/68_RELEASE_NOTES_v0.3.0.md").read_text(encoding="utf-8")
-manual = Path("docs/69_MANUAL_RELEASE_STEPS.md").read_text(encoding="utf-8")
+plan = Path("docs/84_RELEASE_PLAN_v0.4.0.md").read_text(encoding="utf-8")
+preflight = Path("docs/85_RELEASE_PREFLIGHT_v0.4.0.md").read_text(encoding="utf-8")
 
-required_note_markers = [
-    f"# ni {version} - Project Intent Compiler for AI Agents",
-    f"Tag suggestion: `{version}`",
-    "Project Intent Compiler positioning",
-    "README as product pamphlet",
-    "Local deterministic SVG visual system",
-    "Intent Lock Protocol",
-    "Ambiguous prompt blocked demo",
-    "Non-software demos",
-    "Status proof",
+required_plan_markers = [
+    f"# ni {version}",
+    "Conversation Authoring Hardening",
+    "First-run `ni-start` conversation card",
+    "`SYNC-014`",
+    "`SYNC-015`",
+    "`SYNC-016`",
+    "Grouped question output",
     "Model workspace packs",
-    "Source-first usage",
-    "Release binaries and curl installer availability",
-    "available only after",
-    "Task runner",
+    "No-terminal",
+    "Homebrew remains Planned",
+    "No task runner.",
     "SPEC runner",
-    "Multi-agent execution layer",
     "Codex exec adapter",
-    "Shell adapter",
-    "Queue",
+    "No shell adapter.",
+    "No queue.",
     "PR automation",
-    "Release automation inside `ni-kernel`",
-    "Downstream execution runtime",
-    "`ni run` compiles a prompt only",
+    "No release automation inside `ni-kernel`.",
+    "`ni run` remains a prompt compiler only",
 ]
-missing = [marker for marker in required_note_markers if marker not in notes]
+missing = [marker for marker in required_plan_markers if marker not in plan]
 if missing:
-    raise SystemExit(f"release notes are missing markers: {missing}")
+    raise SystemExit(f"release plan is missing markers: {missing}")
 
 required_manual_markers = [
     "git status --short",
     "bash scripts/release-dry-run.sh",
-    "git tag -a v0.3.0 -m",
-    "git push origin v0.3.0",
+    "git tag -a v0.4.0 -m",
+    "git push origin v0.4.0",
     "Wait for the GitHub Actions release workflow",
-    "Confirm checksums match",
-    "Only after assets and checksums exist",
-    "Do not mark curl installer availability as available",
+    "Verify release assets",
+    "Verify the current-platform binary",
+    "Verify the curl installer",
 ]
-missing = [marker for marker in required_manual_markers if marker not in manual]
+missing = [marker for marker in required_manual_markers if marker not in preflight]
 if missing:
-    raise SystemExit(f"manual release steps are missing markers: {missing}")
+    raise SystemExit(f"preflight manual release steps are missing markers: {missing}")
 
 forbidden_claims = [
+    "Homebrew: Available",
     "published binary packages are available",
     "curl installer is available",
     "brew install ni",
 ]
 for claim in forbidden_claims:
-    if claim in notes:
-        raise SystemExit(f"release notes appear to claim availability: {claim}")
+    if claim in plan or claim in preflight:
+        raise SystemExit(f"v0.4.0 docs appear to claim availability: {claim}")
 PY
 
 if command -v goreleaser >/dev/null 2>&1; then

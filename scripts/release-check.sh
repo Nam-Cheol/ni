@@ -3,7 +3,7 @@ set -euo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 QUICKSTART_TMP="$(mktemp -d "${TMPDIR:-/tmp}/ni-release-check.XXXXXX")"
-RELEASE_VERSION="v0.3.0"
+RELEASE_VERSION="v0.4.0"
 
 trap 'rm -rf "$QUICKSTART_TMP"' EXIT
 
@@ -151,6 +151,96 @@ for path in drafts:
         ]
         if claim in text and not any(marker in context for marker in allowed_negations):
             raise SystemExit(f"{path} appears to make a forbidden release claim: {claim}")
+PY
+
+run_step "v0.4.0 release plan and preflight are factual" python3 - <<'PY'
+from pathlib import Path
+
+required_paths = [
+    Path("docs/84_RELEASE_PLAN_v0.4.0.md"),
+    Path("docs/84_RELEASE_PLAN_v0.4.0.ko.md"),
+    Path("docs/85_RELEASE_PREFLIGHT_v0.4.0.md"),
+    Path("docs/85_RELEASE_PREFLIGHT_v0.4.0.ko.md"),
+]
+
+for path in required_paths:
+    if not path.exists():
+        raise SystemExit(f"{path} is missing")
+
+required_markers = {
+    Path("docs/84_RELEASE_PLAN_v0.4.0.md"): [
+        "# ni v0.4.0",
+        "Conversation Authoring Hardening",
+        "No `v0.4.0` tag is",
+        "`ni run` remains a prompt compiler only",
+        "Homebrew remains Planned",
+        "No task runner.",
+        "No Codex exec adapter.",
+        "No shell adapter.",
+        "No downstream agents.",
+        "No queue.",
+        "Create an annotated tag for `v0.4.0`.",
+    ],
+    Path("docs/84_RELEASE_PLAN_v0.4.0.ko.md"): [
+        "# ni v0.4.0",
+        "Conversation Authoring Hardening",
+        "`v0.4.0` tag가 없으므로",
+        "`ni run`은 계속 prompt compiler only",
+        "Homebrew",
+        "Planned",
+        "No task runner.",
+        "No Codex exec adapter.",
+        "No shell adapter.",
+        "No downstream agents.",
+        "No queue.",
+        "`v0.4.0` annotated tag를 만든다.",
+    ],
+    Path("docs/85_RELEASE_PREFLIGHT_v0.4.0.md"): [
+        "# ni v0.4.0 Release Preflight",
+        "HEAD == origin/main",
+        "`v0.4.0` tag absent before release",
+        "GoReleaser injects",
+        "binary release should report `0.4.0`",
+        "No runtime execution behavior",
+        "goreleaser check",
+        "goreleaser release --snapshot --clean",
+        "git tag -a v0.4.0",
+        "git push origin v0.4.0",
+    ],
+    Path("docs/85_RELEASE_PREFLIGHT_v0.4.0.ko.md"): [
+        "# ni v0.4.0 Release Preflight",
+        "HEAD == origin/main",
+        "`v0.4.0` tag absent before release",
+        "GoReleaser",
+        "binary release는 `0.4.0`",
+        "runtime execution behavior 없음",
+        "goreleaser check",
+        "goreleaser release --snapshot --clean",
+        "git tag -a v0.4.0",
+        "git push origin v0.4.0",
+    ],
+}
+
+for path, markers in required_markers.items():
+    text = path.read_text(encoding="utf-8")
+    missing = [marker for marker in markers if marker not in text]
+    if missing:
+        raise SystemExit(f"{path} is missing v0.4.0 preflight markers: {missing}")
+
+for path in required_paths:
+    text = path.read_text(encoding="utf-8")
+    forbidden_claims = [
+        "Homebrew: Available",
+        "brew install Nam-Cheol",
+        "runtime execution is included",
+        "Codex exec adapter is included",
+        "shell adapter is included",
+        "tag was pushed",
+        "release was published",
+    ]
+    for claim in forbidden_claims:
+        if claim in text:
+            raise SystemExit(f"{path} appears to make a forbidden v0.4.0 claim: {claim}")
 PY
 
 run_step "release facts match repository resources" python3 - <<'PY'
@@ -462,6 +552,7 @@ boundary_markers = [
     "안 된다",
     "않고",
     "않는다",
+    "없음",
     "실행하지",
 ]
 
