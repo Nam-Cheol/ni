@@ -457,6 +457,8 @@ Expected hidden assumptions include:
   `examples/benchmark-report/cases/internal-dashboard/08-blocker-analysis.md`
 - resolution path:
   `examples/benchmark-report/cases/internal-dashboard/09-resolution-path.md`
+- answer packet:
+  `examples/benchmark-report/cases/internal-dashboard/10-answer-packet.md`
 - planning workspace:
   `examples/benchmark-report/cases/internal-dashboard/workspace/`
 

@@ -459,6 +459,8 @@ The checked-in case artifact records the measured pre-runtime ni path:
   `examples/benchmark-report/cases/internal-dashboard/08-blocker-analysis.md`
 - resolution path:
   `examples/benchmark-report/cases/internal-dashboard/09-resolution-path.md`
+- answer packet:
+  `examples/benchmark-report/cases/internal-dashboard/10-answer-packet.md`
 - planning workspace:
   `examples/benchmark-report/cases/internal-dashboard/workspace/`
 
@@ -524,11 +526,12 @@ Execution must not start.
 The full proof and next-question output are checked in under
 `06-ni-status-proof.md` and `07-ni-next-questions.md`.
 
-The blocker analysis and resolution path are checked in under
-`08-blocker-analysis.md` and `09-resolution-path.md`. They explain why each
-blocker prevents lock, what kind of user answer would be needed later, which
-unsafe assumption is avoided, and how a future resolved variant could proceed
-through `ni status`, `ni end`, and `ni run` without weakening the gates.
+The blocker analysis, resolution path, and fillable answer packet are checked
+in under `08-blocker-analysis.md`, `09-resolution-path.md`, and
+`10-answer-packet.md`. They explain why each blocker prevents lock, what kind
+of user answer would be needed later, which unsafe assumption is avoided, and
+how a future resolved variant could proceed through `ni status`, `ni end`, and
+`ni run` without weakening the gates or inventing blocker answers.
 
 | Blocker | Required answer | Expected planning update | Unsafe assumption avoided |
 | --- | --- | --- | --- |

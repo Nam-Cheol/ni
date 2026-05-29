@@ -29,6 +29,9 @@ Added blocker evidence:
 - `09-resolution-path.md` defines how a future resolved variant could update
   docs, contract records, risks, and evaluations before `ni status`, `ni end`,
   and `ni run` become eligible.
+- `10-answer-packet.md` and `10-answer-packet.ko.md` provide fillable
+  user-facing answer packets for `OQ-001` through `OQ-004` without resolving
+  the blockers or changing benchmark readiness.
 
 The benchmark evidence is qualitative and auditable. It does not claim
 statistical significance, adoption metrics, rework reduction, or downstream
