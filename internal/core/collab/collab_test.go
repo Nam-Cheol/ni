@@ -110,8 +110,11 @@ func TestConflictsDetectLockHashMismatch(t *testing.T) {
 		}
 	}
 	writePlanDoc(t, dir, "docs/plan/02_capabilities.md", "# Capabilities\n\n## CAP-001: Prompt compiler\n\nCompile prompts.\n")
+	writePlanDoc(t, dir, "docs/plan/00_project_brief.md", "# Project brief\n\n## Product type\n\nsoftware\n\n## Delivery surfaces\n\n- cli\n\n## Purpose\n\nExercise collaboration conflict detection.\n")
+	writePlanDoc(t, dir, "docs/plan/01_actors_outcomes.md", "# Actors and outcomes\n\n## Actors\n\n- CLI user: reviews collaboration conflict detection.\n- CLI: reports lock hash mismatches.\n\n## Outcomes\n\n- Exercise collaboration conflict detection.\n")
 	writePlanDoc(t, dir, "docs/plan/06_risks_security.md", "# Risks and security\n\n## RISK-001: Prompt may exceed budget\n\nSeverity: high\n\nMitigation: Enforce maximum prompt length.\n")
 	writePlanDoc(t, dir, "docs/plan/07_evaluation_contract.md", "# Evaluation contract\n\n## EVAL-001: Prompt budget check\n\nMethod: automated test\n")
+	writePlanDoc(t, dir, "docs/plan/08_delivery_operation.md", "# Delivery and operation\n\n## Delivery surfaces\n\n- cli\n\n## Initial delivery\n\nThe CLI prompt compiler is reviewed before lock.\n")
 	writePlanDoc(t, dir, "docs/plan/11_decision_log.md", "# Decision log\n\n## DEC-001: Use prompt compiler only\n\nStatus: accepted\n")
 	if _, err := lock.CreateAt(dir, time.Date(2026, 5, 26, 0, 0, 0, 0, time.UTC)); err != nil {
 		t.Fatalf("creating lock: %v", err)

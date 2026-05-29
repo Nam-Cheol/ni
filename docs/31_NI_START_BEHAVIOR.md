@@ -86,6 +86,12 @@ accepted decisions merely to pass readiness. After recording the answer,
 `ni-start` runs or requests `ni status --dir . --proof --next-questions`
 again and uses the CLI result as the next authority.
 
+If that status result reports `SYNC-014`, `SYNC-015`, or `SYNC-016`, the
+first-run answer was recorded inconsistently. `ni-start` should repair the
+stale side of the docs/contract pair, or keep uncertain intent as an explicit
+assumption, open blocker question, or deferral. It must not proceed to
+`ni-end` while these sync diagnostics block readiness.
+
 ## Resume mode
 
 When a later model session resumes planning, `ni-start` first uses the same

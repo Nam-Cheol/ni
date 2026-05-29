@@ -84,6 +84,12 @@ record에, delivery surface를 `docs/plan/08_delivery_operation.md`,
 `ni status --dir . --proof --next-questions`를 실행하거나 요청하고, CLI 결과를
 다음 권한으로 사용한다.
 
+그 status 결과가 `SYNC-014`, `SYNC-015`, `SYNC-016`을 보고하면 first-run
+답변이 docs/contract pair에 일관되게 기록되지 않은 것이다. `ni-start`는 stale한
+쪽을 고치거나, 불확실한 intent를 assumption, blocker open question, deferral로
+명시해야 한다. 이 sync diagnostic이 readiness를 막고 있는 동안 `ni-end`로
+진행하면 안 된다.
+
 ## Resume mode
 
 나중의 model session이 계획을 이어갈 때, `ni-start`는 일반 turn과 같은

@@ -386,6 +386,92 @@ func TestStatusProofTextShowsSyncDiagnosticFields(t *testing.T) {
 	}
 }
 
+func TestStatusProofTextShowsFirstRunSyncDiagnostic(t *testing.T) {
+	dir := t.TempDir()
+	if code := run([]string{"init", "--dir", dir}, &bytes.Buffer{}, &bytes.Buffer{}); code != 0 {
+		t.Fatalf("init expected exit code 0, got %d", code)
+	}
+	writeReadyContractForCLI(t, dir)
+	updateContractForCLI(t, dir, func(payload map[string]any) {
+		project := payload["project"].(map[string]any)
+		project["purpose"] = "TODO"
+	})
+
+	var stdout bytes.Buffer
+	code := run([]string{"status", "--dir", dir, "--proof"}, &stdout, &bytes.Buffer{})
+	if code != 0 {
+		t.Fatalf("expected exit code 0, got %d", code)
+	}
+	out := stdout.String()
+	for _, want := range []string{
+		"NI Intent Readiness: BLOCKED",
+		"Project purpose is documented but missing from .ni/contract.json.",
+		"ID: SYNC-014",
+		"Location: docs/plan/00_project_brief.md",
+		"Problem: Project purpose is documented but missing from .ni/contract.json.",
+		"Why it matters: ni cannot safely lock a plan when the human-readable purpose and machine-readable contract disagree.",
+		"Suggested repair: Record the documented project purpose in .ni/contract.json, or mark the purpose unresolved with an explicit blocker question.",
+		"Blocks ni-end: true",
+	} {
+		if !strings.Contains(out, want) {
+			t.Fatalf("expected %q in proof output, got %q", want, out)
+		}
+	}
+	for _, forbidden := range []string{
+		"this deterministic readiness rule affects whether the plan can be trusted.",
+		"update planning docs and .ni/contract.json together to resolve this rule.",
+	} {
+		if strings.Contains(out, forbidden) {
+			t.Fatalf("first-run sync diagnostic should not use generic fallback %q, got %q", forbidden, out)
+		}
+	}
+}
+
+func TestStatusJSONIncludesFirstRunSyncDiagnostic(t *testing.T) {
+	dir := t.TempDir()
+	if code := run([]string{"init", "--dir", dir}, &bytes.Buffer{}, &bytes.Buffer{}); code != 0 {
+		t.Fatalf("init expected exit code 0, got %d", code)
+	}
+	writeReadyContractForCLI(t, dir)
+	if err := os.WriteFile(filepath.Join(dir, "docs", "plan", "08_delivery_operation.md"), []byte("# Delivery and operation\n\n## Delivery surfaces\n\n- conversation\n\n## Initial delivery\n\nConversation planning happens before lock.\n"), 0o644); err != nil {
+		t.Fatalf("writing mismatched delivery doc: %v", err)
+	}
+
+	var stdout bytes.Buffer
+	code := run([]string{"status", "--dir", dir, "--json", "--proof"}, &stdout, &bytes.Buffer{})
+	if code != 0 {
+		t.Fatalf("expected exit code 0, got %d", code)
+	}
+	var payload struct {
+		Issues []struct {
+			RuleID         string `json:"rule_id"`
+			SyncDiagnostic *struct {
+				ID              string `json:"id"`
+				Location        string `json:"location"`
+				Problem         string `json:"problem"`
+				WhyItMatters    string `json:"why_it_matters"`
+				SuggestedRepair string `json:"suggested_repair"`
+				BlocksEnd       bool   `json:"blocks_ni_end"`
+			} `json:"sync_diagnostic"`
+		} `json:"issues"`
+	}
+	if err := json.Unmarshal(stdout.Bytes(), &payload); err != nil {
+		t.Fatalf("decoding status JSON: %v\n%s", err, stdout.String())
+	}
+	var found bool
+	for _, issue := range payload.Issues {
+		if issue.RuleID == "R012" && issue.SyncDiagnostic != nil && issue.SyncDiagnostic.ID == "SYNC-016" {
+			found = true
+			if issue.SyncDiagnostic.Location == "" || issue.SyncDiagnostic.Problem == "" || issue.SyncDiagnostic.WhyItMatters == "" || issue.SyncDiagnostic.SuggestedRepair == "" || !issue.SyncDiagnostic.BlocksEnd {
+				t.Fatalf("expected stable first-run sync diagnostic fields, got %#v", issue.SyncDiagnostic)
+			}
+		}
+	}
+	if !found {
+		t.Fatalf("expected SYNC-016 R012 diagnostic in %q", stdout.String())
+	}
+}
+
 func TestStatusJSONInvalidContractStructuredError(t *testing.T) {
 	dir := t.TempDir()
 	if code := run([]string{"init", "--dir", dir}, &bytes.Buffer{}, &bytes.Buffer{}); code != 0 {
@@ -464,6 +550,35 @@ func TestEndBlockedByDocsContractSync(t *testing.T) {
 
 	var stderr bytes.Buffer
 	code := run([]string{"end", "--dir", dir}, &bytes.Buffer{}, &stderr)
+	if code != exitReadinessBlocked {
+		t.Fatalf("expected exit code %d, got %d", exitReadinessBlocked, code)
+	}
+	if !strings.Contains(stderr.String(), "readiness is BLOCKED") {
+		t.Fatalf("expected blocked error, got %q", stderr.String())
+	}
+}
+
+func TestEndBlockedByFirstRunDocsContractSync(t *testing.T) {
+	dir := t.TempDir()
+	if code := run([]string{"init", "--dir", dir}, &bytes.Buffer{}, &bytes.Buffer{}); code != 0 {
+		t.Fatalf("init expected exit code 0, got %d", code)
+	}
+	writeReadyContractForCLI(t, dir)
+	if err := os.WriteFile(filepath.Join(dir, "docs", "plan", "01_actors_outcomes.md"), []byte("# Actors and outcomes\n\n## Actors\n\n- TODO\n\n## Outcomes\n\n- TODO\n"), 0o644); err != nil {
+		t.Fatalf("writing stale actors doc: %v", err)
+	}
+
+	var statusOut bytes.Buffer
+	code := run([]string{"status", "--dir", dir, "--proof"}, &statusOut, &bytes.Buffer{})
+	if code != 0 {
+		t.Fatalf("expected status exit code 0, got %d", code)
+	}
+	if !strings.Contains(statusOut.String(), "ID: SYNC-015") {
+		t.Fatalf("expected SYNC-015 in status proof, got %q", statusOut.String())
+	}
+
+	var stderr bytes.Buffer
+	code = run([]string{"end", "--dir", dir}, &bytes.Buffer{}, &stderr)
 	if code != exitReadinessBlocked {
 		t.Fatalf("expected exit code %d, got %d", exitReadinessBlocked, code)
 	}
@@ -1990,6 +2105,25 @@ func writeReadyWithDeferralsContractForCLI(t *testing.T, dir string) {
 	openQuestionDoc := "# Open questions\n\n## OQ-001: Non-blocking question\n\nBlocker: false\n\nStatus: open\n"
 	if err := os.WriteFile(filepath.Join(dir, "docs", "plan", "10_open_questions.md"), []byte(openQuestionDoc), 0o644); err != nil {
 		t.Fatalf("writing ready-with-deferrals open question doc: %v", err)
+	}
+}
+
+func updateContractForCLI(t *testing.T, dir string, mutate func(map[string]any)) {
+	t.Helper()
+
+	path := filepath.Join(dir, ".ni", "contract.json")
+	data := readFileForCLI(t, path)
+	var payload map[string]any
+	if err := json.Unmarshal(data, &payload); err != nil {
+		t.Fatalf("parsing contract: %v", err)
+	}
+	mutate(payload)
+	updated, err := json.MarshalIndent(payload, "", "  ")
+	if err != nil {
+		t.Fatalf("marshaling contract: %v", err)
+	}
+	if err := os.WriteFile(path, append(updated, '\n'), 0o644); err != nil {
+		t.Fatalf("writing contract: %v", err)
 	}
 }
 

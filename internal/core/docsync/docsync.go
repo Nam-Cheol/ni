@@ -12,9 +12,12 @@ import (
 )
 
 const (
+	ProjectBriefDoc = "docs/plan/00_project_brief.md"
+	ActorsDoc       = "docs/plan/01_actors_outcomes.md"
 	CapabilityDoc   = "docs/plan/02_capabilities.md"
 	RiskDoc         = "docs/plan/06_risks_security.md"
 	EvaluationDoc   = "docs/plan/07_evaluation_contract.md"
+	DeliveryDoc     = "docs/plan/08_delivery_operation.md"
 	OpenQuestionDoc = "docs/plan/10_open_questions.md"
 	DecisionDoc     = "docs/plan/11_decision_log.md"
 )
@@ -62,6 +65,7 @@ func Check(root string, c contract.Contract) []Finding {
 	openQuestionSections := parseDoc(root, OpenQuestionDoc, "OQ")
 	decisionSections := parseDoc(root, DecisionDoc, "DEC")
 
+	findings = append(findings, checkFirstRunFields(root, c)...)
 	findings = append(findings, checkUnknownDocIDs(root, c)...)
 	findings = append(findings, checkCapabilities(c, capabilitySections)...)
 	findings = append(findings, checkEvaluations(c, evaluationSections)...)
@@ -79,6 +83,142 @@ func Check(root string, c contract.Contract) []Finding {
 		return findings[i].Diagnostic.Problem < findings[j].Diagnostic.Problem
 	})
 	return findings
+}
+
+func checkFirstRunFields(root string, c contract.Contract) []Finding {
+	var findings []Finding
+	findings = append(findings, checkProjectPurpose(root, c)...)
+	findings = append(findings, checkActorsOutcomes(root, c)...)
+	findings = append(findings, checkDeliverySurfaces(root, c)...)
+	return findings
+}
+
+func checkProjectPurpose(root string, c contract.Contract) []Finding {
+	if !docExists(root, ProjectBriefDoc) {
+		return nil
+	}
+	purpose, line := sectionBody(root, ProjectBriefDoc, "purpose")
+	docHasPurpose := meaningfulText(purpose)
+	contractHasPurpose := !isPlaceholder(c.Project.Purpose)
+
+	switch {
+	case docHasPurpose && !contractHasPurpose:
+		return []Finding{diagnosticFinding(Diagnostic{
+			ID:              "SYNC-014",
+			Location:        twoSidedLocation(location(ProjectBriefDoc, line), ".ni/contract.json:project.purpose"),
+			Problem:         "Project purpose is documented but missing from .ni/contract.json.",
+			WhyItMatters:    "ni cannot safely lock a plan when the human-readable purpose and machine-readable contract disagree.",
+			SuggestedRepair: "Record the documented project purpose in .ni/contract.json, or mark the purpose unresolved with an explicit blocker question.",
+			BlocksEnd:       true,
+		})}
+	case contractHasPurpose && !docHasPurpose:
+		return []Finding{diagnosticFinding(Diagnostic{
+			ID:              "SYNC-014",
+			Location:        twoSidedLocation(".ni/contract.json:project.purpose", ProjectBriefDoc),
+			Problem:         "Project purpose is recorded in .ni/contract.json but not explained in docs.",
+			WhyItMatters:    "Reviewers need the same purpose in the human-readable plan before ni can lock it.",
+			SuggestedRepair: "Explain the contract purpose in docs/plan/00_project_brief.md, or revise the contract if the purpose is no longer accepted.",
+			BlocksEnd:       true,
+		})}
+	case contractHasPurpose && docHasPurpose && !textExplainsValue(purpose, c.Project.Purpose):
+		return []Finding{diagnosticFinding(Diagnostic{
+			ID:              "SYNC-014",
+			Location:        twoSidedLocation(location(ProjectBriefDoc, line), ".ni/contract.json:project.purpose"),
+			Problem:         "Project purpose differs between docs and contract.",
+			WhyItMatters:    "ni cannot safely lock a plan when the human-readable purpose and machine-readable contract disagree.",
+			SuggestedRepair: "Update the stale side so both describe the same project purpose.",
+			BlocksEnd:       true,
+		})}
+	default:
+		return nil
+	}
+}
+
+func checkActorsOutcomes(root string, c contract.Contract) []Finding {
+	if !docExists(root, ActorsDoc) {
+		return nil
+	}
+	actors, actorsLine := sectionBody(root, ActorsDoc, "actors")
+	outcomes, outcomesLine := sectionBody(root, ActorsDoc, "outcomes")
+	docText := strings.TrimSpace(actors + "\n" + outcomes)
+	docHasActorsOutcomes := meaningfulText(actors) && meaningfulText(outcomes)
+	contractText := contractNarrativeText(c)
+	contractHasFirstRunIntent := contractHasAcceptedFirstRunIntent(c)
+
+	switch {
+	case docHasActorsOutcomes && !contractHasFirstRunIntent:
+		return []Finding{diagnosticFinding(Diagnostic{
+			ID:              "SYNC-015",
+			Location:        twoSidedLocation(location(ActorsDoc, firstPositiveLine(actorsLine, outcomesLine)), ".ni/contract.json"),
+			Problem:         "Actors or outcomes are documented but missing from .ni/contract.json.",
+			WhyItMatters:    "ni cannot judge readiness unless the machine-readable contract reflects who the plan is for and what outcomes they need.",
+			SuggestedRepair: "Record the accepted actors and outcomes in contract purpose, capability, requirement, decision, or open-question records.",
+			BlocksEnd:       true,
+		})}
+	case contractHasFirstRunIntent && !docHasActorsOutcomes:
+		return []Finding{diagnosticFinding(Diagnostic{
+			ID:              "SYNC-015",
+			Location:        twoSidedLocation(".ni/contract.json", ActorsDoc),
+			Problem:         "Actors or outcomes are recorded in .ni/contract.json but not explained in docs.",
+			WhyItMatters:    "Human reviewers need the actor and outcome story before the intent can be safely locked.",
+			SuggestedRepair: "Explain primary actors and expected outcomes in docs/plan/01_actors_outcomes.md, or keep the missing actor/outcome as an open blocker question.",
+			BlocksEnd:       true,
+		})}
+	case docHasActorsOutcomes && significantText(docText) != "" && !textOverlaps(docText, contractText):
+		return []Finding{diagnosticFinding(Diagnostic{
+			ID:              "SYNC-015",
+			Location:        twoSidedLocation(location(ActorsDoc, firstPositiveLine(actorsLine, outcomesLine)), ".ni/contract.json"),
+			Problem:         "Actors or outcomes differ between docs and contract.",
+			WhyItMatters:    "Downstream actors cannot rely on a locked plan when the docs and contract describe different beneficiaries or outcomes.",
+			SuggestedRepair: "Update the stale side so actor names and expected outcomes are consistent, or record uncertainty as an open question.",
+			BlocksEnd:       true,
+		})}
+	default:
+		return nil
+	}
+}
+
+func checkDeliverySurfaces(root string, c contract.Contract) []Finding {
+	if !docExists(root, ProjectBriefDoc) && !docExists(root, DeliveryDoc) {
+		return nil
+	}
+	projectSurfaces, projectLine := sectionBody(root, ProjectBriefDoc, "delivery surfaces")
+	deliverySurfaces, deliveryLine := sectionBody(root, DeliveryDoc, "delivery surfaces")
+	docSurfaces := extractSurfaces(projectSurfaces + "\n" + deliverySurfaces)
+	contractSurfaces := normalizedSurfaces(c.DeliverySurfaces)
+	contractHasPurpose := !isPlaceholder(c.Project.Purpose)
+
+	switch {
+	case len(docSurfaces) > 0 && len(contractSurfaces) == 0:
+		return []Finding{diagnosticFinding(Diagnostic{
+			ID:              "SYNC-016",
+			Location:        twoSidedLocation(location(DeliveryDoc, deliveryLine), ".ni/contract.json:delivery_surfaces"),
+			Problem:         "Delivery surface is documented but missing from .ni/contract.json.",
+			WhyItMatters:    "ni-run cannot produce a safe handoff if the machine-readable contract does not know the delivery surface.",
+			SuggestedRepair: "Record the selected delivery surface in .ni/contract.json, or mark it deferred with an explicit reason.",
+			BlocksEnd:       true,
+		})}
+	case len(docSurfaces) > 0 && !sameStringSet(docSurfaces, contractSurfaces):
+		return []Finding{diagnosticFinding(Diagnostic{
+			ID:              "SYNC-016",
+			Location:        twoSidedLocation(location(DeliveryDoc, firstPositiveLine(deliveryLine, projectLine)), ".ni/contract.json:delivery_surfaces"),
+			Problem:         "Delivery surface differs between docs and contract.",
+			WhyItMatters:    "ni-run cannot produce a safe handoff if human docs and the contract disagree about how the project will be delivered.",
+			SuggestedRepair: "Update the stale side so both list the same delivery surface, or mark the surface deferred with an explicit reason.",
+			BlocksEnd:       true,
+		})}
+	case contractHasPurpose && len(contractSurfaces) > 0 && !surfacesExplained(docSurfaces, contractSurfaces):
+		return []Finding{diagnosticFinding(Diagnostic{
+			ID:              "SYNC-016",
+			Location:        twoSidedLocation(".ni/contract.json:delivery_surfaces", DeliveryDoc),
+			Problem:         "Delivery surface is recorded in .ni/contract.json but not explained in docs.",
+			WhyItMatters:    "Human reviewers need to see the accepted delivery surface before ni can lock the plan.",
+			SuggestedRepair: "Explain the selected delivery surface in docs/plan/08_delivery_operation.md and the project brief, or revise the contract if it is not accepted.",
+			BlocksEnd:       true,
+		})}
+	default:
+		return nil
+	}
 }
 
 func checkUnknownDocIDs(root string, c contract.Contract) []Finding {
@@ -245,6 +385,16 @@ func checkOpenQuestions(c contract.Contract, sections map[string]section) []Find
 		}
 		docStatus := normalizeValue(doc.fields["status"])
 		docBlocker := normalizeValue(doc.fields["blocker"])
+		if isClosed(docStatus) && openQuestion.Blocker && !isClosed(openQuestion.Status) {
+			findings = append(findings, diagnosticFinding(Diagnostic{
+				ID:              openQuestion.ID,
+				Location:        twoSidedLocation(location(doc.path, doc.line), contractLocation("open_questions", openQuestion.ID)),
+				Problem:         fmt.Sprintf("open question %s is resolved in docs but still marked as a blocker in .ni/contract.json.", openQuestion.ID),
+				WhyItMatters:    "A resolved first-run question should not keep ni-end blocked or confuse the next planning turn.",
+				SuggestedRepair: "Set the contract question status to resolved and blocker to false, or reopen the docs question consistently if it still blocks lock readiness.",
+				BlocksEnd:       true,
+			}))
+		}
 		if (isClosed(openQuestion.Status) || isClosed(docStatus)) && docBlocker == "true" {
 			findings = append(findings, diagnosticFinding(Diagnostic{
 				ID:              openQuestion.ID,
@@ -462,12 +612,247 @@ func referencedCapabilityIDs(doc section) []string {
 	return ids
 }
 
+func sectionBody(root string, relPath string, heading string) (string, int) {
+	data, err := os.ReadFile(filepath.Join(root, relPath))
+	if err != nil {
+		return "", 0
+	}
+	lines := strings.Split(string(data), "\n")
+	target := normalizeKey(heading)
+	start := -1
+	for idx, rawLine := range lines {
+		line := strings.TrimSpace(rawLine)
+		if !strings.HasPrefix(line, "## ") {
+			continue
+		}
+		title := strings.TrimSpace(strings.TrimPrefix(line, "## "))
+		title = strings.TrimSpace(strings.TrimPrefix(title, "#"))
+		if normalizeKey(title) == target {
+			start = idx
+			break
+		}
+	}
+	if start < 0 {
+		return "", 0
+	}
+	end := len(lines)
+	for idx := start + 1; idx < len(lines); idx++ {
+		if strings.HasPrefix(strings.TrimSpace(lines[idx]), "## ") {
+			end = idx
+			break
+		}
+	}
+	return strings.TrimSpace(strings.Join(lines[start+1:end], "\n")), start + 1
+}
+
+func docExists(root string, relPath string) bool {
+	info, err := os.Stat(filepath.Join(root, relPath))
+	return err == nil && !info.IsDir()
+}
+
+func meaningfulText(value string) bool {
+	text := significantText(value)
+	return text != ""
+}
+
+func significantText(value string) string {
+	text := wordText(value)
+	if text == "" {
+		return ""
+	}
+	words := strings.Fields(text)
+	kept := make([]string, 0, len(words))
+	for _, word := range words {
+		if isPlaceholderWord(word) || isStopWord(word) {
+			continue
+		}
+		kept = append(kept, word)
+	}
+	return strings.Join(kept, " ")
+}
+
+func textExplainsValue(docs string, value string) bool {
+	return textOverlaps(docs, value)
+}
+
+func textOverlaps(left string, right string) bool {
+	leftTokens := tokenSet(significantText(left))
+	rightTokens := tokenSet(significantText(right))
+	if len(leftTokens) == 0 || len(rightTokens) == 0 {
+		return false
+	}
+	overlap := 0
+	for token := range leftTokens {
+		if rightTokens[token] {
+			overlap++
+		}
+	}
+	required := 2
+	if len(rightTokens) < required {
+		required = len(rightTokens)
+	}
+	return overlap >= required
+}
+
+func tokenSet(value string) map[string]bool {
+	tokens := map[string]bool{}
+	for _, word := range strings.Fields(value) {
+		if len(word) < 3 {
+			continue
+		}
+		tokens[word] = true
+	}
+	return tokens
+}
+
+func contractHasAcceptedFirstRunIntent(c contract.Contract) bool {
+	if !isPlaceholder(c.Project.Purpose) {
+		return true
+	}
+	for _, capability := range c.Capabilities {
+		if capability.Status == "accepted" && !isPlaceholder(capability.Title) {
+			return true
+		}
+	}
+	for _, requirement := range c.Requirements {
+		if requirement.Status == "accepted" && !isPlaceholder(requirement.Title) {
+			return true
+		}
+	}
+	for _, decision := range c.Decisions {
+		if decision.Status == "accepted" && !isPlaceholder(decision.Title) {
+			return true
+		}
+	}
+	return false
+}
+
+func contractNarrativeText(c contract.Contract) string {
+	var parts []string
+	parts = append(parts, c.Project.Name, c.Project.Purpose, c.ProductType)
+	parts = append(parts, c.DeliverySurfaces...)
+	for _, item := range c.NonGoals {
+		parts = append(parts, item.Title)
+	}
+	for _, item := range c.Capabilities {
+		parts = append(parts, item.Title)
+	}
+	for _, item := range c.Requirements {
+		parts = append(parts, item.Title)
+	}
+	for _, item := range c.Decisions {
+		parts = append(parts, item.Title)
+	}
+	for _, item := range c.Risks {
+		parts = append(parts, item.Title, item.Mitigation)
+	}
+	for _, item := range c.Evaluations {
+		parts = append(parts, item.Title, item.Method)
+	}
+	for _, item := range c.Artifacts {
+		parts = append(parts, item.Path, item.Kind)
+	}
+	for _, item := range c.OpenQuestions {
+		parts = append(parts, item.Title)
+	}
+	return strings.Join(parts, "\n")
+}
+
+func extractSurfaces(value string) []string {
+	text := wordText(value)
+	if text == "" {
+		return nil
+	}
+	terms := map[string][]string{
+		"api":           {"api"},
+		"cli":           {"cli", "command line"},
+		"conversation":  {"conversation", "chat"},
+		"document":      {"document", "docs", "handoff"},
+		"human_service": {"human service", "service"},
+		"physical":      {"physical"},
+		"web":           {"web", "web app", "website"},
+		"workflow":      {"workflow"},
+	}
+	var surfaces []string
+	for surface, options := range terms {
+		for _, option := range options {
+			if containsWordPhrase(text, option) {
+				surfaces = append(surfaces, surface)
+				break
+			}
+		}
+	}
+	sort.Strings(surfaces)
+	return surfaces
+}
+
+func normalizedSurfaces(values []string) []string {
+	seen := map[string]bool{}
+	var surfaces []string
+	for _, value := range values {
+		value = strings.TrimSpace(value)
+		if value == "" || seen[value] {
+			continue
+		}
+		seen[value] = true
+		surfaces = append(surfaces, value)
+	}
+	sort.Strings(surfaces)
+	return surfaces
+}
+
+func surfacesExplained(docSurfaces []string, contractSurfaces []string) bool {
+	if len(contractSurfaces) == 0 {
+		return true
+	}
+	return sameStringSet(docSurfaces, contractSurfaces)
+}
+
+func sameStringSet(left []string, right []string) bool {
+	if len(left) != len(right) {
+		return false
+	}
+	for i := range left {
+		if left[i] != right[i] {
+			return false
+		}
+	}
+	return true
+}
+
+func containsWordPhrase(text string, phrase string) bool {
+	return strings.Contains(" "+text+" ", " "+wordText(phrase)+" ")
+}
+
 func normalizeKey(value string) string {
 	return strings.ToLower(strings.Join(strings.Fields(value), " "))
 }
 
 func normalizeValue(value string) string {
 	return strings.ToLower(strings.TrimSpace(value))
+}
+
+func isPlaceholder(value string) bool {
+	text := wordText(value)
+	return text == "" || text == "todo" || text == "tbd" || text == "to do"
+}
+
+func isPlaceholderWord(value string) bool {
+	switch value {
+	case "todo", "tbd":
+		return true
+	default:
+		return false
+	}
+}
+
+func isStopWord(value string) bool {
+	switch value {
+	case "a", "an", "and", "are", "as", "at", "be", "before", "both", "by", "can", "each", "for", "from", "has", "have", "how", "in", "into", "is", "it", "its", "of", "on", "or", "should", "that", "the", "their", "them", "this", "to", "what", "when", "where", "who", "why", "with":
+		return true
+	default:
+		return false
+	}
 }
 
 func missingDocsFinding(id string, loc string, problem string, why string, repair string) Finding {
@@ -493,6 +878,25 @@ func location(path string, line int) string {
 		return path
 	}
 	return fmt.Sprintf("%s:%d", path, line)
+}
+
+func twoSidedLocation(left string, right string) string {
+	if left == "" {
+		return right
+	}
+	if right == "" {
+		return left
+	}
+	return left + " and " + right
+}
+
+func firstPositiveLine(lines ...int) int {
+	for _, line := range lines {
+		if line > 0 {
+			return line
+		}
+	}
+	return 0
 }
 
 func contractLocation(collection string, id string) string {
