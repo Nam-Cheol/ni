@@ -108,3 +108,15 @@ tap and formula are published and `brew install Nam-Cheol/tap/ni`, `ni --help`,
 and `ni version` pass. `ni run` remains a prompt compiler only and must not call
 Codex, shell adapters, package publishing, queues, PR automation, or downstream
 execution.
+
+## RISK-016: v0.5 roadmap turns benchmark, product surface, or integration work into runtime claims
+
+Severity: high
+
+Mitigation: Keep v0.5 work as benchmark reports, docs, examples, product-surface
+proof, authoring reliability, lock/change-control UX, optional factual
+distribution work, optional landing page work, and inert seed-quality
+improvements. Real benchmark data must state scope and limits. Homebrew remains
+Planned until tested. Downstream integrations must be separate packages or
+repositories that consume locked output, not `ni-kernel` adapters, queues,
+execution state, or lifecycle state.

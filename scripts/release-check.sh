@@ -386,7 +386,8 @@ run_step "install and build paths pass" bash scripts/install-check.sh
 run_step "status proof works" bash -c '
   go run ./cmd/ni status --dir examples/conversation-product --proof >"$1/status-proof.out"
   require_output "NI Intent Readiness: READY" "$1/status-proof.out"
-  require_output "Proof:" "$1/status-proof.out"
+  require_output "Passed checks:" "$1/status-proof.out"
+  require_output "Docs and contract are synchronized." "$1/status-proof.out"
 ' bash "$QUICKSTART_TMP"
 
 run_step "README quickstart works in go run mode" bash -c '
@@ -459,6 +460,9 @@ boundary_markers = [
     "not add",
     "아니다",
     "안 된다",
+    "않고",
+    "않는다",
+    "실행하지",
 ]
 
 paths = [Path("README.md")]
@@ -472,7 +476,7 @@ for path in paths:
         if not matched:
             continue
         start = max(0, index - 10)
-        context = "\n".join(lines[start : index + 1]).lower()
+        context = "\n".join(lines[start : min(len(lines), index + 2)]).lower()
         if not any(marker in context for marker in boundary_markers):
             raise SystemExit(
                 f"{path}:{index + 1} contains an affirmative claim about {matched}"

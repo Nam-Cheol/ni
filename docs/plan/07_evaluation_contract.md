@@ -123,3 +123,15 @@ docs/77_BENCHMARK_CASE_STUDY.md, and docs/78_LANDING_PAGE_PLAN.md while
 preserving verified install claims, Planned Homebrew status, model workspace
 pack boundaries, benchmark limits, optional static landing-page scope, and the
 pre-runtime `ni-kernel` boundary.
+
+## EVAL-023: v0.5 roadmap is benchmark-backed, authoring-reliable, and pre-runtime
+
+Method: `go test ./...`, `bash scripts/quality.sh`,
+`bash scripts/smoke.sh`, `bash scripts/demo-check.sh`,
+`bash scripts/install-check.sh`, `bash scripts/release-check.sh`,
+`bash scripts/fresh-install-check.sh` when present, and
+`ni run --target codex --max-chars 4000` verify the roadmap preserves real
+benchmark-data limits, broader product-surface scope, conversation authoring
+reliability, lock/change-control UX, optional Homebrew only after tested
+evidence, optional factual landing-page scope, separate-package-only downstream
+integrations, and the pre-runtime `ni-kernel` boundary.

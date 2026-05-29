@@ -2,7 +2,29 @@
 
 ## Purpose
 
-`ni` is the Project Intent Compiler for AI Agents. In v0.4, it turns the verified v0.3.0 release, release binary, curl installer, and model workspace pack work into an adoption roadmap while preserving the same deterministic readiness, lockfile, and bounded prompt compiler boundary before any execution harness runs.
+`ni` is the Project Intent Compiler for AI Agents. In v0.5, it turns the v0.4 adoption hardening work into a roadmap for real benchmark evidence, broader product surfaces, stronger conversation authoring reliability, and clearer lock/change-control UX while preserving the same deterministic readiness, lockfile, and bounded prompt compiler boundary before any execution harness runs.
+
+## v0.5 roadmap focus
+
+The v0.5 roadmap improves trust and usefulness after v0.4 adoption hardening
+without turning `ni-kernel` into runtime execution:
+
+- publish real benchmark data using the existing benchmark protocol, with
+  transparent limits and no downstream execution or statistical overclaim;
+- cover more product surfaces and examples so the Intent Lock Protocol is
+  understandable beyond the current CLI-first and README-first paths;
+- improve conversation authoring reliability, including first-run guidance,
+  resume proof, blocker-question loops, docs/contract sync diagnostics, and
+  Korean/English parity where companion docs are maintained;
+- strengthen lock, relock, amendment, and change-control UX so users can see
+  when intent changed, which records changed, and why handoff must stop;
+- keep Homebrew optional and Planned unless the tap, formula, checksums, audit,
+  clean install, `ni --help`, and `ni version` evidence all pass;
+- keep a lightweight landing page optional and factual, with README remaining
+  the canonical quick entry unless the page is implemented and verified;
+- keep downstream integrations optional and separate-package only. Integration
+  work may consume locked `ni` output, but it must not become `ni-kernel`
+  adapter state, execution state, queue state, or runtime lifecycle state.
 
 ## v0.4 adoption focus
 

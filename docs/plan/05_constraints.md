@@ -35,6 +35,10 @@
 - Distribution must support non-Go users through release binaries before curl or package-manager paths are presented as available.
 - Model workspace packs may support Codex- and Claude-style planning workflows, but they must remain UX over docs and CLI proof.
 - No-terminal mode is assisted planning only unless exact CLI output from a trusted runner supplies deterministic validation.
+- v0.5 downstream integrations, if pursued, must live in separate packages or
+  downstream repositories that consume locked `ni` output; they must not become
+  adapters, execution state, queue state, release automation, or lifecycle
+  ownership inside `ni-kernel`.
 
 ## Kernel boundary
 
@@ -57,3 +61,5 @@
 - Do not falsely claim package, curl, Homebrew, or binary availability.
 - Do not replace the local README hero with a remote capsule-style renderer or
   make essential product copy image-only.
+- Do not add v0.5 downstream integration adapters to `ni-kernel`; package them
+  separately if they are ever implemented.

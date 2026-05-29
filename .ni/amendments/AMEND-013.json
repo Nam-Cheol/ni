@@ -1,0 +1,40 @@
+{
+  "schema": "ni.amendment.v0",
+  "id": "AMEND-013",
+  "title": "Lock v0.5 roadmap",
+  "reason": "Lock the next v0.5 roadmap after v0.4 adoption hardening, while preserving real benchmark limits, conversation authoring reliability, lock/change-control clarity, factual Homebrew status, and the pre-runtime ni-kernel boundary.",
+  "affected_docs": [
+    "docs/plan/00_project_brief.md",
+    "docs/plan/02_capabilities.md",
+    "docs/plan/05_constraints.md",
+    "docs/plan/06_risks_security.md",
+    "docs/plan/07_evaluation_contract.md",
+    "docs/plan/08_delivery_operation.md",
+    "docs/plan/11_decision_log.md",
+    ".ni/contract.json"
+  ],
+  "affected_contract_ids": [
+    "CAP-019",
+    "REQ-019",
+    "DEC-015",
+    "RISK-016",
+    "EVAL-023",
+    "NG-011",
+    "ART-050",
+    "ART-051",
+    "ART-052"
+  ],
+  "proposed_changes": [
+    "Add CAP-019 for the v0.5 roadmap after v0.4 adoption hardening.",
+    "Record real benchmark data, broader product surfaces, conversation authoring reliability, lock/change-control UX, optional tested Homebrew, optional factual landing page, and separate-package-only downstream integrations as the v0.5 focus.",
+    "Add REQ-019, EVAL-023, RISK-016, DEC-015, NG-011, and v0.5 artifacts while preserving prompt-only ni run behavior and the pre-runtime ni-kernel boundary."
+  ],
+  "risk_impact": "Adds a high-severity v0.5 roadmap risk so benchmark, product-surface, Homebrew, landing-page, and downstream integration work cannot drift into runtime claims, false availability, or ni-kernel adapters.",
+  "readiness_impact": "Expected to remain READY because CAP-019 is accepted with a linked requirement, evaluation, mitigated high-severity risk, artifacts, non-goal, and no blocker questions.",
+  "created_from_feedback_refs": [],
+  "created_from_pressure_refs": [],
+  "status": "applied",
+  "created_at": "2026-05-29T01:20:03Z",
+  "applied_at": "2026-05-29T01:22:08Z",
+  "source_lock_hash": "479c0cd818e183411abec7a79851b02846732472b3ab0488a25de2320e206d8c"
+}

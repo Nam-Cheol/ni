@@ -110,3 +110,15 @@ benchmark case study, and optionally add a lightweight static landing page.
 These surfaces help people try and trust `ni`; they do not make `ni-kernel` a
 task runner, package publisher, Codex executor, shell adapter, hosted service,
 or downstream runtime.
+
+## DEC-015: v0.5 roadmap is evidence-quality, product-surface, and change-control focused
+
+Status: accepted
+
+Rationale: After v0.4 adoption hardening, the next useful roadmap should make
+the locked-intent workflow more trustworthy and useful through real benchmark
+data, broader product surfaces, stronger conversation authoring reliability,
+and clearer lock/change-control UX. Optional Homebrew and landing-page work
+remain evidence-gated and factual. Optional downstream integrations belong in
+separate packages that consume locked output, not in `ni-kernel` as adapters or
+runtime state.

@@ -18,6 +18,14 @@ model workspace pack verification, README use-anywhere clarity, announcement
 copy, one qualitative benchmark case study, and an optional lightweight static
 landing page. These are adoption and proof surfaces, not kernel runtime state.
 
+The v0.5 roadmap surface builds on v0.4 adoption hardening. It prioritizes real
+benchmark data, more product surfaces and examples, more reliable conversation
+authoring, stronger lock/relock/amendment and change-control UX, optional
+Homebrew only if tested, optional factual landing page work, and optional
+downstream integrations only as separate packages. These are evidence,
+documentation, validation, distribution, and seed-quality surfaces, not
+`ni-kernel` runtime state.
+
 Tracked planning state:
 
 - `docs/plan/**`
@@ -55,6 +63,9 @@ Packaging and distribution references:
 - `docs/76_ANNOUNCEMENT_KIT.md`
 - `docs/77_BENCHMARK_CASE_STUDY.md`
 - `docs/78_LANDING_PAGE_PLAN.md`
+- `docs/79_CONVERSATION_AUTHORING_UX_AUDIT.md`
+- `docs/80_HOMEBREW_DECISION.md`
+- `docs/81_RELEASE_PLAN_v0.4.1.md`
 
 ## Operating model
 
@@ -74,6 +85,10 @@ Packaging and distribution references:
 10. For v0.4 adoption, compile a locked Codex handoff prompt only after
     readiness passes and the amended plan is relocked. Do not execute the
     generated prompt or add downstream runtime behavior.
+11. For v0.5 roadmap work, compile a locked Codex handoff prompt only after
+    readiness passes and the amended plan is relocked. Do not execute the
+    generated prompt, call `codex exec`, add adapters to `ni-kernel`, or mark
+    Homebrew Available without tested Homebrew evidence.
 
 ## Validation
 
@@ -91,3 +106,17 @@ For this v0.2 planning contract, also verify:
 ni status --dir .
 ni run --dir . --target codex --max-chars 4000
 ```
+
+For the v0.5 roadmap lock, also verify:
+
+```bash
+go test ./...
+bash scripts/quality.sh
+bash scripts/smoke.sh
+bash scripts/demo-check.sh
+bash scripts/install-check.sh
+bash scripts/release-check.sh
+bash scripts/fresh-install-check.sh
+```
+
+Run `bash scripts/fresh-install-check.sh` only when the script is present.

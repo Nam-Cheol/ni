@@ -52,6 +52,10 @@
     {
       "id": "NG-010",
       "title": "Do not execute the v0.4 adoption roadmap prompt, call codex exec, add runtime execution behavior, or mark Homebrew Available before the published tap command is tested."
+    },
+    {
+      "id": "NG-011",
+      "title": "Do not execute the v0.5 roadmap prompt, call codex exec, add runtime execution behavior, add adapters to ni-kernel, claim false availability, or mark Homebrew Available before tested Homebrew evidence passes."
     }
   ],
   "capabilities": [
@@ -437,6 +441,39 @@
         "ART-048",
         "ART-049"
       ]
+    },
+    {
+      "id": "CAP-019",
+      "title": "Lock v0.5 roadmap",
+      "status": "accepted",
+      "dependencies": [
+        "CAP-002",
+        "CAP-003",
+        "CAP-004",
+        "CAP-005",
+        "CAP-014",
+        "CAP-018"
+      ],
+      "requirements": [
+        "REQ-019"
+      ],
+      "evaluations": [
+        "EVAL-023"
+      ],
+      "risks": [
+        "RISK-013",
+        "RISK-016"
+      ],
+      "artifacts": [
+        "ART-022",
+        "ART-023",
+        "ART-043",
+        "ART-046",
+        "ART-047",
+        "ART-050",
+        "ART-051",
+        "ART-052"
+      ]
     }
   ],
   "requirements": [
@@ -529,6 +566,11 @@
       "id": "REQ-018",
       "title": "v0.4 adoption roadmap must cover fresh-user install verification, Homebrew as Planned until a published tap/formula is tested, model workspace pack verification, README use-anywhere clarity, announcement kit, first qualitative benchmark case study, optional lightweight static landing page, generated codex prompt budget at 4000 characters or less, and preservation of ni-kernel as pre-runtime with no generated prompt execution or codex exec",
       "status": "accepted"
+    },
+    {
+      "id": "REQ-019",
+      "title": "v0.5 roadmap must cover real benchmark data, more product surfaces and examples, better conversation authoring reliability, stronger lock/relock/amendment and change-control UX, optional Homebrew only if tested, optional factual landing page work, optional downstream integrations only as separate packages, generated codex prompt budget at 4000 characters or less, and preservation of ni-kernel as pre-runtime with no generated prompt execution, codex exec, runtime execution, or ni-kernel adapters",
+      "status": "accepted"
     }
   ],
   "decisions": [
@@ -600,6 +642,11 @@
     {
       "id": "DEC-014",
       "title": "v0.4 adoption roadmap is evidence-gated and pre-runtime",
+      "status": "accepted"
+    },
+    {
+      "id": "DEC-015",
+      "title": "v0.5 roadmap is evidence-quality, product-surface, and change-control focused",
       "status": "accepted"
     }
   ],
@@ -708,6 +755,13 @@
       "severity": "high",
       "status": "accepted",
       "mitigation": "Keep v0.4 adoption work as documentation, packaging verification, announcement copy, qualitative benchmark evidence, and optional static landing page work outside ni-kernel runtime behavior. Homebrew stays Planned until the tap and formula are published and brew install Nam-Cheol/tap/ni, ni --help, and ni version pass. ni run remains a prompt compiler only and must not call Codex, shell adapters, package publishing, queues, PR automation, or downstream execution."
+    },
+    {
+      "id": "RISK-016",
+      "title": "v0.5 roadmap turns benchmark, product surface, or integration work into runtime claims",
+      "severity": "high",
+      "status": "accepted",
+      "mitigation": "Keep v0.5 work as benchmark reports, docs, examples, product-surface proof, authoring reliability, lock/change-control UX, optional factual distribution work, optional landing page work, and inert seed-quality improvements. Real benchmark data must state scope and limits. Homebrew remains Planned until tested. Downstream integrations must be separate packages or repositories that consume locked output, not ni-kernel adapters, queues, execution state, or lifecycle state."
     }
   ],
   "evaluations": [
@@ -820,6 +874,11 @@
       "id": "EVAL-022",
       "title": "v0.4 adoption roadmap is evidence-gated and pre-runtime",
       "method": "go test ./..., bash scripts/quality.sh, bash scripts/smoke.sh, bash scripts/demo-check.sh, bash scripts/install-check.sh, bash scripts/release-check.sh, and ni run --target codex --max-chars 4000 verify README.md, README.ko.md, docs/22_INSTALL.md, docs/53_DISTRIBUTION_STRATEGY.md, docs/70_RELEASE_VERIFICATION_v0.3.0.md, docs/71_CURL_INSTALLER_VERIFICATION_v0.3.0.md, docs/72_HOMEBREW_TAP_PLAN.md, docs/75_MODEL_PACK_INSTALL_VERIFICATION.md, docs/76_ANNOUNCEMENT_KIT.md, docs/77_BENCHMARK_CASE_STUDY.md, and docs/78_LANDING_PAGE_PLAN.md preserve verified install claims, Planned Homebrew status, model workspace pack boundaries, benchmark limits, optional static landing-page scope, and the pre-runtime ni-kernel boundary"
+    },
+    {
+      "id": "EVAL-023",
+      "title": "v0.5 roadmap is benchmark-backed, authoring-reliable, and pre-runtime",
+      "method": "go test ./..., bash scripts/quality.sh, bash scripts/smoke.sh, bash scripts/demo-check.sh, bash scripts/install-check.sh, bash scripts/release-check.sh, bash scripts/fresh-install-check.sh when present, and ni run --target codex --max-chars 4000 verify the roadmap preserves real benchmark-data limits, broader product-surface scope, conversation authoring reliability, lock/change-control UX, optional Homebrew only after tested evidence, optional factual landing-page scope, separate-package-only downstream integrations, and the pre-runtime ni-kernel boundary"
     }
   ],
   "artifacts": [
@@ -1067,6 +1126,21 @@
       "id": "ART-049",
       "path": ".ni/amendments/AMEND-012.json",
       "kind": "amendment"
+    },
+    {
+      "id": "ART-050",
+      "path": ".ni/generated/v0.5-roadmap.prompt.txt",
+      "kind": "generated_prompt"
+    },
+    {
+      "id": "ART-051",
+      "path": ".ni/amendments/AMEND-013.json",
+      "kind": "amendment"
+    },
+    {
+      "id": "ART-052",
+      "path": "docs/51_POST_RELEASE_ROADMAP.md docs/79_CONVERSATION_AUTHORING_UX_AUDIT.md docs/80_HOMEBREW_DECISION.md docs/81_RELEASE_PLAN_v0.4.1.md",
+      "kind": "roadmap_input_docs"
     }
   ],
   "open_questions": [

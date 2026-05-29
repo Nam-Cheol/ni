@@ -106,3 +106,18 @@ This capability is accepted only as planning and packaging direction. It must
 not execute the generated prompt, call `codex exec`, add runtime execution
 behavior, claim untested install availability, or mark Homebrew Available before
 the published tap command is verified.
+
+## CAP-019: lock v0.5 roadmap
+
+After v0.4 adoption hardening, lock the next roadmap around evidence quality
+and change-control clarity instead of runtime expansion. The roadmap covers real
+benchmark data, more product surfaces and examples, better conversation
+authoring reliability, stronger lock/relock/amendment UX, optional Homebrew
+only if tested, optional lightweight landing page work, and optional downstream
+integrations only as separate packages.
+
+This capability is accepted only as planning, validation, documentation,
+distribution, and seed-quality direction. It must not execute the generated
+prompt, call `codex exec`, add runtime execution behavior, add adapters to
+`ni-kernel`, claim untested availability, or mark Homebrew Available before
+Homebrew evidence passes.
