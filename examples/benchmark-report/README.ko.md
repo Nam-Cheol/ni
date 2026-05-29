@@ -40,7 +40,7 @@ prompt-count evidence가 없으면 반드시 `not_measured`로 남긴다.
 - `sample-report.md`: `not_measured` placeholder를 가진 fillable template.
 - `cases/internal-dashboard/`: vague dashboard request에 대한 manual
   qualitative readiness drill. isolated ni workspace와 checked-in blocked
-  status proof를 포함한다.
+  status proof, blocker analysis, future resolution path를 포함한다.
 - `../../docs/43_BENCHMARK_PROTOCOL.md`: scoring method를 정의하는 benchmark
   protocol.
 
@@ -56,6 +56,8 @@ test -f examples/benchmark-report/cases/internal-dashboard/README.md
 test -f examples/benchmark-report/cases/internal-dashboard/04-measurement-table.md
 test -f examples/benchmark-report/cases/internal-dashboard/06-ni-status-proof.md
 test -f examples/benchmark-report/cases/internal-dashboard/07-ni-next-questions.md
+test -f examples/benchmark-report/cases/internal-dashboard/08-blocker-analysis.md
+test -f examples/benchmark-report/cases/internal-dashboard/09-resolution-path.md
 test -f docs/43_BENCHMARK_PROTOCOL.md
 go run ./cmd/ni status --dir examples/benchmark-report/cases/internal-dashboard/workspace --proof --next-questions
 rg -n "not_measured|must not execute downstream agents|Target prompt boundedness|internal-dashboard|NI Intent Readiness: BLOCKED" examples/benchmark-report/README.md examples/benchmark-report/README.ko.md examples/benchmark-report/sample-report.md examples/benchmark-report/cases/internal-dashboard/*.md docs/43_BENCHMARK_PROTOCOL.md
@@ -68,9 +70,9 @@ rg -n "not_measured|must not execute downstream agents|Target prompt boundedness
 `ni status` 명령은 internal-dashboard workspace에 대해
 `NI Intent Readiness: BLOCKED`를 보고해야 한다.
 
-`rg` 명령은 template과 dashboard case의 `not_measured` marker, 그리고
-checked-in blocked status proof, benchmark protocol의 non-execution 및
-prompt-boundedness marker를 보여야 한다.
+`rg` 명령은 template과 dashboard case의 `not_measured` marker, checked-in
+blocked status proof, blocker analysis와 resolution-path evidence, benchmark
+protocol의 non-execution 및 prompt-boundedness marker를 보여야 한다.
 
 ## 7. demo-check coverage
 

@@ -41,7 +41,7 @@ run, and prompt-count evidence must remain `not_measured`.
   placeholders.
 - `cases/internal-dashboard/`: manual qualitative readiness drill for a vague
   dashboard request, with an isolated ni workspace and checked-in blocked
-  status proof.
+  status proof, blocker analysis, and future resolution path.
 - `../../docs/43_BENCHMARK_PROTOCOL.md`: the benchmark protocol that defines
   the scoring method.
 
@@ -56,6 +56,8 @@ test -f examples/benchmark-report/cases/internal-dashboard/README.md
 test -f examples/benchmark-report/cases/internal-dashboard/04-measurement-table.md
 test -f examples/benchmark-report/cases/internal-dashboard/06-ni-status-proof.md
 test -f examples/benchmark-report/cases/internal-dashboard/07-ni-next-questions.md
+test -f examples/benchmark-report/cases/internal-dashboard/08-blocker-analysis.md
+test -f examples/benchmark-report/cases/internal-dashboard/09-resolution-path.md
 test -f docs/43_BENCHMARK_PROTOCOL.md
 go run ./cmd/ni status --dir examples/benchmark-report/cases/internal-dashboard/workspace --proof --next-questions
 rg -n "not_measured|must not execute downstream agents|Target prompt boundedness|internal-dashboard|NI Intent Readiness: BLOCKED" examples/benchmark-report/README.md examples/benchmark-report/sample-report.md examples/benchmark-report/cases/internal-dashboard/*.md docs/43_BENCHMARK_PROTOCOL.md
@@ -69,8 +71,9 @@ The `ni status` command should report `NI Intent Readiness: BLOCKED` for the
 internal-dashboard workspace.
 
 The `rg` command should show `not_measured` markers in this template and
-dashboard case, the checked-in blocked status proof, plus non-execution and
-prompt-boundedness markers in the benchmark protocol.
+dashboard case, the checked-in blocked status proof, the blocker analysis and
+resolution-path evidence, plus non-execution and prompt-boundedness markers in
+the benchmark protocol.
 
 ## 7. demo-check coverage
 

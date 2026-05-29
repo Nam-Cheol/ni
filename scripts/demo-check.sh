@@ -63,6 +63,10 @@ check_benchmark_report_docs() {
   require_file examples/benchmark-report/cases/internal-dashboard/05-not-measured.md
   require_file examples/benchmark-report/cases/internal-dashboard/06-ni-status-proof.md
   require_file examples/benchmark-report/cases/internal-dashboard/07-ni-next-questions.md
+  require_file examples/benchmark-report/cases/internal-dashboard/08-blocker-analysis.md
+  require_file examples/benchmark-report/cases/internal-dashboard/08-blocker-analysis.ko.md
+  require_file examples/benchmark-report/cases/internal-dashboard/09-resolution-path.md
+  require_file examples/benchmark-report/cases/internal-dashboard/09-resolution-path.ko.md
   require_file examples/benchmark-report/cases/internal-dashboard/workspace/.ni/contract.json
   require_file docs/43_BENCHMARK_PROTOCOL.md
 }
@@ -198,6 +202,8 @@ require_output "not_measured" "examples/benchmark-report/sample-report.md"
 require_output "not_measured" "examples/benchmark-report/cases/internal-dashboard/04-measurement-table.md"
 require_output "No downstream agent was executed" "examples/benchmark-report/cases/internal-dashboard/05-not-measured.md"
 require_output "NI Intent Readiness: BLOCKED" "examples/benchmark-report/cases/internal-dashboard/06-ni-status-proof.md"
+require_output "\`BLOCKED\` is a valid benchmark result" "examples/benchmark-report/cases/internal-dashboard/08-blocker-analysis.md"
+require_output "The current benchmark remains \`BLOCKED\`" "examples/benchmark-report/cases/internal-dashboard/09-resolution-path.md"
 require_output "must not execute downstream agents" "docs/43_BENCHMARK_PROTOCOL.md"
 require_output "Target prompt boundedness" "docs/43_BENCHMARK_PROTOCOL.md"
 

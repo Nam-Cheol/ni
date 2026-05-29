@@ -29,7 +29,7 @@ bash scripts/quality.sh
 | `examples/conversation-authoring/` | sustained model-user authoring은 docs, contract, session을 갱신하고 CLI proof는 stale sync를 잡아낸다. | `conversation_product` | `conversation`, `document` | `BLOCKED` | status와 `R012`를 확인하고 historical lock에서만 compile한다. | 아니오, historical lock material이 있는 blocked fixture. | Yes |
 | `examples/namba-ai-upgrade/` | ni는 existing harness/workflow project의 upstream에서 계획하지만 그 harness가 되지 않는다. | `software` | `cli`, `document`, `workflow` | `BLOCKED` | status와 `R012`를 확인하고 historical lock에서만 Codex prompt를 컴파일한다. | 아니오, historical lock material이 있는 blocked fixture. | Yes |
 | `examples/ni-start-dogfood/` | first-run card, grouped next questions, docs/contract/session update, re-status loop를 증명한다. | `conversation_product` | `conversation`, `document` | `READY_WITH_DEFERRALS` | status, grouped proof, existing lock의 `human-team` prompt compile을 실행한다. | 아니오, locked workspace fixture. | Yes |
-| `examples/benchmark-report/` | fake empirical claim 없이 benchmark/case-study reporting method와 `not_measured` placeholder를 증명한다. | 해당 없음 | `document` | 해당 없음 | required docs와 `not_measured` marker만 확인한다. | 예, report template. | Yes |
+| `examples/benchmark-report/` | fake empirical claim 없이 benchmark/case-study reporting method, `not_measured` placeholder, 실제 blocked `ni status` proof가 있는 internal-dashboard readiness case, blocker analysis, resolution path를 증명한다. | dashboard case는 `software` | isolated case workspace는 `document`, `web` | Dashboard case: `BLOCKED` | required docs, dashboard evidence files, blocked status proof, blocker analysis, resolution path, lock/run의 `not_measured` marker를 확인한다. | 부분적: report template은 docs-only이고 dashboard case는 blocked ni workspace를 가진다. | Yes |
 | `examples/no-terminal-assisted/` | local CLI validation 전에도 docs와 contract draft는 만들 수 있지만 deterministic readiness claim은 하지 않는다. | draft `workflow` | draft `document` | claim하지 않음 | required file과 boundary wording만 확인한다. | 예, assisted draft. | Yes |
 
 ## Grouped next-question coverage
@@ -37,6 +37,8 @@ bash scripts/quality.sh
 Grouped `ni status --proof --next-questions` UX는 다음 파일에서 직접 보여준다:
 
 - `examples/ambiguous-prompt-blocked/05-next-questions.md`
+- `examples/benchmark-report/cases/internal-dashboard/06-ni-status-proof.md`
+- `examples/benchmark-report/cases/internal-dashboard/07-ni-next-questions.md`
 - `examples/conversation-authoring/transcript.md`
 - `examples/conversation-authoring/session-resume.md`
 - `examples/ni-start-dogfood/03-model-summary-and-questions.md`

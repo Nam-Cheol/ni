@@ -455,6 +455,10 @@ The checked-in case artifact records the measured pre-runtime ni path:
   `examples/benchmark-report/cases/internal-dashboard/06-ni-status-proof.md`
 - next-question proof:
   `examples/benchmark-report/cases/internal-dashboard/07-ni-next-questions.md`
+- blocker analysis:
+  `examples/benchmark-report/cases/internal-dashboard/08-blocker-analysis.md`
+- resolution path:
+  `examples/benchmark-report/cases/internal-dashboard/09-resolution-path.md`
 - planning workspace:
   `examples/benchmark-report/cases/internal-dashboard/workspace/`
 
@@ -520,6 +524,29 @@ Execution must not start.
 The full proof and next-question output are checked in under
 `06-ni-status-proof.md` and `07-ni-next-questions.md`.
 
+The blocker analysis and resolution path are checked in under
+`08-blocker-analysis.md` and `09-resolution-path.md`. They explain why each
+blocker prevents lock, what kind of user answer would be needed later, which
+unsafe assumption is avoided, and how a future resolved variant could proceed
+through `ni status`, `ni end`, and `ni run` without weakening the gates.
+
+| Blocker | Required answer | Expected planning update | Unsafe assumption avoided |
+| --- | --- | --- | --- |
+| `OQ-001` | Confirm the primary dashboard user and supported decision. | Update actor/outcome, capability, open-question, and contract records. | Avoids guessing the customer-team role or decision. |
+| `OQ-002` | Define observable attention signals, thresholds, ordering criteria, or review rules. | Update capability, domain-state, evaluation, open-question, and contract records. | Avoids inventing account-health metrics or ranking formulas. |
+| `OQ-003` | Confirm source systems, allowed fields, freshness, privacy constraints, and access controls. | Update domain-state, constraints, risks, open-question, and contract records. | Avoids assuming sensitive data may be exposed or stale data is acceptable. |
+| `OQ-004` | Confirm meeting timing, audience, minimum artifact, and pass/fail evidence. | Update evaluation, delivery-operation, open-question, and contract records. | Avoids treating any prototype, memo, or live dashboard as sufficient evidence. |
+
+| Step | Action | Expected result |
+| --- | --- | --- |
+| 1 | User answers `OQ-001`. | Primary user is explicit. |
+| 2 | User answers `OQ-002`. | Attention signals and ranking criteria are explicit. |
+| 3 | User answers `OQ-003`. | Source systems, privacy, and access constraints are explicit. |
+| 4 | User answers `OQ-004`. | Meeting acceptance evidence is explicit. |
+| 5 | Run `ni status`. | May become `READY` or `READY_WITH_DEFERRALS` if no new blockers appear. |
+| 6 | Run `ni end` only after confirmation. | Lock may be created. |
+| 7 | Run `ni run` only after lock. | Bounded prompt may be compiled. |
+
 ## Case 3 Manual Measurement Table
 
 This table is one reviewer's manual qualitative assessment for the dashboard
@@ -546,14 +573,17 @@ improvement is that the benchmark exposes why execution should wait. The direct
 request hides users, outcomes, data boundaries, risks, evaluation evidence, and
 non-goals. The ni path converted those items into synchronized docs/contract
 records, mitigated high risks by preserving blockers, and kept the plan
-blocked.
+blocked. `BLOCKED` is therefore a useful result: ni prevented premature
+handoff and made readiness gaps explicit without proving implementation
+quality.
 
 ## Case 3 What Was Not Measured
 
 This case did not measure lockfile creation, compiled prompt availability,
 prompt character count, agent behavior, dashboard quality, development time,
 user adoption, reduced rework, or statistical effect. It did not run `ni end`,
-`ni run`, a model API, a dashboard implementation, or a downstream agent.
+`ni run`, a model API, a dashboard implementation, or a downstream agent. It
+also did not measure cost, latency, or downstream agent performance.
 
 ## Case 3 Non-Execution Boundary
 
