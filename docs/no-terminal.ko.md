@@ -17,22 +17,32 @@ locking, lock hash verification, prompt compilation에는 CLI가 필요하다.
 
 ## 수동 흐름
 
-1. 이 repository에서 필요한 skill instructions를 download하거나 copy한다:
+1. 이 repository의 model pack 또는 copied instructions로 시작한다:
    `packages/claude-skills`, `packages/codex-skills`, `.agents/skills`.
 2. Model에게 project의 `docs/plan` draft를 만들게 한다. Purpose, actors,
    capabilities, requirements, decisions, risks, evaluations, non-goals,
    constraints, artifacts, open questions를 다뤄야 한다.
-3. Model에게 docs와 함께 `.ni/contract.json` draft를 유지하게 한다.
-   Tentative하거나 conflicting한 statement는 assumptions, draft records, open
-   questions로 남겨야 한다.
-4. Blocker checklist를 visible하게 유지한다. Open blocker questions는 plan이
-   거의 완성되어 보여도 lock을 막아야 한다.
+3. Model에게 docs와 함께 `.ni/contract.json` draft를 작성하게 한다. 이것은
+   model-maintained draft이지 authoritative state가 아니다.
+4. Assumptions와 open questions를 명시적으로 표시한다. Tentative하거나
+   conflicting하거나 incomplete한 statement는 accepted decisions가 되면 안 된다.
 5. 나중에 CLI를 사용할 수 있는 teammate, CI job, local setup에게 `ni status`를
    실행하게 한다. Result가 blocked라면 planning conversation을 계속한다.
-6. `ni status`가 plan ready를 report하면 `ni end`로 lock을 만든다.
-   `.ni/plan.lock.json`은 CLI만 만들어야 한다.
+6. Model judgment를 lock으로 취급하지 않는다. `ni status`가 plan ready를
+   report하면 `ni end`로 lock을 만든다. `.ni/plan.lock.json`은 CLI만 만들어야 한다.
 7. Final handoff prompt는 `ni run`으로 compile한다. `ni run`은 text를 compile할
    뿐 shell commands, agents, queues, downstream work를 실행하지 않는다.
+
+## No-terminal assisted checklist
+
+Local CLI 없이 시작할 때 이 checklist를 사용한다:
+
+- Model pack 또는 copied instructions로 시작한다.
+- `docs/plan` draft를 만든다.
+- Docs와 함께 `.ni/contract.json`을 draft한다.
+- Assumptions와 open questions를 표시한다, especially blockers.
+- 나중에 CLI, teammate, trusted runner로 validate한다.
+- Model judgment를 lock으로 취급하지 않는다.
 
 ## Intent Lock checklist
 
@@ -50,6 +60,21 @@ locking, lock hash verification, prompt compilation에는 CLI가 필요하다.
 
 이 checklist는 learning과 drafting aid다. Model이 더 좋은 질문을 하게 도울 수는
 있지만 `ni status`, `ni end`, `ni run`을 대체하지 않는다.
+
+## Full ni로 넘어가야 할 때
+
+Plan이 implementation, budget, review, downstream seed generation을 안내할 수
+있는 순간에는 no-terminal assisted drafting에서 full `ni`로 넘어간다. 특히
+readiness를 claim하거나, lockfile을 만들거나 신뢰하거나, plan hash를 검증하거나,
+bounded handoff prompt를 compile하거나, 다른 actor에게 plan 기반 work를 시작하게
+하기 전에는 CLI를 사용해야 한다.
+
+Local에서 CLI를 실행할 수 없다면 draft를 teammate, CI job, trusted runner에게
+넘겨 `ni status`, `ni end`, `ni run`을 실행하게 한다. 그 전까지 workspace는
+learning과 drafting에만 유용하다.
+
+Deterministic validation을 claim하지 않는 docs-only example은
+`examples/no-terminal-assisted/`를 참고한다.
 
 ## Boundary
 

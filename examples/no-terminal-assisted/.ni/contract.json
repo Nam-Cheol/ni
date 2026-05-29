@@ -1,0 +1,111 @@
+{
+  "schema": "ni.contract.v0",
+  "readiness_profile": "concept",
+  "product_type": "education_program",
+  "delivery_surfaces": [
+    "document",
+    "conversation"
+  ],
+  "interaction_mode": "human_to_model_workspace",
+  "project": {
+    "id": "no-terminal-assisted-draft",
+    "name": "No-Terminal Assisted Draft",
+    "purpose": "Draft a lightweight onboarding plan for a small team evaluating ni before installing the CLI.",
+    "status": "draft_no_terminal_assisted"
+  },
+  "non_goals": [
+    {
+      "id": "NG-001",
+      "title": "Do not execute downstream work from this draft."
+    },
+    {
+      "id": "NG-002",
+      "title": "Do not call a model API or web service from this example."
+    },
+    {
+      "id": "NG-003",
+      "title": "Do not treat model-authored skills or model judgment as authoritative."
+    }
+  ],
+  "capabilities": [
+    {
+      "id": "CAP-001",
+      "title": "Draft a human-readable onboarding plan without claiming readiness.",
+      "status": "draft",
+      "requirements": [
+        "REQ-001",
+        "REQ-002"
+      ],
+      "evaluations": [
+        "EVAL-001"
+      ],
+      "risks": [
+        "RISK-001"
+      ],
+      "artifacts": [
+        "ART-001"
+      ]
+    }
+  ],
+  "requirements": [
+    {
+      "id": "REQ-001",
+      "title": "Keep the docs/plan draft and .ni/contract.json draft aligned.",
+      "status": "draft"
+    },
+    {
+      "id": "REQ-002",
+      "title": "Leave readiness, locking, hash verification, and prompt compilation to full ni.",
+      "status": "draft"
+    }
+  ],
+  "decisions": [
+    {
+      "id": "DEC-001",
+      "title": "Use no-terminal assisted mode only for learning and drafting.",
+      "status": "accepted"
+    },
+    {
+      "id": "DEC-002",
+      "title": "Choose the trusted runner that will validate the draft.",
+      "status": "deferred"
+    }
+  ],
+  "risks": [
+    {
+      "id": "RISK-001",
+      "title": "A reader may mistake model confidence for deterministic readiness.",
+      "severity": "high",
+      "status": "draft",
+      "mitigation": "Keep the no-terminal checklist, blocker questions, and CLI graduation requirement visible."
+    }
+  ],
+  "evaluations": [
+    {
+      "id": "EVAL-001",
+      "title": "No-terminal boundary review.",
+      "method": "Review docs and draft contract for explicit assisted status, visible blocker questions, and absence of lock or prompt compilation claims."
+    }
+  ],
+  "artifacts": [
+    {
+      "id": "ART-001",
+      "path": "docs/plan/00_project_brief.md",
+      "kind": "draft_plan"
+    }
+  ],
+  "open_questions": [
+    {
+      "id": "OQ-001",
+      "title": "Who will run ni status, ni end, and ni run before any implementation handoff?",
+      "blocker": true,
+      "status": "open"
+    },
+    {
+      "id": "OQ-002",
+      "title": "Which project will be used as the first real validation target?",
+      "blocker": true,
+      "status": "open"
+    }
+  ]
+}

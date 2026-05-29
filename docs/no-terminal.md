@@ -18,22 +18,33 @@ locking, lock hash verification, and prompt compilation require the CLI.
 
 ## Manual Flow
 
-1. Download or copy the relevant skill instructions from this repository:
+1. Start with a model pack or copied instructions from this repository:
    `packages/claude-skills`, `packages/codex-skills`, or `.agents/skills`.
 2. Ask the model to create a `docs/plan` draft for your project. It should cover
    purpose, actors, capabilities, requirements, decisions, risks, evaluations,
    non-goals, constraints, artifacts, and open questions.
-3. Ask the model to maintain a `.ni/contract.json` draft alongside the docs.
-   Tentative or conflicting statements should stay as assumptions, draft
-   records, or open questions.
-4. Keep a visible checklist of blockers. Open blocker questions must prevent
-   lock, even if the plan feels close.
+3. Ask the model to draft `.ni/contract.json` alongside the docs. Treat it as a
+   model-maintained draft, not authoritative state.
+4. Mark assumptions and open questions explicitly. Tentative, conflicting, or
+   incomplete statements should not become accepted decisions.
 5. Later, ask a teammate, CI job, or local setup with the CLI to run
    `ni status`. If the result is blocked, continue the planning conversation.
-6. When `ni status` reports that the plan is ready, use `ni end` to create the
-   lock. Only the CLI should create `.ni/plan.lock.json`.
+6. Do not treat model judgment as a lock. When `ni status` reports that the
+   plan is ready, use `ni end` to create the lock. Only the CLI should create
+   `.ni/plan.lock.json`.
 7. Use `ni run` to compile the final handoff prompt. `ni run` compiles text; it
    does not execute shell commands, agents, queues, or downstream work.
+
+## No-Terminal Assisted Checklist
+
+Use this checklist when you are starting without a local CLI:
+
+- Start with a model pack or copied instructions.
+- Create a `docs/plan` draft.
+- Draft `.ni/contract.json` alongside the docs.
+- Mark assumptions and open questions, especially blockers.
+- Later validate with the CLI, a teammate, or a trusted runner.
+- Do not treat model judgment as a lock.
 
 ## Intent Lock Checklist
 
@@ -51,6 +62,21 @@ Use this checklist when you are working without a terminal:
 
 This checklist is a learning and drafting aid. It can help a model ask better
 questions, but it does not replace `ni status`, `ni end`, or `ni run`.
+
+## When to Graduate to Full ni
+
+Move from no-terminal assisted drafting to full `ni` as soon as the plan might
+guide implementation, budget, review, or downstream seed generation. In
+particular, use the CLI before you claim readiness, create or trust a lockfile,
+verify plan hashes, compile a bounded handoff prompt, or ask another actor to
+start work from the plan.
+
+If you cannot run the CLI locally, hand the draft to a teammate, CI job, or
+trusted runner that can execute `ni status`, `ni end`, and `ni run`. Until that
+happens, the workspace is useful for learning and drafting only.
+
+See `examples/no-terminal-assisted/` for a docs-only example that keeps the
+draft useful without claiming deterministic validation.
 
 ## Boundary
 
