@@ -1,64 +1,115 @@
-# Homebrew Decision
+# Homebrew decision
 
 Date: 2026-05-29
 
-Decision: **B. Defer Homebrew tap implementation to v0.5.**
+## Current distribution state
 
-Current Homebrew status: Planned.
+- Release binary: Available for the verified v0.3.0 GitHub Release archives and
+  checksums.
+- Curl installer: Available for the verified v0.3.0 release assets.
+- Homebrew: Planned. No tap or formula is published or tested.
+- Model workspace packs: Experimental as a broad product path; source packs,
+  manual copy, zip packaging, and the Claude target-directory dry-run path are
+  available, but global host discovery is unverified.
+- No-terminal method: Experimental / assisted. It can support drafting, but
+  deterministic readiness, lock, hash, and prompt claims still require CLI
+  proof from a trusted runner.
 
-## Reviewed Inputs
+## Decision
 
-- [Homebrew Tap Plan](72_HOMEBREW_TAP_PLAN.md)
-- [Homebrew Tap Plan, Korean companion](72_HOMEBREW_TAP_PLAN.ko.md)
-- [Homebrew Tap Setup](74_HOMEBREW_TAP_SETUP.md)
-- v0.3.0 release binary status: Available after release asset and checksum
-  verification.
-- v0.3.0 curl installer status: Available after verification against the real
-  release assets.
+Choose **B. Defer Homebrew to v0.5.**
+
+Homebrew should remain Planned for v0.4.1 and should be implemented no earlier
+than v0.5 as distribution infrastructure.
 
 ## Rationale
 
-Homebrew should not be implemented in this task because the required external
-tap work has not happened yet. The intended tap is still
-`Nam-Cheol/homebrew-tap`, but Homebrew must remain Planned until the tap exists,
-`Formula/ni.rb` is published with real checksums, Homebrew audit passes, and
-`brew install Nam-Cheol/tap/ni` is tested from a clean Homebrew environment.
+Homebrew is useful, but it is not the next adoption bottleneck. The release
+binary and curl installer already serve users who want to try `ni` without Go,
+and both paths have verification evidence. Homebrew would improve convenience
+for macOS and developer users who prefer package-manager installation, but it
+does not change the core product experience of planning, readiness proof,
+locking, or prompt compilation.
 
-Deferring the implementation keeps the current release story factual: source,
-local binary, release binary, and curl installer paths are Available, while
-package-manager distribution is still unverified. It also keeps package
-publishing outside `ni-kernel` runtime behavior.
+The blocking work for Homebrew is external and operational: the tap repository
+is not available, the formula is not published, and the clean `brew install`
+path has not been tested. Implementing it now would compete with higher-impact
+v0.4.1 stabilization work: conversation authoring UX, readiness proof clarity,
+model workspace pack guidance, no-terminal proof capture, and benchmark
+evidence.
 
-## What This Decision Does
+Because `ni` is a pre-runtime Project Intent Compiler, Homebrew must stay
+outside `ni-kernel` behavior. Package distribution should help users obtain the
+CLI; it must not become release automation, execution state, adapter behavior,
+or a reason to expand `ni run` beyond prompt compilation.
 
-- Keeps Homebrew status as Planned.
-- Keeps the existing tap target as `Nam-Cheol/homebrew-tap`.
-- Keeps `docs/74_HOMEBREW_TAP_SETUP.md` as the setup procedure for the later
-  implementation task.
-- Schedules Homebrew tap implementation for v0.5 as distribution
-  infrastructure, not kernel runtime behavior.
+## User impact
 
-## What This Decision Does Not Do
+Homebrew would benefit users who already trust Homebrew, want upgrades through
+a package manager, or expect `brew install Nam-Cheol/tap/ni` for a macOS CLI.
+It would reduce install friction for that audience after the tap and formula
+are verified.
 
-- Does not create or modify a Homebrew tap.
-- Does not add `brew install` instructions to public install docs.
-- Does not mark Homebrew Available.
-- Does not add package-manager automation, release publishing, tags, or runtime
-  execution behavior.
+Users who are willing to inspect a script or manually verify checksums are
+already served by the curl installer and release binary paths. Developers,
+evaluators, and contributors are already served by source and local binary
+paths. Users who need help authoring plans are better served right now by
+improvements to conversation authoring, model workspace packs, no-terminal
+assisted proof capture, and benchmark evidence.
 
-## Availability Gate
+## Required implementation work if Homebrew is chosen
 
-Homebrew may become Available only after all of these are true:
+If a later task chooses to implement Homebrew, it must do this exact work:
 
-1. `Nam-Cheol/homebrew-tap` exists and is confirmed as the intended public tap.
-2. `Formula/ni.rb` is published in that tap.
-3. Formula URLs point to official release assets.
-4. Formula checksums match the published release checksum source.
-5. `brew audit --strict --online Formula/ni.rb` passes.
-6. `brew install --build-from-source Formula/ni.rb` passes.
-7. `brew install Nam-Cheol/tap/ni` passes from a clean Homebrew environment.
-8. `ni --help` and `ni version` pass for the Homebrew-installed binary.
+1. Create or identify the public tap repository.
+2. Choose the formula name.
+3. Define the formula source URL.
+4. Define the sha256 source from published release checksums.
+5. Test `brew install`.
+6. Update README/docs only after the tested install path works.
 
-Until then, README, install docs, release docs, and launch material must keep
-Homebrew as Planned.
+The current intended tap remains:
 
+```text
+Nam-Cheol/homebrew-tap
+```
+
+## Risks
+
+- False package availability claims: README or install docs could imply
+  Homebrew works before a formula exists and has been tested.
+- Stale formula checksums: a release asset or checksum update could leave the
+  formula pointing at mismatched metadata.
+- Release asset naming drift: future archives may change names or platforms,
+  breaking formula URLs unless the naming contract stays stable.
+- Package-manager maintenance burden: once published, users expect upgrades,
+  checksums, audit fixes, and working install commands.
+- Confusing Homebrew with ni-kernel behavior: package distribution is
+  repository infrastructure, not Intent Lock Protocol behavior, runtime
+  execution, or kernel-owned state.
+
+## Status wording
+
+Use this exact status wording:
+
+```text
+Homebrew: Planned
+```
+
+Acceptable supporting wording:
+
+```text
+No tap or formula is published or tested.
+```
+
+```text
+Package-manager distribution, including Homebrew, is not available yet.
+```
+
+Do not use `Homebrew: Experimental` or `Homebrew: Available` until a tap,
+formula, checksums, audit, install test, published tap install test, and
+`ni --help` / `ni version` verification all exist.
+
+## Next task
+
+Improve conversation-authoring UX proof capture for v0.4.1 stabilization.
