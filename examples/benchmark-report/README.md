@@ -2,8 +2,8 @@
 
 ## 1. Purpose
 
-This directory is a deterministic template for manually reporting the intent
-readiness benchmark defined in `docs/43_BENCHMARK_PROTOCOL.md`.
+This directory is a deterministic template for manually reporting the Project
+Intent Compiler benchmark method defined in `docs/43_BENCHMARK_PROTOCOL.md`.
 
 It contains no empirical results. Fill it only after running the protocol on a
 specific request. Do not invent values for empty cells.
@@ -16,6 +16,8 @@ specific request. Do not invent values for empty cells.
   intent-lock path without executing either path.
 - The report format makes status output, prompt boundedness, and reviewer
   notes auditable.
+- It is a case-study method, not a claim of empirical results or statistical
+  significance.
 
 ## 3. Product type / surface
 
@@ -27,6 +29,7 @@ specific request. Do not invent values for empty cells.
 ## 4. Files
 
 - `README.md`: the report template and boundary statement.
+- `README.ko.md`: Korean companion guide.
 - `sample-report.md`: a fillable sample/template report with `not_measured`
   placeholders.
 - `../../docs/43_BENCHMARK_PROTOCOL.md`: the benchmark protocol that defines
@@ -50,11 +53,22 @@ The `test` commands should exit successfully.
 The `rg` command should show `not_measured` markers in this template and
 non-execution plus prompt-boundedness markers in the benchmark protocol.
 
-## 7. Non-execution boundary
+## 7. demo-check coverage
+
+Covered by `bash scripts/demo-check.sh`.
+
+The demo check treats this as docs-only: it verifies required files and
+`not_measured` placeholders instead of running `ni status` or `ni run`.
+
+## 8. Korean companion
+
+Korean companion docs exist: `README.ko.md`.
+
+## 9. Non-execution boundary
 
 This report must remain intent-focused. It must not include downstream
 execution traces, implementation results, telemetry, model API outputs, or
-invented aggregate claims.
+invented aggregate claims. It must not claim statistical significance.
 
 ## Run Metadata
 

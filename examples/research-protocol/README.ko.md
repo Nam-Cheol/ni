@@ -2,9 +2,9 @@
 
 ## 1. 목적
 
-이 locked 예시는 software app이 아니라 research protocol을 계획한다. 제품은
-fieldwork 전에 street-level cooling intervention을 비교하기 위한 문서화된
-field-study method다.
+이 locked 예시는 software app이 아니라 research protocol을 위한 Project Intent
+Compiler 사용을 보여준다. 제품은 fieldwork 전에 street-level cooling
+intervention을 비교하기 위한 문서화된 field-study method다.
 
 ## 2. 증명하는 것
 
@@ -12,6 +12,8 @@ field-study method다.
 - `product_type=research_protocol`은 planning guidance를 바꾸지만 shared
   readiness gate는 바꾸지 않는다.
 - delivery surface는 document일 수 있다.
+- conversation-driven authoring은 software가 아닌 artifact도 lock 가능한 계획으로
+  만들 수 있다.
 - `ni run`은 data collection이나 analysis 없이 research team을 위한
   bounded handoff prompt를 컴파일할 수 있다.
 
@@ -38,6 +40,7 @@ Repository root에서:
 
 ```bash
 go run ./cmd/ni status --dir examples/research-protocol
+go run ./cmd/ni status --dir examples/research-protocol --proof --next-questions
 tmpdir="$(mktemp -d)"
 go run ./cmd/ni run --dir examples/research-protocol --target human-team --max-chars 4000 --out "$tmpdir/human-team.prompt.md"
 wc -m "$tmpdir/human-team.prompt.md"
@@ -59,7 +62,18 @@ delivery surfaces: document
 
 `ni run`은 4000자 이하의 비어 있지 않은 prompt를 써야 한다.
 
-## 7. 실행하지 않는 경계
+## 7. demo-check coverage
+
+`bash scripts/demo-check.sh`가 이 예시를 검증한다.
+
+demo check는 `READY` status를 확인하고, 예시에 이미 CLI-written lock이 있기
+때문에 `human-team` prompt만 컴파일한다.
+
+## 8. Korean companion
+
+Korean companion docs: `README.ko.md`.
+
+## 9. 실행하지 않는 경계
 
 이 예시는 study를 수행하거나 participant data를 수집하지 않는다. sensor
 deployment, statistics, model API, ethics review 대체도 하지 않는다. ni는

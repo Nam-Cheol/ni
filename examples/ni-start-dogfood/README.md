@@ -2,17 +2,17 @@
 
 ## 1. Purpose
 
-This public example shows the intended authoring loop after `ni init`: the
-user plans through conversation, the model updates `docs/plan/**` and
-`.ni/contract.json` together, and the CLI validates readiness before anything
-locks or compiles.
+This public example shows ni as a Project Intent Compiler in its intended
+authoring loop after `ni init`: the user plans through conversation, the model
+updates `docs/plan/**`, `.ni/contract.json`, and `.ni/session.json` together,
+and the CLI validates readiness before anything locks or compiles.
 
 ## 2. What this proves
 
 - The primary authoring UX is sustained planning conversation, not user-entered
   contract `add`, `list`, or `set` commands.
 - The model may summarize, ask focused questions, and update docs plus contract
-  records from confirmed answers.
+  and session records from confirmed answers.
 - `ni status` controls readiness; the model never overrides a `BLOCKED` result.
 - `ni-start` consumes grouped `ni status --proof --next-questions` output,
   preserves group labels and answer shapes, and asks the highest-priority
@@ -91,6 +91,13 @@ deferral D001: DEC-004 is deferred
 deferral D002: OQ-002 remains open
 ```
 
+The proof command should show grouped handoff deferral questions:
+
+```text
+Next questions:
+Handoff deferrals:
+```
+
 ## 8. Grouped next-question excerpt
 
 ```text
@@ -124,7 +131,19 @@ again.
 $ ni status --dir ./refund-triage-plan --proof --next-questions
 ```
 
-## 9. Non-execution boundary
+## 9. demo-check coverage
+
+Covered by `bash scripts/demo-check.sh`.
+
+The demo check verifies `READY_WITH_DEFERRALS`, runs the grouped proof command,
+and compiles the `human-team` prompt only because the workspace already has a
+CLI-written lock.
+
+## 10. Korean companion
+
+Korean companion docs exist: `README.ko.md`.
+
+## 11. Non-execution boundary
 
 This example does not run a support assistant, call a model API, start Codex,
 contact customers, approve refunds, create adapters, or manage a queue. It is a

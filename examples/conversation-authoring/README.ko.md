@@ -2,9 +2,9 @@
 
 ## 1. 목적
 
-이 fixture는 `ni init` 이후의 지속적인 planning loop를 보여준다. 모델과
-사용자는 대화로 planning docs를 작성하지만, readiness, lock, prompt compiler
-권한은 CLI에 남아 있다.
+이 fixture는 `ni init` 이후 지속적인 planning loop에서 Project Intent Compiler로
+동작하는 ni를 보여준다. 모델과 사용자는 대화로 planning docs를 작성하지만,
+readiness, lock, prompt compiler 권한은 CLI에 남아 있다.
 
 또한 historical locked fixture material만으로 fresh ready state를 주장할 수
 없다는 점을 보여준다. 현재 planning docs와 contract는 여전히 `ni status`를
@@ -16,6 +16,9 @@
   command를 입력할 필요가 없다.
 - 모델은 `docs/plan/**`와 `.ni/contract.json`을 함께 갱신한 뒤 `ni status`로
   readiness를 검증해야 한다.
+- 모델은 broad question을 만들지 않고 grouped
+  `ni status --proof --next-questions` output을 다음 planning interview로
+  사용해야 한다.
 - `ni status`는 historical lockfile과 generated prompt가 있어도 stale
   docs/contract synchronization을 잡아낼 수 있다.
 - 체크인된 `ni run` material은 inert handoff seed material이며 downstream
@@ -47,6 +50,7 @@ Repository root에서:
 
 ```bash
 go run ./cmd/ni status --dir examples/conversation-authoring
+go run ./cmd/ni status --dir examples/conversation-authoring --proof --next-questions
 tmpdir="$(mktemp -d)"
 go run ./cmd/ni run --dir examples/conversation-authoring --target human-team --max-chars 4000 --out "$tmpdir/human-team.prompt.txt"
 wc -m "$tmpdir/human-team.prompt.txt"
@@ -75,7 +79,18 @@ blocker R012
 `ni run`은 existing lockfile에서 prompt를 컴파일할 수 있지만, `ni status`가
 다시 통과하기 전에는 이 fixture를 fresh ready 상태로 설명하면 안 된다.
 
-## 7. 실행하지 않는 경계
+## 7. demo-check coverage
+
+`bash scripts/demo-check.sh`가 이 예시를 검증한다.
+
+demo check는 현재 `BLOCKED` status와 sync blocker를 확인하고, existing lock에서만
+`human-team` prompt를 컴파일한다.
+
+## 8. Korean companion
+
+Korean companion docs: `README.ko.md`.
+
+## 9. 실행하지 않는 경계
 
 이 fixture는 support assistant를 실행하지 않고, customer contact, refund
 approval, model API 호출, downstream tool invocation도 하지 않는다. `ni status`가

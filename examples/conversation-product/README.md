@@ -2,9 +2,10 @@
 
 ## 1. Purpose
 
-This locked example plans a conversation product, not an app. The product is a
-human-operated travel intake conversation that gathers trip intent,
-constraints, risks, and open questions for a human concierge.
+This locked example uses ni as a Project Intent Compiler for a conversation
+product, not an app. The product is a human-operated travel intake conversation
+that gathers trip intent, constraints, risks, and open questions for a human
+concierge.
 
 ## 2. What this proves
 
@@ -12,6 +13,8 @@ constraints, risks, and open questions for a human concierge.
 - `product_type=conversation_product` changes planning guidance without turning
   ni into a chatbot runner.
 - The delivery surface can be conversation-first.
+- Conversation-driven authoring can produce a lockable plan for a
+  conversation surface.
 - `ni run` can compile a bounded handoff prompt for a human team.
 
 ## 3. Product type / surface
@@ -38,6 +41,7 @@ From the repository root:
 
 ```bash
 go run ./cmd/ni status --dir examples/conversation-product
+go run ./cmd/ni status --dir examples/conversation-product --proof --next-questions
 tmpdir="$(mktemp -d)"
 go run ./cmd/ni run --dir examples/conversation-product --target human-team --max-chars 4000 --out "$tmpdir/human-team.prompt.md"
 wc -m "$tmpdir/human-team.prompt.md"
@@ -59,7 +63,18 @@ delivery surfaces: conversation
 
 The run command should write a non-empty prompt at or below 4000 characters.
 
-## 7. Non-execution boundary
+## 7. demo-check coverage
+
+Covered by `bash scripts/demo-check.sh`.
+
+The demo check verifies `READY` status, compiles the `human-team` prompt from
+the existing lock, and verifies downstream export packages remain seed-only.
+
+## 8. Korean companion
+
+Korean companion docs exist: `README.ko.md`.
+
+## 9. Non-execution boundary
 
 This example does not implement a chatbot, deploy a service, add a queue,
 contact vendors, book travel, call a model API, or make regulated advice

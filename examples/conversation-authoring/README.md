@@ -2,9 +2,10 @@
 
 ## 1. Purpose
 
-This fixture shows the sustained planning loop after `ni init`: a model and
-user author planning docs through conversation while the CLI remains the
-readiness, lock, and prompt compiler authority.
+This fixture shows ni as a Project Intent Compiler during the sustained
+planning loop after `ni init`: a model and user author planning docs through
+conversation while the CLI remains the readiness, lock, and prompt compiler
+authority.
 
 It also shows that historical locked fixture material is not enough to claim a
 fresh ready state. The current planning docs and contract must still pass
@@ -16,6 +17,8 @@ fresh ready state. The current planning docs and contract must still pass
   `contract set`, or `contract list`.
 - A model may update `docs/plan/**` and `.ni/contract.json` together, then use
   `ni status` to verify readiness.
+- The model should consume grouped `ni status --proof --next-questions` output
+  as the next planning interview instead of inventing broad questions.
 - `ni status` can catch stale docs/contract synchronization even when a
   historical lockfile and generated prompt are present.
 - The checked-in `ni run` material remains inert handoff seed material; it is
@@ -48,6 +51,7 @@ From the repository root:
 
 ```bash
 go run ./cmd/ni status --dir examples/conversation-authoring
+go run ./cmd/ni status --dir examples/conversation-authoring --proof --next-questions
 tmpdir="$(mktemp -d)"
 go run ./cmd/ni run --dir examples/conversation-authoring --target human-team --max-chars 4000 --out "$tmpdir/human-team.prompt.txt"
 wc -m "$tmpdir/human-team.prompt.txt"
@@ -76,7 +80,18 @@ blocker R012
 The run command may compile from the existing lockfile, but the fixture must
 not be described as freshly ready until `ni status` passes again.
 
-## 7. Non-execution boundary
+## 7. demo-check coverage
+
+Covered by `bash scripts/demo-check.sh`.
+
+The demo check verifies the current `BLOCKED` status and sync blocker, and it
+compiles the `human-team` prompt only from the existing lock.
+
+## 8. Korean companion
+
+Korean companion docs exist: `README.ko.md`.
+
+## 9. Non-execution boundary
 
 This fixture does not run a support assistant, contact customers, approve
 refunds, call a model API, or invoke downstream tools. Do not call `ni end` for

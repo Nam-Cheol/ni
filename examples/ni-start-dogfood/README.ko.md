@@ -2,18 +2,20 @@
 
 ## 1. 목적
 
-이 공개 예시는 `ni init` 이후의 의도한 작성 흐름을 보여준다. 사용자는
-계획을 대화로 설명하고, 모델은 확인된 답변을 바탕으로 `docs/plan/**`와
-`.ni/contract.json`을 함께 갱신하며, CLI가 잠금과 프롬프트 컴파일 전에
-준비 상태를 검증한다.
+이 공개 예시는 `ni init` 이후 Project Intent Compiler의 의도한 작성 흐름을
+보여준다. 사용자는 계획을 대화로 설명하고, 모델은 확인된 답변을 바탕으로
+`docs/plan/**`, `.ni/contract.json`, `.ni/session.json`을 함께 갱신하며, CLI가
+잠금과 프롬프트 컴파일 전에 준비 상태를 검증한다.
 
 ## 2. 증명하는 것
 
 - 기본 작성 UX는 사용자가 contract `add`, `list`, `set` 명령을 입력하는
   방식이 아니라 지속적인 계획 대화다.
-- 모델은 요약, 집중 질문, 문서와 계약 기록의 동기화 갱신을 할 수 있다.
+- 모델은 요약, 집중 질문, 문서, 계약, session 기록의 동기화 갱신을 할 수 있다.
 - `ni status`가 준비 상태의 권한이며, 모델은 `BLOCKED` 결과를 덮어쓸 수
   없다.
+- `ni-start`는 grouped `ni status --proof --next-questions` output을 사용하고,
+  group label과 answer shape를 보존하며 highest-priority group을 먼저 묻는다.
 - `ni end`는 CLI 준비 상태와 사용자의 명시적 확인 뒤에만 lockfile을 쓴다.
 - `ni run`은 제한된 handoff 프롬프트만 컴파일하며 downstream 실행을 하지
   않는다.
@@ -79,9 +81,27 @@ deferral D001: DEC-004 is deferred
 deferral D002: OQ-002 remains open
 ```
 
+proof 명령은 grouped handoff deferral question도 보여야 한다.
+
+```text
+Next questions:
+Handoff deferrals:
+```
+
 `ni run`은 4000자 이하의 비어 있지 않은 handoff 프롬프트를 써야 한다.
 
-## 7. 실행하지 않는 경계
+## 7. demo-check coverage
+
+`bash scripts/demo-check.sh`가 이 예시를 검증한다.
+
+demo check는 `READY_WITH_DEFERRALS`를 확인하고 grouped proof command를 실행하며,
+workspace에 이미 CLI-written lock이 있기 때문에 `human-team` prompt만 컴파일한다.
+
+## 8. Korean companion
+
+Korean companion docs: `README.ko.md`.
+
+## 9. 실행하지 않는 경계
 
 이 예시는 support assistant를 실행하지 않고, model API를 호출하지 않으며,
 Codex 실행, 고객 연락, 환불 승인, adapter, queue를 만들지 않는다. 커널의

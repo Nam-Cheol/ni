@@ -3,12 +3,14 @@
 Run:
 
 ```bash
-go run ./cmd/ni status --dir ./examples/ambiguous-prompt-blocked/workspace --next-questions
+go run ./cmd/ni status --dir ./examples/ambiguous-prompt-blocked/workspace --proof --next-questions
 ```
 
 Expected focused questions:
 
 ```text
+NI Intent Readiness: BLOCKED
+
 Next questions:
 Open blockers:
 1. OQ-001: OQ-001 is blocking readiness. Should it be resolved, deferred with reason, or kept blocking with the missing information named?

@@ -2,9 +2,9 @@
 
 ## 1. Purpose
 
-This locked example plans a research protocol, not a software app. The product
-is a documented field-study method for comparing street-level cooling
-interventions before any fieldwork begins.
+This locked example uses ni as a Project Intent Compiler for a research
+protocol, not a software app. The product is a documented field-study method
+for comparing street-level cooling interventions before any fieldwork begins.
 
 ## 2. What this proves
 
@@ -12,6 +12,8 @@ interventions before any fieldwork begins.
 - `product_type=research_protocol` changes planning guidance without changing
   the shared readiness gate.
 - The delivery surface can be a document.
+- Conversation-driven authoring can produce a lockable plan for a non-software
+  artifact.
 - `ni run` can compile a bounded handoff prompt for a research team without
   collecting data or running analysis.
 
@@ -39,6 +41,7 @@ From the repository root:
 
 ```bash
 go run ./cmd/ni status --dir examples/research-protocol
+go run ./cmd/ni status --dir examples/research-protocol --proof --next-questions
 tmpdir="$(mktemp -d)"
 go run ./cmd/ni run --dir examples/research-protocol --target human-team --max-chars 4000 --out "$tmpdir/human-team.prompt.md"
 wc -m "$tmpdir/human-team.prompt.md"
@@ -60,7 +63,18 @@ delivery surfaces: document
 
 The run command should write a non-empty prompt at or below 4000 characters.
 
-## 7. Non-execution boundary
+## 7. demo-check coverage
+
+Covered by `bash scripts/demo-check.sh`.
+
+The demo check verifies `READY` status and compiles the `human-team` prompt
+only because the example already has a CLI-written lock.
+
+## 8. Korean companion
+
+Korean companion docs exist: `README.ko.md`.
+
+## 9. Non-execution boundary
 
 This example does not implement the study, collect participant data, deploy
 sensors, run statistics, call a model API, or replace ethics review. ni only

@@ -2,8 +2,8 @@
 
 ## 1. Purpose
 
-This example shows ni's core payoff: ambiguous execution is blocked before an
-agent starts implementation.
+This example shows ni's core payoff as a Project Intent Compiler: ambiguous
+execution is blocked before an agent starts implementation.
 
 A vague request such as "build me a dashboard for my team" sounds actionable,
 but it hides product decisions that an implementation agent would otherwise
@@ -16,6 +16,8 @@ invent silently.
 - The model may draft planning records, but it may not declare readiness.
 - A Codex target prompt is only illustrative here; it is not compiled or
   executed from the blocked workspace.
+- Grouped `ni status --proof --next-questions` output gives the next planning
+  questions without letting the model invent a sequence.
 
 ## 3. Product type / surface
 
@@ -45,7 +47,7 @@ From the repository root:
 
 ```bash
 go run ./cmd/ni status --dir ./examples/ambiguous-prompt-blocked/workspace
-go run ./cmd/ni status --dir ./examples/ambiguous-prompt-blocked/workspace --next-questions
+go run ./cmd/ni status --dir ./examples/ambiguous-prompt-blocked/workspace --proof --next-questions
 ```
 
 ## 6. Expected output
@@ -60,10 +62,26 @@ blocker R009: OQ-001 is a blocker open question
 blocker R009: OQ-002 is a blocker open question
 ```
 
-The next-questions command should also start with `BLOCKED` and list the
-blocker questions.
+The proof command should show grouped next questions:
 
-## 7. Non-execution boundary
+```text
+Next questions:
+Open blockers:
+```
+
+## 7. demo-check coverage
+
+Covered by `bash scripts/demo-check.sh`.
+
+The demo check runs `ni status` against the blocked workspace and verifies that
+grouped next questions render for the open blockers. It does not compile or
+run a handoff because the workspace is intentionally blocked.
+
+## 8. Korean companion
+
+Korean companion docs exist: `README.ko.md`.
+
+## 9. Non-execution boundary
 
 This example does not execute Codex, implement a dashboard, start a shell
 adapter, create a queue, call a model API, or run downstream tools. It is a

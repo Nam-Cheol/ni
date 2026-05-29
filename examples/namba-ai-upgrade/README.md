@@ -2,8 +2,9 @@
 
 ## 1. Purpose
 
-This example plans the next namba-ai upgrade before any runtime, SPEC-runner,
-Codex execution harness, or namba-ai implementation work begins.
+This example uses ni as a Project Intent Compiler for the next namba-ai
+upgrade before any runtime, SPEC-runner, Codex execution harness, or namba-ai
+implementation work begins.
 
 It exists to prove that ni keeps the kernel authoritative even for
 software-oriented downstream seed material. The current fixture is verified
@@ -14,6 +15,8 @@ example is not freshly ready.
 
 - A software-oriented plan can still be pre-runtime and contract-first.
 - `ni status` remains the readiness authority and catches stale planning docs.
+- Grouped `ni status --proof --next-questions` output identifies the sync
+  repair instead of letting a model restart broad planning.
 - The historical `.ni/plan.lock.json` can still bound existing downstream
   prompt seed material.
 - `ni run --target codex` produces seed material without invoking Codex when
@@ -47,6 +50,7 @@ From the repository root:
 
 ```bash
 go run ./cmd/ni status --dir examples/namba-ai-upgrade
+go run ./cmd/ni status --dir examples/namba-ai-upgrade --proof --next-questions
 tmpdir="$(mktemp -d)"
 go run ./cmd/ni run --dir examples/namba-ai-upgrade --target codex --max-chars 4000 --out "$tmpdir/codex.goal.prompt.txt"
 wc -m "$tmpdir/codex.goal.prompt.txt"
@@ -75,7 +79,18 @@ blocker R012: CAP-001
 The run command may compile from the existing lockfile, but this example must
 not be described as freshly ready until `ni status` passes again.
 
-## 7. Non-execution boundary
+## 7. demo-check coverage
+
+Covered by `bash scripts/demo-check.sh`.
+
+The demo check verifies the current `BLOCKED` status and `R012` sync blocker,
+then compiles the Codex prompt only from the existing lock.
+
+## 8. Korean companion
+
+Korean companion docs exist: `README.ko.md`.
+
+## 9. Non-execution boundary
 
 This example does not run Codex, modify namba-ai, create a shell adapter, start
 a queue, call a model API, run a SPEC workflow, or execute downstream tools. Do
