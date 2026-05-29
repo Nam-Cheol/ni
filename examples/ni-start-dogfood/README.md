@@ -14,6 +14,9 @@ locks or compiles.
 - The model may summarize, ask focused questions, and update docs plus contract
   records from confirmed answers.
 - `ni status` controls readiness; the model never overrides a `BLOCKED` result.
+- `ni-start` consumes grouped `ni status --proof --next-questions` output,
+  preserves group labels and answer shapes, and asks the highest-priority
+  group first.
 - `ni end` writes the lock only after CLI readiness and explicit user
   confirmation.
 - `ni run` compiles a bounded handoff prompt only; it does not execute
@@ -88,7 +91,40 @@ deferral D001: DEC-004 is deferred
 deferral D002: OQ-002 remains open
 ```
 
-## 8. Non-execution boundary
+## 8. Grouped next-question excerpt
+
+```text
+$ ni status --dir ./refund-triage-plan --proof --next-questions
+
+NI Intent Readiness: BLOCKED
+
+Next questions:
+First-run card:
+1. R014: What should this project change, for whom, and why does it matter?
+   Answer shape: one or two sentences describing the desired reality change
+2. R015: Who are the primary actors, and what outcome should each one get?
+   Answer shape: actor -> expected outcome
+3. R016: What is the likely delivery surface?
+   Answer shape: CLI, web app, conversation, document, workflow, research protocol, human service, or deferred with reason
+
+Model:
+I will use the highest-priority group, `First-run card`, and ask only these
+three questions. Readiness is blocked by the deterministic gate, not by model
+judgment.
+
+User:
+This should create a refund triage recommendation workflow for support agents
+and supervisors. Deliver it as a conversation product with a document handoff.
+
+Model:
+I will update docs/plan/**, .ni/contract.json, and .ni/session.json with the
+confirmed purpose, actors/outcomes, and delivery surfaces, then run status
+again.
+
+$ ni status --dir ./refund-triage-plan --proof --next-questions
+```
+
+## 9. Non-execution boundary
 
 This example does not run a support assistant, call a model API, start Codex,
 contact customers, approve refunds, create adapters, or manage a queue. It is a

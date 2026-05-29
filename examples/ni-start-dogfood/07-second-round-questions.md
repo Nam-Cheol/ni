@@ -4,6 +4,10 @@
 
 Focused question from the readiness gate:
 
+Group: `Open blockers`
+Answer shape: accepted decision, deferral with reason, `not_applicable`, or
+keep blocking with reason
+
 1. For `OQ-001`, which refund policy source should `REQ-001`, `REQ-002`,
    `EVAL-001`, and `EVAL-002` treat as authoritative?
 

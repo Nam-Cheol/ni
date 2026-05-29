@@ -20,6 +20,8 @@ compilation은 CLI result를 기준으로 판단한다.
 
 - Skills are UX; CLI is authority.
 - Readiness claim 전에는 `ni status`를 run 또는 request한다.
+- `ni-start`는 grouped `ni status --proof --next-questions` output이 있으면
+  primary planning interview로 사용해야 한다.
 - Lock claim 전에는 `ni end`를 run 또는 request한다.
 - Handoff prompt claim 전에는 `ni run`을 run 또는 request한다.
 - `.ni/plan.lock.json`을 manually edit하지 않는다.

@@ -11,6 +11,7 @@ rules that produce `issues[]` produce `next_questions[]` when requested.
 
 ```bash
 ni status --dir . --next-questions
+ni status --dir . --proof --next-questions
 ni status --dir . --json --next-questions
 ```
 
@@ -182,20 +183,33 @@ DEC-001 differs between docs and contract. Which source is correct, and should t
 `ni-start` should run:
 
 ```bash
-ni status --dir . --next-questions
+ni status --dir . --proof --next-questions
 ```
 
 If JSON is easier to parse, use:
 
 ```bash
-ni status --dir . --json --next-questions
+ni status --dir . --proof --json --next-questions
 ```
 
-When questions are present, ask the highest-impact one to three questions from
-the CLI result. The skill may rephrase for clarity, but it must preserve the
-referenced IDs, the readiness gap, and the allowed outcomes. It must not ask a
-question that implies implementation work, pressures acceptance, or silently
-turns a blocker into a deferral.
+When questions are present, read the grouped output directly. Select the
+highest-priority group in CLI order, preserve the group label, and ask at most
+one group per turn unless the group itself is the compact `First-run card`.
+Ask at most three primary questions at once. The skill may rephrase for
+clarity, but it must preserve the referenced IDs, locations, readiness gap,
+and answer shapes. It must not ask a question that implies implementation
+work, pressures acceptance, invents broad brainstorming while deterministic
+questions exist, or silently turns a blocker into a deferral.
+
+If `Sync repairs` contains `SYNC-014`, `SYNC-015`, or `SYNC-016`, use those
+repair questions instead of re-asking matching generic `R014`, `R015`, or
+`R016` first-run questions. Ask whether to update contract, revise docs,
+revise both, or keep the blocker with a reason.
+
+After the user answers, `ni-start` updates `docs/plan/**`,
+`.ni/contract.json`, and `.ni/session.json`, then runs or requests
+`ni status --dir . --proof --next-questions` again. Readiness is blocked or
+cleared by the deterministic CLI gate, not by model judgment.
 
 If no next questions are present and readiness is `READY` or
 `READY_WITH_DEFERRALS`, `ni-start` may suggest `ni-end`. If readiness is

@@ -93,8 +93,52 @@ record에, delivery surface를 `docs/plan/08_delivery_operation.md`,
 `ni status --next-questions`는 prompt를 `First-run card`, `Sync repairs`,
 `Risk decisions`, `Evaluation evidence`, `Scope boundaries`, `Open blockers`
 같은 heading으로 묶는다. `ni-start`는 사용자에게 질문할 때 CLI가 반환한 group,
-ID, location, answer-shape field를 보존하고, CLI가 반환한 top question만
+ID, location, answer-shape field를 반드시 보존하고, CLI가 반환한 top question만
 물어야 한다.
+
+## Grouped next-question 처리
+
+`ni-start`는 계획 turn 시작 시와 의미 있는 authoring update 뒤에 다음 명령을
+실행하거나 요청해야 한다.
+
+```bash
+ni status --dir . --proof --next-questions
+```
+
+grouped `Next questions` section이 있으면 이것이 conversation의 primary driver다.
+`ni-start`는 CLI 순서대로 group을 읽고, highest-priority group을 선택하며,
+compact `First-run card`가 아닌 한 turn마다 최대 1개 group만 물어야 한다. 한 번에
+묻는 primary question은 최대 3개다. deterministic next question이 있을 때 넓은
+brainstorming question을 새로 만들면 안 된다.
+
+model response에서는 group label을 보여주거나 보존해야 한다. CLI가 `Location`이나
+`Answer shape`을 출력하면, 사용자가 기대된 형태로 답할 수 있도록 그 field도
+충분히 보존한다. readiness는 model judgment가 아니라 deterministic CLI gate에
+의해 blocked 상태로 남는다.
+
+group별 규칙:
+
+- `First-run card`: purpose, actor/outcome, delivery surface를 묻는 compact
+  3-question card를 사용한다. unrelated lower-priority question을 추가하지 않는다.
+- `Sync repairs`: repair question을 묻고, contract update, docs revise,
+  both revise, blocker 유지와 reason 중 무엇인지 묻는다. 한쪽에 이미 useful content가
+  있으면 broad planning을 다시 시작하지 않는다. `SYNC-014`, `SYNC-015`,
+  `SYNC-016` repair question이 있으면 matching `R014`, `R015`, `R016`을 다시 묻지
+  않는다.
+- `Risk decisions`: mitigation, owner, monitoring plan, accepted-risk decision,
+  explicit deferral을 묻는다. readiness 통과를 위해 risk severity를 낮추자고 제안하지
+  않는다.
+- `Evaluation evidence`: capability 완료를 증명하는 evidence를 묻는다. answer
+  shape로 test, review checklist, demo condition, user approval, protocol check,
+  manual inspection을 제시한다.
+- `Scope boundaries`: explicit non-goal을 묻고, non-goal이 scope drift를 막는다고
+  설명한다.
+- `Open blockers`: resolve, defer with reason, keep blocking 중 무엇인지 묻는다.
+  open question을 accepted decision으로 조용히 바꾸면 안 된다.
+
+사용자가 선택된 group에 답하면 `ni-start`는 `docs/plan/**`,
+`.ni/contract.json`, `.ni/session.json`을 함께 업데이트한 뒤
+`ni status --dir . --proof --next-questions`를 다시 실행하거나 요청한다.
 
 ## Resume mode
 
@@ -129,10 +173,11 @@ continuity state로 다시 만들거나 갱신해야 한다. 기본적으로 raw
 - constraint나 non-goal이 요청된 behavior와 충돌하는 경우,
 - docs와 `.ni/contract.json`이 같은 record에 대해 불일치하는 경우.
 
-질문은 readiness를 막는 gap에 집중해야 한다. turn마다 1개에서 3개까지만
-묻고, CLI가 반환한 질문을 우선한다. project가 아직 비어 있을 때가 아니라면
-넓고 일반적인 brainstorming 질문은 피한다. 예를 들어 "계획에 또 무엇을
-넣을까요?" 대신 다음처럼 묻는다.
+질문은 readiness를 막는 gap에 집중해야 한다. CLI가 grouped next question을
+반환하면 highest-priority group을 먼저 묻고, turn마다 최대 1개 group만 묻고,
+한 번에 primary question은 최대 3개만 묻는다. deterministic next question이
+있는 동안 넓고 일반적인 brainstorming 질문은 피한다. 예를 들어 "계획에 또
+무엇을 넣을까요?" 대신 다음처럼 묻는다.
 
 ```text
 For CAP-002, what evidence proves this capability works, or should that evidence be deferred?
@@ -173,9 +218,9 @@ ni status --dir . --proof --next-questions
 ```
 
 status 결과가 권한이다. `BLOCKED`면 `ni-start`는 planning을 열어 두고
-`next_questions`에서 가장 영향이 큰 1개에서 3개 질문을 묻는다. CLI가 다음
-질문을 반환하지 않으면 readiness issue를 직접 보여준다. `READY` 또는
-`READY_WITH_DEFERRALS`면 `ni-end`로 이동하자고 제안할 수 있다.
+`next_questions`의 highest-priority group을 묻는다. CLI가 다음 질문을 반환하지
+않으면 readiness issue를 직접 보여준다. `READY` 또는 `READY_WITH_DEFERRALS`면
+`ni-end`로 이동하자고 제안할 수 있다.
 
 `ni-start`는 model judgment만으로 completion을 선언하면 안 된다.
 

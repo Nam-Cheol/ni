@@ -19,6 +19,8 @@ lock creation, lock hash verification, and prompt compilation.
 
 - Skills are UX; the CLI is authority.
 - Run or request `ni status` before any readiness claim.
+- `ni-start` must use grouped `ni status --proof --next-questions` output as
+  its primary planning interview when present.
 - Run or request `ni end` before any lock claim.
 - Run or request `ni run` before any compiled handoff prompt claim.
 - Never edit `.ni/plan.lock.json` manually.

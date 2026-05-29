@@ -94,9 +94,55 @@ assumption, open blocker question, or deferral. It must not proceed to
 
 `ni status --next-questions` groups these prompts under headings such as
 `First-run card`, `Sync repairs`, `Risk decisions`, `Evaluation evidence`,
-`Scope boundaries`, and `Open blockers`. `ni-start` should preserve the group,
+`Scope boundaries`, and `Open blockers`. `ni-start` must preserve the group,
 ID, location, and answer-shape fields when asking the user, and ask only the
 top questions returned by the CLI.
+
+## Grouped next-question handling
+
+`ni-start` should run or request this command at the start of a planning turn
+and after every meaningful authoring update:
+
+```bash
+ni status --dir . --proof --next-questions
+```
+
+The grouped `Next questions` section is the primary conversation driver when
+it is present. `ni-start` should read the groups in CLI order, select the
+highest-priority group, and ask at most one group per turn unless the group is
+the compact `First-run card`. It should ask at most three primary questions at
+once. It must not invent broad brainstorming questions while deterministic
+next questions exist.
+
+Group labels should be shown or preserved in the model response. If the CLI
+prints `Location` or `Answer shape`, keep those fields visible enough that the
+user can answer in the expected form. Readiness remains blocked by
+deterministic CLI gates, not by model judgment.
+
+Group-specific rules:
+
+- `First-run card`: use the compact three-question card for purpose,
+  actors/outcomes, and delivery surface. Do not add unrelated lower-priority
+  questions.
+- `Sync repairs`: ask the repair questions and ask whether to update contract,
+  revise docs, revise both, or keep the blocker with reason. Do not restart
+  broad planning if one side already has useful content. Do not re-ask
+  `R014`, `R015`, or `R016` when matching `SYNC-014`, `SYNC-015`, or
+  `SYNC-016` repair questions are present.
+- `Risk decisions`: ask for mitigation, owner, monitoring plan, accepted-risk
+  decision, or explicit deferral. Do not suggest lowering risk severity to
+  pass readiness.
+- `Evaluation evidence`: ask what evidence proves a capability is complete.
+  Offer answer shapes such as test, review checklist, demo condition, user
+  approval, protocol check, or manual inspection.
+- `Scope boundaries`: ask for explicit non-goals and explain that non-goals
+  prevent scope drift.
+- `Open blockers`: ask whether to resolve, defer with reason, or keep
+  blocking. Do not silently convert open questions into accepted decisions.
+
+After the user answers the selected group, `ni-start` updates `docs/plan/**`,
+`.ni/contract.json`, and `.ni/session.json` together, then runs or requests
+`ni status --dir . --proof --next-questions` again.
 
 ## Resume mode
 
@@ -132,11 +178,12 @@ source for readiness-blocking interview prompts. Common gaps include:
 - constraints or non-goals that conflict with requested behavior,
 - docs and `.ni/contract.json` disagreeing about the same record.
 
-Questions should be focused on the gaps that block readiness. Ask at most one
-to three focused questions per turn and prefer questions returned by the CLI.
-Avoid broad generic brainstorming unless the project is still empty. Instead
-of asking "What else should the plan include?", ask a concrete question such
-as:
+Questions should be focused on the gaps that block readiness. When the CLI
+returns grouped next questions, ask the highest-priority group first, ask at
+most one group per turn, and ask at most three primary questions at once.
+Avoid broad generic brainstorming while deterministic next questions exist.
+Instead of asking "What else should the plan include?", ask a concrete
+question such as:
 
 ```text
 CAP-002 has no evaluation. What evidence would prove this capability is complete: a test, review checklist, demo condition, user approval, or an explicit deferral?
@@ -179,10 +226,10 @@ ni status --dir . --proof --next-questions
 ```
 
 The status result is authoritative. If it reports `BLOCKED`, `ni-start` keeps
-planning open and asks the highest-impact one to three questions from
-`next_questions`. If the CLI returns no next questions, show the readiness
-issues directly. If it reports `READY` or `READY_WITH_DEFERRALS`, `ni-start` may
-suggest moving to `ni-end`.
+planning open and asks the highest-priority group from `next_questions`. If
+the CLI returns no next questions, show the readiness issues directly. If it
+reports `READY` or `READY_WITH_DEFERRALS`, `ni-start` may suggest moving to
+`ni-end`.
 
 `ni-start` must never declare completion by model judgment alone.
 

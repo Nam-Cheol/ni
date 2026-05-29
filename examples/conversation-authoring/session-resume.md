@@ -21,14 +21,21 @@ Current planning state:
 - Blocking gaps: purpose, actors, capabilities, evaluations, risks, artifacts,
   and blocker questions need concrete entries.
 
-Focused questions:
+CLI grouped next-question focus:
 
-1. Should the compiler produce a checklist only, or also assign owners?
-2. What evidence should prove the checklist is complete enough to hand to a new
-   team lead?
-3. What must be out of scope for the first locked plan?
+Group: `First-run card`
+
+1. What should this project change, for whom, and why does it matter?
+2. Who are the primary actors, and what outcome should each one get?
+3. What is the likely delivery surface: CLI, web app, conversation, document,
+   workflow, research protocol, human service, or something else?
 
 **User**
+
+It should turn scattered onboarding source material into a checklist for team
+leads. Team leads get a checklist they can hand to a new hire; the planning
+model keeps the docs and contract synchronized before lock. Deliver it as a
+document output for a human-to-human workflow.
 
 It should produce the checklist only. It must not assign owners or send
 notifications. Evidence should be a review fixture with a complete onboarding
@@ -49,7 +56,7 @@ I will update the planning docs and contract together:
 - `.ni/session.json` with the active focus, summary, pending question, and last
   updated docs.
 
-Then I will run `ni status --dir . --next-questions`.
+Then I will run `ni status --dir . --proof --next-questions`.
 
 ## Docs updated
 
@@ -144,8 +151,12 @@ Example `.ni/session.json` carryover state:
 Example readiness result:
 
 ```text
-BLOCKED
-- OQ-001: Which source documents are authoritative for onboarding checklist content?
+NI Intent Readiness: BLOCKED
+
+Next questions:
+Open blockers:
+1. OQ-001: OQ-001 is blocking readiness. Should it be resolved, deferred with reason, or kept blocking with the missing information named?
+   Answer shape: accepted decision, deferral with reason, not_applicable, or keep blocking with reason
 ```
 
 ## Session ends
@@ -163,7 +174,8 @@ Invoke `ni-start` and resume planning.
 **Model using ni-start**
 
 I read `AGENTS.md`, `.ni/contract.json`, `docs/plan/**`, and
-`.ni/session.json`. I also ran `ni status --dir . --next-questions`.
+`.ni/session.json`. I also ran
+`ni status --dir . --proof --next-questions`.
 
 Resumed state:
 
@@ -176,7 +188,11 @@ Resumed state:
   `ni status`.
 - Readiness: `BLOCKED`.
 
-Focused question:
+Focused group from the CLI:
+
+Group: `Open blockers`
+Answer shape: accepted decision, deferral with reason, `not_applicable`, or
+keep blocking with reason
 
 1. For `OQ-001`, which source documents are authoritative for onboarding
    checklist content, or should this remain blocking because the owner is not
@@ -186,9 +202,9 @@ Focused question:
 
 If `.ni/session.json` is missing in the later session, the model reconstructs
 the same summary from `docs/plan/**`, `.ni/contract.json`, and
-`ni status --dir . --next-questions`. It should state that no session file was
-available and recreate bounded session state after the next meaningful planning
-edit.
+`ni status --dir . --proof --next-questions`. It should state that no session
+file was available and recreate bounded session state after the next meaningful
+planning edit.
 
 ## Resume conflict example
 

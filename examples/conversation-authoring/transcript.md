@@ -28,6 +28,36 @@ Invoke `ni-start`. I want to plan a refund triage assistant for support agents.
 
 **Model using ni-start**
 
+I will run the readiness gate with proof and grouped next questions before
+asking anything. The CLI output is the interview driver.
+
+```bash
+ni status --dir . --proof --next-questions
+```
+
+Example CLI result:
+
+```text
+NI Intent Readiness: BLOCKED
+
+Blockers:
+- R014 Project purpose is missing.
+- R015 Actors or outcomes are missing.
+- R016 Delivery surface is missing.
+- OQ-001 is marked as blocker.
+
+Execution must not start.
+
+Next questions:
+First-run card:
+1. R014: What should this project change, for whom, and why does it matter?
+   Answer shape: one or two sentences describing the desired reality change
+2. R015: Who are the primary actors, and what outcome should each one get?
+   Answer shape: actor -> expected outcome
+3. R016: What is the likely delivery surface?
+   Answer shape: CLI, web app, conversation, document, workflow, research protocol, human service, or deferred with reason
+```
+
 Current planning state:
 
 - Purpose: template still has TODO content.
@@ -36,20 +66,28 @@ Current planning state:
 - Blocking gaps: purpose, actors, capabilities, evaluations, risks, artifacts,
   and blocker questions need concrete entries.
 
-Focused questions:
+I will ask the highest-priority group from the CLI result first. The compact
+`First-run card` is allowed to include all three primary questions, and I will
+not add unrelated lower-priority questions.
 
-1. Should the assistant only draft refund recommendations, or may it approve
-   refunds automatically?
-2. What transcript evidence should prove the assistant handled a refund request
-   correctly?
-3. What must be out of scope for the first locked plan?
+Group: `First-run card`
+
+1. What should this project change, for whom, and why does it matter?
+2. Who are the primary actors, and what outcome should each one get?
+3. What is the likely delivery surface: CLI, web app, conversation, document,
+   workflow, research protocol, human service, or something else?
 
 **User**
 
+It changes refund triage from ad hoc judgment into a documented recommendation
+workflow for support agents and supervisors. Support agents get a draft refund
+recommendation; supervisors get escalations for ambiguous policy cases.
+Deliver it as a conversation product with a document handoff.
+
 It only drafts recommendations for support agents. It must never issue refunds
-or contact customers. Readiness should be proven with three transcript fixtures:
-eligible refund, ineligible refund, and policy ambiguity that escalates to a
-supervisor.
+or contact customers. Readiness should be proven with three transcript
+fixtures: eligible refund, ineligible refund, and policy ambiguity that
+escalates to a supervisor.
 
 **Model using ni-start**
 
@@ -63,8 +101,10 @@ I will update:
 - `docs/plan/10_open_questions.md` with remaining policy and owner questions.
 - `.ni/contract.json` with matching capability, requirement, evaluation,
   risk, artifact, non-goal, and open question records.
+- `.ni/session.json` with bounded continuity state and the latest CLI
+  readiness blockers.
 
-After the edit, I will run `ni status --dir .`.
+After the edit, I will run `ni status --dir . --proof --next-questions`.
 
 ## Persisted planning records
 
@@ -130,21 +170,31 @@ ineligible refund, and ambiguous policy escalation.
 ## Gate result
 
 ```bash
-ni status --dir .
+ni status --dir . --proof --next-questions
 ```
 
 Example result:
 
 ```text
-BLOCKED
-- OQ-001: Which policy source is authoritative for refund eligibility?
+NI Intent Readiness: BLOCKED
+
+Blockers:
+- OQ-001 is marked as blocker.
+
+Execution must not start.
+
+Next questions:
+Open blockers:
+1. OQ-001: OQ-001 is blocking readiness. Should it be resolved, deferred with reason, or kept blocking with the missing information named?
+   Answer shape: accepted decision, deferral with reason, not_applicable, or keep blocking with reason
 ```
 
 **Model using ni-start**
 
 `ni status` reports `BLOCKED`, so I will not suggest `ni-end` yet. The next
-focused question is: which refund policy source should `REQ-001` and
-`EVAL-001` treat as authoritative?
+focused group is `Open blockers`: which refund policy source should `REQ-001`
+and `EVAL-001` treat as authoritative, should it be deferred with reason, or
+should it remain blocking?
 
 ## Turn 2
 
@@ -158,7 +208,8 @@ with the ticket text, escalate.
 I will resolve `OQ-001`, add `DEC-001` that the internal refund policy page is
 authoritative, add `RISK-003` for stale policy references, update the transcript
 evaluation to include conflict escalation, and refresh `.ni/session.json` as
-bounded continuity state. Then I will run `ni status --dir .` again.
+bounded continuity state. Then I will run
+`ni status --dir . --proof --next-questions` again.
 
 Changed files:
 

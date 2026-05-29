@@ -65,12 +65,51 @@ If a lock hash mismatch exists, stop and report `BLOCKED`.
    - unresolved blocker questions,
    - recent decisions,
    - next recommended planning focus.
-7. Ask focused questions about the highest-impact readiness gaps. Ask at most
-   one to three questions per turn. Prefer questions from the CLI
-   `next_questions` result, preserving the referenced IDs, readiness gap, and
-   allowed answer shapes such as evidence, decision, deferral, not_applicable,
-   mitigation, or explicit non-goal. Avoid broad generic brainstorming unless
-   the project is still empty.
+7. Ask focused questions from the grouped CLI `next_questions` result when it
+   is present. Read the groups in CLI order, select the highest-priority group,
+   preserve the group label, and ask at most one group per turn unless the
+   group is the compact `First-run card`. Ask at most three primary questions
+   at once. Preserve the referenced IDs, locations, readiness gap, and allowed
+   answer shapes such as evidence, decision, deferral, not_applicable,
+   mitigation, or explicit non-goal. Do not invent broad generic brainstorming
+   questions while deterministic next questions exist.
+
+## Grouped Next-Question Handling
+
+`ni status --dir . --proof --next-questions` is the conversation driver when it
+returns grouped next questions. Preserve group labels such as:
+
+- `First-run card`
+- `Sync repairs`
+- `Risk decisions`
+- `Evaluation evidence`
+- `Scope boundaries`
+- `Open blockers`
+
+Use the groups this way:
+
+- `First-run card`: use the compact three-question card. Do not add unrelated
+  lower-priority questions.
+- `Sync repairs`: ask repair questions and ask whether to update contract,
+  revise docs, revise both, or keep the blocker with reason. Do not restart
+  broad planning if one side already has useful content. Do not re-ask
+  `R014`, `R015`, or `R016` when `SYNC-014`, `SYNC-015`, or `SYNC-016`
+  already provide matching repair questions.
+- `Risk decisions`: ask for mitigation, owner, monitoring plan, accepted-risk
+  decision, or explicit deferral. Do not suggest lowering risk severity to
+  pass readiness.
+- `Evaluation evidence`: ask what evidence proves a capability is complete.
+  Offer the CLI answer shapes: test, review checklist, demo condition, user
+  approval, protocol check, or manual inspection.
+- `Scope boundaries`: ask for explicit non-goals and explain that non-goals
+  prevent scope drift.
+- `Open blockers`: ask whether to resolve, defer with reason, or keep
+  blocking. Do not silently convert open questions into accepted decisions.
+
+After the user answers the selected group, update `docs/plan/**`,
+`.ni/contract.json`, and `.ni/session.json`, then run or request
+`ni status --dir . --proof --next-questions` again. Explain that readiness is
+blocked or cleared by deterministic CLI gates, not model judgment.
 
 ## First-run Opening Card
 
@@ -144,8 +183,14 @@ When responding during planning:
 - Name affected IDs and whether they are accepted, draft, assumption,
   rejected, deferred, resolved, or blockers.
 - Ask only the next focused questions needed to unblock readiness.
-- Ask at most one to three questions per turn.
-- Prefer deterministic next questions from `ni status --proof --next-questions`.
+- Ask at most one grouped next-question section per turn, except for the
+  compact `First-run card`.
+- Ask at most three primary questions at once.
+- Use deterministic next questions from `ni status --proof --next-questions`
+  directly.
+- Preserve the CLI group labels, including `First-run card`, `Sync repairs`,
+  `Risk decisions`, `Evaluation evidence`, `Scope boundaries`, and
+  `Open blockers`.
 - Preserve the CLI answer shapes: evidence, decision, deferral,
   not_applicable, mitigation, or explicit non-goal.
 - If `ni status` reports `BLOCKED`, state the blockers plainly and keep
