@@ -142,6 +142,42 @@ The resumed summary should name:
    explicit non-goal. Do not ask broad generic brainstorming questions unless
    the project is still empty.
 
+## First-run opening card
+
+When a fresh project reports the first-run blockers `R014`, `R015`, and
+`R016`, use them as the opening planning card. Do not ask broad generic
+brainstorming questions and do not ask more than three questions at once. If
+the CLI also reports a template blocker such as `OQ-001`, keep it visible but
+do not let it displace the three foundational questions.
+
+Use this framing:
+
+```text
+ni is blocked because the initial project intent is not explicit enough to lock
+yet. I need three things before execution can safely start: what reality this
+project should change, who it is for, and how it will be delivered.
+
+Implementation has not started. This is still planning.
+```
+
+Then ask:
+
+1. What should this project change, for whom, and why does it matter?
+2. Who are the primary actors, and what outcome should each one get?
+3. What is the likely delivery surface: CLI, web app, conversation, document,
+   workflow, research protocol, human service, or something else?
+
+After the user answers, record clear purpose in `docs/plan/00_project_brief.md`
+and `project.purpose`, actors and outcomes in
+`docs/plan/01_actors_outcomes.md` and matching contract records, and delivery
+surface in `docs/plan/08_delivery_operation.md`, `product_type`, and
+`delivery_surfaces` when clear. Record uncertain answers as assumptions or
+open questions. Record clear exclusions as non-goals. Do not convert vague
+answers into accepted decisions without confirmation.
+
+Run or request `ni status --dir . --proof --next-questions` again after the
+update, and use the CLI result as the next authority.
+
 ## Authoring loop
 
 After the user answers:

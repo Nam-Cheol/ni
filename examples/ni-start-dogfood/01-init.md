@@ -14,11 +14,7 @@ state will be maintained through conversation by updating `docs/plan/**` and
 `.ni/contract.json` together.
 
 ```bash
-ni init --dir ./refund-triage-plan \
-  --product-type conversation_product \
-  --surface conversation \
-  --surface document \
-  --interaction-mode human_to_system
+ni init --dir ./refund-triage-plan
 ```
 
 ## CLI result

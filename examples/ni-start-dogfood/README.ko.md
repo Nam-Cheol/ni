@@ -31,13 +31,16 @@
 ## 4. 대화 기록 개요
 
 - `01-init.md`: `ni init`이 계획 workspace를 만든다.
-- `02-user-vague-idea.md`: 사용자가 모호한 support assistant 아이디어를
-  제시한다.
-- `03-model-summary-and-questions.md`: `ni-start`가 gap을 요약하고 집중
-  질문을 한다.
-- `04-user-answers.md`: 사용자가 scope, non-goal, evidence를 확인한다.
+- `02-user-vague-idea.md`: 사용자가 fresh workspace에서 `ni-start`를
+  호출한다.
+- `03-model-summary-and-questions.md`: `ni-start`가
+  `ni status --proof --next-questions`를 실행하고 first-run blocker
+  `R014`/`R015`/`R016`을 확인한 뒤 opening card 질문을 묻는다.
+- `04-user-answers.md`: 사용자가 purpose, actor/outcome, delivery surface,
+  초기 scope, non-goal, evidence를 답한다.
 - `05-docs-contract-delta.md`: 모델이 docs와 contract를 함께 갱신한다.
-- `06-status-proof.md`: `ni status`가 준비 상태와 blocker를 보고한다.
+- `06-status-proof.md`: first-run 답변을 기록한 뒤 `ni status`를 다시
+  실행하고 다음 blocker를 보고한다.
 - `07-second-round-questions.md`: 모델이 gate가 요구하는 다음 blocker
   질문만 묻는다.
 - `08-ni-end-confirmation.md`: `ni-end`가 lock 전에 CLI 준비 상태를 확인한다.

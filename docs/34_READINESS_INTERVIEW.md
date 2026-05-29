@@ -86,6 +86,38 @@ docs/plan/01_actors_outcomes.md is missing an actor or outcome. Which actor need
 docs/plan/08_delivery_operation.md is missing a delivery surface. Should the plan target a CLI, web app, conversation, document, workflow, research protocol, human service, another surface, or a deferral with reason?
 ```
 
+## First-run Card
+
+When a fresh workspace reports `R014`, `R015`, and `R016`, `ni-start` should
+group them into the opening planning card. The model should not ask broad
+generic brainstorming questions and should not ask more than three questions at
+once.
+
+The card should say that `ni` is blocked only because the initial project
+intent is not explicit enough to lock yet, and that implementation has not
+started. Then it should ask:
+
+1. What should this project change, for whom, and why does it matter?
+2. Who are the primary actors, and what outcome should each one get?
+3. What is the likely delivery surface: CLI, web app, conversation, document,
+   workflow, research protocol, human service, or something else?
+
+The user's answer should be recorded into both `docs/plan/**` and
+`.ni/contract.json`: purpose in the project brief and `project.purpose`, actors
+and outcomes in the actors doc and matching contract records, and delivery
+surface in the delivery/operation doc plus `product_type` and
+`delivery_surfaces` when clear. Uncertain answers remain assumptions or open
+questions, clear exclusions become non-goals, and vague answers must not become
+accepted decisions without confirmation.
+
+After the authoring update, run or request:
+
+```bash
+ni status --dir . --proof --next-questions
+```
+
+The next readiness state still comes from the CLI.
+
 `D001` deferred decision:
 
 ```text

@@ -29,12 +29,15 @@ locks or compiles.
 ## 4. Transcript outline
 
 - `01-init.md`: `ni init` creates the planning workspace.
-- `02-user-vague-idea.md`: the user gives a vague support-assistant idea.
-- `03-model-summary-and-questions.md`: `ni-start` summarizes gaps and asks
-  focused questions.
-- `04-user-answers.md`: the user confirms scope, non-goals, and evidence.
+- `02-user-vague-idea.md`: the user invokes `ni-start` on the fresh workspace.
+- `03-model-summary-and-questions.md`: `ni-start` runs
+  `ni status --proof --next-questions`, sees first-run blockers
+  `R014`/`R015`/`R016`, and asks the opening card questions.
+- `04-user-answers.md`: the user provides purpose, actors/outcomes, delivery
+  surface, initial scope, non-goals, and evidence.
 - `05-docs-contract-delta.md`: the model updates docs and contract together.
-- `06-status-proof.md`: `ni status` reports readiness state and blockers.
+- `06-status-proof.md`: `ni status` runs again after recording the first-run
+  answers and reports the next blocker.
 - `07-second-round-questions.md`: the model asks only the next blocker
   question from the gate.
 - `08-ni-end-confirmation.md`: `ni-end` confirms CLI readiness before locking.

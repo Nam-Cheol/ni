@@ -39,6 +39,51 @@ ni init -> ni-start conversation -> docs/plan + .ni/contract.json -> ni status
 `.ni/session.json`의 주장은 contract, docs, 그리고
 `ni status --dir . --proof --next-questions` 결과와 대조해야 한다.
 
+## First-run conversation card
+
+fresh workspace에서 `ni init` 직후 `ni status --proof --next-questions`는
+보통 첫 intent blocker를 보고한다.
+
+- `R014 Project purpose is missing`
+- `R015 Actors or outcomes are missing`
+- `R016 Delivery surface is missing`
+
+`ni-start`는 이 blocker를 사용자가 막힌 느낌을 받는 상태 메시지가 아니라
+간결한 opening planning card로 바꿔야 한다. card는 `ni`가 막힌 이유가 초기
+intent가 아직 lock할 만큼 명시적이지 않기 때문이며, implementation은 아직
+시작되지 않았다고 설명해야 한다.
+
+권장 문구:
+
+```text
+ni is blocked because the initial project intent is not explicit enough to lock
+yet. I need three things before execution can safely start: what reality this
+project should change, who it is for, and how it will be delivered.
+
+Implementation has not started. This is still planning.
+```
+
+그 다음 first-run blocker를 중심으로 최대 3개의 focused question만 묻는다.
+
+1. What should this project change, for whom, and why does it matter?
+2. Who are the primary actors, and what outcome should each one get?
+3. What is the likely delivery surface: CLI, web app, conversation, document,
+   workflow, research protocol, human service, or something else?
+
+CLI가 template open question도 함께 보여줄 수 있지만, generic brainstorming이
+이 세 가지 first-run question을 밀어내면 안 된다. 사용자가 답하면
+`ni-start`는 purpose를 `docs/plan/00_project_brief.md`와 `project.purpose`에,
+actor와 outcome을 `docs/plan/01_actors_outcomes.md`와 matching contract
+record에, delivery surface를 `docs/plan/08_delivery_operation.md`,
+`product_type`, `delivery_surfaces`에 적절히 기록한다.
+
+명확한 제외 사항은 non-goal로 기록한다. 불확실하거나 tentative하거나 vague한
+답은 사용자가 확인할 때까지 assumption이나 blocker open question으로 남겨야
+한다. model은 readiness를 통과시키려고 vague answer를 accepted decision으로
+바꾸면 안 된다. 답을 기록한 뒤에는 다시
+`ni status --dir . --proof --next-questions`를 실행하거나 요청하고, CLI 결과를
+다음 권한으로 사용한다.
+
 ## Resume mode
 
 나중의 model session이 계획을 이어갈 때, `ni-start`는 일반 turn과 같은

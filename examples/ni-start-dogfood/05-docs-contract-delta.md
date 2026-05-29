@@ -7,20 +7,23 @@ answers.
 
 Changed planning files:
 
-- `docs/plan/00_project_brief.md`: add refund triage purpose and success
-  definition.
+- `docs/plan/00_project_brief.md`: add refund triage purpose, who it serves,
+  and why it matters.
 - `docs/plan/01_actors_outcomes.md`: add support agent, supervisor, planning
   model, and NI CLI roles.
 - `docs/plan/02_capabilities.md`: add `CAP-001`, `CAP-002`, and `CAP-003`.
 - `docs/plan/03_interaction_contract.md`: capture conversation and refund
   triage boundaries.
+- `docs/plan/08_delivery_operation.md`: record `conversation` and `document`
+  as the delivery surfaces.
 - `docs/plan/05_constraints.md`: add non-goals for refunds, customer contact,
   and execution runtime.
 - `docs/plan/06_risks_security.md`: add refund authority and data risks with
   mitigations.
 - `docs/plan/07_evaluation_contract.md`: add transcript fixture evaluations.
 - `docs/plan/10_open_questions.md`: add blocker `OQ-001`.
-- `.ni/contract.json`: add matching `CAP`, `REQ`, `EVAL`, `RISK`, `ART`,
+- `.ni/contract.json`: add `project.purpose`, `product_type`,
+  `delivery_surfaces`, and matching `CAP`, `REQ`, `EVAL`, `RISK`, `ART`,
   `NG`, and `OQ` records.
 - `.ni/session.json`: refresh bounded continuity state below contract
   authority, including active readiness profile, product type, delivery
@@ -36,17 +39,26 @@ Status: accepted
 Linked records: REQ-001, REQ-002, EVAL-001, RISK-001, RISK-002, ART-001
 ```
 
-The contract contains the corresponding machine record:
+The contract contains corresponding machine records:
 
 ```json
 {
-  "id": "CAP-001",
-  "title": "Draft refund recommendations for support agents.",
-  "status": "accepted",
-  "requirements": ["REQ-001", "REQ-002"],
-  "evaluations": ["EVAL-001"],
-  "risks": ["RISK-001", "RISK-002"],
-  "artifacts": ["ART-001"]
+  "product_type": "conversation_product",
+  "delivery_surfaces": ["conversation", "document"],
+  "project": {
+    "purpose": "Plan a support-agent assistant that drafts refund recommendations from tickets and policy, escalates ambiguity, and excludes refund approval, customer contact, and runtimes."
+  },
+  "capabilities": [
+    {
+      "id": "CAP-001",
+      "title": "Draft refund recommendations for support agents.",
+      "status": "accepted",
+      "requirements": ["REQ-001", "REQ-002"],
+      "evaluations": ["EVAL-001"],
+      "risks": ["RISK-001", "RISK-002"],
+      "artifacts": ["ART-001"]
+    }
+  ]
 }
 ```
 

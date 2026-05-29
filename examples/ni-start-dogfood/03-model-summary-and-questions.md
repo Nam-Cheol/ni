@@ -4,18 +4,14 @@
 
 Current planning state:
 
-- Current purpose: template content exists, but the concrete product intent is still
-  draft.
+- Current purpose: missing.
 - Active readiness profile: `prototype`.
-- Product type / delivery surfaces: not accepted yet; likely
-  `conversation_product` with `conversation` and `document` surfaces, but this
-  stays draft until confirmed.
+- Product type / delivery surfaces: missing.
 - Accepted capabilities: none yet.
-- Unresolved blocker questions: product authority, evaluation evidence, and
-  first-plan non-goals are still open.
+- Unresolved blocker questions: the initial template question is still open.
 - Recent decisions: none accepted yet.
-- Next recommended planning focus: narrow refund authority, evidence, and
-  non-goals before accepting capabilities.
+- Next recommended planning focus: answer the first-run intent blockers before
+  any execution or lock.
 
 I will run or request the readiness gate with proof:
 
@@ -23,16 +19,51 @@ I will run or request the readiness gate with proof:
 ni status --dir ./refund-triage-plan --proof --next-questions
 ```
 
+## CLI result
+
+```text
+NI Intent Readiness: BLOCKED
+
+Blockers:
+- R014 Project purpose is missing.
+  Why it matters: ni cannot lock intent until it knows what reality the project is meant to change.
+  Next: describe the project in one or two sentences: what should change, for whom, and why it matters.
+- OQ-001 is marked as blocker.
+  Why it matters: open blocker questions mean required intent is still unresolved.
+  Next: answer or defer the blocker question, or keep it blocking with an explicit reason.
+- R015 Actors or outcomes are missing.
+  Why it matters: ni cannot judge readiness without knowing who uses or operates the product and what successful use looks like for them.
+  Next: list the primary actors and the outcome each one expects.
+- R016 Delivery surface is missing.
+  Why it matters: downstream handoff depends on knowing whether the product is delivered as a CLI, web app, conversation, document, workflow, research protocol, human service, or another surface.
+  Next: choose the likely delivery surface, or mark it deferred with an explicit reason.
+
+Execution must not start.
+
+Next questions:
+1. project.purpose is missing a concrete purpose. What should change, for whom, and why does it matter?
+2. OQ-001 is blocking readiness. What answer would resolve it: an accepted decision, a deferral with reason, not_applicable, or keeping it blocking with the missing information named?
+3. docs/plan/01_actors_outcomes.md is missing an actor or outcome. Which actor needs what outcome, and should that record be accepted, kept as evidence, deferred, or marked not_applicable?
+4. docs/plan/08_delivery_operation.md is missing a delivery surface. Should the plan target a CLI, web app, conversation, document, workflow, research protocol, human service, another surface, or a deferral with reason?
+```
+
+## First-run conversation card
+
+ni is blocked because the initial project intent is not explicit enough to lock
+yet. I need three things before execution can safely start: what reality this
+project should change, who it is for, and how it will be delivered.
+
+Implementation has not started. This is still planning.
+
 Focused questions:
 
-1. Should the assistant only draft refund recommendations, or may it approve
-   refunds automatically?
-2. What transcript evidence should prove the assistant handled refund requests
-   correctly?
-3. What must be out of scope for the first locked plan?
+1. What should this project change, for whom, and why does it matter?
+2. Who are the primary actors, and what outcome should each one get?
+3. What is the likely delivery surface: CLI, web app, conversation, document,
+   workflow, research protocol, human service, or something else?
 
 ## Boundary shown
 
-The model asks for missing intent instead of inventing product behavior. It
-does not declare readiness from the conversation alone, and it asks only three
-focused questions instead of broad brainstorming.
+The model uses R014, R015, and R016 as the opening planning card. It keeps the
+template open question visible through the CLI output, but it asks only the
+three first-run questions and does not start implementation.

@@ -39,6 +39,53 @@ start summary must name:
 Claims from `.ni/session.json` should be checked against the contract, docs,
 and `ni status --dir . --proof --next-questions`.
 
+## First-run conversation card
+
+On a fresh workspace after `ni init`, `ni status --proof --next-questions`
+commonly reports the first intent blockers:
+
+- `R014 Project purpose is missing`
+- `R015 Actors or outcomes are missing`
+- `R016 Delivery surface is missing`
+
+`ni-start` should turn those blockers into a concise opening planning card
+instead of making the user feel stuck. The card should explain that `ni` is
+blocked only because the initial intent is not explicit enough to lock, and
+that implementation has not started.
+
+Recommended wording:
+
+```text
+ni is blocked because the initial project intent is not explicit enough to lock
+yet. I need three things before execution can safely start: what reality this
+project should change, who it is for, and how it will be delivered.
+
+Implementation has not started. This is still planning.
+```
+
+Then ask at most three focused questions, grouped around the first-run
+blockers:
+
+1. What should this project change, for whom, and why does it matter?
+2. Who are the primary actors, and what outcome should each one get?
+3. What is the likely delivery surface: CLI, web app, conversation, document,
+   workflow, research protocol, human service, or something else?
+
+The model may mention that the CLI also surfaced a template open question, but
+it should not let generic brainstorming displace the three first-run questions.
+When the user answers, `ni-start` records purpose in
+`docs/plan/00_project_brief.md` and `project.purpose`, actors and outcomes in
+`docs/plan/01_actors_outcomes.md` and matching contract records, and delivery
+surface in `docs/plan/08_delivery_operation.md`, `product_type`, and
+`delivery_surfaces` as appropriate.
+
+Clear exclusions should be recorded as non-goals. Uncertain, tentative, or
+vague answers should stay visible as assumptions or blocker open questions
+until the user confirms them. The model must not convert vague answers into
+accepted decisions merely to pass readiness. After recording the answer,
+`ni-start` runs or requests `ni status --dir . --proof --next-questions`
+again and uses the CLI result as the next authority.
+
 ## Resume mode
 
 When a later model session resumes planning, `ni-start` first uses the same
