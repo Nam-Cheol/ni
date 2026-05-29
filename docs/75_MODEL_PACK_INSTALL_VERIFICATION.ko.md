@@ -44,6 +44,34 @@ visible instruction이 있어야 한다.
 
 ## Installation Paths
 
+### Copy This Folder Quick Guides
+
+Codex repo-local usage는 Codex skill folder를 workspace의 `.agents/skills/`
+directory로 copy한다:
+
+```bash
+mkdir -p .agents/skills
+cp -R packages/codex-skills/ni-start .agents/skills/
+cp -R packages/codex-skills/ni-status-review .agents/skills/
+cp -R packages/codex-skills/ni-end .agents/skills/
+cp -R packages/codex-skills/ni-run .agents/skills/
+```
+
+Claude-compatible host는 해당 host에서 document되고 verify된 target skill
+directory를 고른 뒤 Claude skill folder를 copy한다:
+
+```bash
+TARGET=/path/to/verified/claude-skills
+mkdir -p "$TARGET"
+cp -R packages/claude-skills/ni-start "$TARGET/"
+cp -R packages/claude-skills/ni-status-review "$TARGET/"
+cp -R packages/claude-skills/ni-end "$TARGET/"
+cp -R packages/claude-skills/ni-run "$TARGET/"
+```
+
+이 절차는 file-copy workflow일 뿐이다. Global host install 또는 global skill
+discovery를 prove하지 않는다.
+
 ### Repo-local Codex usage
 
 Repo-local Codex-style usage는 Codex skill directories를 workspace-local
@@ -119,11 +147,19 @@ preserve한다.
 Codex dry-run install support는 Planned다. Codex global installation은 이
 repository에서 Unverified 상태다.
 
-## Verification Command
+## Verify The Pack
 
-Run:
+Skills 목록을 확인한다:
 
 ```bash
+find packages/codex-skills -mindepth 1 -maxdepth 1 -type d -name 'ni-*' -print | sort
+find packages/claude-skills -mindepth 1 -maxdepth 1 -type d -name 'ni-*' -print | sort
+```
+
+`SKILL.md` files와 README boundary text를 확인한다:
+
+```bash
+find packages/codex-skills packages/claude-skills -path '*/SKILL.md' -print | sort
 bash scripts/check-skill-packs.sh
 ```
 
@@ -138,6 +174,30 @@ Checker가 verify하는 항목:
 - Claude dry-run installer가 file 변경 없이 완료된다.
 
 Checker는 Codex APIs, Claude APIs, downstream execution systems를 call하지 않는다.
+
+Zip archives를 package한다:
+
+```bash
+bash scripts/package-codex-skills.sh
+bash scripts/package-claude-skills.sh
+```
+
+Archives를 inspect한다:
+
+```bash
+unzip -l dist/ni-codex-skills.zip
+unzip -l dist/ni-claude-skills.zip
+```
+
+Archive inspection은 pack root, pack README files, `SKILL.md` files가 있는 네 개의
+expected skill folders만 보여야 한다.
+
+## What This Does Not Do
+
+- Codex APIs, Claude APIs, `codex exec`를 run하지 않는다.
+- Implementation 또는 downstream work를 execute하지 않는다.
+- Readiness, locking, hash checks, prompt compilation에 대한 `ni` CLI validation을
+  replace하지 않는다.
 
 ## Boundary Checklist
 

@@ -42,7 +42,7 @@ Archive output:
 dist/ni-codex-skills.zip
 ```
 
-## Repo-Local Usage
+## Copy This Folder
 
 이 repository는 repo-local skill usage만 verify한다. Skill directories를
 workspace-local `.agents/skills/` directory로 copy한다:
@@ -53,6 +53,17 @@ cp -R packages/codex-skills/ni-start .agents/skills/
 cp -R packages/codex-skills/ni-status-review .agents/skills/
 cp -R packages/codex-skills/ni-end .agents/skills/
 cp -R packages/codex-skills/ni-run .agents/skills/
+```
+
+Zip archive에서 사용할 때는 먼저 unpack한 뒤 같은 skill folder를 copy한다:
+
+```bash
+unzip -q dist/ni-codex-skills.zip -d /tmp/ni-codex-skills-unpacked
+mkdir -p .agents/skills
+cp -R /tmp/ni-codex-skills-unpacked/ni-codex-skills/ni-start .agents/skills/
+cp -R /tmp/ni-codex-skills-unpacked/ni-codex-skills/ni-status-review .agents/skills/
+cp -R /tmp/ni-codex-skills-unpacked/ni-codex-skills/ni-end .agents/skills/
+cp -R /tmp/ni-codex-skills-unpacked/ni-codex-skills/ni-run .agents/skills/
 ```
 
 Skill이 authority를 요구하면 project workspace에서 relevant `ni` CLI command를
@@ -69,12 +80,41 @@ model host에 대해 user가 verify한 target folder로 skill directories만 cop
 Host-specific path와 loading behavior가 verify되지 않았다면 그 target을 global
 Codex install path로 설명하지 않는다.
 
-Codex dry-run install support는 Planned다. 지금은 다음 command로 pack을 verify한다:
+Codex dry-run install support는 Planned다.
+
+## Verify The Pack
+
+Skills 목록을 확인한다:
 
 ```bash
+find packages/codex-skills -mindepth 1 -maxdepth 1 -type d -name 'ni-*' -print | sort
+```
+
+`SKILL.md` files를 확인한다:
+
+```bash
+find packages/codex-skills -path '*/SKILL.md' -print | sort
 bash scripts/check-skill-packs.sh
+```
+
+Zip package를 만든다:
+
+```bash
 bash scripts/package-codex-skills.sh
+```
+
+Archive contents를 inspect한다:
+
+```bash
+unzip -l dist/ni-codex-skills.zip
 ```
 
 Full installation과 verification status는
 `docs/75_MODEL_PACK_INSTALL_VERIFICATION.ko.md`를 참고한다.
+
+## What This Does Not Do
+
+- Codex APIs 또는 `codex exec`를 run하지 않는다.
+- Implementation 또는 downstream work를 execute하지 않는다.
+- Readiness, locking, hash checks, prompt compilation에 대한 `ni` CLI validation을
+  replace하지 않는다.

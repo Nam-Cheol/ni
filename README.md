@@ -92,7 +92,7 @@ go run ./cmd/ni run --dir ./my-plan --target generic --max-chars 4000
 | Local binary | Available | `make build && ./bin/ni --help` | You want `./bin/ni` or a local install from this checkout. |
 | Release binary | Available | [v0.3.0 release](https://github.com/Nam-Cheol/ni/releases/tag/v0.3.0) | You want `ni` without Go and prefer manual checksum verification. |
 | Curl installer | Available | `sh install.sh --dry-run --version 0.3.0` | You want a small shell installer after inspecting the script. |
-| Model workspaces | Experimental | [Model Workspace Packs](docs/55_MODEL_WORKSPACE_PACKS.md) | You want verified Codex or Claude source/zip skill packs to help draft docs and contract records; the CLI remains authority. |
+| Model workspaces | Experimental | [Model Workspace Packs](docs/55_MODEL_WORKSPACE_PACKS.md) | You want Codex or Claude source/zip skill packs to help draft docs and contract records; global host install is unverified and the CLI remains authority. |
 | No-terminal method | Experimental | [No-Terminal Planning](docs/no-terminal.md) | You want assisted drafting before a trusted runner produces CLI proof. |
 | Homebrew | Planned | [Homebrew Tap Plan](docs/72_HOMEBREW_TAP_PLAN.md) | You prefer a package manager; no tap or formula is published or tested. |
 

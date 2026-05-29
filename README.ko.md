@@ -92,7 +92,7 @@ go run ./cmd/ni run --dir ./my-plan --target generic --max-chars 4000
 | Local binary | Available | `make build && ./bin/ni --help` | 이 checkout에서 `./bin/ni` 또는 local install을 원할 때. |
 | Release binary | Available | [v0.3.0 release](https://github.com/Nam-Cheol/ni/releases/tag/v0.3.0) | Go 없이 설치하고 checksum을 직접 검증하고 싶을 때. |
 | Curl installer | Available | `sh install.sh --dry-run --version 0.3.0` | Script를 먼저 inspect한 뒤 작은 shell installer를 쓰고 싶을 때. |
-| Model workspaces | Experimental | [Model Workspace Packs](docs/55_MODEL_WORKSPACE_PACKS.md) | Verified Codex 또는 Claude source/zip skill packs로 docs와 contract records draft를 돕게 하고 싶을 때; CLI가 authority입니다. |
+| Model workspaces | Experimental | [Model Workspace Packs](docs/55_MODEL_WORKSPACE_PACKS.md) | Codex 또는 Claude source/zip skill packs로 docs와 contract records draft를 돕게 하고 싶을 때; global host install은 unverified이고 CLI가 authority입니다. |
 | No-terminal method | Experimental | [터미널 없이 계획하기](docs/no-terminal.ko.md) | Trusted runner가 CLI proof를 만들기 전 assisted drafting을 하고 싶을 때. |
 | Homebrew | Planned | [Homebrew Tap Plan](docs/72_HOMEBREW_TAP_PLAN.ko.md) | Package manager를 선호할 때; published 또는 tested tap/formula는 없습니다. |
 

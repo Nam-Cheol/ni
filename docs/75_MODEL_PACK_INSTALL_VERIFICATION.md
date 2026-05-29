@@ -45,6 +45,34 @@ the CLI as the readiness, lock, hash, and prompt compilation authority.
 
 ## Installation Paths
 
+### Copy This Folder Quick Guides
+
+For Codex repo-local usage, copy the Codex skill folders into the workspace's
+`.agents/skills/` directory:
+
+```bash
+mkdir -p .agents/skills
+cp -R packages/codex-skills/ni-start .agents/skills/
+cp -R packages/codex-skills/ni-status-review .agents/skills/
+cp -R packages/codex-skills/ni-end .agents/skills/
+cp -R packages/codex-skills/ni-run .agents/skills/
+```
+
+For Claude-compatible hosts, choose a target skill directory documented and
+verified for that host, then copy the Claude skill folders into it:
+
+```bash
+TARGET=/path/to/verified/claude-skills
+mkdir -p "$TARGET"
+cp -R packages/claude-skills/ni-start "$TARGET/"
+cp -R packages/claude-skills/ni-status-review "$TARGET/"
+cp -R packages/claude-skills/ni-end "$TARGET/"
+cp -R packages/claude-skills/ni-run "$TARGET/"
+```
+
+These are file-copy workflows only. They do not prove global host install or
+global skill discovery.
+
 ### Repo-local Codex usage
 
 Repo-local Codex-style usage is verified by copying the Codex skill directories
@@ -119,11 +147,19 @@ directories unless `--force` is passed.
 Codex dry-run install support is planned. Codex global installation remains
 unverified in this repository.
 
-## Verification Command
+## Verify The Pack
 
-Run:
+List the skills:
 
 ```bash
+find packages/codex-skills -mindepth 1 -maxdepth 1 -type d -name 'ni-*' -print | sort
+find packages/claude-skills -mindepth 1 -maxdepth 1 -type d -name 'ni-*' -print | sort
+```
+
+Check the `SKILL.md` files and README boundary text:
+
+```bash
+find packages/codex-skills packages/claude-skills -path '*/SKILL.md' -print | sort
 bash scripts/check-skill-packs.sh
 ```
 
@@ -139,6 +175,30 @@ The checker verifies:
 
 The checker does not call Codex APIs, Claude APIs, or downstream execution
 systems.
+
+Package the zip archives:
+
+```bash
+bash scripts/package-codex-skills.sh
+bash scripts/package-claude-skills.sh
+```
+
+Inspect the archives:
+
+```bash
+unzip -l dist/ni-codex-skills.zip
+unzip -l dist/ni-claude-skills.zip
+```
+
+Archive inspection should show only the pack root, pack README files, and the
+four expected skill folders with `SKILL.md` files.
+
+## What This Does Not Do
+
+- Does not run Codex APIs, Claude APIs, or `codex exec`.
+- Does not execute implementation or downstream work.
+- Does not replace `ni` CLI validation for readiness, locking, hash checks, or
+  prompt compilation.
 
 ## Boundary Checklist
 

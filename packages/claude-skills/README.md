@@ -43,13 +43,41 @@ The archive is written to:
 dist/ni-claude-skills.zip
 ```
 
-## Installation
+## Copy This Folder
 
 Claude-compatible environments may use different skill folder locations. This
 repository does not assume a global path.
 
 Use a target directory that your environment documents and that you have
-verified:
+verified. Copy only the skill folders into that target:
+
+```bash
+TARGET=/path/to/verified/claude-skills
+mkdir -p "$TARGET"
+cp -R packages/claude-skills/ni-start "$TARGET/"
+cp -R packages/claude-skills/ni-status-review "$TARGET/"
+cp -R packages/claude-skills/ni-end "$TARGET/"
+cp -R packages/claude-skills/ni-run "$TARGET/"
+```
+
+From the zip archive, unpack first, then copy the same skill folders:
+
+```bash
+unzip -q dist/ni-claude-skills.zip -d /tmp/ni-claude-skills-unpacked
+cp -R /tmp/ni-claude-skills-unpacked/ni-claude-skills/ni-start "$TARGET/"
+cp -R /tmp/ni-claude-skills-unpacked/ni-claude-skills/ni-status-review "$TARGET/"
+cp -R /tmp/ni-claude-skills-unpacked/ni-claude-skills/ni-end "$TARGET/"
+cp -R /tmp/ni-claude-skills-unpacked/ni-claude-skills/ni-run "$TARGET/"
+```
+
+This is a file-copy workflow only. Do not describe the target as a global
+Claude install path unless that specific host path and loading behavior have
+been verified.
+
+## Guarded Install Script
+
+The Claude pack also includes a guarded copy script. Use a target directory
+that your environment documents and that you have verified:
 
 ```bash
 bash scripts/install-claude-skills.sh --dry-run --target /path/to/skills
@@ -63,12 +91,39 @@ Manual copy from this source tree or from the unpacked zip archive is also
 available when the user has verified the target folder for the current Claude
 compatible host. Do not describe that target as a global Claude install path.
 
-Verify the pack with:
+## Verify The Pack
+
+List the skills:
 
 ```bash
+find packages/claude-skills -mindepth 1 -maxdepth 1 -type d -name 'ni-*' -print | sort
+```
+
+Check the `SKILL.md` files:
+
+```bash
+find packages/claude-skills -path '*/SKILL.md' -print | sort
 bash scripts/check-skill-packs.sh
+```
+
+Package the zip:
+
+```bash
 bash scripts/package-claude-skills.sh
+```
+
+Inspect the archive:
+
+```bash
+unzip -l dist/ni-claude-skills.zip
 ```
 
 See `docs/75_MODEL_PACK_INSTALL_VERIFICATION.md` for the full installation and
 verification status.
+
+## What This Does Not Do
+
+- Does not run Claude APIs.
+- Does not execute implementation or downstream work.
+- Does not replace `ni` CLI validation for readiness, locking, hash checks, or
+  prompt compilation.

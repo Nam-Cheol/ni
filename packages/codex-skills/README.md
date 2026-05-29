@@ -42,7 +42,7 @@ The archive is written to:
 dist/ni-codex-skills.zip
 ```
 
-## Repo-Local Usage
+## Copy This Folder
 
 This repository verifies repo-local skill usage only. Copy the skill directories
 into a workspace-local `.agents/skills/` directory:
@@ -53,6 +53,17 @@ cp -R packages/codex-skills/ni-start .agents/skills/
 cp -R packages/codex-skills/ni-status-review .agents/skills/
 cp -R packages/codex-skills/ni-end .agents/skills/
 cp -R packages/codex-skills/ni-run .agents/skills/
+```
+
+From the zip archive, unpack first, then copy the same skill folders:
+
+```bash
+unzip -q dist/ni-codex-skills.zip -d /tmp/ni-codex-skills-unpacked
+mkdir -p .agents/skills
+cp -R /tmp/ni-codex-skills-unpacked/ni-codex-skills/ni-start .agents/skills/
+cp -R /tmp/ni-codex-skills-unpacked/ni-codex-skills/ni-status-review .agents/skills/
+cp -R /tmp/ni-codex-skills-unpacked/ni-codex-skills/ni-end .agents/skills/
+cp -R /tmp/ni-codex-skills-unpacked/ni-codex-skills/ni-run .agents/skills/
 ```
 
 Then run the relevant `ni` CLI commands from the project workspace when a skill
@@ -70,12 +81,41 @@ has verified for the current model host. Do not describe that target as a
 global Codex install path unless that host-specific path and loading behavior
 have been verified.
 
-Codex dry-run install support is planned. For now, verify the pack with:
+Codex dry-run install support is planned.
+
+## Verify The Pack
+
+List the skills:
 
 ```bash
+find packages/codex-skills -mindepth 1 -maxdepth 1 -type d -name 'ni-*' -print | sort
+```
+
+Check the `SKILL.md` files:
+
+```bash
+find packages/codex-skills -path '*/SKILL.md' -print | sort
 bash scripts/check-skill-packs.sh
+```
+
+Package the zip:
+
+```bash
 bash scripts/package-codex-skills.sh
+```
+
+Inspect the archive:
+
+```bash
+unzip -l dist/ni-codex-skills.zip
 ```
 
 See `docs/75_MODEL_PACK_INSTALL_VERIFICATION.md` for the full installation and
 verification status.
+
+## What This Does Not Do
+
+- Does not run Codex APIs or `codex exec`.
+- Does not execute implementation or downstream work.
+- Does not replace `ni` CLI validation for readiness, locking, hash checks, or
+  prompt compilation.

@@ -43,13 +43,40 @@ Archive output:
 dist/ni-claude-skills.zip
 ```
 
-## Installation
+## Copy This Folder
 
 Claude-compatible environment마다 skill folder location이 다를 수 있다. 이
 repository는 global path를 assume하지 않는다.
 
 사용 중인 environment가 document하고 사용자가 verify한 target directory를
-지정한다:
+지정한다. 그 target으로 skill folder만 copy한다:
+
+```bash
+TARGET=/path/to/verified/claude-skills
+mkdir -p "$TARGET"
+cp -R packages/claude-skills/ni-start "$TARGET/"
+cp -R packages/claude-skills/ni-status-review "$TARGET/"
+cp -R packages/claude-skills/ni-end "$TARGET/"
+cp -R packages/claude-skills/ni-run "$TARGET/"
+```
+
+Zip archive에서 사용할 때는 먼저 unpack한 뒤 같은 skill folder를 copy한다:
+
+```bash
+unzip -q dist/ni-claude-skills.zip -d /tmp/ni-claude-skills-unpacked
+cp -R /tmp/ni-claude-skills-unpacked/ni-claude-skills/ni-start "$TARGET/"
+cp -R /tmp/ni-claude-skills-unpacked/ni-claude-skills/ni-status-review "$TARGET/"
+cp -R /tmp/ni-claude-skills-unpacked/ni-claude-skills/ni-end "$TARGET/"
+cp -R /tmp/ni-claude-skills-unpacked/ni-claude-skills/ni-run "$TARGET/"
+```
+
+이 절차는 file-copy workflow일 뿐이다. Specific host path와 loading behavior가
+verify되지 않았다면 target을 global Claude install path로 설명하지 않는다.
+
+## Guarded Install Script
+
+Claude pack에는 guarded copy script도 있다. 사용 중인 environment가 document하고
+사용자가 verify한 target directory를 지정한다:
 
 ```bash
 bash scripts/install-claude-skills.sh --dry-run --target /path/to/skills
@@ -63,12 +90,39 @@ Manual copy는 이 source tree 또는 unpacked zip archive에서 Available이다
 Claude-compatible host에 대해 user가 verify한 target folder로 skill directories만
 copy한다. 그 target을 global Claude install path로 설명하지 않는다.
 
-다음 command로 pack을 verify한다:
+## Verify The Pack
+
+Skills 목록을 확인한다:
 
 ```bash
+find packages/claude-skills -mindepth 1 -maxdepth 1 -type d -name 'ni-*' -print | sort
+```
+
+`SKILL.md` files를 확인한다:
+
+```bash
+find packages/claude-skills -path '*/SKILL.md' -print | sort
 bash scripts/check-skill-packs.sh
+```
+
+Zip package를 만든다:
+
+```bash
 bash scripts/package-claude-skills.sh
+```
+
+Archive contents를 inspect한다:
+
+```bash
+unzip -l dist/ni-claude-skills.zip
 ```
 
 Full installation과 verification status는
 `docs/75_MODEL_PACK_INSTALL_VERIFICATION.ko.md`를 참고한다.
+
+## What This Does Not Do
+
+- Claude APIs를 run하지 않는다.
+- Implementation 또는 downstream work를 execute하지 않는다.
+- Readiness, locking, hash checks, prompt compilation에 대한 `ni` CLI validation을
+  replace하지 않는다.
