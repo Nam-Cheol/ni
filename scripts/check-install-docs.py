@@ -50,12 +50,12 @@ REQUIRED_MARKERS = {
         "curl installer availability only for the verified v0.3.0 installer path",
     ],
     "docs/install-curl.md": [
-        "Status: Available for the verified v0.3.0 GitHub Release assets.",
-        "The v0.3.0 verification passed on 2026-05-28.",
+        "Status: Available for the verified v0.4.0 GitHub Release assets.",
+        "The v0.4.0 verification passed on 2026-05-29.",
     ],
     "docs/install-curl.ko.md": [
-        "Status: verified v0.3.0 GitHub Release assets에 대해 Available이다.",
-        "v0.3.0 verification은 2026-05-28에 통과했다.",
+        "Status: verified v0.4.0 GitHub Release assets에 대해 Available이다.",
+        "v0.4.0 verification은 2026-05-29에 통과했다.",
     ],
     "docs/54_HOMEBREW_DISTRIBUTION.md": [
         "Current status: Planned.",
@@ -84,6 +84,16 @@ REQUIRED_MARKERS = {
     ],
     "docs/71_CURL_INSTALLER_VERIFICATION_v0.3.0.ko.md": [
         "Curl installer status: verified v0.3.0 release assets에 대해 Available.",
+        "Homebrew status: Planned.",
+        "이 검증은 package-manager availability를 claim하지 않는다.",
+    ],
+    "docs/87_CURL_INSTALLER_VERIFICATION_v0.4.0.md": [
+        "Curl installer status: Available for the verified v0.4.0 release assets.",
+        "Homebrew status: Planned.",
+        "No package-manager availability is claimed by this verification.",
+    ],
+    "docs/87_CURL_INSTALLER_VERIFICATION_v0.4.0.ko.md": [
+        "Curl installer status: verified v0.4.0 release assets에 대해 Available.",
         "Homebrew status: Planned.",
         "이 검증은 package-manager availability를 claim하지 않는다.",
     ],
@@ -204,6 +214,8 @@ def check_forbidden_claims() -> None:
         "docs/70_RELEASE_VERIFICATION_v0.3.0.ko.md",
         "docs/71_CURL_INSTALLER_VERIFICATION_v0.3.0.md",
         "docs/71_CURL_INSTALLER_VERIFICATION_v0.3.0.ko.md",
+        "docs/87_CURL_INSTALLER_VERIFICATION_v0.4.0.md",
+        "docs/87_CURL_INSTALLER_VERIFICATION_v0.4.0.ko.md",
         "docs/72_HOMEBREW_TAP_PLAN.md",
         "docs/72_HOMEBREW_TAP_PLAN.ko.md",
         "docs/50_LAUNCH_CHECKLIST.md",
