@@ -120,3 +120,13 @@ improvements. Real benchmark data must state scope and limits. Homebrew remains
 Planned until tested. Downstream integrations must be separate packages or
 repositories that consume locked output, not `ni-kernel` adapters, queues,
 execution state, or lifecycle state.
+
+## RISK-017: v0.4.0 post-release lock overclaims distribution or execution readiness
+
+Severity: high
+
+Mitigation: Keep the lock limited to verified v0.4.0 release binary and curl
+installer evidence, install docs sync, Planned / deferred Homebrew status, and
+model workspace packs as UX. Do not publish a release, push tags, execute the
+generated prompt, call `codex exec`, add runtime execution, mark Homebrew
+Available, or treat model workspace packs as CLI authority.

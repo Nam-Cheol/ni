@@ -1,8 +1,35 @@
 # Project brief
 
+## Delivery surfaces
+
+- cli
+
 ## Purpose
 
-`ni` is the Project Intent Compiler for AI Agents. In v0.5, it turns the v0.4 adoption hardening work into a roadmap for real benchmark evidence, broader product surfaces, stronger conversation authoring reliability, and clearer lock/change-control UX while preserving the same deterministic readiness, lockfile, and bounded prompt compiler boundary before any execution harness runs.
+`ni` is the Project Intent Compiler for AI Agents. The current locked planning
+state records the v0.4.0 post-release distribution facts after release asset
+verification, curl installer verification, and install docs sync, while
+preserving the deterministic readiness, lockfile, and bounded prompt compiler
+boundary before any execution harness runs.
+
+## v0.4.0 post-release focus
+
+The v0.4.0 post-release state is factual distribution lock-in, not new runtime
+scope:
+
+- v0.4.0 GitHub Release assets and checksums are verified;
+- the v0.4.0 curl installer path is verified against the real release assets;
+- README.md, README.ko.md, and docs/22_INSTALL.md describe the current release
+  as v0.4.0;
+- release binary and curl installer paths are Available for verified v0.4.0
+  assets;
+- Homebrew remains Planned / deferred, with no package-manager availability
+  claim;
+- model workspace packs remain planning UX over docs and CLI proof, not CLI
+  authority or execution adapters;
+- `ni-kernel` remains pre-runtime: `ni run` compiles prompts only and does not
+  execute Codex, shell commands, adapters, queues, release automation, PR
+  automation, or downstream work.
 
 ## v0.5 roadmap focus
 

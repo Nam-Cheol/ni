@@ -34,6 +34,10 @@
 - Visual regression checks must guard the README and assets surface.
 - Distribution must support non-Go users through release binaries before curl or package-manager paths are presented as available.
 - Model workspace packs may support Codex- and Claude-style planning workflows, but they must remain UX over docs and CLI proof.
+- The v0.4.0 current release state records release binaries and curl installer
+  as Available only because v0.4.0 assets, checksums, current-platform binary
+  behavior, and installer behavior were verified; Homebrew remains Planned /
+  deferred.
 - No-terminal mode is assisted planning only unless exact CLI output from a trusted runner supplies deterministic validation.
 - v0.5 downstream integrations, if pursued, must live in separate packages or
   downstream repositories that consume locked `ni` output; they must not become

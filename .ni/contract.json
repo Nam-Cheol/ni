@@ -56,6 +56,10 @@
     {
       "id": "NG-011",
       "title": "Do not execute the v0.5 roadmap prompt, call codex exec, add runtime execution behavior, add adapters to ni-kernel, claim false availability, or mark Homebrew Available before tested Homebrew evidence passes."
+    },
+    {
+      "id": "NG-012",
+      "title": "Do not execute the v0.4.0 post-release prompt, call codex exec, publish a release, push tags, add runtime execution behavior, mark Homebrew Available, or make model workspace packs CLI authority."
     }
   ],
   "capabilities": [
@@ -474,6 +478,41 @@
         "ART-051",
         "ART-052"
       ]
+    },
+    {
+      "id": "CAP-020",
+      "title": "Lock v0.4.0 post-release state",
+      "status": "accepted",
+      "dependencies": [
+        "CAP-002",
+        "CAP-003",
+        "CAP-004",
+        "CAP-005",
+        "CAP-014",
+        "CAP-017",
+        "CAP-018"
+      ],
+      "requirements": [
+        "REQ-020"
+      ],
+      "evaluations": [
+        "EVAL-024"
+      ],
+      "risks": [
+        "RISK-013",
+        "RISK-015",
+        "RISK-017"
+      ],
+      "artifacts": [
+        "ART-022",
+        "ART-023",
+        "ART-032",
+        "ART-043",
+        "ART-053",
+        "ART-054",
+        "ART-055",
+        "ART-056"
+      ]
     }
   ],
   "requirements": [
@@ -571,6 +610,11 @@
       "id": "REQ-019",
       "title": "v0.5 roadmap must cover real benchmark data, more product surfaces and examples, better conversation authoring reliability, stronger lock/relock/amendment and change-control UX, optional Homebrew only if tested, optional factual landing page work, optional downstream integrations only as separate packages, generated codex prompt budget at 4000 characters or less, and preservation of ni-kernel as pre-runtime with no generated prompt execution, codex exec, runtime execution, or ni-kernel adapters",
       "status": "accepted"
+    },
+    {
+      "id": "REQ-020",
+      "title": "v0.4.0 post-release state must record verified release assets, verified curl installer behavior, install docs current-release sync to v0.4.0, release binary Available, curl installer Available, Homebrew Planned / deferred, model workspace packs as UX rather than CLI authority, generated codex prompt budget at 4000 characters or less, and preservation of ni-kernel as pre-runtime with no generated prompt execution, codex exec, release publishing, tag pushing, runtime execution, or Homebrew availability claim",
+      "status": "accepted"
     }
   ],
   "decisions": [
@@ -647,6 +691,11 @@
     {
       "id": "DEC-015",
       "title": "v0.5 roadmap is evidence-quality, product-surface, and change-control focused",
+      "status": "accepted"
+    },
+    {
+      "id": "DEC-016",
+      "title": "v0.4.0 post-release state is locked after verification",
       "status": "accepted"
     }
   ],
@@ -762,6 +811,13 @@
       "severity": "high",
       "status": "accepted",
       "mitigation": "Keep v0.5 work as benchmark reports, docs, examples, product-surface proof, authoring reliability, lock/change-control UX, optional factual distribution work, optional landing page work, and inert seed-quality improvements. Real benchmark data must state scope and limits. Homebrew remains Planned until tested. Downstream integrations must be separate packages or repositories that consume locked output, not ni-kernel adapters, queues, execution state, or lifecycle state."
+    },
+    {
+      "id": "RISK-017",
+      "title": "v0.4.0 post-release lock overclaims distribution or execution readiness",
+      "severity": "high",
+      "status": "accepted",
+      "mitigation": "Keep the lock limited to verified v0.4.0 release binary and curl installer evidence, install docs sync, Planned / deferred Homebrew status, and model workspace packs as UX. Do not publish a release, push tags, execute the generated prompt, call codex exec, add runtime execution, mark Homebrew Available, or treat model workspace packs as CLI authority."
     }
   ],
   "evaluations": [
@@ -879,6 +935,11 @@
       "id": "EVAL-023",
       "title": "v0.5 roadmap is benchmark-backed, authoring-reliable, and pre-runtime",
       "method": "go test ./..., bash scripts/quality.sh, bash scripts/smoke.sh, bash scripts/demo-check.sh, bash scripts/install-check.sh, bash scripts/release-check.sh, bash scripts/fresh-install-check.sh when present, and ni run --target codex --max-chars 4000 verify the roadmap preserves real benchmark-data limits, broader product-surface scope, conversation authoring reliability, lock/change-control UX, optional Homebrew only after tested evidence, optional factual landing-page scope, separate-package-only downstream integrations, and the pre-runtime ni-kernel boundary"
+    },
+    {
+      "id": "EVAL-024",
+      "title": "v0.4.0 post-release state is verified, synced, and pre-runtime",
+      "method": "go test ./..., bash scripts/quality.sh, bash scripts/smoke.sh, bash scripts/demo-check.sh, bash scripts/install-check.sh, bash scripts/release-check.sh, and ni run --target codex --max-chars 4000 verify README.md, README.ko.md, docs/84_RELEASE_PLAN_v0.4.0.md, docs/85_RELEASE_PREFLIGHT_v0.4.0.md, docs/86_RELEASE_VERIFICATION_v0.4.0.md, docs/87_CURL_INSTALLER_VERIFICATION_v0.4.0.md, docs/22_INSTALL.md, docs/53_DISTRIBUTION_STRATEGY.md, docs/80_HOMEBREW_DECISION.md, and docs/51_POST_RELEASE_ROADMAP.md preserve the respective post-release facts: verified v0.4.0 release binary availability, verified v0.4.0 curl installer availability, current-release install docs, Planned / deferred Homebrew status, model workspace pack UX boundaries, and the pre-runtime ni-kernel boundary"
     }
   ],
   "artifacts": [
@@ -1141,6 +1202,26 @@
       "id": "ART-052",
       "path": "docs/51_POST_RELEASE_ROADMAP.md docs/79_CONVERSATION_AUTHORING_UX_AUDIT.md docs/80_HOMEBREW_DECISION.md docs/81_RELEASE_PLAN_v0.4.1.md",
       "kind": "roadmap_input_docs"
+    },
+    {
+      "id": "ART-053",
+      "path": "docs/84_RELEASE_PLAN_v0.4.0.md docs/85_RELEASE_PREFLIGHT_v0.4.0.md docs/86_RELEASE_VERIFICATION_v0.4.0.md docs/87_CURL_INSTALLER_VERIFICATION_v0.4.0.md",
+      "kind": "release_verification_docs"
+    },
+    {
+      "id": "ART-054",
+      "path": "docs/22_INSTALL.md docs/53_DISTRIBUTION_STRATEGY.md docs/80_HOMEBREW_DECISION.md docs/51_POST_RELEASE_ROADMAP.md",
+      "kind": "post_release_distribution_docs"
+    },
+    {
+      "id": "ART-055",
+      "path": ".ni/generated/v0.4.0-post-release.prompt.txt",
+      "kind": "generated_prompt"
+    },
+    {
+      "id": "ART-056",
+      "path": ".ni/amendments/AMEND-014.json",
+      "kind": "amendment"
     }
   ],
   "open_questions": [

@@ -1,10 +1,10 @@
 {
   "schema": "ni.lock.v0",
-  "locked_at": "2026-05-29T07:24:18Z",
+  "locked_at": "2026-05-29T01:22:11Z",
   "previous_lock": {
-    "path": ".ni/locks/20260529T072418Z-plan.lock.json",
-    "sha256": "bfc2909fecb0481f6e14c7933351a25c9b84e4b10b89780759a054697ac767ba",
-    "locked_at": "2026-05-29T01:22:11Z"
+    "path": ".ni/locks/20260529T012211Z-plan.lock.json",
+    "sha256": "479c0cd818e183411abec7a79851b02846732472b3ab0488a25de2320e206d8c",
+    "locked_at": "2026-05-28T06:43:35Z"
   },
   "source_of_truth": [
     ".ni/plan.lock.json",
@@ -19,11 +19,11 @@
   "files": [
     {
       "path": ".ni/contract.json",
-      "sha256": "c8583a31b22e13fa2e6c9330f426d57ae6f7bc59ada8b8fb92b30625e6587100"
+      "sha256": "3d5f7a6898dc0be9deb013acf65a992c9c64bacfb41bea23b138f81c8e27c64f"
     },
     {
       "path": "docs/plan/00_project_brief.md",
-      "sha256": "9b7c499aefd12506f5ae26f97592a8dc0c388a024d2624c9e23d2f3f0dec8603"
+      "sha256": "a176c5342629697084f16f075e557562356b665ea5e19fa90ee14b2b34a54a41"
     },
     {
       "path": "docs/plan/01_actors_outcomes.md",
@@ -31,7 +31,7 @@
     },
     {
       "path": "docs/plan/02_capabilities.md",
-      "sha256": "28fa41d766e886651daf9525e58a075f24081d95a606809aae62472c3d6abe59"
+      "sha256": "e318cbea1d44fa61958762ce068e09fc75229ac5e4fb92e9029a0d7c95d9580b"
     },
     {
       "path": "docs/plan/03_interaction_contract.md",
@@ -43,19 +43,19 @@
     },
     {
       "path": "docs/plan/05_constraints.md",
-      "sha256": "52a2e7cf5ecdcc012ad87df5e62c0963bc603bd44a8c9288eee8454da524c2c0"
+      "sha256": "5a020f3a75c65d1bc98684843cce542603d3793cd42132813357c02419476fc6"
     },
     {
       "path": "docs/plan/06_risks_security.md",
-      "sha256": "d55ed935541b4e86eeaba539d969898c73ffde244e7cd7af9e017dcb9dd25f2b"
+      "sha256": "4db3718f140f7964e3b1d19f1ecc25dbf23b6076a3502105d3c09d0f8879b132"
     },
     {
       "path": "docs/plan/07_evaluation_contract.md",
-      "sha256": "72d6aaf383b056c7f2666a4f2105ba545aaf4b717101480bde943d26edae7f2a"
+      "sha256": "0c16a25624af001ecf86b8a54dc3ad8bb716fd1ae87c7a151d6a324b4630afcd"
     },
     {
       "path": "docs/plan/08_delivery_operation.md",
-      "sha256": "be6e8c04bebd5d9f9021a28e403c0093c999d54babfab07b611525ad4f1ca913"
+      "sha256": "5c1f7fc6f50f25ee570cc60ea1242dea2d00e657ee89ef8a2de6ccdb6c784ebc"
     },
     {
       "path": "docs/plan/09_execution_strategy.md",
@@ -67,7 +67,7 @@
     },
     {
       "path": "docs/plan/11_decision_log.md",
-      "sha256": "d756569860055c43091fd3ad8c43c0b5ff4715917b5ecb73430df1b71963b10a"
+      "sha256": "66b9c201aaa62fae91635d5d9227ae5338eb910f7eebae39f734dcc8dc4b79b2"
     }
   ]
 }

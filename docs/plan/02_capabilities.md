@@ -121,3 +121,17 @@ distribution, and seed-quality direction. It must not execute the generated
 prompt, call `codex exec`, add runtime execution behavior, add adapters to
 `ni-kernel`, claim untested availability, or mark Homebrew Available before
 Homebrew evidence passes.
+
+## CAP-020: lock v0.4.0 post-release state
+
+After v0.4.0 release asset verification, curl installer verification, and
+install docs sync, lock the post-release distribution state as verified v0.4.0
+facts. Release binary and curl installer paths are Available for verified
+v0.4.0 assets, Homebrew remains Planned / deferred, install docs name v0.4.0
+as the current release, and model workspace packs remain UX over docs and CLI
+proof rather than CLI authority.
+
+This capability is accepted only as planning, validation, and documentation
+state. It must not publish a release, push tags, execute the generated prompt,
+call `codex exec`, add runtime execution behavior, mark Homebrew Available, or
+turn model workspace packs into execution adapters.

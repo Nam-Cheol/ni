@@ -135,3 +135,18 @@ benchmark-data limits, broader product-surface scope, conversation authoring
 reliability, lock/change-control UX, optional Homebrew only after tested
 evidence, optional factual landing-page scope, separate-package-only downstream
 integrations, and the pre-runtime `ni-kernel` boundary.
+
+## EVAL-024: v0.4.0 post-release state is verified, synced, and pre-runtime
+
+Method: `go test ./...`, `bash scripts/quality.sh`,
+`bash scripts/smoke.sh`, `bash scripts/demo-check.sh`,
+`bash scripts/install-check.sh`, `bash scripts/release-check.sh`, and
+`ni run --target codex --max-chars 4000` verify README.md, README.ko.md,
+docs/84_RELEASE_PLAN_v0.4.0.md, docs/85_RELEASE_PREFLIGHT_v0.4.0.md,
+docs/86_RELEASE_VERIFICATION_v0.4.0.md,
+docs/87_CURL_INSTALLER_VERIFICATION_v0.4.0.md, docs/22_INSTALL.md,
+docs/53_DISTRIBUTION_STRATEGY.md, docs/80_HOMEBREW_DECISION.md, and
+docs/51_POST_RELEASE_ROADMAP.md preserve the respective post-release facts:
+verified v0.4.0 release binary availability, verified v0.4.0 curl installer
+availability, current-release install docs, Planned / deferred Homebrew status,
+model workspace pack UX boundaries, and the pre-runtime `ni-kernel` boundary.

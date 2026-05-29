@@ -122,3 +122,13 @@ and clearer lock/change-control UX. Optional Homebrew and landing-page work
 remain evidence-gated and factual. Optional downstream integrations belong in
 separate packages that consume locked output, not in `ni-kernel` as adapters or
 runtime state.
+
+## DEC-016: v0.4.0 post-release state is locked after verification
+
+Status: accepted
+
+Rationale: v0.4.0 release assets, checksums, current-platform binary behavior,
+curl installer behavior, and install docs sync have been verified. The public
+distribution state can therefore record release binary and curl installer paths
+as Available for v0.4.0 while keeping Homebrew Planned / deferred, model
+workspace packs as UX rather than authority, and `ni-kernel` pre-runtime.

@@ -26,6 +26,24 @@ downstream integrations only as separate packages. These are evidence,
 documentation, validation, distribution, and seed-quality surfaces, not
 `ni-kernel` runtime state.
 
+The v0.4.0 post-release surface records verified distribution state after the
+published release assets, checksums, current-platform binary, curl installer,
+and install docs were checked. Release binary and curl installer paths are
+Available for verified v0.4.0 assets; Homebrew remains Planned / deferred; and
+model workspace packs remain UX over docs and CLI proof.
+
+## Delivery surfaces
+
+- cli
+
+## Accepted delivery surface details
+
+The accepted delivery surface is `cli`. Users interact with `ni-kernel` through
+the local command line for deterministic readiness, lock/relock, and bounded
+prompt compilation. Documentation, model workspace packs, and generated prompts
+support that CLI flow, but they do not replace CLI authority or add runtime
+execution.
+
 Tracked planning state:
 
 - `docs/plan/**`
@@ -66,6 +84,10 @@ Packaging and distribution references:
 - `docs/79_CONVERSATION_AUTHORING_UX_AUDIT.md`
 - `docs/80_HOMEBREW_DECISION.md`
 - `docs/81_RELEASE_PLAN_v0.4.1.md`
+- `docs/84_RELEASE_PLAN_v0.4.0.md`
+- `docs/85_RELEASE_PREFLIGHT_v0.4.0.md`
+- `docs/86_RELEASE_VERIFICATION_v0.4.0.md`
+- `docs/87_CURL_INSTALLER_VERIFICATION_v0.4.0.md`
 
 ## Operating model
 
@@ -78,7 +100,7 @@ Packaging and distribution references:
 7. Treat downstream feedback as inert until it becomes an explicit amendment.
 8. Use the differentiation proof assets to show why locked intent should precede downstream agent, human-team, or harness work.
 9. Keep public packaging claims factual: release binaries and curl installer
-   availability stay tied to verified v0.3.0 release evidence, package-manager
+   availability stay tied to verified v0.4.0 release evidence, package-manager
    availability stays planned until published and tested, model workspace packs
    remain UX, and no-terminal mode remains assisted unless CLI proof is
    supplied.
@@ -120,3 +142,15 @@ bash scripts/fresh-install-check.sh
 ```
 
 Run `bash scripts/fresh-install-check.sh` only when the script is present.
+
+For the v0.4.0 post-release state lock, also verify:
+
+```bash
+go test ./...
+bash scripts/quality.sh
+bash scripts/smoke.sh
+bash scripts/demo-check.sh
+bash scripts/install-check.sh
+bash scripts/release-check.sh
+go run ./cmd/ni run --dir . --target codex --max-chars 4000
+```
