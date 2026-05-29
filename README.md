@@ -90,8 +90,8 @@ go run ./cmd/ni run --dir ./my-plan --target generic --max-chars 4000
 | --- | --- | --- | --- |
 | Source | Available | `go run ./cmd/ni --help` | You have Go and want the clearest development or evaluation path. |
 | Local binary | Available | `make build && ./bin/ni --help` | You want `./bin/ni` or a local install from this checkout. |
-| Release binary | Available | [v0.3.0 release](https://github.com/Nam-Cheol/ni/releases/tag/v0.3.0) | You want `ni` without Go and prefer manual checksum verification. |
-| Curl installer | Available | `sh install.sh --dry-run --version 0.3.0` | You want a small shell installer after inspecting the script. |
+| Release binary | Available | [v0.4.0 release](https://github.com/Nam-Cheol/ni/releases/tag/v0.4.0) | You want `ni` without Go and prefer manual checksum verification. |
+| Curl installer | Available | `sh install.sh --dry-run --version 0.4.0` | You want a small shell installer after inspecting the script. |
 | Model workspaces | Experimental | [Model Workspace Packs](docs/55_MODEL_WORKSPACE_PACKS.md) | You want Codex or Claude source/zip skill packs to help draft docs and contract records; global host install is unverified and the CLI remains authority. |
 | No-terminal method | Experimental | [No-Terminal Planning](docs/no-terminal.md) | You want assisted docs and contract drafting before a trusted runner produces CLI proof; model judgment is not a lock. |
 | Homebrew | Planned | [Homebrew Decision](docs/80_HOMEBREW_DECISION.md) | You prefer a package manager; implementation is deferred to v0.5 and no tap or formula is published or tested. |
@@ -108,7 +108,7 @@ exists. Wait for Homebrew if you require package-manager installation.
 Minimal curl installer check:
 
 ```bash
-VERSION="0.3.0"
+VERSION="0.4.0"
 curl -fsSLO https://raw.githubusercontent.com/Nam-Cheol/ni/main/install.sh
 sed -n '1,320p' install.sh
 sh install.sh --dry-run --version "$VERSION"
@@ -116,13 +116,13 @@ sh install.sh --dry-run --version "$VERSION"
 
 For complete source, local binary, release binary, and curl installer steps,
 see [Install ni](docs/22_INSTALL.md). For the manual release path, download
-the matching archive and `ni_0.3.0_checksums.txt` from the same v0.3.0 release,
+the matching archive and `ni_0.4.0_checksums.txt` from the same v0.4.0 release,
 verify the archive checksum, extract it, and then run `ni --help` and
 `ni version`.
 
-Release status: v0.3.0 release binaries are available after asset and checksum
+Release status: v0.4.0 release binaries are available after asset and checksum
 verification. The curl installer is available after verification against the
-real v0.3.0 release assets. Package-manager distribution, including Homebrew,
+real v0.4.0 release assets. Package-manager distribution, including Homebrew,
 is not available yet.
 
 License: `ni` is licensed under the [MIT License](LICENSE).

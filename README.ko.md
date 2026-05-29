@@ -90,8 +90,8 @@ go run ./cmd/ni run --dir ./my-plan --target generic --max-chars 4000
 | --- | --- | --- | --- |
 | Source | Available | `go run ./cmd/ni --help` | Go가 있고 development 또는 evaluation을 가장 투명하게 시작하고 싶을 때. |
 | Local binary | Available | `make build && ./bin/ni --help` | 이 checkout에서 `./bin/ni` 또는 local install을 원할 때. |
-| Release binary | Available | [v0.3.0 release](https://github.com/Nam-Cheol/ni/releases/tag/v0.3.0) | Go 없이 설치하고 checksum을 직접 검증하고 싶을 때. |
-| Curl installer | Available | `sh install.sh --dry-run --version 0.3.0` | Script를 먼저 inspect한 뒤 작은 shell installer를 쓰고 싶을 때. |
+| Release binary | Available | [v0.4.0 release](https://github.com/Nam-Cheol/ni/releases/tag/v0.4.0) | Go 없이 설치하고 checksum을 직접 검증하고 싶을 때. |
+| Curl installer | Available | `sh install.sh --dry-run --version 0.4.0` | Script를 먼저 inspect한 뒤 작은 shell installer를 쓰고 싶을 때. |
 | Model workspaces | Experimental | [Model Workspace Packs](docs/55_MODEL_WORKSPACE_PACKS.md) | Codex 또는 Claude source/zip skill packs로 docs와 contract records draft를 돕게 하고 싶을 때; global host install은 unverified이고 CLI가 authority입니다. |
 | No-terminal method | Experimental | [터미널 없이 계획하기](docs/no-terminal.ko.md) | Trusted runner가 CLI proof를 만들기 전 docs와 contract assisted drafting을 하고 싶을 때; model judgment는 lock이 아닙니다. |
 | Homebrew | Planned | [Homebrew Decision](docs/80_HOMEBREW_DECISION.ko.md) | Package manager를 선호할 때; implementation은 v0.5로 defer되었고 published 또는 tested tap/formula는 없습니다. |
@@ -108,7 +108,7 @@ install이 필수라면 Homebrew를 기다려야 합니다.
 Minimal curl installer check:
 
 ```bash
-VERSION="0.3.0"
+VERSION="0.4.0"
 curl -fsSLO https://raw.githubusercontent.com/Nam-Cheol/ni/main/install.sh
 sed -n '1,320p' install.sh
 sh install.sh --dry-run --version "$VERSION"
@@ -116,12 +116,12 @@ sh install.sh --dry-run --version "$VERSION"
 
 Source, local binary, release binary, curl installer의 전체 절차는
 [Install ni](docs/22_INSTALL.md)를 참고하세요. Manual release path는 같은
-v0.3.0 release에서 matching archive와 `ni_0.3.0_checksums.txt`를 download하고,
+v0.4.0 release에서 matching archive와 `ni_0.4.0_checksums.txt`를 download하고,
 archive checksum을 verify하고, 압축을 해제한 뒤 `ni --help`와 `ni version`을
 실행하는 것이다.
 
-Release status: v0.3.0 release binaries는 asset과 checksum 검증 후 Available입니다.
-Curl installer는 실제 v0.3.0 release assets에 대해 검증된 뒤 Available입니다.
+Release status: v0.4.0 release binaries는 asset과 checksum 검증 후 Available입니다.
+Curl installer는 실제 v0.4.0 release assets에 대해 검증된 뒤 Available입니다.
 Homebrew를 포함한 package-manager distribution은 아직 Available이 아닙니다.
 
 License: `ni`는 [MIT License](LICENSE)로 배포됩니다.

@@ -317,13 +317,13 @@ else:
 
 release_claim_markers = {
     "README.md": [
-        "v0.3.0 release binaries are available",
+        "v0.4.0 release binaries are available",
         "The curl installer is available after verification against the",
         "Package-manager distribution, including Homebrew,",
     ],
     "README.ko.md": [
-        "v0.3.0 release binaries는 asset과 checksum 검증 후 Available입니다",
-        "Curl installer는 실제 v0.3.0 release assets에 대해 검증된 뒤 Available입니다",
+        "v0.4.0 release binaries는 asset과 checksum 검증 후 Available입니다",
+        "Curl installer는 실제 v0.4.0 release assets에 대해 검증된 뒤 Available입니다",
         "Homebrew를 포함한 package-manager distribution은 아직 Available이 아닙니다",
     ],
 }

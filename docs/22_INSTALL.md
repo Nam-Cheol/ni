@@ -1,7 +1,7 @@
 # Install ni
 
 `ni` is usable from source, from a locally built binary, from the verified
-v0.3.0 GitHub Release archives, or through the verified curl installer.
+v0.4.0 GitHub Release archives, or through the verified curl installer.
 
 ## Prerequisites
 
@@ -20,8 +20,8 @@ Every public install path has exactly one status:
 | --- | --- | --- |
 | Source | Available | Run `go run ./cmd/ni ...` from this checkout. |
 | Local binary | Available | Build or install locally from this checkout. |
-| Release binary | Available | Use the verified v0.3.0 GitHub Release archives and checksums. |
-| Curl installer | Available | Use the verified v0.3.0 `install.sh` path after inspecting the script. |
+| Release binary | Available | Use the verified v0.4.0 GitHub Release archives and checksums. |
+| Curl installer | Available | Use the verified v0.4.0 `install.sh` path after inspecting the script. |
 | Homebrew | Planned | No tap or formula is published or tested. |
 | Model workspaces | Experimental | Repo-local model assistance can draft docs; the CLI remains authority. |
 | No-terminal method | Experimental | Assisted planning only; deterministic validation still requires CLI proof. |
@@ -88,10 +88,10 @@ make install-local BINDIR="$tmpdir/bin"
 
 Release binary status: Available.
 
-The v0.3.0 GitHub Release contains the expected OS/arch archives and
-`ni_0.3.0_checksums.txt`:
+The v0.4.0 GitHub Release contains the expected OS/arch archives and
+`ni_0.4.0_checksums.txt`:
 
-<https://github.com/Nam-Cheol/ni/releases/tag/v0.3.0>
+<https://github.com/Nam-Cheol/ni/releases/tag/v0.4.0>
 
 Use this matrix to choose the archive for your OS and architecture:
 
@@ -103,14 +103,14 @@ Use this matrix to choose the archive for your OS and architecture:
 | macOS | arm64 | `ni_<version>_darwin_arm64.tar.gz` |
 | Windows | amd64 | `ni_<version>_windows_amd64.zip` |
 
-Each valid release must include `ni_<version>_checksums.txt`. For v0.3.0,
+Each valid release must include `ni_<version>_checksums.txt`. For v0.4.0,
 download the archive and checksum file from the same release, verify the
 archive, unpack the binary, and then run `ni --help` and `ni version`.
 
 Linux example:
 
 ```bash
-VERSION="0.3.0"
+VERSION="0.4.0"
 curl -fSLO "https://github.com/Nam-Cheol/ni/releases/download/v${VERSION}/ni_${VERSION}_linux_amd64.tar.gz"
 curl -fSLO "https://github.com/Nam-Cheol/ni/releases/download/v${VERSION}/ni_${VERSION}_checksums.txt"
 grep " ni_${VERSION}_linux_amd64.tar.gz$" "ni_${VERSION}_checksums.txt" | sha256sum -c -
@@ -122,7 +122,7 @@ tar -xzf "ni_${VERSION}_linux_amd64.tar.gz"
 macOS example:
 
 ```bash
-VERSION="0.3.0"
+VERSION="0.4.0"
 curl -fSLO "https://github.com/Nam-Cheol/ni/releases/download/v${VERSION}/ni_${VERSION}_darwin_arm64.tar.gz"
 curl -fSLO "https://github.com/Nam-Cheol/ni/releases/download/v${VERSION}/ni_${VERSION}_checksums.txt"
 grep " ni_${VERSION}_darwin_arm64.tar.gz$" "ni_${VERSION}_checksums.txt" | shasum -a 256 -c -
@@ -134,7 +134,7 @@ tar -xzf "ni_${VERSION}_darwin_arm64.tar.gz"
 Windows PowerShell:
 
 ```powershell
-$Version = "0.3.0"
+$Version = "0.4.0"
 Invoke-WebRequest "https://github.com/Nam-Cheol/ni/releases/download/v$Version/ni_$($Version)_windows_amd64.zip" -OutFile "ni_$($Version)_windows_amd64.zip"
 Invoke-WebRequest "https://github.com/Nam-Cheol/ni/releases/download/v$Version/ni_$($Version)_checksums.txt" -OutFile "ni_$($Version)_checksums.txt"
 Get-FileHash "ni_$($Version)_windows_amd64.zip" -Algorithm SHA256
@@ -149,18 +149,18 @@ Compare the `Get-FileHash` output with the checksum line printed by
 
 ## Curl installer
 
-Curl installer status: Available for verified v0.3.0 release assets.
+Curl installer status: Available for verified v0.4.0 release assets.
 
 `install.sh` can install a release archive without requiring Go. It was
-verified against the real v0.3.0 darwin/arm64 archive and checksum file on
-2026-05-28. The installer downloads the selected archive and checksum file,
+verified against the real v0.4.0 darwin/arm64 archive and checksum file on
+2026-05-29. The installer downloads the selected archive and checksum file,
 verifies the checksum when a local sha256 tool is available, installs only the
 `ni` binary, and does not install model skills or run downstream work.
 
 Download and inspect the script before any local install:
 
 ```bash
-VERSION="0.3.0"
+VERSION="0.4.0"
 curl -fsSLO https://raw.githubusercontent.com/Nam-Cheol/ni/main/install.sh
 sed -n '1,320p' install.sh
 sh install.sh --dry-run --version "$VERSION"
@@ -171,7 +171,7 @@ BINDIR="$HOME/.local/bin" sh install.sh --version "$VERSION"
 
 See [Curl Installer](install-curl.md) for `BINDIR`, checksum behavior, and the
 manual verification path. The manual verification path is to download the
-matching archive and `ni_0.3.0_checksums.txt` from the same release, verify the
+matching archive and `ni_0.4.0_checksums.txt` from the same release, verify the
 archive checksum, extract it, and then run `ni --help` and `ni version`.
 
 Package manager status: Planned. Do not use package manager instructions for
@@ -206,7 +206,7 @@ bash scripts/release-check.sh
 `ni` is licensed under the [MIT License](../LICENSE).
 
 This install document claims release binary availability only for the verified
-v0.3.0 GitHub Release assets and curl installer availability only for the
-verified v0.3.0 installer path. It does not claim package distribution,
+v0.4.0 GitHub Release assets and curl installer availability only for the
+verified v0.4.0 installer path. It does not claim package distribution,
 Homebrew support, Scoop support, no-terminal deterministic validation, runtime
 execution behavior, or global model-pack installation.
