@@ -18,9 +18,11 @@ locked 상태로 유지한다.
    - Likely delivery surface는 무엇인가?
 3. User가 initial project idea와 clear exclusions를 답한다.
 4. Model이 `docs/plan/00_project_brief.md`와 `.ni/contract.json`을 draft한다.
-5. Draft는 "not locked"로 표시되고 assumptions, non-goals, blocker questions를
+5. Model은 무엇이 바뀌었다고 해석했는지 draft planning proof block으로 보여줄 수
+   있지만, 이것은 deterministic validation이 아니다.
+6. Draft는 "not locked"로 표시되고 assumptions, non-goals, blocker questions를
    visible하게 유지한다.
-6. 나중에 readiness, locking, hash trust, prompt compilation, downstream seed
+7. 나중에 readiness, locking, hash trust, prompt compilation, downstream seed
    generation 전에 CLI validation이 필요하다.
 
 ## 3. 증명하는 것
@@ -33,6 +35,8 @@ locked 상태로 유지한다.
 - Model workspace packs는 drafting을 guide할 수 있지만 downstream work를 실행하지
   않고 CLI readiness를 override하지 않는다.
 - 이 예시는 deterministic validation claim을 하지 않는다.
+- No-terminal planning proof는 trusted CLI run이 docs와 contract를 validate하기
+  전까지 draft-only다.
 
 ## 4. 제품 유형 / 표면
 
@@ -54,6 +58,7 @@ locked 상태로 유지한다.
 - Project idea를 설명한다.
 - Model에게 `docs/plan/**` draft를 만들게 한다.
 - Model에게 `.ni/contract.json`을 draft하게 한다.
+- Model에게 concise draft planning proof block을 요청한다.
 - Uncertain statements는 assumptions 또는 open questions로 표시한다.
 - Explicit exclusions는 non-goals로 표시한다.
 - Draft를 locked 상태로 취급하지 않는다.

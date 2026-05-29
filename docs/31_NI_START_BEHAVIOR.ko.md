@@ -140,6 +140,61 @@ group별 규칙:
 `.ni/contract.json`, `.ni/session.json`을 함께 업데이트한 뒤
 `ni status --dir . --proof --next-questions`를 다시 실행하거나 요청한다.
 
+## Planning proof capture
+
+의미 있는 authoring update 뒤마다 `ni-start`는 concise planning proof block을
+보고해야 한다. 이 block은 model을 readiness authority로 만들지 않고도 사용자가 edit을
+검토할 수 있게 한다.
+
+필수 형태:
+
+```text
+Planning proof:
+- User input captured:
+  "<short paraphrase of user answer>"
+- Interpreted planning records:
+  - Purpose: ...
+  - Actors/outcomes: ...
+  - Delivery surface: ...
+  - Capabilities: CAP-001 ...
+  - Requirements: REQ-001 ...
+  - Risks: RISK-001 ...
+  - Evaluations: EVAL-001 ...
+  - Decisions: DEC-001 accepted/deferred/rejected if applicable
+  - Assumptions: ASM-001 or open question if applicable
+  - Non-goals: NG-001 if applicable
+  - Open questions: OQ-001 ...
+- Updated planning artifacts:
+  - docs/plan/00_project_brief.md: purpose clarified
+  - docs/plan/01_actors_outcomes.md: primary actors added
+  - docs/plan/03_interaction_contract.md: delivery surface recorded
+  - .ni/contract.json: project.purpose, actors/outcomes, delivery_surfaces updated
+  - .ni/session.json: active focus and pending questions updated
+- Status result:
+  - before: BLOCKED because R014/R015/R016
+  - after: BLOCKED/READY_WITH_DEFERRALS/READY because ...
+- Remaining blockers:
+  - OQ-001 ...
+- Next question group:
+  - Sync repairs / Risk decisions / Evaluation evidence / Open blockers / none
+```
+
+규칙:
+
+- 간결하게 유지한다.
+- Hidden chain-of-thought를 노출하지 않는다.
+- 실제로 update하지 않은 file change나 contract ID를 만들지 않는다.
+- 변경된 file이 없으면 `No planning artifacts were updated.`라고 말한다.
+- After-status가 CLI에서 온 것이 아니면 readiness를 claim하지 않는다.
+- `ni end`가 실제로 `.ni/plan.lock.json`을 만들기 전에는 lock을 claim하지 않는다.
+- 불확실한 user statement는 assumption 또는 open question으로 유지한다.
+- 명확한 exclusion은 non-goal로 기록한다.
+- Docs와 contract가 불일치하면 그렇게 말하고, 다음 status result를 사용하거나
+  진행 전에 다시 요청한다.
+
+No-terminal mode에서 이 block은 draft audit trail일 뿐이다. Drafted docs와
+contract가 CLI validation을 통과한 뒤에만 trusted 상태가 된다.
+
 ## Resume mode
 
 나중의 model session이 계획을 이어갈 때, `ni-start`는 일반 turn과 같은

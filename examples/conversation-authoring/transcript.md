@@ -106,6 +106,47 @@ I will update:
 
 After the edit, I will run `ni status --dir . --proof --next-questions`.
 
+Planning proof:
+
+- User input captured:
+  "Refund triage should become a documented recommendation workflow for
+  support agents and supervisors, delivered through conversation plus a
+  document handoff, with refund issuing and customer contact excluded."
+- Interpreted planning records:
+  - Purpose: documented refund recommendation workflow.
+  - Actors/outcomes: support agents get draft recommendations; supervisors get
+    ambiguity escalations.
+  - Delivery surface: conversation product with document handoff.
+  - Capabilities: `CAP-001` draft refund recommendations.
+  - Requirements: `REQ-001` recommendations only.
+  - Risks: `RISK-001` refund authority confusion.
+  - Evaluations: `EVAL-001` transcript fixtures.
+  - Decisions: none newly accepted beyond explicit scope exclusions.
+  - Assumptions: none promoted to accepted decisions.
+  - Non-goals: `NG-001` no refunds issued or customer contact.
+  - Open questions: `OQ-001` authoritative refund policy source remains
+    blocking.
+- Updated planning artifacts:
+  - `docs/plan/00_project_brief.md`: purpose recorded.
+  - `docs/plan/02_capabilities.md`: `CAP-001` recorded.
+  - `docs/plan/05_constraints.md`: refund and customer-contact non-goals
+    recorded.
+  - `docs/plan/07_evaluation_contract.md`: transcript fixture evaluation
+    recorded.
+  - `docs/plan/10_open_questions.md`: `OQ-001` recorded as blocking.
+  - `.ni/contract.json`: matching capability, requirement, evaluation, risk,
+    artifact, non-goal, and open question records updated.
+  - `.ni/session.json`: bounded continuity state and latest readiness blockers
+    refreshed.
+- Status result:
+  - before: `BLOCKED` because `R014`, `R015`, `R016`, and `OQ-001` were
+    unresolved.
+  - after: pending the next `ni status --dir . --proof --next-questions` run.
+- Remaining blockers:
+  - `OQ-001`: authoritative refund policy source.
+- Next question group:
+  - pending CLI output.
+
 ## Persisted planning records
 
 Example contract records after the turn:

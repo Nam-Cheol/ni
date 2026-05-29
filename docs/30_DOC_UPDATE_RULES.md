@@ -63,6 +63,11 @@ After meaningful authoring changes, run `ni status` when possible. Before
 declaring lock readiness, rely on `ni status`, not model judgment. Before
 compiling downstream prompt material, rely on `ni end` and `ni run`.
 
+After the status check, include a concise planning proof summary. It should
+only name files and contract fields or IDs that actually changed, quote the
+before/after status result from `ni status --proof --next-questions` when
+available, and keep unresolved uncertainty visible as assumptions or open
+questions. If no files changed, say that no planning artifacts were updated.
+
 For repository changes, also run the project validation commands required by
 AGENTS.md.
-

@@ -29,6 +29,45 @@ Changed planning files:
   authority, including active readiness profile, product type, delivery
   surfaces, recent decisions, pending questions, and last readiness status.
 
+## Planning proof shown to the user
+
+```text
+Planning proof:
+- User input captured:
+  "Refund triage should become a documented recommendation workflow for support agents and supervisors, delivered as a conversation product with a document handoff, with refunds/customer contact/runtime execution excluded."
+- Interpreted planning records:
+  - Purpose: refund triage planning should move ad hoc judgment into a lockable recommendation workflow.
+  - Actors/outcomes: support agents get draft recommendations; supervisors get ambiguity escalations; the planning model keeps docs and contract synchronized; the NI CLI validates readiness.
+  - Delivery surface: conversation and document.
+  - Capabilities: CAP-001 draft refund recommendations; CAP-002 escalate ambiguous or conflicting cases.
+  - Requirements: REQ-001 recommendations only; REQ-002 escalation on policy ambiguity.
+  - Risks: RISK-001 refund authority confusion; RISK-002 customer or policy data mishandling.
+  - Evaluations: EVAL-001 and EVAL-002 transcript fixtures.
+  - Decisions: none newly accepted beyond the clear scope exclusions.
+  - Assumptions: none promoted to accepted decisions.
+  - Non-goals: NG-001 no refund issuing or approval; NG-003 no execution runtime, shell adapter, Codex adapter, queue, or live support integration.
+  - Open questions: OQ-001 authoritative refund policy source remains blocking.
+- Updated planning artifacts:
+  - docs/plan/00_project_brief.md: refund triage purpose recorded.
+  - docs/plan/01_actors_outcomes.md: support agent, supervisor, planning model, and NI CLI roles recorded.
+  - docs/plan/02_capabilities.md: CAP-001 and CAP-002 recorded.
+  - docs/plan/03_interaction_contract.md: conversation and recommendation boundaries recorded.
+  - docs/plan/05_constraints.md: refund, customer contact, and runtime non-goals recorded.
+  - docs/plan/06_risks_security.md: refund authority and data risks recorded.
+  - docs/plan/07_evaluation_contract.md: transcript fixture evaluations recorded.
+  - docs/plan/08_delivery_operation.md: conversation and document delivery surfaces recorded.
+  - docs/plan/10_open_questions.md: OQ-001 recorded as blocking.
+  - .ni/contract.json: project.purpose, product_type, delivery_surfaces, CAP, REQ, EVAL, RISK, ART, NG, and OQ records updated.
+  - .ni/session.json: active focus, pending questions, and last readiness status refreshed.
+- Status result:
+  - before: BLOCKED because R014, R015, R016, and OQ-001 were unresolved.
+  - after: BLOCKED because OQ-001 remains a blocker.
+- Remaining blockers:
+  - OQ-001: authoritative refund policy source is still unresolved.
+- Next question group:
+  - Open blockers.
+```
+
 ## Example synchronized records
 
 Human docs describe:

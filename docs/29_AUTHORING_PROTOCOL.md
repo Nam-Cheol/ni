@@ -17,6 +17,9 @@ For each planning turn, the model should:
    session.
 7. Preserve existing accepted criteria unless the user explicitly changes them.
 8. Run or recommend `ni status` when readiness may have changed.
+9. Show a concise planning proof block that names the user input captured,
+   interpreted records, changed files, changed contract fields or IDs,
+   before/after status result, remaining blockers, and next question group.
 
 The docs and contract should move together. A conversation turn that changes a
 capability, requirement, risk, evaluation, non-goal, decision, artifact, or open

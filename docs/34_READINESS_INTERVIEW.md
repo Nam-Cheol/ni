@@ -165,6 +165,9 @@ ni status --dir . --proof --next-questions
 ```
 
 The next readiness state still comes from the CLI.
+`ni-start` should then show a planning proof block that summarizes what the
+user said, which planning records and files changed, the before/after status
+result, remaining blockers, and the next highest-priority question group.
 
 `D001` deferred decision:
 
@@ -210,6 +213,9 @@ After the user answers, `ni-start` updates `docs/plan/**`,
 `.ni/contract.json`, and `.ni/session.json`, then runs or requests
 `ni status --dir . --proof --next-questions` again. Readiness is blocked or
 cleared by the deterministic CLI gate, not by model judgment.
+
+The model's response after that update should include the planning proof block
+defined in [`83_CONVERSATION_PROOF_CAPTURE.md`](83_CONVERSATION_PROOF_CAPTURE.md).
 
 If no next questions are present and readiness is `READY` or
 `READY_WITH_DEFERRALS`, `ni-start` may suggest `ni-end`. If readiness is

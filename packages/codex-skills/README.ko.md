@@ -21,6 +21,9 @@ compile하는 UX를 돕는다. Authority는 계속 `ni` CLI에 있다. Readiness
 - Readiness claim 전에는 `ni status`를 run 또는 request한다.
 - `ni-start`는 grouped `ni status --proof --next-questions` output이 있으면
   primary planning interview로 사용해야 한다.
+- `ni-start`는 의미 있는 authoring update 뒤 changed files, affected IDs,
+  before/after CLI status, remaining blockers, next question group을 담은 concise
+  planning proof block을 보여야 한다.
 - Lock claim 전에는 `ni end`를 run 또는 request한다.
 - Handoff prompt claim 전에는 `ni run`을 run 또는 request한다.
 - `.ni/plan.lock.json`을 manually edit하지 않는다.

@@ -17,6 +17,14 @@ The CLI remains the authority for validation, lock, and prompt compilation.
 Conversation is the authoring surface; `ni status`, `ni end`, and `ni run` are
 the gates and compilers.
 
+After a meaningful authoring update, the model should show a concise planning
+proof block that connects the user's answer to the changed docs, changed
+contract fields or IDs, the before/after `ni status --proof --next-questions`
+result, remaining blockers, and the next highest-priority question group. This
+is planning proof only; it does not execute downstream work and does not make
+the model a readiness authority. See
+[`83_CONVERSATION_PROOF_CAPTURE.md`](83_CONVERSATION_PROOF_CAPTURE.md).
+
 ## Extraction model
 
 During planning conversation, the model extracts these elements:

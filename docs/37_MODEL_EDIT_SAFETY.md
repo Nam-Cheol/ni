@@ -30,9 +30,10 @@ Use these rules whenever a model updates `docs/plan/**`,
 6. Lock safety rule: after `.ni/plan.lock.json` exists, do not edit locked
    planning docs or matching contract records except through the amendment or
    relock flow. If a locked hash mismatch exists, stop and report `BLOCKED`.
-7. Change summary rule: after updating planning docs, show a short summary that
-   names the files changed, the records affected, and any assumptions or
-   blockers that remain.
+7. Planning proof rule: after updating planning docs, show a short proof
+   summary that names the user input captured, files changed, records affected,
+   before/after `ni status --proof --next-questions` result, remaining
+   assumptions or blockers, and next question group.
 
 These rules apply to model-maintained authoring state. They do not add a task
 runner, contract editing command surface, runtime adapter, evidence runner, or
@@ -120,4 +121,4 @@ Before finishing a model-authored planning turn, check:
 - Were risks, mitigations, requirements, evaluations, and non-goals preserved
   unless explicitly changed?
 - If the plan is locked, did the change use the amendment or relock flow?
-- Did the response include a short change summary?
+- Did the response include a short planning proof summary?

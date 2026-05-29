@@ -22,6 +22,9 @@ and prompt compilation.
 - Run or request `ni status` before any readiness claim.
 - `ni-start` must use grouped `ni status --proof --next-questions` output as
   its primary planning interview when present.
+- `ni-start` must show a concise planning proof block after meaningful
+  authoring updates, naming changed files, affected IDs, before/after CLI
+  status, remaining blockers, and the next question group.
 - Run or request `ni end` before any lock claim.
 - Run or request `ni run` before any compiled handoff prompt claim.
 - Never edit `.ni/plan.lock.json` manually.

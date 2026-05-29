@@ -7,6 +7,11 @@ It is an explanation of the gate result, not a model-generated review.
 The proof does not edit planning docs, does not resolve issues, and does not
 start execution. If the proof reports `BLOCKED`, execution must not start.
 
+During `ni-start` authoring, the model may quote or summarize this CLI proof
+inside a planning proof block after it updates docs and contract records. That
+block is an audit trail for the authoring turn; the deterministic readiness
+proof still comes from this command.
+
 ## Commands
 
 ```bash

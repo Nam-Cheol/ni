@@ -19,9 +19,11 @@ compiled handoff prompt.
    - What is the likely delivery surface?
 3. User answers with an initial project idea and any clear exclusions.
 4. Model drafts `docs/plan/00_project_brief.md` and `.ni/contract.json`.
-5. The draft is marked "not locked" and keeps assumptions, non-goals, and
+5. Model may show a draft planning proof block describing what it believes
+   changed, but that proof is not deterministic validation.
+6. The draft is marked "not locked" and keeps assumptions, non-goals, and
    blocker questions visible.
-6. Later, CLI validation is required before readiness, locking, hash trust,
+7. Later, CLI validation is required before readiness, locking, hash trust,
    prompt compilation, or downstream seed generation.
 
 ## 3. What this proves
@@ -35,6 +37,8 @@ compiled handoff prompt.
 - Model workspace packs can guide drafting, but they do not execute downstream
   work and do not override CLI readiness.
 - This example does not make deterministic validation claims.
+- Any no-terminal planning proof is draft-only until a trusted CLI run
+  validates the docs and contract.
 
 ## 4. Product type / surface
 
@@ -57,6 +61,7 @@ compiled handoff prompt.
 - Describe the project idea.
 - Ask the model to create a `docs/plan/**` draft.
 - Ask the model to draft `.ni/contract.json`.
+- Ask the model for a concise draft planning proof block.
 - Mark uncertain statements as assumptions or open questions.
 - Mark explicit exclusions as non-goals.
 - Do not treat the draft as locked.

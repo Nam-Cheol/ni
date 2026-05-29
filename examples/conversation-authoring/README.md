@@ -17,6 +17,9 @@ fresh ready state. The current planning docs and contract must still pass
   `contract set`, or `contract list`.
 - A model may update `docs/plan/**` and `.ni/contract.json` together, then use
   `ni status` to verify readiness.
+- After meaningful authoring updates, the model should show a planning proof
+  block that names what the user said, changed files and IDs, before/after CLI
+  status, remaining blockers, and the next question group.
 - The model should consume grouped `ni status --proof --next-questions` output
   as the next planning interview instead of inventing broad questions.
 - `ni status` can catch stale docs/contract synchronization even when a

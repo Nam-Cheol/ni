@@ -144,6 +144,61 @@ After the user answers the selected group, `ni-start` updates `docs/plan/**`,
 `.ni/contract.json`, and `.ni/session.json` together, then runs or requests
 `ni status --dir . --proof --next-questions` again.
 
+## Planning proof capture
+
+After every meaningful authoring update, `ni-start` should report a concise
+planning proof block. The block makes the edit auditable for the user without
+turning the model into a readiness authority.
+
+Required shape:
+
+```text
+Planning proof:
+- User input captured:
+  "<short paraphrase of user answer>"
+- Interpreted planning records:
+  - Purpose: ...
+  - Actors/outcomes: ...
+  - Delivery surface: ...
+  - Capabilities: CAP-001 ...
+  - Requirements: REQ-001 ...
+  - Risks: RISK-001 ...
+  - Evaluations: EVAL-001 ...
+  - Decisions: DEC-001 accepted/deferred/rejected if applicable
+  - Assumptions: ASM-001 or open question if applicable
+  - Non-goals: NG-001 if applicable
+  - Open questions: OQ-001 ...
+- Updated planning artifacts:
+  - docs/plan/00_project_brief.md: purpose clarified
+  - docs/plan/01_actors_outcomes.md: primary actors added
+  - docs/plan/03_interaction_contract.md: delivery surface recorded
+  - .ni/contract.json: project.purpose, actors/outcomes, delivery_surfaces updated
+  - .ni/session.json: active focus and pending questions updated
+- Status result:
+  - before: BLOCKED because R014/R015/R016
+  - after: BLOCKED/READY_WITH_DEFERRALS/READY because ...
+- Remaining blockers:
+  - OQ-001 ...
+- Next question group:
+  - Sync repairs / Risk decisions / Evaluation evidence / Open blockers / none
+```
+
+Rules:
+
+- Keep it concise.
+- Do not expose hidden chain-of-thought.
+- Do not invent file changes or contract IDs that were not updated.
+- If no files changed, say `No planning artifacts were updated.`
+- Do not claim readiness unless the after-status came from the CLI.
+- Do not claim lock unless `ni end` actually created `.ni/plan.lock.json`.
+- Keep uncertain user statements as assumptions or open questions.
+- Record clear exclusions as non-goals.
+- If docs and contract disagree, say so and use the next status result or
+  request one before proceeding.
+
+In no-terminal mode, this block is only a draft audit trail. It becomes trusted
+only after the drafted docs and contract pass CLI validation.
+
 ## Resume mode
 
 When a later model session resumes planning, `ni-start` first uses the same

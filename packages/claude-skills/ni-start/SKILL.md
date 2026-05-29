@@ -111,6 +111,58 @@ After the user answers the selected group, update `docs/plan/**`,
 `ni status --dir . --proof --next-questions` again. Explain that readiness is
 blocked or cleared by deterministic CLI gates, not model judgment.
 
+## Planning Proof Capture
+
+After every meaningful authoring update, show a concise planning proof block.
+The block must describe what changed in planning state without exposing hidden
+chain-of-thought and without making you the readiness authority.
+
+Use this shape:
+
+```text
+Planning proof:
+- User input captured:
+  "<short paraphrase of user answer>"
+- Interpreted planning records:
+  - Purpose: ...
+  - Actors/outcomes: ...
+  - Delivery surface: ...
+  - Capabilities: CAP-001 ...
+  - Requirements: REQ-001 ...
+  - Risks: RISK-001 ...
+  - Evaluations: EVAL-001 ...
+  - Decisions: DEC-001 accepted/deferred/rejected if applicable
+  - Assumptions: ASM-001 or open question if applicable
+  - Non-goals: NG-001 if applicable
+  - Open questions: OQ-001 ...
+- Updated planning artifacts:
+  - docs/plan/00_project_brief.md: purpose clarified
+  - docs/plan/01_actors_outcomes.md: primary actors added
+  - docs/plan/03_interaction_contract.md: delivery surface recorded
+  - .ni/contract.json: project.purpose, actors/outcomes, delivery_surfaces updated
+  - .ni/session.json: active focus and pending questions updated
+- Status result:
+  - before: BLOCKED because R014/R015/R016
+  - after: BLOCKED/READY_WITH_DEFERRALS/READY because ...
+- Remaining blockers:
+  - OQ-001 ...
+- Next question group:
+  - Sync repairs / Risk decisions / Evaluation evidence / Open blockers / none
+```
+
+Rules:
+
+- Keep it short.
+- Do not invent file changes, contract fields, or IDs.
+- If no files were changed, say no planning artifacts were updated.
+- Do not claim readiness unless CLI status proves it.
+- Do not claim lock unless `ni end` actually created `.ni/plan.lock.json`.
+- Keep uncertain user statements as assumptions or open questions.
+- Record clear exclusions as non-goals.
+- If docs and contract disagree, say so and run or request status again.
+- In no-terminal mode, call this a draft audit trail only; it becomes trusted
+  only after CLI validation.
+
 ## First-run Opening Card
 
 When a fresh project reports the first-run blockers `R014`, `R015`, and
@@ -169,8 +221,8 @@ When the user provides new intent:
    and artifacts.
 7. Run or request `ni status --dir . --proof --next-questions` after
    meaningful edits.
-8. Report changed files, affected IDs, readiness blockers, and the next
-   focused planning questions.
+8. Report the planning proof block, including changed files, affected IDs,
+   readiness blockers, and the next focused planning questions.
 9. Suggest `ni-end` only when the CLI reports no blockers. Never declare
    completion by model judgment alone.
 
@@ -180,6 +232,7 @@ When responding during planning:
 
 - Lead with the current planning summary or what changed.
 - Name changed files, including `.ni/session.json` when refreshed.
+- Include the planning proof block after meaningful authoring updates.
 - Name affected IDs and whether they are accepted, draft, assumption,
   rejected, deferred, resolved, or blockers.
 - Ask only the next focused questions needed to unblock readiness.

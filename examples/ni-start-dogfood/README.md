@@ -13,6 +13,9 @@ and the CLI validates readiness before anything locks or compiles.
   contract `add`, `list`, or `set` commands.
 - The model may summarize, ask focused questions, and update docs plus contract
   and session records from confirmed answers.
+- After meaningful authoring updates, the model shows a planning proof block
+  tying the user's answer to changed files, contract IDs, before/after status,
+  remaining blockers, and the next question group.
 - `ni status` controls readiness; the model never overrides a `BLOCKED` result.
 - `ni-start` consumes grouped `ni status --proof --next-questions` output,
   preserves group labels and answer shapes, and asks the highest-priority
@@ -38,7 +41,8 @@ and the CLI validates readiness before anything locks or compiles.
   `R014`/`R015`/`R016`, and asks the opening card questions.
 - `04-user-answers.md`: the user provides purpose, actors/outcomes, delivery
   surface, initial scope, non-goals, and evidence.
-- `05-docs-contract-delta.md`: the model updates docs and contract together.
+- `05-docs-contract-delta.md`: the model updates docs and contract together
+  and shows the planning proof block for the first-run answer.
 - `06-status-proof.md`: `ni status` runs again after recording the first-run
   answers and reports the next blocker.
 - `07-second-round-questions.md`: the model asks only the next blocker

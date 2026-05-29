@@ -43,6 +43,7 @@ Without direct terminal access, a user can:
 - copy or load the `ni-start` guidance into a model workspace;
 - describe the project idea, actors, delivery surface, constraints, and risks;
 - ask the model to draft planning docs and `.ni/contract.json`;
+- ask the model to show a draft planning proof block after meaningful updates;
 - keep assumptions, draft decisions, explicit non-goals, and open blocker
   questions visible;
 - hand the draft to a teammate, CI job, or later local setup for CLI
@@ -55,6 +56,11 @@ Without CLI proof, a user cannot trust:
 - lock hash checks;
 - prompt compilation;
 - downstream seed generation from a locked plan.
+
+In no-terminal mode, planning proof capture is a draft audit trail only. It can
+show what the model believes it changed, but it is not deterministic validation
+and becomes trusted only after a CLI run validates the drafted docs and
+contract.
 
 ## No-Terminal Checklist
 
@@ -69,6 +75,7 @@ Use this checklist when you are starting without a local CLI:
 - Ask the model to draft `.ni/contract.json` alongside the docs.
 - Mark uncertain statements as assumptions or open questions.
 - Mark explicit exclusions as non-goals.
+- Ask for a concise planning proof block after meaningful updates.
 - Do not treat the draft as locked.
 - Later validate with the CLI or a teammate who can run the CLI.
 
