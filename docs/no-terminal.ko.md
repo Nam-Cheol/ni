@@ -1,88 +1,157 @@
 # 터미널 없이 계획하기
 
-CLI를 설치하기 전에도 `ni`의 planning method에서 이득을 얻을 수 있다. 핵심은
-discipline이다. Intent를 명시하고, docs와 contract draft를 함께 유지하고,
-blocker를 드러내며, plan이 검증되기 전에는 agent에게 work를 넘기지 않는다.
+No-terminal planning은 사용자가 `ni` CLI를 설치하거나 실행하기 전에 Intent Lock
+Protocol을 시작할 수 있게 하는 assisted drafting path다. Model conversation으로
+초기 `docs/plan/**` notes와 draft `.ni/contract.json`을 만들 수 있지만, 이것만으로
+trusted lock을 끝낼 수는 없다.
 
-No-terminal planning은 validated `ni`와 같지 않다. Deterministic readiness,
-locking, lock hash verification, prompt compilation에는 CLI가 필요하다.
+규칙은 단순하다. No-terminal 사용자는 planning을 시작하고 protocol을 배우고 review
+대상 draft를 준비할 수 있다. Trusted readiness, lock creation, hash verification,
+prompt compilation은 CLI-validated `ni`가 필요하다.
 
-## 세 가지 수준
+## No-terminal mode가 하는 일
 
-| 수준 | 작동 방식 | 신뢰할 수 있는 것 |
-| --- | --- | --- |
-| Full `ni` | CLI가 설치되어 있고 `ni status`, `ni end`, `ni run`을 사용할 수 있다. | Authoritative readiness, lock creation, lock hash checks, bounded prompt compilation. |
-| Model pack assisted | Claude/Codex-style skills가 planning docs authoring과 contract drafting을 안내한다. Lock 전에는 user, teammate, CI runner가 CLI validation을 실행해야 한다. | Model-assisted drafting에는 유용하지만 readiness와 lock claim은 CLI output 이후에만 authoritative하다. |
-| Read-only method | Intent Lock checklist나 이 문서를 model session에 복사하고 plan을 검토하게 한다. | Learning과 self-review에는 유용하지만 authoritative하지 않고 validated `ni`와 equivalent하지 않다. |
+No-terminal mode는:
 
-## 수동 흐름
+- model conversation으로 planning을 시작하는 방법이다;
+- `docs/plan/**`과 contract draft 작성에 유용하다;
+- 설치 전에 `ni`의 Intent Lock Protocol을 배우는 데 유용하다;
+- teammate 또는 local setup이 CLI를 실행하기 전에 questions, assumptions,
+  non-goals, handoff notes를 준비하는 데 유용하다;
+- assisted authoring path이지 source of authority가 아니다.
 
-1. 이 repository의 model pack 또는 copied instructions로 시작한다:
-   `packages/claude-skills`, `packages/codex-skills`, `.agents/skills`.
-2. Model에게 project의 `docs/plan` draft를 만들게 한다. Purpose, actors,
-   capabilities, requirements, decisions, risks, evaluations, non-goals,
-   constraints, artifacts, open questions를 다뤄야 한다.
-3. Model에게 docs와 함께 `.ni/contract.json` draft를 작성하게 한다. 이것은
-   model-maintained draft이지 authoritative state가 아니다.
-4. Assumptions와 open questions를 명시적으로 표시한다. Tentative하거나
-   conflicting하거나 incomplete한 statement는 accepted decisions가 되면 안 된다.
-5. 나중에 CLI를 사용할 수 있는 teammate, CI job, local setup에게 `ni status`를
-   실행하게 한다. Result가 blocked라면 planning conversation을 계속한다.
-6. Model judgment를 lock으로 취급하지 않는다. `ni status`가 plan ready를
-   report하면 `ni end`로 lock을 만든다. `.ni/plan.lock.json`은 CLI만 만들어야 한다.
-7. Final handoff prompt는 `ni run`으로 compile한다. `ni run`은 text를 compile할
-   뿐 shell commands, agents, queues, downstream work를 실행하지 않는다.
+## No-terminal mode가 아닌 것
 
-## No-terminal assisted checklist
+No-terminal mode는 다음이 아니다:
+
+- deterministic readiness validation;
+- 실제 `ni` lock;
+- lock hash verification;
+- `ni status`, `ni end`, `ni run`의 replacement;
+- execution;
+- hosted service;
+- model authority.
+
+Trusted CLI run이 결과를 만들고 exact proof를 확인할 수 있기 전에는 no-terminal
+draft를 `READY`, `READY_WITH_DEFERRALS`, locked 상태로 설명하지 않는다.
+
+## 터미널 없이 할 수 있는 일
+
+터미널 접근 없이도 사용자는:
+
+- model workspace에 `ni-start` guidance를 복사하거나 load할 수 있다;
+- project idea, actors, delivery surface, constraints, risks를 설명할 수 있다;
+- model에게 planning docs와 `.ni/contract.json`을 draft하게 할 수 있다;
+- assumptions, draft decisions, explicit non-goals, open blocker questions를
+  visible하게 유지할 수 있다;
+- draft를 CLI validation이 가능한 teammate, CI job, later local setup에 넘길 수
+  있다.
+
+CLI proof 없이 신뢰할 수 없는 것은:
+
+- readiness status;
+- lock creation;
+- lock hash checks;
+- prompt compilation;
+- locked plan에서 나온 downstream seed generation.
+
+## No-terminal checklist
 
 Local CLI 없이 시작할 때 이 checklist를 사용한다:
 
-- Model pack 또는 copied instructions로 시작한다.
-- `docs/plan` draft를 만든다.
-- Docs와 함께 `.ni/contract.json`을 draft한다.
-- Assumptions와 open questions를 표시한다, especially blockers.
-- 나중에 CLI, teammate, trusted runner로 validate한다.
-- Model judgment를 lock으로 취급하지 않는다.
+- `.agents/skills/ni-start/SKILL.md`,
+  `packages/codex-skills/ni-start/SKILL.md`, 또는
+  `packages/claude-skills/ni-start/SKILL.md`의 `ni-start` guidance를 복사하거나
+  load한다.
+- Conversation에서 project idea를 설명한다: 무엇이, 누구를 위해, 어떤 delivery로
+  바뀌어야 하는가.
+- Model에게 `docs/plan/**` draft를 만들게 한다.
+- Model에게 docs와 함께 `.ni/contract.json`을 draft하게 한다.
+- Uncertain statements는 assumptions 또는 open questions로 표시한다.
+- Explicit exclusions는 non-goals로 표시한다.
+- Draft를 locked 상태로 취급하지 않는다.
+- 나중에 CLI 또는 CLI를 실행할 수 있는 teammate로 validate한다.
 
-## Intent Lock checklist
+## Intent Lock drafting checklist
 
-터미널 없이 작업할 때 이 checklist를 사용한다:
+Drafting 중에는 이 checklist를 사용한다:
 
 - Project purpose가 explicit한가?
 - Actors와 outcomes가 named 상태인가?
-- Every capability가 at least one requirement와 evaluation에 trace되는가?
+- Draft capability가 관련 record가 존재할 때 at least one requirement와
+  evaluation에 trace되는가?
 - Non-goals가 visible한가?
 - High-severity risks에 mitigations가 있는가?
 - Open questions가 clear하게 marked되어 있는가, especially blockers?
 - Accepted decisions가 assumptions와 rejected options에서 분리되어 있는가?
 - Expected artifacts가 named 상태인가?
-- Downstream handoff가 runtime execution이 아니라 planning output으로 bounded되어 있는가?
+- Downstream handoff가 runtime execution이 아니라 planning output으로 bounded되어
+  있는가?
 
-이 checklist는 learning과 drafting aid다. Model이 더 좋은 질문을 하게 도울 수는
-있지만 `ni status`, `ni end`, `ni run`을 대체하지 않는다.
+이 checklist는 model이 더 좋은 질문을 하게 돕는다. `ni status`, `ni end`,
+`ni run`을 대체하지 않는다.
 
-## Full ni로 넘어가야 할 때
+## Full ni로 넘어가는 경로
 
-Plan이 implementation, budget, review, downstream seed generation을 안내할 수
-있는 순간에는 no-terminal assisted drafting에서 full `ni`로 넘어간다. 특히
-readiness를 claim하거나, lockfile을 만들거나 신뢰하거나, plan hash를 검증하거나,
-bounded handoff prompt를 compile하거나, 다른 actor에게 plan 기반 work를 시작하게
-하기 전에는 CLI를 사용해야 한다.
+Plan이 implementation, budget, review, downstream seed generation을 안내할 수 있는
+순간 assisted drafting에서 full `ni`로 넘어간다.
 
-Local에서 CLI를 실행할 수 없다면 draft를 teammate, CI job, trusted runner에게
-넘겨 `ni status`, `ni end`, `ni run`을 실행하게 한다. 그 전까지 workspace는
-learning과 drafting에만 유용하다.
+1. Verified release binary path 또는 curl installer로 `ni`를 설치한다.
+2. Drafted workspace에서 `ni status --proof --next-questions`를 실행한다.
+3. Planning conversation을 계속하면서 `docs/plan/**`과 `.ni/contract.json`을 함께
+   update해 blockers를 해결한다.
+4. `ni status`가 readiness를 report하고 user가 accepted plan을 confirm한 뒤에만
+   `ni end`를 실행한다.
+5. `.ni/plan.lock.json`이 존재하고 lock hashes가 valid한 뒤에만 `ni run`을
+   실행한다.
+6. Model workspace skills는 UX로 유지한다. Conversation을 guide하지만 CLI
+   readiness, locking, hash verification, prompt compilation을 override하지 않는다.
 
-Deterministic validation을 claim하지 않는 docs-only example은
-`examples/no-terminal-assisted/`를 참고한다.
+## Team handoff path
+
+No-terminal workflow는 team에서도 유용하다:
+
+1. Terminal access가 없는 user가 model과 plan을 draft한다.
+2. CLI가 있는 teammate가 `ni status --proof --next-questions`를 실행한다.
+3. Teammate가 blockers, proof, next questions를 CLI output 그대로 또는 IDs가
+   보존된 faithful summary로 돌려준다.
+4. User는 model과 planning을 계속하고 assumptions, non-goals, open blockers를
+   visible하게 유지한다.
+5. Teammate가 다시 validate한다.
+6. Locking은 CLI validation이 blockers를 clear하고 user가 accepted plan을
+   confirm한 뒤에만 일어난다.
+
+Teammate가 `ni end`를 실행하면 생성된 `.ni/plan.lock.json`이 source of truth가
+된다. 그 뒤에는 locked planning docs를 silently edit하지 않는다.
+
+## Model workspace pack과의 관계
+
+Codex와 Claude skill packs는 conversation을 guide할 수 있다. First-run card를
+묻고, docs를 draft하고, contract records를 draft하고, stable IDs를 보존하고, CLI
+blockers를 설명하는 데 도움이 된다.
+
+그 pack들은 downstream work를 실행하지 않는다. `ni`의 일부로 model APIs를 호출하지
+않는다. CLI readiness를 override하지 않는다. 실제 lock을 만들지 않는다. Global
+install은 host-specific loading과 discovery가 verified되기 전까지 Experimental로
+남을 수 있다.
+
+## Example
+
+Docs-only example은 `examples/no-terminal-assisted/`를 참고한다. 이 example은
+`docs/plan/00_project_brief.md`와 `.ni/contract.json`이 있는 assisted draft를
+보여주고, draft를 "not locked"로 표시하며, later CLI validation을 요구한다.
+
+이 example은 의도적으로 `ni status`, `ni end`, `ni run`을 실행하지 않는다. 그렇게
+하면 no-terminal assisted drafting이 아니라 trusted CLI workspace를 의미하게 되기
+때문이다.
 
 ## Boundary
 
 No-terminal planning은 hosted web app, model API calls, runtime execution, shell
 adapters, queues, automation behavior를 추가해서는 안 된다. 이것은 kernel boundary를
-보존하면서 Intent Lock method를 시작하는 docs-first 방식이다:
+보존하면서 Intent Lock Protocol을 시작하는 docs-first 방식이다:
 
 ```text
-model pack or copied checklist -> draft docs and contract
+model pack or copied guidance -> draft docs and contract
 ni CLI -> deterministic readiness, lock, hash proof, prompt compile
 ```

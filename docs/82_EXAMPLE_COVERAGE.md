@@ -31,7 +31,7 @@ bash scripts/quality.sh
 | `examples/namba-ai-upgrade/` | ni can plan upstream of an existing harness/workflow project without becoming that harness. | `software` | `cli`, `document`, `workflow` | `BLOCKED` | Runs status, checks `R012`, and compiles Codex prompt from the historical lock only. | No, blocked fixture with historical lock material. | Yes |
 | `examples/ni-start-dogfood/` | First-run card, grouped next questions, docs/contract/session update, and re-status loop. | `conversation_product` | `conversation`, `document` | `READY_WITH_DEFERRALS` | Runs status, grouped proof, and compiles `human-team` prompt from the existing lock. | No, locked workspace fixture. | Yes |
 | `examples/benchmark-report/` | Benchmark/case-study reporting method with `not_measured` placeholders and no fake empirical claims. | Not applicable | `document` | Not applicable | Verifies required docs and `not_measured` markers only. | Yes, report template. | Yes |
-| `examples/no-terminal-assisted/` | Assisted planning can draft docs and contract before local CLI validation, without deterministic readiness claims. | draft `workflow` | draft `document` | Not claimed | Verifies required files and boundary wording only. | Yes, assisted draft. | Yes |
+| `examples/no-terminal-assisted/` | Assisted planning can draft docs and contract before local CLI validation, show a model-workspace start flow, and hand off to later CLI proof without deterministic readiness claims. | draft `workflow` | draft `document` | Not claimed | Verifies required files, docs-only status, and boundary wording only. | Yes, assisted draft. | Yes |
 
 ## Grouped next-question coverage
 
@@ -65,3 +65,8 @@ The examples do not:
 Locked examples may compile inert prompts through `ni run` because the CLI
 verifies existing lock material first. Blocked examples remain blocked even
 when historical lock or generated prompt material exists.
+
+The no-terminal assisted example remains docs-only by design. It demonstrates
+drafting, team handoff, and graduation to full `ni`, but it does not run
+`ni status`, `ni end`, or `ni run` because no-terminal mode is not a trusted
+CLI workspace.

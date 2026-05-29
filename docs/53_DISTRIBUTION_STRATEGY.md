@@ -32,7 +32,7 @@ execution service, or multi-agent execution layer.
 | Curl installer mode | Available | Terminal users who want one command and no Go setup | `curl` or equivalent downloader; POSIX shell on supported platforms | Trust the installer script after inspecting it; it verifies real release assets with published checksums when available | Keep `install.sh` small, auditable, covered by installer checks, and reverify it against real release assets before new availability claims |
 | Package manager mode | Planned | Users who prefer platform package managers | Homebrew first; Scoop later if Windows demand appears | Trust package manager metadata, formulas/manifests, and checksums that point to official release assets | Create a Homebrew tap or formula after release binaries stabilize; consider Scoop later; keep publishing outside `ni-kernel` |
 | Model workspace mode | Experimental | Codex/Claude users who author plans through a model workspace | A model workspace that can read the repository docs and invoke the `ni` CLI as authority | Trust the CLI gates, not the model; skills are UX over docs and `.ni/contract.json` | Package and document portable skill packs; keep skill behavior aligned with `ni status`, `ni end`, and `ni run` |
-| No-terminal mode | Experimental | Non-technical users, product leads, researchers, and teams who want docs-first planning without direct terminal use | Assisted docs-first workflow; a trusted runner still invokes `ni` gates for deterministic validation | Trust visible docs, lockfile hashes, and CLI-generated status/lock/run outputs; the model may not declare readiness on its own | Keep assisted no-terminal docs factual; do not claim deterministic validation without CLI proof |
+| No-terminal mode | Experimental | Non-technical users, product leads, researchers, and teams who want docs-first planning without direct terminal use | Assisted docs-first workflow; a trusted runner still invokes `ni` gates for deterministic validation | Trust visible drafts only as planning inputs; trust readiness, lock, hashes, and compiled prompts only after CLI-generated proof | Keep assisted no-terminal docs factual; do not claim deterministic validation without CLI proof |
 
 ## Track Details
 
@@ -132,14 +132,14 @@ instructions, not bypass readiness, lock, or hash verification.
 
 ### 7. No-terminal mode
 
-No-terminal mode is experimental as an assisted docs-first method.
+No-terminal mode is experimental as an assisted docs-first drafting method.
 
 The intended shape is a downloadable model pack and docs-first workflow where a
-non-terminal user can inspect the plan, status proof, lock proof, and compiled
-handoff without typing commands directly. Today it is only an assisted planning
-method: a trusted local or workspace runner must invoke `ni` for deterministic
-validation, and the user-facing experience should remain explicit about which
-outputs came from the CLI.
+non-terminal user can start a plan without typing commands directly. Today it
+is only an assisted planning method: a trusted local or workspace runner must
+invoke `ni` for deterministic validation, lock creation, hash verification, and
+prompt compilation. The user-facing experience should remain explicit about
+which outputs are drafts and which outputs came from the CLI.
 
 This is not a terminal-less web service, hosted execution service, or hidden
 agent runner. The core contract remains:
@@ -158,9 +158,10 @@ planning conversation -> docs contract -> readiness gate -> lockfile -> prompt
   checksums that have been verified with `install.sh`, currently v0.3.0.
 - Package manager install must not be described as available until packages or
   formulas are published.
-- No-terminal mode may be described only as assisted or experimental until a
-  downloadable model pack and proof-oriented workflow exist; it must not be
-  described as deterministic validation without CLI proof.
+- No-terminal mode may be described only as assisted, drafting, or
+  experimental until a downloadable model pack and proof-oriented workflow
+  exist; it must not be described as deterministic validation without CLI
+  proof.
 
 ## Boundary Rules
 

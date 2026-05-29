@@ -1,58 +1,85 @@
 # No-Terminal Planning
 
-You can benefit from `ni`'s planning method before you install the CLI. The
-useful part is the discipline: make intent explicit, keep docs and a contract
-draft aligned, surface blockers, and avoid handing work to an agent until the
-plan has been checked.
+No-terminal planning is an assisted drafting path for people who want to start
+using the Intent Lock Protocol before they install or run the `ni` CLI. It can
+help a model conversation create initial `docs/plan/**` notes and a draft
+`.ni/contract.json`, but it cannot finish a trusted lock on its own.
 
-No-terminal planning is not the same as validated `ni`. Deterministic readiness,
-locking, lock hash verification, and prompt compilation require the CLI.
+The rule is simple: no-terminal users can start planning, learn the protocol,
+and prepare a draft for review. Trusted readiness, lock creation, hash
+verification, and prompt compilation require CLI-validated `ni`.
 
-## Three Levels
+## What No-Terminal Mode Is
 
-| Level | How it works | What you can trust |
-| --- | --- | --- |
-| Full `ni` | The CLI is installed and `ni status`, `ni end`, and `ni run` are available. | Authoritative readiness, lock creation, lock hash checks, and bounded prompt compilation. |
-| Model pack assisted | Claude/Codex-style skills guide planning-doc authoring and contract drafting. A user, teammate, or CI runner should run CLI validation before lock. | Useful model-assisted drafting, but readiness and lock claims are only authoritative after CLI output. |
-| Read-only method | Copy the Intent Lock checklist or these instructions into a model session and ask it to reason through the plan. | Useful for learning and self-review; not authoritative and not equivalent to validated `ni`. |
+No-terminal mode is:
 
-## Manual Flow
+- a way to start planning through model conversation;
+- useful for drafting `docs/plan/**` and a contract draft;
+- useful for learning `ni`'s Intent Lock Protocol before installation;
+- useful for preparing questions, assumptions, non-goals, and handoff notes
+  before a teammate or local setup runs the CLI;
+- an assisted authoring path, not the source of authority.
 
-1. Start with a model pack or copied instructions from this repository:
-   `packages/claude-skills`, `packages/codex-skills`, or `.agents/skills`.
-2. Ask the model to create a `docs/plan` draft for your project. It should cover
-   purpose, actors, capabilities, requirements, decisions, risks, evaluations,
-   non-goals, constraints, artifacts, and open questions.
-3. Ask the model to draft `.ni/contract.json` alongside the docs. Treat it as a
-   model-maintained draft, not authoritative state.
-4. Mark assumptions and open questions explicitly. Tentative, conflicting, or
-   incomplete statements should not become accepted decisions.
-5. Later, ask a teammate, CI job, or local setup with the CLI to run
-   `ni status`. If the result is blocked, continue the planning conversation.
-6. Do not treat model judgment as a lock. When `ni status` reports that the
-   plan is ready, use `ni end` to create the lock. Only the CLI should create
-   `.ni/plan.lock.json`.
-7. Use `ni run` to compile the final handoff prompt. `ni run` compiles text; it
-   does not execute shell commands, agents, queues, or downstream work.
+## What No-Terminal Mode Is Not
 
-## No-Terminal Assisted Checklist
+No-terminal mode is not:
+
+- deterministic readiness validation;
+- a real `ni` lock;
+- lock hash verification;
+- a replacement for `ni status`, `ni end`, or `ni run`;
+- execution;
+- a hosted service;
+- model authority.
+
+Do not describe a no-terminal draft as `READY`, `READY_WITH_DEFERRALS`, or
+locked unless a trusted CLI run produced that result and the exact proof is
+available.
+
+## What Users Can Do Without Terminal
+
+Without direct terminal access, a user can:
+
+- copy or load the `ni-start` guidance into a model workspace;
+- describe the project idea, actors, delivery surface, constraints, and risks;
+- ask the model to draft planning docs and `.ni/contract.json`;
+- keep assumptions, draft decisions, explicit non-goals, and open blocker
+  questions visible;
+- hand the draft to a teammate, CI job, or later local setup for CLI
+  validation.
+
+Without CLI proof, a user cannot trust:
+
+- readiness status;
+- lock creation;
+- lock hash checks;
+- prompt compilation;
+- downstream seed generation from a locked plan.
+
+## No-Terminal Checklist
 
 Use this checklist when you are starting without a local CLI:
 
-- Start with a model pack or copied instructions.
-- Create a `docs/plan` draft.
-- Draft `.ni/contract.json` alongside the docs.
-- Mark assumptions and open questions, especially blockers.
-- Later validate with the CLI, a teammate, or a trusted runner.
-- Do not treat model judgment as a lock.
+- Copy or load `ni-start` guidance from `.agents/skills/ni-start/SKILL.md`,
+  `packages/codex-skills/ni-start/SKILL.md`, or
+  `packages/claude-skills/ni-start/SKILL.md`.
+- Describe the project idea in conversation: what should change, for whom, and
+  how it will be delivered.
+- Ask the model to create a `docs/plan/**` draft.
+- Ask the model to draft `.ni/contract.json` alongside the docs.
+- Mark uncertain statements as assumptions or open questions.
+- Mark explicit exclusions as non-goals.
+- Do not treat the draft as locked.
+- Later validate with the CLI or a teammate who can run the CLI.
 
-## Intent Lock Checklist
+## Intent Lock Drafting Checklist
 
-Use this checklist when you are working without a terminal:
+Use this checklist while drafting:
 
 - Is the project purpose explicit?
 - Are actors and outcomes named?
-- Does every capability trace to at least one requirement and evaluation?
+- Does every draft capability trace to at least one requirement and evaluation
+  when those records exist?
 - Are non-goals visible?
 - Are high-severity risks paired with mitigations?
 - Are open questions marked clearly, especially blockers?
@@ -60,31 +87,71 @@ Use this checklist when you are working without a terminal:
 - Are expected artifacts named?
 - Is the downstream handoff bounded to planning output, not runtime execution?
 
-This checklist is a learning and drafting aid. It can help a model ask better
-questions, but it does not replace `ni status`, `ni end`, or `ni run`.
+This checklist helps a model ask better questions. It does not replace
+`ni status`, `ni end`, or `ni run`.
 
-## When to Graduate to Full ni
+## Graduation Path To Full ni
 
-Move from no-terminal assisted drafting to full `ni` as soon as the plan might
-guide implementation, budget, review, or downstream seed generation. In
-particular, use the CLI before you claim readiness, create or trust a lockfile,
-verify plan hashes, compile a bounded handoff prompt, or ask another actor to
-start work from the plan.
+Move from assisted drafting to full `ni` as soon as the plan might guide
+implementation, budget, review, or downstream seed generation.
 
-If you cannot run the CLI locally, hand the draft to a teammate, CI job, or
-trusted runner that can execute `ni status`, `ni end`, and `ni run`. Until that
-happens, the workspace is useful for learning and drafting only.
+1. Install `ni` through the verified release binary path or the curl installer.
+2. Run `ni status --proof --next-questions` in the drafted workspace.
+3. Fix blockers by continuing the planning conversation and updating
+   `docs/plan/**` and `.ni/contract.json` together.
+4. Run `ni end` only after `ni status` reports readiness and the user confirms
+   the accepted plan.
+5. Run `ni run` only after `.ni/plan.lock.json` exists and the lock hashes are
+   valid.
+6. Keep model workspace skills as UX. They guide the conversation, but they do
+   not override CLI readiness, locking, hash verification, or prompt
+   compilation.
 
-See `examples/no-terminal-assisted/` for a docs-only example that keeps the
-draft useful without claiming deterministic validation.
+## Team Handoff Path
+
+A no-terminal workflow can still be useful on a team:
+
+1. A user without terminal access drafts the plan with a model.
+2. A teammate with the CLI runs `ni status --proof --next-questions`.
+3. The teammate returns the blockers, proof, and next questions exactly as CLI
+   output or as a faithful summary with IDs.
+4. The user continues planning with the model and keeps assumptions, non-goals,
+   and open blockers visible.
+5. The teammate validates again.
+6. Locking happens only after CLI validation clears blockers and the user
+   confirms the accepted plan.
+
+If the teammate runs `ni end`, the generated `.ni/plan.lock.json` becomes the
+source of truth. After that, do not silently edit locked planning docs.
+
+## Model Workspace Pack Relation
+
+Codex and Claude skill packs can guide the conversation. They can help a model
+ask the first-run card, draft docs, draft contract records, preserve stable IDs,
+and explain CLI blockers.
+
+They do not execute downstream work. They do not call model APIs as part of
+`ni`. They do not override CLI readiness. They do not create a real lock.
+Global install may remain Experimental unless host-specific loading and
+discovery have been verified.
+
+## Example
+
+See `examples/no-terminal-assisted/` for a docs-only example. It shows an
+assisted draft with `docs/plan/00_project_brief.md` and `.ni/contract.json`,
+keeps the draft marked "not locked", and requires later CLI validation.
+
+The example intentionally does not run `ni status`, `ni end`, or `ni run`,
+because that would imply a trusted CLI workspace instead of no-terminal
+assisted drafting.
 
 ## Boundary
 
 No-terminal planning must not add a hosted web app, model API calls, runtime
 execution, shell adapters, queues, or automation behavior. It is a docs-first
-way to start the Intent Lock method while preserving the kernel boundary:
+way to start the Intent Lock Protocol while preserving the kernel boundary:
 
 ```text
-model pack or copied checklist -> draft docs and contract
+model pack or copied guidance -> draft docs and contract
 ni CLI -> deterministic readiness, lock, hash proof, prompt compile
 ```
