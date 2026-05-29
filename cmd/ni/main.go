@@ -1149,13 +1149,7 @@ func runStatus(args []string, stdout io.Writer, stderr io.Writer) int {
 		fmt.Fprintf(stdout, "%s %s: %s\n", issue.Severity, issue.RuleID, issue.Message)
 	}
 	if nextQuestions {
-		for _, question := range *result.NextQuestions {
-			label := question.RuleID
-			if len(question.References) > 0 {
-				label += " " + strings.Join(question.References, ",")
-			}
-			fmt.Fprintf(stdout, "question %s: %s\n", label, question.Question)
-		}
+		printNextQuestions(stdout, result)
 	}
 	return exitOK
 }
@@ -1182,10 +1176,59 @@ func printStatusProof(stdout io.Writer, result readiness.Result, nextQuestions b
 
 	if nextQuestions && result.NextQuestions != nil && len(*result.NextQuestions) > 0 {
 		fmt.Fprintln(stdout, "\nNext questions:")
-		for i, question := range *result.NextQuestions {
-			fmt.Fprintf(stdout, "%d. %s\n", i+1, question.Question)
+		printGroupedQuestions(stdout, *result.NextQuestions)
+		if omitted := readiness.OmittedNextQuestionCount(result); omitted > 0 {
+			fmt.Fprintf(stdout, "\n%d additional lower-priority question(s) remain after these top %d.\n", omitted, len(*result.NextQuestions))
 		}
 	}
+}
+
+func printNextQuestions(stdout io.Writer, result readiness.Result) {
+	if result.NextQuestions == nil || len(*result.NextQuestions) == 0 {
+		return
+	}
+	fmt.Fprintln(stdout, "Next questions:")
+	printGroupedQuestions(stdout, *result.NextQuestions)
+	if omitted := readiness.OmittedNextQuestionCount(result); omitted > 0 {
+		fmt.Fprintf(stdout, "\n%d additional lower-priority question(s) remain after these top %d.\n", omitted, len(*result.NextQuestions))
+	}
+}
+
+func printGroupedQuestions(stdout io.Writer, questions []readiness.NextQuestion) {
+	currentGroup := ""
+	indexInGroup := 0
+	for _, question := range questions {
+		group := question.Group
+		if group == "" {
+			group = "Planning repairs"
+		}
+		if group != currentGroup {
+			if currentGroup != "" {
+				fmt.Fprintln(stdout)
+			}
+			fmt.Fprintf(stdout, "%s:\n", group)
+			currentGroup = group
+			indexInGroup = 0
+		}
+		indexInGroup++
+		fmt.Fprintf(stdout, "%d. %s: %s\n", indexInGroup, questionLabel(question), question.Question)
+		if question.Location != "" {
+			fmt.Fprintf(stdout, "   Location: %s\n", question.Location)
+		}
+		if question.AnswerShape != "" {
+			fmt.Fprintf(stdout, "   Answer shape: %s\n", question.AnswerShape)
+		}
+	}
+}
+
+func questionLabel(question readiness.NextQuestion) string {
+	if question.Group == "First-run card" {
+		return question.RuleID
+	}
+	if len(question.References) > 0 {
+		return question.References[0]
+	}
+	return question.RuleID
 }
 
 func groupProofItems(result readiness.Result) ([]readiness.ProofItem, []readiness.ProofItem, []readiness.ProofItem) {

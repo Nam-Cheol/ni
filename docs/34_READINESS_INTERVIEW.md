@@ -28,8 +28,10 @@ Each question includes:
 {
   "rule_id": "R004",
   "severity": "blocker",
+  "group": "Evaluation evidence",
   "references": ["CAP-001"],
-  "question": "CAP-001 has no evaluation. What evidence would prove this capability is complete: a test, review checklist, demo condition, user approval, or an explicit deferral?"
+  "question": "CAP-001 has no evaluation. What evidence would prove this capability is complete?",
+  "answer_shape": "test, review checklist, demo condition, user approval, protocol check, or manual inspection"
 }
 ```
 
@@ -42,12 +44,42 @@ an accepted decision, an explicit deferral, `not_applicable`, a mitigation, or
 an explicit non-goal. The question must not imply implementation should begin
 and must not pressure the user to accept uncertain planning state.
 
+## Prioritization
+
+`ni status --next-questions` returns a compact prioritized interview. It shows
+at most three primary questions. When more deterministic questions exist, human
+output reports how many lower-priority questions remain.
+
+Question groups are ordered by readiness impact:
+
+1. `First-run card`: when fresh `R014`, `R015`, and `R016` blockers appear
+   together, ask exactly the purpose, actors/outcomes, and delivery-surface
+   questions. Do not include unrelated lower-priority questions in that first
+   card.
+2. `Sync repairs`: when `SYNC-014`, `SYNC-015`, or `SYNC-016` exists, ask how
+   to update the stale side of docs or contract. Do not ask the user to restate
+   the whole project if one side already contains useful content.
+3. `Risk decisions`: high-severity risks without mitigation ask for mitigation,
+   owner/monitoring, explicit accepted-risk decision, or explicit deferral.
+4. `Evaluation evidence`: accepted capabilities without evaluation ask what
+   evidence proves completion.
+5. `Scope boundaries`: missing non-goals ask what the project must explicitly
+   avoid to reduce scope drift.
+6. `Open blockers`: blocker open questions ask whether to resolve, defer with
+   reason, or keep blocking with the missing information named.
+
+If first-run blockers and first-run sync diagnostics appear together,
+`ni status --next-questions` prioritizes sync repair because one side already
+contains useful content. If neither side contains useful content, the first-run
+card wins.
+
 ## Rule Examples
 
 `R004` accepted capability without evaluation:
 
 ```text
-CAP-001 has no evaluation. What evidence would prove this capability is complete: a test, review checklist, demo condition, user approval, or an explicit deferral?
+CAP-001 has no evaluation. What evidence would prove this capability is complete?
+Answer shape: test, review checklist, demo condition, user approval, protocol check, or manual inspection
 ```
 
 `R006` high-severity risk without mitigation:
@@ -59,31 +91,43 @@ RISK-001 is high severity and has no mitigation. What mitigation would reduce or
 `R010` missing non-goal:
 
 ```text
-No non-goal is recorded. What explicit non-goal should bound the plan, or why is this boundary not_applicable?
+What must this project explicitly avoid so downstream work does not drift in scope?
+Answer shape: one or more non-goals, or not_applicable with reason
 ```
 
 `R009` blocker open question:
 
 ```text
-OQ-001 is blocking readiness. What answer would resolve it: an accepted decision, a deferral with reason, not_applicable, or keeping it blocking with the missing information named?
+OQ-001 is blocking readiness. Should it be resolved, deferred with reason, or kept blocking with the missing information named?
+Answer shape: accepted decision, deferral with reason, not_applicable, or keep blocking with reason
 ```
 
 `R014` missing purpose:
 
 ```text
-project.purpose is missing a concrete purpose. What should change, for whom, and why does it matter?
+What should this project change, for whom, and why does it matter?
+Answer shape: one or two sentences describing the desired reality change
 ```
 
 `R015` missing actor or outcome:
 
 ```text
-docs/plan/01_actors_outcomes.md is missing an actor or outcome. Which actor needs what outcome, and should that record be accepted, kept as evidence, deferred, or marked not_applicable?
+Who are the primary actors, and what outcome should each one get?
+Answer shape: actor -> expected outcome
 ```
 
 `R016` missing delivery surface:
 
 ```text
-docs/plan/08_delivery_operation.md is missing a delivery surface. Should the plan target a CLI, web app, conversation, document, workflow, research protocol, human service, another surface, or a deferral with reason?
+What is the likely delivery surface?
+Answer shape: CLI, web app, conversation, document, workflow, research protocol, human service, or deferred with reason
+```
+
+`SYNC-014` purpose docs/contract drift:
+
+```text
+Project purpose is documented but missing from .ni/contract.json. Should .ni/contract.json be updated to match the docs, or is the docs text only a draft?
+Answer shape: update contract / revise docs / revise both / keep blocker with reason
 ```
 
 ## First-run Card

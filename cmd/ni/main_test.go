@@ -173,11 +173,16 @@ func TestStatusNextQuestionsText(t *testing.T) {
 	if code != 0 {
 		t.Fatalf("expected exit code 0, got %d", code)
 	}
-	if !strings.Contains(stdout.String(), "question R009 OQ-001:") {
-		t.Fatalf("expected blocker open question prompt, got %q", stdout.String())
+	if !strings.Contains(stdout.String(), "First-run card:") {
+		t.Fatalf("expected first-run card group, got %q", stdout.String())
 	}
-	if !strings.Contains(stdout.String(), "What answer would resolve it") {
+	if !strings.Contains(stdout.String(), "1. R014: What should this project change") ||
+		!strings.Contains(stdout.String(), "2. R015: Who are the primary actors") ||
+		!strings.Contains(stdout.String(), "3. R016: What is the likely delivery surface") {
 		t.Fatalf("expected deterministic next question, got %q", stdout.String())
+	}
+	if strings.Contains(stdout.String(), "OQ-001 is blocking readiness") {
+		t.Fatalf("fresh first-run next questions should not include lower-priority OQ prompt, got %q", stdout.String())
 	}
 }
 
@@ -194,9 +199,11 @@ func TestStatusNextQuestionsJSON(t *testing.T) {
 	}
 	var payload struct {
 		NextQuestions []struct {
-			RuleID     string   `json:"rule_id"`
-			References []string `json:"references"`
-			Question   string   `json:"question"`
+			RuleID      string   `json:"rule_id"`
+			Group       string   `json:"group"`
+			References  []string `json:"references"`
+			Question    string   `json:"question"`
+			AnswerShape string   `json:"answer_shape"`
 		} `json:"next_questions"`
 	}
 	if err := json.Unmarshal(stdout.Bytes(), &payload); err != nil {
@@ -205,15 +212,13 @@ func TestStatusNextQuestionsJSON(t *testing.T) {
 	if len(payload.NextQuestions) == 0 {
 		t.Fatalf("expected next questions, got %q", stdout.String())
 	}
-	found := false
-	for _, question := range payload.NextQuestions {
-		if question.RuleID == "R009" && contains(question.References, "OQ-001") {
-			found = true
-			break
-		}
+	if len(payload.NextQuestions) != 3 {
+		t.Fatalf("expected exactly first-run card questions, got %#v", payload.NextQuestions)
 	}
-	if !found {
-		t.Fatalf("expected R009 question for OQ-001, got %#v", payload.NextQuestions)
+	for i, ruleID := range []string{"R014", "R015", "R016"} {
+		if payload.NextQuestions[i].RuleID != ruleID || payload.NextQuestions[i].Group != "First-run card" || payload.NextQuestions[i].AnswerShape == "" {
+			t.Fatalf("expected first-run question %s at %d, got %#v", ruleID, i, payload.NextQuestions)
+		}
 	}
 }
 

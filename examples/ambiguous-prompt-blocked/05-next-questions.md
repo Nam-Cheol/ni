@@ -9,8 +9,12 @@ go run ./cmd/ni status --dir ./examples/ambiguous-prompt-blocked/workspace --nex
 Expected focused questions:
 
 ```text
-question R009 OQ-001: For OQ-001, what decision resolves this blocker, should it be deferred, or why must it remain blocking?
-question R009 OQ-002: For OQ-002, what decision resolves this blocker, should it be deferred, or why must it remain blocking?
+Next questions:
+Open blockers:
+1. OQ-001: OQ-001 is blocking readiness. Should it be resolved, deferred with reason, or kept blocking with the missing information named?
+   Answer shape: accepted decision, deferral with reason, not_applicable, or keep blocking with reason
+2. OQ-002: OQ-002 is blocking readiness. Should it be resolved, deferred with reason, or kept blocking with the missing information named?
+   Answer shape: accepted decision, deferral with reason, not_applicable, or keep blocking with reason
 ```
 
 Human-facing version:

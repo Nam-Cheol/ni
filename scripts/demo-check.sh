@@ -99,7 +99,8 @@ run_demo "ambiguous prompt next questions render" bash -c '
   go run ./cmd/ni status --dir ./examples/ambiguous-prompt-blocked/workspace --next-questions >"$1/ambiguous-next-questions.out"
 ' bash "$DEMO_TMP"
 require_first_line "BLOCKED" "$DEMO_TMP/ambiguous-next-questions.out"
-require_output "question R009" "$DEMO_TMP/ambiguous-next-questions.out"
+require_output "Open blockers:" "$DEMO_TMP/ambiguous-next-questions.out"
+require_output "OQ-001: OQ-001 is blocking readiness" "$DEMO_TMP/ambiguous-next-questions.out"
 
 run_demo "research protocol status matches docs" bash -c '
   go run ./cmd/ni status --dir examples/research-protocol >"$1/research-status.out"

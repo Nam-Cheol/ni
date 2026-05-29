@@ -42,8 +42,11 @@ Proof:
 Execution may proceed only after lock; deferrals remain explicit.
 
 Next questions:
-1. For DEC-004, should this deferred decision remain deferred, become accepted or rejected, or be not_applicable?
-2. For OQ-002, should this open question be resolved, deferred, or left open with a reason?
+Handoff deferrals:
+1. DEC-004: DEC-004 is deferred. Does this deferred decision affect the next handoff, or should it remain visible without blocking?
+   Answer shape: affects handoff and must resolve / remains deferred with reason
+2. OQ-002: OQ-002 remains open. Does this open question affect the next handoff, or should it remain visible without blocking?
+   Answer shape: resolve now / defer with reason / leave open and non-blocking
 ```
 
 ## Boundary shown

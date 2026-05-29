@@ -1,6 +1,7 @@
 package readiness
 
 import (
+	"encoding/json"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -252,7 +253,7 @@ func TestNextQuestionsFromRuleFailures(t *testing.T) {
 			fixture:   "blocker_open_question.json",
 			ruleID:    "R009",
 			reference: "OQ-001",
-			want:      "What answer would resolve it",
+			want:      "Should it be resolved, deferred with reason, or kept blocking",
 		},
 		{
 			name:      "conflicting decision",
@@ -266,7 +267,7 @@ func TestNextQuestionsFromRuleFailures(t *testing.T) {
 			fixture:   "missing_non_goal.json",
 			ruleID:    "R010",
 			reference: "",
-			want:      "What explicit non-goal should bound the plan",
+			want:      "What must this project explicitly avoid",
 		},
 	} {
 		t.Run(tt.name, func(t *testing.T) {
@@ -287,30 +288,44 @@ func TestNextQuestionsFromRuleFailures(t *testing.T) {
 	}
 }
 
-func TestNextQuestionsFocusedOutputFixture(t *testing.T) {
-	dir := initFixtureProject(t, "question_output.json")
-	writePlanDoc(t, dir, "01_actors_outcomes.md", "# Actors and outcomes\n\n## Actors\n\n- User: TODO\n\n## Outcomes\n\n- TODO\n")
-	writePlanDoc(t, dir, "08_delivery_operation.md", "# Delivery and operation\n\n## Delivery surfaces\n\n- TODO\n")
+func TestNextQuestionsFreshWorkspaceFirstRunCard(t *testing.T) {
+	dir := t.TempDir()
+	if _, err := docstore.Init(dir); err != nil {
+		t.Fatalf("initializing fixture project: %v", err)
+	}
 
 	questions := NextQuestions(Evaluate(dir))
-	want := map[string]string{
-		"R014": "project.purpose is missing a concrete purpose. What should change, for whom, and why does it matter?",
-		"R004": "CAP-001 has no evaluation. What evidence would prove this capability is complete: a test, review checklist, demo condition, user approval, or an explicit deferral?",
-		"R006": "RISK-001 is high severity and has no mitigation. What mitigation would reduce or monitor it, who owns it, or should this become an explicit accepted-risk decision?",
-		"D001": "DEC-001 is deferred. Should it remain deferred with a reason, become an accepted or rejected decision, or be marked not_applicable?",
-		"R009": "OQ-001 is blocking readiness. What answer would resolve it: an accepted decision, a deferral with reason, not_applicable, or keeping it blocking with the missing information named?",
-		"R010": "No non-goal is recorded. What explicit non-goal should bound the plan, or why is this boundary not_applicable?",
-		"R015": "docs/plan/01_actors_outcomes.md is missing an actor or outcome. Which actor needs what outcome, and should that record be accepted, kept as evidence, deferred, or marked not_applicable?",
-		"R016": "docs/plan/08_delivery_operation.md is missing a delivery surface. Should the plan target a CLI, web app, conversation, document, workflow, research protocol, human service, another surface, or a deferral with reason?",
+	if len(questions) != 3 {
+		t.Fatalf("expected exactly first-run card questions, got %#v", questions)
 	}
-	for ruleID, question := range want {
-		got := requireQuestion(t, questions, ruleID)
-		if got.Question != question {
-			t.Fatalf("expected %s question %q, got %#v", ruleID, question, got)
+	for i, ruleID := range []string{"R014", "R015", "R016"} {
+		if questions[i].RuleID != ruleID || questions[i].Group != "First-run card" || questions[i].AnswerShape == "" {
+			t.Fatalf("expected first-run %s at %d, got %#v", ruleID, i, questions)
 		}
-		if strings.Contains(strings.ToLower(got.Question), "implement") {
-			t.Fatalf("question should not imply implementation, got %#v", got)
-		}
+	}
+	if requireQuestionMaybe(questions, "R009") != nil {
+		t.Fatalf("fresh first-run output should not include unrelated OQ question, got %#v", questions)
+	}
+	if omitted := OmittedNextQuestionCount(Evaluate(dir)); omitted != 0 {
+		t.Fatalf("fresh first-run card should suppress lower-priority questions without omitted count, got %d", omitted)
+	}
+}
+
+func TestNextQuestionsPrioritizesTopThreeAndReportsOmitted(t *testing.T) {
+	dir := initFixtureProject(t, "question_output.json")
+	writePlanDoc(t, dir, "01_actors_outcomes.md", "# Actors and outcomes\n\n## Actors\n\n- User: reviews the fixture.\n- CLI: validates deterministic readiness.\n\n## Outcomes\n\n- User receives a focused readiness interview.\n")
+	writePlanDoc(t, dir, "06_risks_security.md", "# Risks and security\n\n## RISK-001: Risk\n\nSeverity: high\n\nMitigation: Pending user answer.\n")
+
+	result := Evaluate(dir)
+	questions := NextQuestions(result)
+	if len(questions) != 3 {
+		t.Fatalf("expected top three questions, got %#v", questions)
+	}
+	if questions[0].RuleID != "R006" || questions[1].RuleID != "R004" || questions[2].RuleID != "R010" {
+		t.Fatalf("expected risk, evaluation, scope priority, got %#v", questions)
+	}
+	if omitted := OmittedNextQuestionCount(result); omitted == 0 {
+		t.Fatalf("expected omitted lower-priority question count for dense fixture")
 	}
 }
 
@@ -323,6 +338,66 @@ func TestNextQuestionsDocsContractMismatchIncludesRepairChoices(t *testing.T) {
 	}
 	if !strings.Contains(question.Question, "Which source is correct") || !strings.Contains(question.Question, "update docs") || !strings.Contains(question.Question, "update the contract") {
 		t.Fatalf("expected docs/contract repair choices, got %#v", question)
+	}
+}
+
+func TestNextQuestionsFirstRunSyncDiagnostics(t *testing.T) {
+	for _, tt := range []struct {
+		name          string
+		mutate        func(string)
+		wantReference string
+		wantText      string
+	}{
+		{
+			name: "sync purpose repair",
+			mutate: func(dir string) {
+				data, err := os.ReadFile(filepath.Join(dir, ".ni", "contract.json"))
+				if err != nil {
+					t.Fatalf("reading contract: %v", err)
+				}
+				updated := strings.Replace(string(data), `"purpose": "Exercise ni end."`, `"purpose": "TODO"`, 1)
+				writeContract(t, dir, []byte(updated))
+			},
+			wantReference: "SYNC-014",
+			wantText:      "Should .ni/contract.json be updated to match the docs",
+		},
+		{
+			name: "sync actors repair",
+			mutate: func(dir string) {
+				writePlanDoc(t, dir, "01_actors_outcomes.md", "# Actors and outcomes\n\n## Actors\n\n- TODO\n\n## Outcomes\n\n- TODO\n")
+			},
+			wantReference: "SYNC-015",
+			wantText:      "Should docs/plan be updated to explain the contract value",
+		},
+		{
+			name: "sync delivery repair",
+			mutate: func(dir string) {
+				writePlanDoc(t, dir, "08_delivery_operation.md", "# Delivery and operation\n\n## Delivery surfaces\n\n- conversation\n\n## Initial delivery\n\nConversation planning happens before lock.\n")
+			},
+			wantReference: "SYNC-016",
+			wantText:      "Which delivery surface is correct",
+		},
+	} {
+		t.Run(tt.name, func(t *testing.T) {
+			dir := t.TempDir()
+			if _, err := docstore.Init(dir); err != nil {
+				t.Fatalf("initializing fixture project: %v", err)
+			}
+			writeReadyContractForReadiness(t, dir)
+			tt.mutate(dir)
+
+			questions := NextQuestions(Evaluate(dir))
+			question := requireQuestionWithReference(t, questions, "R012", tt.wantReference)
+			if question.Group != "Sync repairs" || question.Location == "" || question.AnswerShape == "" {
+				t.Fatalf("expected actionable sync repair question, got %#v", question)
+			}
+			if !strings.Contains(question.Question, tt.wantText) {
+				t.Fatalf("expected sync question containing %q, got %#v", tt.wantText, question)
+			}
+			if requireQuestionMaybe(questions, "R014") != nil || requireQuestionMaybe(questions, "R015") != nil || requireQuestionMaybe(questions, "R016") != nil {
+				t.Fatalf("sync repair output should deduplicate first-run questions, got %#v", questions)
+			}
+		})
 	}
 }
 
@@ -497,6 +572,46 @@ func writePlanDoc(t *testing.T, dir string, name string, content string) {
 	}
 }
 
+func writeReadyContractForReadiness(t *testing.T, dir string) {
+	t.Helper()
+
+	c := contract.Contract{
+		Schema:           contract.Schema,
+		ReadinessProfile: "prototype",
+		ProductType:      "software",
+		DeliverySurfaces: []string{"cli"},
+		InteractionMode:  "human_to_system",
+		Project: contract.Project{
+			ID:      "readiness-fixture",
+			Name:    "Readiness Fixture",
+			Purpose: "Exercise ni end.",
+			Status:  "draft",
+		},
+		NonGoals: []contract.NonGoal{{ID: "NG-001", Title: "Do not execute work."}},
+		Capabilities: []contract.Capability{{
+			ID:           "CAP-001",
+			Title:        "Capability",
+			Status:       "accepted",
+			Requirements: []string{"REQ-001"},
+			Evaluations:  []string{"EVAL-001"},
+			Risks:        []string{},
+			Artifacts:    []string{"ART-001"},
+		}},
+		Requirements:  []contract.Requirement{{ID: "REQ-001", Title: "Requirement", Status: "accepted"}},
+		Decisions:     []contract.Decision{{ID: "DEC-001", Title: "Decision", Status: "accepted"}},
+		Risks:         []contract.Risk{},
+		Evaluations:   []contract.Evaluation{{ID: "EVAL-001", Title: "Evaluation", Method: "fixture"}},
+		Artifacts:     []contract.Artifact{{ID: "ART-001", Path: "docs/plan/", Kind: "planning_docs"}},
+		OpenQuestions: []contract.OpenQuestion{},
+	}
+	data, err := json.MarshalIndent(c, "", "  ")
+	if err != nil {
+		t.Fatalf("marshaling ready contract: %v", err)
+	}
+	writeContract(t, dir, append(data, '\n'))
+	writePlanDocsForContract(t, dir, c)
+}
+
 func setContractProfile(t *testing.T, dir string, readinessProfile string) {
 	t.Helper()
 
@@ -551,6 +666,28 @@ func requireQuestion(t *testing.T, questions []NextQuestion, ruleID string) Next
 		}
 	}
 	t.Fatalf("expected question %s, got %#v", ruleID, questions)
+	return NextQuestion{}
+}
+
+func requireQuestionMaybe(questions []NextQuestion, ruleID string) *NextQuestion {
+	for _, question := range questions {
+		if question.RuleID == ruleID {
+			q := question
+			return &q
+		}
+	}
+	return nil
+}
+
+func requireQuestionWithReference(t *testing.T, questions []NextQuestion, ruleID string, reference string) NextQuestion {
+	t.Helper()
+
+	for _, question := range questions {
+		if question.RuleID == ruleID && containsString(question.References, reference) {
+			return question
+		}
+	}
+	t.Fatalf("expected question %s with reference %s, got %#v", ruleID, reference, questions)
 	return NextQuestion{}
 }
 

@@ -68,9 +68,17 @@ Passed checks:
 Execution must not start.
 
 Next questions:
-1. For CAP-003, what evidence proves this capability works, or should that evidence be deferred?
-2. For RISK-002, what mitigation, owner, or explicit accepted-risk decision is required?
-3. For OQ-001, what decision resolves this blocker, should it be deferred, or why must it remain blocking?
+Risk decisions:
+1. RISK-002: RISK-002 is high severity and has no mitigation. What mitigation would reduce or monitor it, who owns it, or should this become an explicit accepted-risk decision?
+   Answer shape: mitigation plus owner, monitoring plan, accepted-risk decision, or explicit deferral
+
+Evaluation evidence:
+1. CAP-003: CAP-003 has no evaluation. What evidence would prove this capability is complete?
+   Answer shape: test, review checklist, demo condition, user approval, protocol check, or manual inspection
+
+Open blockers:
+1. OQ-001: OQ-001 is blocking readiness. Should it be resolved, deferred with reason, or kept blocking with the missing information named?
+   Answer shape: accepted decision, deferral with reason, not_applicable, or keep blocking with reason
 ```
 
 ## Rule sources

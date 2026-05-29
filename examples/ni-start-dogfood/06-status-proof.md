@@ -28,7 +28,9 @@ Passed checks:
 Execution must not start.
 
 Next questions:
-1. OQ-001 is blocking readiness. What answer would resolve it: an accepted decision, a deferral with reason, not_applicable, or keeping it blocking with the missing information named?
+Open blockers:
+1. OQ-001: OQ-001 is blocking readiness. Should it be resolved, deferred with reason, or kept blocking with the missing information named?
+   Answer shape: accepted decision, deferral with reason, not_applicable, or keep blocking with reason
 ```
 
 ## Model response

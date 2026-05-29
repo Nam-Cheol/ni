@@ -92,6 +92,12 @@ stale side of the docs/contract pair, or keep uncertain intent as an explicit
 assumption, open blocker question, or deferral. It must not proceed to
 `ni-end` while these sync diagnostics block readiness.
 
+`ni status --next-questions` groups these prompts under headings such as
+`First-run card`, `Sync repairs`, `Risk decisions`, `Evaluation evidence`,
+`Scope boundaries`, and `Open blockers`. `ni-start` should preserve the group,
+ID, location, and answer-shape fields when asking the user, and ask only the
+top questions returned by the CLI.
+
 ## Resume mode
 
 When a later model session resumes planning, `ni-start` first uses the same

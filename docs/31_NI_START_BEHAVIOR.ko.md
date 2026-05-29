@@ -90,6 +90,12 @@ record에, delivery surface를 `docs/plan/08_delivery_operation.md`,
 명시해야 한다. 이 sync diagnostic이 readiness를 막고 있는 동안 `ni-end`로
 진행하면 안 된다.
 
+`ni status --next-questions`는 prompt를 `First-run card`, `Sync repairs`,
+`Risk decisions`, `Evaluation evidence`, `Scope boundaries`, `Open blockers`
+같은 heading으로 묶는다. `ni-start`는 사용자에게 질문할 때 CLI가 반환한 group,
+ID, location, answer-shape field를 보존하고, CLI가 반환한 top question만
+물어야 한다.
+
 ## Resume mode
 
 나중의 model session이 계획을 이어갈 때, `ni-start`는 일반 turn과 같은

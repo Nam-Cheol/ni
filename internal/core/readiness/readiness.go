@@ -48,10 +48,13 @@ type ProofItem struct {
 }
 
 type NextQuestion struct {
-	RuleID     string   `json:"rule_id"`
-	Severity   string   `json:"severity"`
-	References []string `json:"references,omitempty"`
-	Question   string   `json:"question"`
+	RuleID      string   `json:"rule_id"`
+	Severity    string   `json:"severity"`
+	Group       string   `json:"group,omitempty"`
+	References  []string `json:"references,omitempty"`
+	Question    string   `json:"question"`
+	AnswerShape string   `json:"answer_shape,omitempty"`
+	Location    string   `json:"location,omitempty"`
 }
 
 type rulesFile struct {

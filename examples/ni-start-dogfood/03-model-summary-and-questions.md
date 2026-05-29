@@ -41,10 +41,13 @@ Blockers:
 Execution must not start.
 
 Next questions:
-1. project.purpose is missing a concrete purpose. What should change, for whom, and why does it matter?
-2. OQ-001 is blocking readiness. What answer would resolve it: an accepted decision, a deferral with reason, not_applicable, or keeping it blocking with the missing information named?
-3. docs/plan/01_actors_outcomes.md is missing an actor or outcome. Which actor needs what outcome, and should that record be accepted, kept as evidence, deferred, or marked not_applicable?
-4. docs/plan/08_delivery_operation.md is missing a delivery surface. Should the plan target a CLI, web app, conversation, document, workflow, research protocol, human service, another surface, or a deferral with reason?
+First-run card:
+1. R014: What should this project change, for whom, and why does it matter?
+   Answer shape: one or two sentences describing the desired reality change
+2. R015: Who are the primary actors, and what outcome should each one get?
+   Answer shape: actor -> expected outcome
+3. R016: What is the likely delivery surface?
+   Answer shape: CLI, web app, conversation, document, workflow, research protocol, human service, or deferred with reason
 ```
 
 ## First-run conversation card
