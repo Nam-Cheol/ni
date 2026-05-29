@@ -48,10 +48,37 @@
 Repository root에서:
 
 ```bash
+go run ./cmd/ni status --dir examples/ni-start-dogfood/workspace
 go run ./cmd/ni status --dir examples/ni-start-dogfood/workspace --proof --next-questions
+tmpdir="$(mktemp -d)"
+go run ./cmd/ni run --dir examples/ni-start-dogfood/workspace --target human-team --max-chars 4000 --out "$tmpdir/human-team.prompt.txt"
+wc -m "$tmpdir/human-team.prompt.txt"
+rm -rf "$tmpdir"
 ```
 
-## 6. 실행하지 않는 경계
+## 6. 예상 출력
+
+예상 상태: `READY_WITH_DEFERRALS`.
+
+상태 명령은 다음으로 시작해야 한다.
+
+```text
+READY_WITH_DEFERRALS
+profile: prototype
+product type: conversation_product
+delivery surfaces: conversation, document
+```
+
+수락된 deferral도 계속 보여야 한다.
+
+```text
+deferral D001: DEC-004 is deferred
+deferral D002: OQ-002 remains open
+```
+
+`ni run`은 4000자 이하의 비어 있지 않은 handoff 프롬프트를 써야 한다.
+
+## 7. 실행하지 않는 경계
 
 이 예시는 support assistant를 실행하지 않고, model API를 호출하지 않으며,
 Codex 실행, 고객 연락, 환불 승인, adapter, queue를 만들지 않는다. 커널의

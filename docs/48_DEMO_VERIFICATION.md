@@ -20,6 +20,19 @@ The script checks:
 - `examples/conversation-product` reports the status documented in its README.
 - the conversation product `human-team` prompt compiles to a temporary file when
   the example is locked.
+- `examples/ni-start-dogfood/workspace` reports the status documented in its
+  README.
+- the ni-start dogfood `human-team` prompt compiles to a temporary file when
+  the example is locked.
+- `examples/conversation-authoring` reports the status documented in its
+  README.
+- the conversation-authoring `human-team` prompt compiles from its existing
+  lock to a temporary file.
+- `examples/namba-ai-upgrade` reports the status documented in its README.
+- the namba-ai upgrade `codex` prompt compiles from its existing lock to a
+  temporary file without invoking Codex.
+- `examples/benchmark-report` remains a docs-only benchmark report template
+  with `not_measured` placeholders and benchmark non-execution markers.
 
 The script must stay deterministic. It must not call Codex, model APIs, shell
 adapters, Hyper Run, namba-ai, Spec Kit, Ouroboros, or any downstream agent

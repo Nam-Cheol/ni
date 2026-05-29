@@ -2,17 +2,22 @@
 
 ## 1. Purpose
 
-This locked example plans the next namba-ai upgrade before any runtime,
-SPEC-runner, Codex execution harness, or namba-ai implementation work begins.
+This example plans the next namba-ai upgrade before any runtime, SPEC-runner,
+Codex execution harness, or namba-ai implementation work begins.
 
-It exists to prove that ni can compile a downstream Codex prompt from a locked
-project contract while keeping the kernel authoritative.
+It exists to prove that ni keeps the kernel authoritative even for
+software-oriented downstream seed material. The current fixture is verified
+through `ni status`, which reports that a planning-doc body is missing and the
+example is not freshly ready.
 
 ## 2. What this proves
 
 - A software-oriented plan can still be pre-runtime and contract-first.
-- `.ni/plan.lock.json` remains the source of truth for downstream prompt use.
-- `ni run --target codex` produces seed material without invoking Codex.
+- `ni status` remains the readiness authority and catches stale planning docs.
+- The historical `.ni/plan.lock.json` can still bound existing downstream
+  prompt seed material.
+- `ni run --target codex` produces seed material without invoking Codex when
+  used against the existing lock.
 - Downstream target notes stay derived and mutable; they do not become
   kernel-owned execution state.
 
@@ -20,17 +25,18 @@ project contract while keeping the kernel authoritative.
 
 - `product_type`: `software`
 - `delivery_surface`: `cli`, `document`, `workflow`
-- Expected `ni status`: `READY`
-- Expected `ni run` target: `codex`
+- Expected `ni status`: `BLOCKED`
+- Expected `ni run` target: `codex` from the existing lock only
 
 ## 4. Files
 
-- `docs/plan/**`: locked planning docs for the namba-ai upgrade intent.
+- `docs/plan/**`: planning docs for the namba-ai upgrade intent.
 - `.ni/contract.json`: accepted capabilities, requirements, risks,
   evaluations, non-goals, artifacts, and decisions.
-- `.ni/plan.lock.json`: CLI-written lock with hashes for authoritative
-  planning files.
-- `generated/codex.goal.prompt.txt`: checked-in compiled Codex target prompt.
+- `.ni/plan.lock.json`: historical CLI-written lock with hashes for
+  authoritative planning files.
+- `generated/codex.goal.prompt.txt`: checked-in compiled Codex target prompt
+  from the existing lock.
 
 Some duplicate `* 2.*` files are present as historical fixture material. They
 are not the authoritative locked planning files.
@@ -49,21 +55,30 @@ rm -rf "$tmpdir"
 
 ## 6. Expected output
 
-Expected status: `READY`.
+Expected status: `BLOCKED`.
 
 The status command should start with:
 
 ```text
-READY
+BLOCKED
 profile: prototype
 product type: software
 delivery surfaces: cli, document, workflow
 ```
 
-The run command should write a non-empty prompt at or below 4000 characters.
+It should also report the current fixture blocker:
+
+```text
+blocker R012: CAP-001
+```
+
+The run command may compile from the existing lockfile, but this example must
+not be described as freshly ready until `ni status` passes again.
 
 ## 7. Non-execution boundary
 
 This example does not run Codex, modify namba-ai, create a shell adapter, start
-a queue, call a model API, run a SPEC workflow, or execute downstream tools. ni
-only validates the locked contract and compiles an inert Codex target prompt.
+a queue, call a model API, run a SPEC workflow, or execute downstream tools. Do
+not call `ni end` for this fixture while `ni status` reports `BLOCKED`; ni only
+validates planning state and compiles inert prompt seed material from an
+existing lock.

@@ -43,6 +43,21 @@ require_doc_status() {
   require_output "Expected status: \`$expected\`." "$example_dir/README.md"
 }
 
+require_file() {
+  local path="$1"
+  if [[ ! -f "$path" ]]; then
+    echo "demo-check failed: required file is missing: $path" >&2
+    return 1
+  fi
+}
+
+check_benchmark_report_docs() {
+  require_file examples/benchmark-report/README.md
+  require_file examples/benchmark-report/README.ko.md
+  require_file examples/benchmark-report/sample-report.md
+  require_file docs/43_BENCHMARK_PROTOCOL.md
+}
+
 run_if_locked() {
   local example_dir="$1"
   local target="$2"
@@ -112,6 +127,34 @@ require_first_line "READY_WITH_DEFERRALS" "$DEMO_TMP/ni-start-dogfood-status.out
 
 run_demo "ni-start dogfood human-team prompt compiles if locked" \
   run_if_locked "examples/ni-start-dogfood/workspace" "human-team" "$DEMO_TMP/ni-start-dogfood-human-team.prompt.md"
+
+run_demo "conversation authoring status matches docs" bash -c '
+  go run ./cmd/ni status --dir examples/conversation-authoring >"$1/conversation-authoring-status.out"
+' bash "$DEMO_TMP"
+require_doc_status "examples/conversation-authoring" "BLOCKED"
+require_first_line "BLOCKED" "$DEMO_TMP/conversation-authoring-status.out"
+require_output "blocker R012" "$DEMO_TMP/conversation-authoring-status.out"
+
+run_demo "conversation authoring human-team prompt compiles from existing lock" \
+  run_if_locked "examples/conversation-authoring" "human-team" "$DEMO_TMP/conversation-authoring-human-team.prompt.md"
+
+run_demo "namba-ai upgrade status matches docs" bash -c '
+  go run ./cmd/ni status --dir examples/namba-ai-upgrade >"$1/namba-ai-upgrade-status.out"
+' bash "$DEMO_TMP"
+require_doc_status "examples/namba-ai-upgrade" "BLOCKED"
+require_first_line "BLOCKED" "$DEMO_TMP/namba-ai-upgrade-status.out"
+require_output "blocker R012: CAP-001" "$DEMO_TMP/namba-ai-upgrade-status.out"
+
+run_demo "namba-ai upgrade codex prompt compiles from existing lock" \
+  run_if_locked "examples/namba-ai-upgrade" "codex" "$DEMO_TMP/namba-ai-upgrade-codex.prompt.md"
+
+run_demo "benchmark report remains docs-only" check_benchmark_report_docs
+require_output "Expected \`ni status\`: not applicable" "examples/benchmark-report/README.md"
+require_output "not_measured" "examples/benchmark-report/README.md"
+require_output "not_measured" "examples/benchmark-report/README.ko.md"
+require_output "not_measured" "examples/benchmark-report/sample-report.md"
+require_output "must not execute downstream agents" "docs/43_BENCHMARK_PROTOCOL.md"
+require_output "Target prompt boundedness" "docs/43_BENCHMARK_PROTOCOL.md"
 
 for export_target in hyper-run namba-ai ouroboros spec-kit; do
   run_demo "conversation product $export_target export stays seed-only if locked" \

@@ -6,23 +6,27 @@ This fixture shows the sustained planning loop after `ni init`: a model and
 user author planning docs through conversation while the CLI remains the
 readiness, lock, and prompt compiler authority.
 
+It also shows that historical locked fixture material is not enough to claim a
+fresh ready state. The current planning docs and contract must still pass
+`ni status`.
+
 ## 2. What this proves
 
 - The user does not need contract authoring commands such as `contract add`,
   `contract set`, or `contract list`.
 - A model may update `docs/plan/**` and `.ni/contract.json` together, then use
   `ni status` to verify readiness.
-- `READY_WITH_DEFERRALS` can be locked when the deferrals are explicit and
-  accepted.
-- `ni run` compiles a human-team handoff prompt without executing downstream
-  implementation.
+- `ni status` can catch stale docs/contract synchronization even when a
+  historical lockfile and generated prompt are present.
+- The checked-in `ni run` material remains inert handoff seed material; it is
+  not downstream execution.
 
 ## 3. Product type / surface
 
 - `product_type`: `conversation_product`
 - `delivery_surface`: `conversation`, `document`
-- Expected `ni status`: `READY_WITH_DEFERRALS`
-- Expected `ni run` target: `human-team`
+- Expected `ni status`: `BLOCKED`
+- Expected `ni run` target: `human-team` from the existing lock only
 
 ## 4. Files
 
@@ -34,8 +38,9 @@ readiness, lock, and prompt compiler authority.
 - `docs/plan/**`: completed human-facing plan docs.
 - `.ni/contract.json`: matching machine-readable planning contract.
 - `.ni/session.json`: bounded resume state below docs and contract.
-- `.ni/plan.lock.json`: CLI-written lockfile for the completed plan.
-- `generated/human-team.prompt.txt`: checked-in compiled handoff prompt.
+- `.ni/plan.lock.json`: historical CLI-written lockfile for the fixture.
+- `generated/human-team.prompt.txt`: checked-in compiled handoff prompt from
+  the existing lock.
 
 ## 5. Commands
 
@@ -51,29 +56,29 @@ rm -rf "$tmpdir"
 
 ## 6. Expected output
 
-Expected status: `READY_WITH_DEFERRALS`.
+Expected status: `BLOCKED`.
 
 The status command should start with:
 
 ```text
-READY_WITH_DEFERRALS
+BLOCKED
 profile: prototype
 product type: conversation_product
 delivery surfaces: conversation, document
 ```
 
-It should also report the accepted deferrals:
+It should also keep the docs/contract synchronization blockers visible:
 
 ```text
-deferral D001: DEC-004 is deferred
-deferral D002: OQ-002 remains open
+blocker R012
 ```
 
-The run command should write a non-empty prompt at or below 4000 characters.
+The run command may compile from the existing lockfile, but the fixture must
+not be described as freshly ready until `ni status` passes again.
 
 ## 7. Non-execution boundary
 
 This fixture does not run a support assistant, contact customers, approve
-refunds, call a model API, or invoke downstream tools. ni validates planning
-state, writes the lock through `ni end`, and compiles a bounded prompt through
-`ni run`.
+refunds, call a model API, or invoke downstream tools. Do not call `ni end` for
+this fixture while `ni status` reports `BLOCKED`; ni only validates planning
+state and compiles bounded prompt material from an existing lock.
