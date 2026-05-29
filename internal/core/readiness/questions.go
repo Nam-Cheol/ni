@@ -57,11 +57,11 @@ func questionForIssue(issue Issue) NextQuestion {
 	case "R013":
 		question.Question = ref + " is part of a decision conflict. Which accepted decision should be revised, rejected, split, or marked not_applicable?"
 	case "R014":
-		question.Question = ref + " is missing a concrete purpose. What purpose should be recorded: a user outcome, evidence-backed assumption, accepted decision, or explicit deferral?"
+		question.Question = ref + " is missing a concrete purpose. What should change, for whom, and why does it matter?"
 	case "R015":
 		question.Question = ref + " is missing an actor or outcome. Which actor needs what outcome, and should that record be accepted, kept as evidence, deferred, or marked not_applicable?"
 	case "R016":
-		question.Question = ref + " is missing a delivery surface. Which surface should the plan target: cli, web, api, conversation, document, workflow, human_service, physical, or a deferral with reason?"
+		question.Question = ref + " is missing a delivery surface. Should the plan target a CLI, web app, conversation, document, workflow, research protocol, human service, another surface, or a deferral with reason?"
 	case "D001":
 		question.Question = ref + " is deferred. Should it remain deferred with a reason, become an accepted or rejected decision, or be marked not_applicable?"
 	case "D002":

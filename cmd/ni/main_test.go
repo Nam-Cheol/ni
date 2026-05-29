@@ -257,9 +257,18 @@ func TestStatusProofTextWithNextQuestions(t *testing.T) {
 	for _, want := range []string{
 		"NI Intent Readiness: BLOCKED",
 		"Blockers:",
+		"R014 Project purpose is missing.",
+		"Why it matters: ni cannot lock intent until it knows what reality the project is meant to change.",
+		"Next: describe the project in one or two sentences: what should change, for whom, and why it matters.",
 		"OQ-001 is marked as blocker.",
 		"Why it matters: open blocker questions mean required intent is still unresolved.",
 		"Next: answer or defer the blocker question, or keep it blocking with an explicit reason.",
+		"R015 Actors or outcomes are missing.",
+		"Why it matters: ni cannot judge readiness without knowing who uses or operates the product and what successful use looks like for them.",
+		"Next: list the primary actors and the outcome each one expects.",
+		"R016 Delivery surface is missing.",
+		"Why it matters: downstream handoff depends on knowing whether the product is delivered as a CLI, web app, conversation, document, workflow, research protocol, human service, or another surface.",
+		"Next: choose the likely delivery surface, or mark it deferred with an explicit reason.",
 		"Deferrals:",
 		"Warnings:",
 		"Passed checks:",
@@ -269,6 +278,14 @@ func TestStatusProofTextWithNextQuestions(t *testing.T) {
 	} {
 		if !strings.Contains(out, want) {
 			t.Fatalf("expected %q in proof output, got %q", want, out)
+		}
+	}
+	for _, forbidden := range []string{
+		"this deterministic readiness rule affects whether the plan can be trusted.",
+		"update planning docs and .ni/contract.json together to resolve this rule.",
+	} {
+		if strings.Contains(out, forbidden) {
+			t.Fatalf("fresh-workspace proof output should not contain generic fallback %q, got %q", forbidden, out)
 		}
 	}
 }

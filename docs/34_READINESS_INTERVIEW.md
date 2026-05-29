@@ -71,7 +71,7 @@ OQ-001 is blocking readiness. What answer would resolve it: an accepted decision
 `R014` missing purpose:
 
 ```text
-project.purpose is missing a concrete purpose. What purpose should be recorded: a user outcome, evidence-backed assumption, accepted decision, or explicit deferral?
+project.purpose is missing a concrete purpose. What should change, for whom, and why does it matter?
 ```
 
 `R015` missing actor or outcome:
@@ -83,7 +83,7 @@ docs/plan/01_actors_outcomes.md is missing an actor or outcome. Which actor need
 `R016` missing delivery surface:
 
 ```text
-docs/plan/08_delivery_operation.md is missing a delivery surface. Which surface should the plan target: cli, web, api, conversation, document, workflow, human_service, physical, or a deferral with reason?
+docs/plan/08_delivery_operation.md is missing a delivery surface. Should the plan target a CLI, web app, conversation, document, workflow, research protocol, human service, another surface, or a deferral with reason?
 ```
 
 `D001` deferred decision:

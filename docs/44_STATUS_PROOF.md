@@ -91,6 +91,9 @@ R010 at least one non-goal exists
 R011 readiness profile definitions are valid
 R012 planning docs and contract are synchronized
 R013 accepted decisions do not contradict each other
+R014 project purpose is recorded
+R015 actors and outcomes are recorded
+R016 delivery surface is recorded
 D001 deferred decisions remain explicit
 D002 non-blocking open questions remain explicit
 ```

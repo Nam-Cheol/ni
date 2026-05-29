@@ -1309,6 +1309,12 @@ func proofWhy(ruleID string) string {
 		return "docs and contract are both lock sources, so drift makes the plan ambiguous."
 	case "R013":
 		return "conflicting accepted decisions give downstream actors incompatible instructions."
+	case "R014":
+		return "ni cannot lock intent until it knows what reality the project is meant to change."
+	case "R015":
+		return "ni cannot judge readiness without knowing who uses or operates the product and what successful use looks like for them."
+	case "R016":
+		return "downstream handoff depends on knowing whether the product is delivered as a CLI, web app, conversation, document, workflow, research protocol, human service, or another surface."
 	case "D001":
 		return "downstream work must avoid depending on this decision."
 	case "D002":
@@ -1346,6 +1352,12 @@ func proofNext(ruleID string) string {
 		return "update docs/plan/** and .ni/contract.json together so the referenced record matches."
 	case "R013":
 		return "revise, reject, or split one conflicting accepted decision."
+	case "R014":
+		return "describe the project in one or two sentences: what should change, for whom, and why it matters."
+	case "R015":
+		return "list the primary actors and the outcome each one expects."
+	case "R016":
+		return "choose the likely delivery surface, or mark it deferred with an explicit reason."
 	default:
 		return "update planning docs and .ni/contract.json together to resolve this rule."
 	}

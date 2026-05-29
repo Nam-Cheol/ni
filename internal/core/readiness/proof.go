@@ -45,6 +45,12 @@ func proofMessage(issue Issue) string {
 		return ref + " is marked as blocker."
 	case "R013":
 		return ensureSentence(issue.Message)
+	case "R014":
+		return "R014 Project purpose is missing."
+	case "R015":
+		return "R015 Actors or outcomes are missing."
+	case "R016":
+		return "R016 Delivery surface is missing."
 	default:
 		return ensureSentence(issue.Message)
 	}

@@ -294,14 +294,14 @@ func TestNextQuestionsFocusedOutputFixture(t *testing.T) {
 
 	questions := NextQuestions(Evaluate(dir))
 	want := map[string]string{
-		"R014": "project.purpose is missing a concrete purpose. What purpose should be recorded: a user outcome, evidence-backed assumption, accepted decision, or explicit deferral?",
+		"R014": "project.purpose is missing a concrete purpose. What should change, for whom, and why does it matter?",
 		"R004": "CAP-001 has no evaluation. What evidence would prove this capability is complete: a test, review checklist, demo condition, user approval, or an explicit deferral?",
 		"R006": "RISK-001 is high severity and has no mitigation. What mitigation would reduce or monitor it, who owns it, or should this become an explicit accepted-risk decision?",
 		"D001": "DEC-001 is deferred. Should it remain deferred with a reason, become an accepted or rejected decision, or be marked not_applicable?",
 		"R009": "OQ-001 is blocking readiness. What answer would resolve it: an accepted decision, a deferral with reason, not_applicable, or keeping it blocking with the missing information named?",
 		"R010": "No non-goal is recorded. What explicit non-goal should bound the plan, or why is this boundary not_applicable?",
 		"R015": "docs/plan/01_actors_outcomes.md is missing an actor or outcome. Which actor needs what outcome, and should that record be accepted, kept as evidence, deferred, or marked not_applicable?",
-		"R016": "docs/plan/08_delivery_operation.md is missing a delivery surface. Which surface should the plan target: cli, web, api, conversation, document, workflow, human_service, physical, or a deferral with reason?",
+		"R016": "docs/plan/08_delivery_operation.md is missing a delivery surface. Should the plan target a CLI, web app, conversation, document, workflow, research protocol, human service, another surface, or a deferral with reason?",
 	}
 	for ruleID, question := range want {
 		got := requireQuestion(t, questions, ruleID)
