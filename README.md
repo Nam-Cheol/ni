@@ -94,7 +94,7 @@ go run ./cmd/ni run --dir ./my-plan --target generic --max-chars 4000
 | Curl installer | Available | `sh install.sh --dry-run --version 0.3.0` | You want a small shell installer after inspecting the script. |
 | Model workspaces | Experimental | [Model Workspace Packs](docs/55_MODEL_WORKSPACE_PACKS.md) | You want Codex or Claude source/zip skill packs to help draft docs and contract records; global host install is unverified and the CLI remains authority. |
 | No-terminal method | Experimental | [No-Terminal Planning](docs/no-terminal.md) | You want assisted docs and contract drafting before a trusted runner produces CLI proof; model judgment is not a lock. |
-| Homebrew | Planned | [Homebrew Tap Plan](docs/72_HOMEBREW_TAP_PLAN.md) | You prefer a package manager; no tap or formula is published or tested. |
+| Homebrew | Planned | [Homebrew Decision](docs/80_HOMEBREW_DECISION.md) | You prefer a package manager; implementation is deferred to v0.5 and no tap or formula is published or tested. |
 
 ### Which path should I choose?
 
@@ -161,6 +161,7 @@ checks, and prompt compilation.
 | [Why ni exists](docs/product-story.md) | The short product story behind compile-before-run. |
 | [Intent Lock Protocol](docs/42_INTENT_LOCK_PROTOCOL.md) | The deeper rules for readiness, locking, hash trust, and blocked handoff. |
 | [Install ni](docs/22_INSTALL.md) | Source, local build, release binary, and curl installer details. |
+| [Homebrew Decision](docs/80_HOMEBREW_DECISION.md) | Homebrew remains Planned; tap implementation is deferred to v0.5. |
 | [Homebrew Tap Plan](docs/72_HOMEBREW_TAP_PLAN.md) | Planned Homebrew route; no package-manager availability claim. |
 | [Command reference](docs/commands.md) | The implemented CLI surface. |
 | [README Visual Wireframe](docs/63_README_VISUAL_WIREFRAME.md) | The visual layout contract for this README. |

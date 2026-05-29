@@ -74,6 +74,11 @@ Focus on making locked-plan seed material more useful while keeping it inert:
 This phase may improve seed quality. It must not make targets into executable
 adapters inside `ni-kernel`.
 
+v0.5 is also the earliest scheduled point for Homebrew tap implementation as
+distribution infrastructure. Homebrew remains Planned until the external tap,
+formula, checksums, audit, local formula install, published tap install, and
+`ni --help` / `ni version` validation have all passed.
+
 ### v0.6: benchmark data and case studies
 
 Focus on evidence about planning quality without running downstream agents:
