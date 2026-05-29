@@ -2,14 +2,14 @@
 
 ## 1. Purpose
 
-This directory is a deterministic template and small docs-only case library for
+This directory is a deterministic template and small pre-runtime case library for
 manually reporting the Project Intent Compiler benchmark method defined in
 `docs/43_BENCHMARK_PROTOCOL.md`.
 
 The template contains no empirical results. Fill it only after running the
 protocol on a specific request. Do not invent values for empty cells. Case
-directories may include manual qualitative readiness drills, but unavailable
-lock, status, run, and prompt-count evidence must remain `not_measured`.
+directories may include manual qualitative readiness drills. Unavailable lock,
+run, and prompt-count evidence must remain `not_measured`.
 
 ## 2. What this proves
 
@@ -23,7 +23,8 @@ lock, status, run, and prompt-count evidence must remain `not_measured`.
   significance.
 - The internal-dashboard case shows how a plausible dashboard request hides
   users, success criteria, data boundaries, risks, non-goals, and handoff
-  evidence before any downstream work starts.
+  evidence before any downstream work starts. It includes real `ni status`
+  evidence and stops at `BLOCKED`.
 
 ## 3. Product type / surface
 
@@ -39,7 +40,8 @@ lock, status, run, and prompt-count evidence must remain `not_measured`.
 - `sample-report.md`: a fillable sample/template report with `not_measured`
   placeholders.
 - `cases/internal-dashboard/`: manual qualitative readiness drill for a vague
-  dashboard request; docs-only and not a locked ni workspace.
+  dashboard request, with an isolated ni workspace and checked-in blocked
+  status proof.
 - `../../docs/43_BENCHMARK_PROTOCOL.md`: the benchmark protocol that defines
   the scoring method.
 
@@ -50,25 +52,34 @@ From the repository root:
 ```bash
 test -f examples/benchmark-report/README.md
 test -f examples/benchmark-report/sample-report.md
+test -f examples/benchmark-report/cases/internal-dashboard/README.md
 test -f examples/benchmark-report/cases/internal-dashboard/04-measurement-table.md
+test -f examples/benchmark-report/cases/internal-dashboard/06-ni-status-proof.md
+test -f examples/benchmark-report/cases/internal-dashboard/07-ni-next-questions.md
 test -f docs/43_BENCHMARK_PROTOCOL.md
-rg -n "not_measured|must not execute downstream agents|Target prompt boundedness|internal-dashboard" examples/benchmark-report/README.md examples/benchmark-report/sample-report.md examples/benchmark-report/cases/internal-dashboard/*.md docs/43_BENCHMARK_PROTOCOL.md
+go run ./cmd/ni status --dir examples/benchmark-report/cases/internal-dashboard/workspace --proof --next-questions
+rg -n "not_measured|must not execute downstream agents|Target prompt boundedness|internal-dashboard|NI Intent Readiness: BLOCKED" examples/benchmark-report/README.md examples/benchmark-report/sample-report.md examples/benchmark-report/cases/internal-dashboard/*.md docs/43_BENCHMARK_PROTOCOL.md
 ```
 
 ## 6. Expected output
 
 The `test` commands should exit successfully.
 
+The `ni status` command should report `NI Intent Readiness: BLOCKED` for the
+internal-dashboard workspace.
+
 The `rg` command should show `not_measured` markers in this template and
-dashboard case, plus non-execution and prompt-boundedness markers in the
-benchmark protocol.
+dashboard case, the checked-in blocked status proof, plus non-execution and
+prompt-boundedness markers in the benchmark protocol.
 
 ## 7. demo-check coverage
 
 Covered by `bash scripts/demo-check.sh`.
 
-The demo check treats this as docs-only: it verifies required files and
-`not_measured` placeholders instead of running `ni status` or `ni run`.
+The demo check verifies required files, runs `ni status` for the isolated
+internal-dashboard workspace, and checks that lock/run evidence remains absent
+or `not_measured`. It does not run `ni end`, `ni run`, dashboard code, or
+downstream agents.
 
 ## 8. Korean companion
 
@@ -94,6 +105,9 @@ downstream-agent run.
 | ni version or commit | `not_measured` |
 | Direct prompt source | `not_measured` |
 | ni workspace path | `not_measured` |
+
+The checked-in internal-dashboard case fills these fields in its case files;
+the generic report template above remains unfilled by design.
 
 ## Metric Table
 

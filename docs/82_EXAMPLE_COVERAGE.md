@@ -30,7 +30,7 @@ bash scripts/quality.sh
 | `examples/conversation-authoring/` | Sustained model-user authoring updates docs, contract, and session while CLI proof catches stale sync. | `conversation_product` | `conversation`, `document` | `BLOCKED` | Runs status, checks `R012`, and compiles from the historical lock only. | No, blocked fixture with historical lock material. | Yes |
 | `examples/namba-ai-upgrade/` | ni can plan upstream of an existing harness/workflow project without becoming that harness. | `software` | `cli`, `document`, `workflow` | `BLOCKED` | Runs status, checks `R012`, and compiles Codex prompt from the historical lock only. | No, blocked fixture with historical lock material. | Yes |
 | `examples/ni-start-dogfood/` | First-run card, grouped next questions, docs/contract/session update, and re-status loop. | `conversation_product` | `conversation`, `document` | `READY_WITH_DEFERRALS` | Runs status, grouped proof, and compiles `human-team` prompt from the existing lock. | No, locked workspace fixture. | Yes |
-| `examples/benchmark-report/` | Benchmark/case-study reporting method with `not_measured` placeholders, plus a docs-only internal-dashboard readiness drill with no fake empirical claims. | Not applicable | `document` | Not applicable | Verifies required docs, dashboard case files, and `not_measured` markers only. | Yes, report template and qualitative case library. | Yes |
+| `examples/benchmark-report/` | Benchmark/case-study reporting method with `not_measured` placeholders, plus a measured internal-dashboard readiness case with real blocked `ni status` proof and no fake empirical claims. | `software` for the dashboard case | `document`, `web` for the isolated case workspace | Dashboard case: `BLOCKED` | Verifies required docs, dashboard evidence files, blocked status proof, and `not_measured` markers for lock/run. | Partial: report template is docs-only; dashboard case has a blocked ni workspace. | Yes |
 | `examples/no-terminal-assisted/` | Assisted planning can draft docs and contract before local CLI validation, show a model-workspace start flow, and hand off to later CLI proof without deterministic readiness claims. | draft `workflow` | draft `document` | Not claimed | Verifies required files, docs-only status, and boundary wording only. | Yes, assisted draft. | Yes |
 
 ## Grouped next-question coverage
@@ -38,6 +38,8 @@ bash scripts/quality.sh
 The grouped `ni status --proof --next-questions` UX is shown directly in:
 
 - `examples/ambiguous-prompt-blocked/05-next-questions.md`
+- `examples/benchmark-report/cases/internal-dashboard/06-ni-status-proof.md`
+- `examples/benchmark-report/cases/internal-dashboard/07-ni-next-questions.md`
 - `examples/conversation-authoring/transcript.md`
 - `examples/conversation-authoring/session-resume.md`
 - `examples/ni-start-dogfood/03-model-summary-and-questions.md`

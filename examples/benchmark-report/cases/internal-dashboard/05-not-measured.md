@@ -2,7 +2,6 @@
 
 This dashboard case did not measure:
 
-- actual `ni status` output;
 - actual `ni end` output;
 - actual `ni run` output or prompt character count;
 - dashboard implementation quality;
@@ -17,6 +16,6 @@ No downstream agent was executed. No model API was called. No dashboard was
 implemented. No queue, shell adapter, telemetry path, or runtime harness was
 added.
 
-Benchmark-report remains docs-only here because the public proof is about
-pre-runtime intent readiness: making missing intent visible before execution
-starts.
+The case now includes actual `ni status --proof --next-questions` output in
+`06-ni-status-proof.md`. Because that output is `BLOCKED`, lock creation,
+prompt compilation, and prompt character count remain `not_measured`.

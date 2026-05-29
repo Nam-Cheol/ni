@@ -55,11 +55,15 @@ check_benchmark_report_docs() {
   require_file examples/benchmark-report/README.md
   require_file examples/benchmark-report/README.ko.md
   require_file examples/benchmark-report/sample-report.md
+  require_file examples/benchmark-report/cases/internal-dashboard/README.md
   require_file examples/benchmark-report/cases/internal-dashboard/01-original-request.md
   require_file examples/benchmark-report/cases/internal-dashboard/02-direct-to-agent-risk.md
   require_file examples/benchmark-report/cases/internal-dashboard/03-ni-path.md
   require_file examples/benchmark-report/cases/internal-dashboard/04-measurement-table.md
   require_file examples/benchmark-report/cases/internal-dashboard/05-not-measured.md
+  require_file examples/benchmark-report/cases/internal-dashboard/06-ni-status-proof.md
+  require_file examples/benchmark-report/cases/internal-dashboard/07-ni-next-questions.md
+  require_file examples/benchmark-report/cases/internal-dashboard/workspace/.ni/contract.json
   require_file docs/43_BENCHMARK_PROTOCOL.md
 }
 
@@ -177,13 +181,23 @@ require_output "Sync repairs:" "$DEMO_TMP/namba-ai-upgrade-proof.out"
 run_demo "namba-ai upgrade codex prompt compiles from existing lock" \
   run_if_locked "examples/namba-ai-upgrade" "codex" "$DEMO_TMP/namba-ai-upgrade-codex.prompt.md"
 
-run_demo "benchmark report remains docs-only" check_benchmark_report_docs
+run_demo "benchmark report internal dashboard remains blocked pre-runtime" bash -c '
+  go run ./cmd/ni status --dir examples/benchmark-report/cases/internal-dashboard/workspace >"$1/internal-dashboard-status.out"
+  go run ./cmd/ni status --dir examples/benchmark-report/cases/internal-dashboard/workspace --proof --next-questions >"$1/internal-dashboard-proof.out"
+' bash "$DEMO_TMP"
+check_benchmark_report_docs
+require_first_line "BLOCKED" "$DEMO_TMP/internal-dashboard-status.out"
+require_output "blocker R009: OQ-001 is a blocker open question" "$DEMO_TMP/internal-dashboard-status.out"
+require_output "NI Intent Readiness: BLOCKED" "$DEMO_TMP/internal-dashboard-proof.out"
+require_output "Open blockers:" "$DEMO_TMP/internal-dashboard-proof.out"
+require_output "OQ-001: OQ-001 is blocking readiness" "$DEMO_TMP/internal-dashboard-proof.out"
 require_output "Expected \`ni status\`: not applicable" "examples/benchmark-report/README.md"
 require_output "not_measured" "examples/benchmark-report/README.md"
 require_output "not_measured" "examples/benchmark-report/README.ko.md"
 require_output "not_measured" "examples/benchmark-report/sample-report.md"
 require_output "not_measured" "examples/benchmark-report/cases/internal-dashboard/04-measurement-table.md"
 require_output "No downstream agent was executed" "examples/benchmark-report/cases/internal-dashboard/05-not-measured.md"
+require_output "NI Intent Readiness: BLOCKED" "examples/benchmark-report/cases/internal-dashboard/06-ni-status-proof.md"
 require_output "must not execute downstream agents" "docs/43_BENCHMARK_PROTOCOL.md"
 require_output "Target prompt boundedness" "docs/43_BENCHMARK_PROTOCOL.md"
 

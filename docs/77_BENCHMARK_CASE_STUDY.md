@@ -392,7 +392,7 @@ not repeated numeric benchmark data.
 - Scoring date: 2026-05-29
 - Comparison:
   - A. direct-to-agent prompt readiness
-  - B. expected `ni-start -> ni status -> ni-end -> ni-run` readiness path
+  - B. `ni-start -> ni status` readiness path that stops at `BLOCKED`
 
 This third case is a manual, qualitative readiness drill for a software
 dashboard request. It is included because internal dashboards are easy for a
@@ -400,10 +400,11 @@ downstream actor to start building too early: a web surface feels obvious while
 the users, decisions, account signals, privacy constraints, data freshness,
 success criteria, risks, and non-goals are still missing.
 
-Unlike Cases 1 and 2, this case does not claim a checked-in locked ni workspace,
-actual `ni status` output, actual `ni end` output, or actual `ni run` prompt
-character count. It shows what the benchmark report should make visible before
-execution, and it keeps unavailable evidence as `not_measured`.
+Unlike Cases 1 and 2, this case is not locked and does not compile a handoff
+prompt. It does include a checked-in ni planning workspace and actual
+`ni status --proof --next-questions` output. Because the authoritative status
+is `BLOCKED`, it does not run `ni end` or `ni run`, and prompt character count
+stays `not_measured`.
 
 ## Case 3 Artifacts: A. Direct-to-Agent Prompt
 
@@ -438,7 +439,7 @@ Expected hidden assumptions include:
 
 ## Case 3 Artifacts: B. ni Intent-Lock Path
 
-The checked-in case artifact records the intended pre-runtime ni path:
+The checked-in case artifact records the measured pre-runtime ni path:
 
 - original request:
   `examples/benchmark-report/cases/internal-dashboard/01-original-request.md`
@@ -450,6 +451,12 @@ The checked-in case artifact records the intended pre-runtime ni path:
   `examples/benchmark-report/cases/internal-dashboard/04-measurement-table.md`
 - not-measured boundary:
   `examples/benchmark-report/cases/internal-dashboard/05-not-measured.md`
+- status proof:
+  `examples/benchmark-report/cases/internal-dashboard/06-ni-status-proof.md`
+- next-question proof:
+  `examples/benchmark-report/cases/internal-dashboard/07-ni-next-questions.md`
+- planning workspace:
+  `examples/benchmark-report/cases/internal-dashboard/workspace/`
 
 Suggested ni-start questions from the fixture:
 
@@ -463,70 +470,94 @@ Suggested ni-start questions from the fixture:
 - What privacy, access-control, or data-freshness constraints apply?
 ```
 
-Expected readiness blockers before lock:
+Measured readiness blockers before lock:
 
-- primary users and actor outcomes are not accepted yet;
-- account signals, source systems, required fields, and freshness constraints
-  are not accepted yet;
-- privacy, access-control, and customer-data handling risks are not mitigated
-  yet;
-- acceptance criteria for prioritization, usability, performance, and planning
-  review are missing;
-- non-goals such as CRM replacement, forecasting, workflow automation, and
-  write-back behavior are not explicit.
+- `OQ-001`: primary dashboard user and supported decision are not accepted yet;
+- `OQ-002`: "needs attention" is not defined in observable account signals;
+- `OQ-003`: source systems, account fields, freshness rules, privacy
+  constraints, and access controls are not accepted yet;
+- `OQ-004`: planning-meeting acceptance evidence is not accepted yet.
 
-Expected docs and contract records before `READY` or `READY_WITH_DEFERRALS`:
+Checked-in docs and contract records:
 
-- `docs/plan/01_actors_outcomes.md` names the customer-team actors and the
-  decision each actor must make.
+- `docs/plan/01_actors_outcomes.md` records the requested customer-team actor
+  and keeps exact role/outcome as blocker intent.
 - `docs/plan/02_capabilities.md` and `.ni/contract.json` record accepted
-  dashboard capabilities with linked requirements and evaluations.
-- `docs/plan/06_risks_security.md` and `.ni/contract.json` record high-severity
-  customer-data, incorrect-prioritization, and stale-signal risks with
-  mitigations.
-- `docs/plan/07_evaluation_contract.md` records evidence for account-health
-  correctness, freshness, access control, usability review, and planning-meeting
-  acceptance.
-- `docs/plan/08_delivery_operation.md` records the delivery surface and handoff
-  boundary.
-- `docs/plan/10_open_questions.md` has no blocker open questions.
+  planning capabilities for capturing the request and blocking readiness.
+- `docs/plan/06_risks_security.md` and `.ni/contract.json` record three
+  high-severity risks with mitigations that keep blockers visible.
+- `docs/plan/07_evaluation_contract.md` records planning-capture review and
+  blocked-readiness proof.
+- `docs/plan/08_delivery_operation.md` records the web surface and states that
+  no dashboard delivery is authorized in this benchmark case.
+- `docs/plan/10_open_questions.md` keeps four blocker open questions.
+
+Verified `ni status` output excerpt on 2026-05-29:
+
+```text
+$ go run ./cmd/ni status --dir examples/benchmark-report/cases/internal-dashboard/workspace --proof --next-questions
+NI Intent Readiness: BLOCKED
+
+Blockers:
+- OQ-001 is marked as blocker.
+- OQ-002 is marked as blocker.
+- OQ-003 is marked as blocker.
+- OQ-004 is marked as blocker.
+
+Passed checks:
+- Required docs exist.
+- Contract JSON is valid.
+- Readiness profile definitions are valid.
+- Capability and evaluation traceability rules passed.
+- High-severity risks have mitigation.
+- Decision statuses are valid and accepted decisions do not conflict.
+- At least one non-goal is recorded.
+- Docs and contract are synchronized.
+
+Execution must not start.
+```
+
+The full proof and next-question output are checked in under
+`06-ni-status-proof.md` and `07-ni-next-questions.md`.
 
 ## Case 3 Manual Measurement Table
 
 This table is one reviewer's manual qualitative assessment for the dashboard
 request. It does not report repeated benchmark data. The ni path evidence is
-expected readiness evidence, not a completed lock/run measurement.
+real status proof for a blocked pre-runtime workspace, not a completed lock/run
+measurement.
 
-| Criterion | Direct-to-agent risk | ni path evidence | Improved? |
-| --- | --- | --- | --- |
-| Missing acceptance criteria | Missing pass/fail checks for account health, priority ranking, freshness, performance, usability, and meeting acceptance. | Required before lock as REQ/EVAL records linked to dashboard capabilities. | Yes, for readiness visibility. |
-| Unmitigated high-risk items | Customer data exposure, incorrect prioritization, and stale account signals are visible but unmitigated. | High-severity RISK records must include mitigation or explicit accepted rationale before readiness can pass. | Yes, as a gate expectation. |
-| Unresolved blockers | Primary users, source systems, required fields, meeting date, and launch surface are unknown. | ni-start questions turn these into blocker questions; `ni status` should remain `BLOCKED` until answered or explicitly deferred. | Yes. |
-| Hidden assumptions | Users, metrics, source systems, privacy review, deadline, and visualization format would be invented by the downstream actor. | Assumptions are expected to become open questions, accepted decisions, requirements, risks, or non-goals. | Yes. |
-| Non-goal coverage | Missing; request does not exclude CRM replacement, workflow automation, forecasting, or write-back behavior. | Non-goals are expected contract records before lock. | Yes. |
-| Delivery surface clarity | Assumed web dashboard, but prototype, report, embedded CRM view, or planning document are not distinguished. | Readiness interview guidance asks for delivery surface; docs and contract must agree. | Yes. |
-| Actor/outcome clarity | "Customer team" and "who needs attention" are too broad to guide implementation. | Actor/outcome records must name who uses the dashboard and which decision it supports. | Yes. |
-| Evaluation evidence clarity | No evidence is named for correctness, freshness, access, or meeting readiness. | Evaluation records are expected for data checks, prioritization review, usability review, and planning acceptance. | Yes. |
-| Bounded handoff prompt availability | Unavailable; the direct prompt has no lock-verified compiled target prompt. | `not_measured`; no actual lock or `ni run` output exists for this case. | Not measured. |
+| Criterion | Direct-to-agent risk | ni-path evidence | Improved? | Evidence file or command reference |
+| --- | --- | --- | --- | --- |
+| Missing acceptance criteria | Missing pass/fail checks for account health, priority ranking, freshness, performance, usability, and meeting acceptance. | `OQ-002`, `OQ-003`, and `OQ-004` keep signal definitions, data freshness, and meeting evidence blocking before lock. | yes | `workspace/docs/plan/10_open_questions.md`; `06-ni-status-proof.md` |
+| Unmitigated high-risk items | Customer data exposure, incorrect prioritization, and stale account signals are visible but unmitigated. | `RISK-001`, `RISK-002`, and `RISK-003` are high severity and include mitigations; `ni status` reports high-severity risks have mitigation. | yes | `workspace/docs/plan/06_risks_security.md`; `workspace/.ni/contract.json`; `06-ni-status-proof.md` |
+| Unresolved blockers | Primary users, source systems, required fields, meeting date, and launch surface are unknown. | `ni status --proof --next-questions` reports `BLOCKED` with four blocker open questions and says execution must not start. | yes | `06-ni-status-proof.md`; `07-ni-next-questions.md` |
+| Hidden assumptions | Users, metrics, source systems, privacy review, deadline, and visualization format would be invented by the downstream actor. | The workspace records those assumptions as blocker questions or non-goals instead of accepted dashboard scope. | yes | `workspace/docs/plan/01_actors_outcomes.md`; `workspace/docs/plan/10_open_questions.md`; `workspace/.ni/contract.json` |
+| Non-goal coverage | Missing; request does not exclude CRM replacement, workflow automation, forecasting, write-back behavior, downstream agents, or live system integration. | `NG-001` through `NG-003` explicitly exclude dashboard implementation, live customer-system integration, CRM write-back, runtime state, downstream agents, model APIs, queues, PR automation, and release automation. | yes | `workspace/.ni/contract.json`; `workspace/docs/plan/08_delivery_operation.md` |
+| Delivery surface clarity | Assumed web dashboard, but prototype, report, embedded CRM view, or planning document are not distinguished. | The workspace records the requested surface as `web` while `OQ-004` keeps the actual planning-meeting evidence and deliverable readiness blocking. | yes | `workspace/docs/plan/00_project_brief.md`; `workspace/docs/plan/08_delivery_operation.md`; `06-ni-status-proof.md` |
+| Actor/outcome clarity | "Customer team" and "who needs attention" are too broad to guide implementation. | `OQ-001` and `OQ-002` block readiness until actor, decision, and attention signals are accepted. | yes | `workspace/docs/plan/01_actors_outcomes.md`; `workspace/docs/plan/10_open_questions.md`; `07-ni-next-questions.md` |
+| Evaluation evidence clarity | No evidence is named for correctness, freshness, access, usability, or meeting readiness. | `EVAL-001` and `EVAL-002` cover planning capture and blocked-readiness proof; product evidence remains blocked by `OQ-002` through `OQ-004`. | yes | `workspace/docs/plan/07_evaluation_contract.md`; `06-ni-status-proof.md` |
+| Bounded handoff prompt availability | Unavailable; the direct prompt has no lock-verified compiled target prompt. | No bounded prompt was compiled because `ni status` is `BLOCKED`; prompt character count remains `not_measured`. | no | `06-ni-status-proof.md`; no `08-ni-lock-summary.md`; no `09-ni-run-prompt-summary.md` |
 
 ## Case 3 What Improved
 
 The improvement is not that a dashboard was designed or implemented. The
 improvement is that the benchmark exposes why execution should wait. The direct
 request hides users, outcomes, data boundaries, risks, evaluation evidence, and
-non-goals. The ni path would force those items into docs and contract records,
-or keep the plan blocked.
+non-goals. The ni path converted those items into synchronized docs/contract
+records, mitigated high risks by preserving blockers, and kept the plan
+blocked.
 
 ## Case 3 What Was Not Measured
 
-This case did not measure a real `ni status` output, lockfile, compiled prompt,
-agent behavior, dashboard quality, development time, user adoption, reduced
-rework, or statistical effect. It did not run `ni end`, `ni run`, a model API,
-a dashboard implementation, or a downstream agent.
+This case did not measure lockfile creation, compiled prompt availability,
+prompt character count, agent behavior, dashboard quality, development time,
+user adoption, reduced rework, or statistical effect. It did not run `ni end`,
+`ni run`, a model API, a dashboard implementation, or a downstream agent.
 
 ## Case 3 Non-Execution Boundary
 
-The dashboard case remains benchmark-report documentation only. It must not
+The dashboard case remains pre-runtime benchmark evidence only. It must not
 become a runtime demo, shell adapter, dashboard scaffold, queue, telemetry
 collector, or downstream agent harness. Its job is to show why intent should be
 compiled before anyone starts building the dashboard.
@@ -548,8 +579,10 @@ authoritative policy source before reaching `READY_WITH_DEFERRALS`, the
 research-protocol case reached `READY`, both accepted plans carried explicit
 requirements, high-risk mitigations, evaluations, and non-goals, and both
 target handoff prompts stayed under the configured 4,000-character bound. The
-dashboard drill does not add a measured lock/run result; it shows the same
-readiness gaps earlier and keeps bounded prompt availability as `not_measured`.
+dashboard case adds a real blocked status proof: docs and contract synchronize,
+high risks have mitigations, non-goals are explicit, and execution is stopped
+because four blocker questions remain open. It keeps lock, run, and prompt
+character count as `not_measured`.
 
 ## Limits
 
@@ -557,5 +590,6 @@ This case study report is intentionally narrow. It does not prove that every
 ni plan improves, that downstream implementation succeeds, or that one process
 is statistically better than another. It shows two transparent before/after
 cases where the Intent Lock Protocol converts a vague prompt into a bounded,
-lock-verified handoff without executing downstream work, plus one docs-only
-dashboard readiness drill that deliberately avoids fake lock/run evidence.
+lock-verified handoff without executing downstream work, plus one measured
+dashboard readiness case that deliberately stops at `BLOCKED` instead of faking
+lock/run evidence.

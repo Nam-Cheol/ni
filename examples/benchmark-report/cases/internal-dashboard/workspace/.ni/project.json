@@ -1,0 +1,14 @@
+{
+  "schema": "ni.project.v0",
+  "id": "internal-dashboard-benchmark",
+  "name": "Internal Dashboard Benchmark Case",
+  "created_for": "manual qualitative benchmark evidence workspace",
+  "kernel_phase": "planning",
+  "commands": [
+    "init",
+    "status",
+    "end",
+    "run"
+  ],
+  "prompt_max_chars": 4000
+}

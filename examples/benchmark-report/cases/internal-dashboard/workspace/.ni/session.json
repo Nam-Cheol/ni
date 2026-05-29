@@ -1,0 +1,94 @@
+{
+  "schema": "ni.session.v0",
+  "active_planning_focus": "Resolve dashboard benchmark blocker questions before lock",
+  "last_planning_summary": "The vague internal dashboard request has been captured as pre-runtime planning state. Readiness remains blocked until the primary user, needs-attention signals, allowed source systems, privacy/access constraints, and planning-meeting evidence are answered.",
+  "pending_questions": [
+    {
+      "id": "OQ-001",
+      "title": "Who exactly is the primary dashboard user, and what decision should the dashboard support?",
+      "blocker": true
+    },
+    {
+      "id": "OQ-002",
+      "title": "What does needs attention mean in observable account signals?",
+      "blocker": true
+    },
+    {
+      "id": "OQ-003",
+      "title": "Which source systems, account fields, freshness rules, privacy constraints, and access controls may v0 use?",
+      "blocker": true
+    },
+    {
+      "id": "OQ-004",
+      "title": "What acceptance evidence must be ready for the next planning meeting?",
+      "blocker": true
+    }
+  ],
+  "recent_decisions": [
+    {
+      "id": "DEC-001",
+      "title": "Treat the dashboard request as planning evidence, not build scope.",
+      "status": "accepted"
+    },
+    {
+      "id": "DEC-002",
+      "title": "Use the benchmark workspace only for ni CLI readiness proof.",
+      "status": "accepted"
+    }
+  ],
+  "recent_risks": [
+    {
+      "id": "RISK-001",
+      "title": "A downstream actor could build around guessed users, metrics, charts, deadlines, and success criteria.",
+      "severity": "high",
+      "status": "accepted"
+    },
+    {
+      "id": "RISK-002",
+      "title": "Customer account signals could be exposed to the wrong audience if the privacy and access-control boundary is guessed.",
+      "severity": "high",
+      "status": "accepted"
+    },
+    {
+      "id": "RISK-003",
+      "title": "Account prioritization could be incorrect or stale if needs-attention signals are undefined.",
+      "severity": "high",
+      "status": "accepted"
+    }
+  ],
+  "last_readiness_status": "BLOCKED",
+  "last_readiness_blockers": [
+    "OQ-001 is marked as blocker.",
+    "OQ-002 is marked as blocker.",
+    "OQ-003 is marked as blocker.",
+    "OQ-004 is marked as blocker."
+  ],
+  "last_updated_docs": [
+    "docs/plan/00_project_brief.md",
+    "docs/plan/01_actors_outcomes.md",
+    "docs/plan/02_capabilities.md",
+    "docs/plan/03_interaction_contract.md",
+    "docs/plan/04_domain_state.md",
+    "docs/plan/05_constraints.md",
+    "docs/plan/06_risks_security.md",
+    "docs/plan/07_evaluation_contract.md",
+    "docs/plan/08_delivery_operation.md",
+    "docs/plan/09_execution_strategy.md",
+    "docs/plan/10_open_questions.md",
+    "docs/plan/11_decision_log.md",
+    ".ni/contract.json"
+  ],
+  "authority_order": [
+    ".ni/plan.lock.json",
+    ".ni/contract.json",
+    "docs/plan/**",
+    ".ni/session.json",
+    "chat history"
+  ],
+  "notes": {
+    "planning_aid_only": "Session state is a planning aid, not authority.",
+    "locked_docs": "Session state must not override locked docs.",
+    "completion": "Session state must not mark docs complete.",
+    "raw_transcript": "Raw transcript is not the source of truth."
+  }
+}

@@ -13,3 +13,7 @@ the next planning meeting.
 
 This case is manual and qualitative. It is a pre-runtime readiness drill, not a
 downstream dashboard implementation and not a repeated benchmark run.
+
+The ni-path measurement uses the isolated workspace at
+`examples/benchmark-report/cases/internal-dashboard/workspace/`; it does not use
+the repository root as a benchmark workspace.

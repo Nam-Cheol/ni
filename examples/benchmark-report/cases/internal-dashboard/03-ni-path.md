@@ -1,8 +1,11 @@
 # ni Path
 
-This case records the expected ni intent-lock path for the vague dashboard
-request. It does not claim that a checked-in dashboard workspace reached
-`READY`, `ni end`, or `ni run`.
+This case records a real ni intent-lock path for the vague dashboard request.
+The checked-in workspace is intentionally pre-runtime and remains blocked until
+the missing dashboard intent is answered.
+
+Workspace:
+`examples/benchmark-report/cases/internal-dashboard/workspace/`
 
 ## ni-start Questions
 
@@ -16,37 +19,54 @@ request. It does not claim that a checked-in dashboard workspace reached
 
 ## Readiness Blockers
 
-- Primary users and actor outcomes are not accepted yet.
-- Delivery surface is assumed but not confirmed.
-- Source systems, required account fields, and freshness constraints are not
-  accepted yet.
-- Customer-data exposure, incorrect prioritization, and stale-signal risks are
-  not mitigated yet.
-- Acceptance criteria for priority ranking, usability, performance, and
-  planning-meeting review are missing.
-- Non-goals such as CRM replacement, forecasting, workflow automation, and
-  write-back behavior are not explicit.
+- `OQ-001`: primary dashboard user and supported decision are not accepted yet.
+- `OQ-002`: "needs attention" is not defined in observable account signals.
+- `OQ-003`: source systems, account fields, freshness rules, privacy
+  constraints, and access controls are not accepted yet.
+- `OQ-004`: planning-meeting acceptance evidence is not accepted yet.
 
 ## Docs and Contract Expectations
 
-- `docs/plan/01_actors_outcomes.md` names the dashboard users and decisions.
-- `docs/plan/02_capabilities.md` records accepted capabilities for account
-  visibility, attention prioritization, and planning-meeting review.
-- `.ni/contract.json` links each accepted capability to requirements,
+- `docs/plan/01_actors_outcomes.md` records the requested customer-team actor
+  and keeps exact role/outcome as blocker intent.
+- `docs/plan/02_capabilities.md` records accepted planning capabilities for
+  capturing the request and blocking readiness.
+- `.ni/contract.json` links accepted planning capabilities to requirements,
   evaluations, risks, and artifacts.
-- `docs/plan/05_constraints.md` records privacy, access-control, data source,
-  and freshness constraints.
-- `docs/plan/06_risks_security.md` records high-severity risks with
-  mitigations.
-- `docs/plan/07_evaluation_contract.md` records review evidence for
-  correctness, freshness, usability, and meeting acceptance.
-- `docs/plan/08_delivery_operation.md` records the delivery surface and
-  non-execution handoff boundary.
-- `docs/plan/10_open_questions.md` has no blocker open questions before lock.
+- `docs/plan/05_constraints.md` records the non-execution boundary and the
+  unresolved data constraints.
+- `docs/plan/06_risks_security.md` records three high-severity risks with
+  mitigations that preserve the blockers instead of weakening them.
+- `docs/plan/07_evaluation_contract.md` records planning-capture review and
+  blocked-readiness proof.
+- `docs/plan/08_delivery_operation.md` records that no dashboard delivery is
+  authorized in this benchmark case.
+- `docs/plan/10_open_questions.md` keeps four blocker open questions before
+  lock.
+
+## Measured CLI Evidence
+
+Command run from the repository root on 2026-05-29:
+
+```bash
+go run ./cmd/ni status --dir examples/benchmark-report/cases/internal-dashboard/workspace --proof --next-questions
+```
+
+Readiness result:
+
+```text
+NI Intent Readiness: BLOCKED
+```
+
+The status proof records four blocker open questions, no deferrals, no
+warnings, valid contract JSON, passing traceability, mitigated high risks,
+recorded non-goals, and synchronized docs/contract records. See
+`06-ni-status-proof.md` and `07-ni-next-questions.md`.
 
 ## Lock Readiness Improvement
 
-The ni path improves readiness only if it keeps the plan blocked until these
-records exist or are explicitly and safely deferred. A future completed run
-would need authoritative `ni status` output, then `ni end`, then a bounded
-`ni run` prompt. Those artifacts are not present in this docs-only case.
+The ni path improved readiness visibility by converting hidden dashboard
+assumptions into explicit blocker questions and preventing execution. Because
+the authoritative status is `BLOCKED`, this benchmark did not run `ni end`,
+`ni relock`, or `ni run`; no lockfile or bounded handoff prompt exists for this
+case.

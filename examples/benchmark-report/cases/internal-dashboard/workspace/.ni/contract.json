@@ -1,0 +1,162 @@
+{
+  "schema": "ni.contract.v0",
+  "readiness_profile": "prototype",
+  "product_type": "software",
+  "delivery_surfaces": ["web"],
+  "interaction_mode": "human_to_system",
+  "project": {
+    "id": "internal-dashboard-benchmark",
+    "name": "Internal Dashboard Benchmark Case",
+    "purpose": "Plan an internal customer-account dashboard before implementation so the customer team can decide which accounts need attention without downstream actors inventing users, account signals, data boundaries, or meeting acceptance criteria.",
+    "status": "draft"
+  },
+  "non_goals": [
+    {
+      "id": "NG-001",
+      "title": "Do not implement, scaffold, or run a dashboard from this benchmark case."
+    },
+    {
+      "id": "NG-002",
+      "title": "Do not connect live customer systems, write back to CRM, automate account workflows, or create downstream runtime state."
+    },
+    {
+      "id": "NG-003",
+      "title": "Do not run downstream agents, model APIs, shell adapters, queues, PR automation, or release automation."
+    }
+  ],
+  "capabilities": [
+    {
+      "id": "CAP-001",
+      "title": "Capture the vague dashboard request as planning state.",
+      "status": "accepted",
+      "requirements": [
+        "REQ-001"
+      ],
+      "evaluations": [
+        "EVAL-001"
+      ],
+      "risks": [
+        "RISK-001"
+      ],
+      "artifacts": [
+        "ART-001"
+      ]
+    },
+    {
+      "id": "CAP-002",
+      "title": "Block readiness while dashboard intent is unresolved.",
+      "status": "accepted",
+      "requirements": [
+        "REQ-002"
+      ],
+      "evaluations": [
+        "EVAL-002"
+      ],
+      "risks": [
+        "RISK-001",
+        "RISK-002",
+        "RISK-003"
+      ],
+      "artifacts": [
+        "ART-002"
+      ]
+    }
+  ],
+  "requirements": [
+    {
+      "id": "REQ-001",
+      "title": "The plan must record the original dashboard request, visible assumptions, non-goals, risks, and blocker questions without treating them as implementation instructions.",
+      "status": "accepted"
+    },
+    {
+      "id": "REQ-002",
+      "title": "The readiness gate must remain blocked while the primary actor, attention definition, source systems, privacy boundary, and planning-meeting evidence are unresolved.",
+      "status": "accepted"
+    }
+  ],
+  "decisions": [
+    {
+      "id": "DEC-001",
+      "title": "Treat the dashboard request as planning evidence, not build scope.",
+      "status": "accepted"
+    },
+    {
+      "id": "DEC-002",
+      "title": "Use the benchmark workspace only for ni CLI readiness proof.",
+      "status": "accepted"
+    }
+  ],
+  "risks": [
+    {
+      "id": "RISK-001",
+      "title": "A downstream actor could build around guessed users, metrics, charts, deadlines, and success criteria.",
+      "severity": "high",
+      "status": "accepted",
+      "mitigation": "Keep actor, attention-definition, source-system, and acceptance questions as blocker open questions until the user answers or explicitly defers them with rationale."
+    },
+    {
+      "id": "RISK-002",
+      "title": "Customer account signals could be exposed to the wrong audience if the privacy and access-control boundary is guessed.",
+      "severity": "high",
+      "status": "accepted",
+      "mitigation": "Block lock until allowed source systems, required fields, data freshness, privacy review, and access-control constraints are explicit."
+    },
+    {
+      "id": "RISK-003",
+      "title": "Account prioritization could be incorrect or stale if needs-attention signals are undefined.",
+      "severity": "high",
+      "status": "accepted",
+      "mitigation": "Block lock until needs-attention signals, freshness expectations, and review evidence for planning-meeting use are explicit."
+    }
+  ],
+  "evaluations": [
+    {
+      "id": "EVAL-001",
+      "title": "Planning capture review.",
+      "method": "Review docs/plan/** and .ni/contract.json to confirm the vague dashboard request is represented as planning state, not executable dashboard implementation scope."
+    },
+    {
+      "id": "EVAL-002",
+      "title": "Blocked readiness proof.",
+      "method": "Run go run ./cmd/ni status --dir examples/benchmark-report/cases/internal-dashboard/workspace --proof --next-questions and verify it reports BLOCKED with blocker open questions before downstream work starts."
+    }
+  ],
+  "artifacts": [
+    {
+      "id": "ART-001",
+      "path": "docs/plan/00_project_brief.md",
+      "kind": "planning_doc"
+    },
+    {
+      "id": "ART-002",
+      "path": "examples/benchmark-report/cases/internal-dashboard/06-ni-status-proof.md",
+      "kind": "status_evidence"
+    }
+  ],
+  "open_questions": [
+    {
+      "id": "OQ-001",
+      "title": "Who exactly is the primary dashboard user, and what decision should the dashboard support?",
+      "blocker": true,
+      "status": "open"
+    },
+    {
+      "id": "OQ-002",
+      "title": "What does needs attention mean in observable account signals?",
+      "blocker": true,
+      "status": "open"
+    },
+    {
+      "id": "OQ-003",
+      "title": "Which source systems, account fields, freshness rules, privacy constraints, and access controls may v0 use?",
+      "blocker": true,
+      "status": "open"
+    },
+    {
+      "id": "OQ-004",
+      "title": "What acceptance evidence must be ready for the next planning meeting?",
+      "blocker": true,
+      "status": "open"
+    }
+  ]
+}
