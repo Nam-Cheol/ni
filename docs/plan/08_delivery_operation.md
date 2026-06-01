@@ -138,10 +138,17 @@ bash scripts/smoke.sh
 bash scripts/demo-check.sh
 bash scripts/install-check.sh
 bash scripts/release-check.sh
+bash scripts/check-skill-packs.sh
+bash scripts/package-claude-skills.sh
+bash scripts/package-codex-skills.sh
 bash scripts/fresh-install-check.sh
+go run ./cmd/ni status --dir . --proof --next-questions
+go run ./cmd/ni run --dir . --target codex --max-chars 4000
 ```
 
-Run `bash scripts/fresh-install-check.sh` only when the script is present.
+Run `bash scripts/fresh-install-check.sh` only when the script is present. The
+generated v0.5 roadmap prompt must be 4000 characters or less and must not be
+executed.
 
 For the v0.4.0 post-release state lock, also verify:
 

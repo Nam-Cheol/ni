@@ -129,12 +129,18 @@ pre-runtime `ni-kernel` boundary.
 Method: `go test ./...`, `bash scripts/quality.sh`,
 `bash scripts/smoke.sh`, `bash scripts/demo-check.sh`,
 `bash scripts/install-check.sh`, `bash scripts/release-check.sh`,
-`bash scripts/fresh-install-check.sh` when present, and
-`ni run --target codex --max-chars 4000` verify the roadmap preserves real
-benchmark-data limits, broader product-surface scope, conversation authoring
-reliability, lock/change-control UX, optional Homebrew only after tested
-evidence, optional factual landing-page scope, separate-package-only downstream
-integrations, and the pre-runtime `ni-kernel` boundary.
+`bash scripts/check-skill-packs.sh`, `bash scripts/package-claude-skills.sh`,
+`bash scripts/package-codex-skills.sh`, `bash scripts/fresh-install-check.sh`
+when present, `go run ./cmd/ni status --dir . --proof --next-questions`, and
+`go run ./cmd/ni run --dir . --target codex --max-chars 4000` verify the
+roadmap preserves real benchmark-data limits, named benchmark evidence files
+under `examples/benchmark-report/cases/internal-dashboard/` and
+`examples/benchmark-report/cases/research-protocol/`, ni-grill dogfood notes,
+broader product-surface scope, conversation authoring reliability,
+lock/change-control UX, optional Homebrew only after tested evidence, model
+workspace status boundaries, no-terminal assisted wording, separate-package-only
+downstream integrations, generated prompt budget, and the pre-runtime
+`ni-kernel` boundary.
 
 ## EVAL-024: v0.4.0 post-release state is verified, synced, and pre-runtime
 

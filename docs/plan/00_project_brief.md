@@ -38,11 +38,18 @@ without turning `ni-kernel` into runtime execution:
 
 - publish real benchmark data using the existing benchmark protocol, with
   transparent limits and no downstream execution or statistical overclaim;
+- expand benchmark evidence from qualitative manual cases toward repeatable
+  evidence packages, including the internal-dashboard and research-protocol
+  case material, while keeping `not_measured` limits next to claims;
 - cover more product surfaces and examples so the Intent Lock Protocol is
-  understandable beyond the current CLI-first and README-first paths;
+  understandable beyond the current CLI-first and README-first paths,
+  including operations process, education program, document product, and
+  physical product planning examples;
 - improve conversation authoring reliability, including first-run guidance,
   resume proof, blocker-question loops, docs/contract sync diagnostics, and
   Korean/English parity where companion docs are maintained;
+- preserve language-adaptive authoring and ni-start / ni-grill / ni-end proof
+  capture as planning UX while keeping `ni status` as readiness authority;
 - strengthen lock, relock, amendment, and change-control UX so users can see
   when intent changed, which records changed, and why handoff must stop;
 - keep Homebrew optional and Planned unless the tap, formula, checksums, audit,
@@ -52,6 +59,11 @@ without turning `ni-kernel` into runtime execution:
 - keep downstream integrations optional and separate-package only. Integration
   work may consume locked `ni` output, but it must not become `ni-kernel`
   adapter state, execution state, queue state, or runtime lifecycle state.
+- treat ni-grill dogfood findings as roadmap pressure: GRILL-001 and GRILL-002
+  are addressed by roadmap and distribution alignment, while GRILL-003 remains
+  a v0.5 acceptance-evidence improvement candidate, GRILL-004 remains a
+  benchmark claim-boundary note, and GRILL-005 remains a model workspace status
+  preservation note.
 
 ## v0.4 adoption focus
 

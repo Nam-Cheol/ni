@@ -109,18 +109,24 @@ the published tap command is verified.
 
 ## CAP-019: lock v0.5 roadmap
 
-After v0.4 adoption hardening, lock the next roadmap around evidence quality
-and change-control clarity instead of runtime expansion. The roadmap covers real
-benchmark data, more product surfaces and examples, better conversation
-authoring reliability, stronger lock/relock/amendment UX, optional Homebrew
-only if tested, optional lightweight landing page work, and optional downstream
-integrations only as separate packages.
+After v0.4.0 post-release verification, benchmark evidence expansion,
+ni-grill dogfood, and roadmap/distribution alignment, lock the next roadmap
+around evidence quality, authoring reliability, adoption hardening, and
+change-control clarity instead of runtime expansion. The roadmap covers real
+benchmark evidence with visible `not_measured` limits, repeatable evidence
+packages, more non-software product surfaces and examples, better
+conversation-authoring proof capture and docs/contract/session consistency,
+stronger lock/relock/amendment UX, optional Homebrew only if tested, model
+workspace packs as Experimental unless host-level install is verified,
+assisted no-terminal wording, and optional downstream integrations only as
+separate packages or seed formats.
 
 This capability is accepted only as planning, validation, documentation,
-distribution, and seed-quality direction. It must not execute the generated
-prompt, call `codex exec`, add runtime execution behavior, add adapters to
-`ni-kernel`, claim untested availability, or mark Homebrew Available before
-Homebrew evidence passes.
+distribution, evidence, and seed-quality direction. It must not execute the
+generated prompt, call `codex exec`, add runtime execution behavior, add
+adapters to `ni-kernel`, claim untested availability, mark Homebrew Available
+before Homebrew evidence passes, claim model workspace packs are globally
+verified, or present no-terminal assistance as deterministic validation.
 
 ## CAP-020: lock v0.4.0 post-release state
 

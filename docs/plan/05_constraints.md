@@ -43,6 +43,22 @@
   downstream repositories that consume locked `ni` output; they must not become
   adapters, execution state, queue state, release automation, or lifecycle
   ownership inside `ni-kernel`.
+- v0.5 benchmark evidence must keep claim boundaries visible: preserve
+  `not_measured` rows, avoid fake empirical claims, avoid statistical claims
+  without repeated measurement, and keep `READY` scoped to the relevant
+  planning artifact or synthetic fixture workspace.
+- v0.5 product-surface expansion must remain pre-runtime planning examples for
+  operations process, education program, document product, physical product
+  planning, and similar surfaces; examples must not implement those products or
+  execute downstream agents.
+- Homebrew remains Planned / v0.5 candidate until tap, formula, checksums,
+  audit, install, published tap install, `ni --help`, and `ni version`
+  evidence all pass.
+- Model workspace packs remain Experimental as a broad product path unless
+  host-level install or discovery is verified; skills remain UX and the CLI
+  remains authority.
+- No-terminal mode remains assisted and may not claim deterministic validation
+  without exact CLI proof from a trusted runner.
 
 ## Kernel boundary
 

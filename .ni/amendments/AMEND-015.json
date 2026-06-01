@@ -1,0 +1,48 @@
+{
+  "schema": "ni.amendment.v0",
+  "id": "AMEND-015",
+  "title": "Lock v0.5 roadmap",
+  "reason": "Lock the v0.5 roadmap after v0.4.0 post-release verification, ni-grill dogfood, roadmap/distribution alignment, and benchmark evidence expansion, while preserving Homebrew as a v0.5 candidate, model workspace packs as Experimental unless host-level install is verified, no-terminal as assisted, and the pre-runtime ni-kernel boundary.",
+  "affected_docs": [
+    "docs/plan/00_project_brief.md",
+    "docs/plan/02_capabilities.md",
+    "docs/plan/05_constraints.md",
+    "docs/plan/06_risks_security.md",
+    "docs/plan/07_evaluation_contract.md",
+    "docs/plan/08_delivery_operation.md",
+    "docs/plan/11_decision_log.md",
+    ".ni/contract.json"
+  ],
+  "affected_contract_ids": [
+    "CAP-019",
+    "REQ-019",
+    "DEC-017",
+    "RISK-013",
+    "RISK-016",
+    "RISK-018",
+    "EVAL-023",
+    "ART-052",
+    "ART-057",
+    "ART-058"
+  ],
+  "proposed_changes": [
+    "Update CAP-019 and REQ-019 so the v0.5 roadmap is framed as evidence, reliability, and adoption hardening rather than package-manager release work.",
+    "Add RISK-018 and strengthen existing risk/evaluation records for benchmark overclaiming, Homebrew availability, model workspace authority, no-terminal validation, and runtime drift.",
+    "Record DEC-017 with GRILL-001/002 addressed and GRILL-003/004/005 retained as v0.5 improvement or status notes.",
+    "Expand EVAL-023 evidence to include benchmark case files, ni status proof, demo checks, skill-pack checks, install/release checks, and prompt budget verification."
+  ],
+  "risk_impact": "Adds an explicit high-severity v0.5 overclaim risk so benchmark evidence, Homebrew status, model workspace status, no-terminal claims, and downstream integration boundaries cannot drift into false availability or runtime claims.",
+  "readiness_impact": "Expected to remain READY after CAP-019 has linked requirement, evaluation, mitigated high-severity risks, artifacts, accepted decision records, and no blocker questions.",
+  "created_from_feedback_refs": [
+    "GRILL-001",
+    "GRILL-002",
+    "GRILL-003",
+    "GRILL-004",
+    "GRILL-005"
+  ],
+  "created_from_pressure_refs": [],
+  "status": "applied",
+  "created_at": "2026-06-01T05:59:25Z",
+  "applied_at": "2026-06-01T05:59:25Z",
+  "source_lock_hash": "bb5b5f9b3143dc34ea6349e5841fb58c198f2ffe5d68a9e0d55135e21efae5c4"
+}

@@ -132,3 +132,18 @@ curl installer behavior, and install docs sync have been verified. The public
 distribution state can therefore record release binary and curl installer paths
 as Available for v0.4.0 while keeping Homebrew Planned / deferred, model
 workspace packs as UX rather than authority, and `ni-kernel` pre-runtime.
+
+## DEC-017: v0.5 roadmap lock follows evidence, reliability, and adoption hardening
+
+Status: accepted
+
+Rationale: v0.5 is not primarily a package-manager release. It is focused on
+real benchmark evidence, conversation-authoring reliability, ni-grill planning
+challenge quality, change-control UX, factual distribution/adoption surfaces,
+non-software product-surface expansion, and downstream integration boundaries.
+Homebrew remains a v0.5 candidate and can become Available only after tested
+tap/formula evidence. Downstream execution remains outside `ni-kernel`.
+GRILL-001 and GRILL-002 are addressed by roadmap and distribution alignment;
+GRILL-003 remains a v0.5 acceptance-evidence improvement candidate; GRILL-004
+remains a benchmark claim-boundary note; and GRILL-005 remains a model
+workspace status preservation note.

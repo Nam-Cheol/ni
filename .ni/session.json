@@ -1,19 +1,19 @@
 {
   "schema": "ni.session.v0",
-  "active_planning_focus": "Lock v0.4.0 post-release state.",
-  "last_planning_summary": "Task 155 is locking the v0.4.0 post-release state after release asset verification, curl installer verification, and install docs sync. CAP-020 records verified v0.4.0 release binary availability, verified v0.4.0 curl installer availability, install docs current-release sync, Planned / deferred Homebrew status, model workspace packs as UX rather than CLI authority, and the pre-runtime ni-kernel boundary. The current turn must use ni status, apply AMEND-014, relock through the CLI, and compile .ni/generated/v0.4.0-post-release.prompt.txt without executing it.",
+  "active_planning_focus": "Lock v0.5 roadmap.",
+  "last_planning_summary": "Task 173 is locking the v0.5 roadmap after v0.4.0 post-release verification, ni-grill dogfood, roadmap/distribution alignment, and benchmark evidence expansion. CAP-019 records v0.5 as evidence, reliability, and adoption hardening: real benchmark evidence with visible not_measured boundaries, conversation-authoring reliability, ni-grill challenge quality, change-control UX, Homebrew as Planned / v0.5 candidate only, model workspace packs as Experimental unless host-level install is verified, no-terminal as assisted, product-surface expansion, and downstream integrations only as separate packages or seed formats. The current turn must use ni status, apply AMEND-015, relock through the CLI after explicit confirmation, and compile .ni/generated/v0.5-roadmap.prompt.txt without executing it.",
   "pending_questions": [],
   "recent_decisions": [
     {
-      "id": "DEC-016",
-      "title": "v0.4.0 post-release state is locked after verification",
+      "id": "DEC-017",
+      "title": "v0.5 roadmap lock follows evidence, reliability, and adoption hardening",
       "status": "accepted"
     }
   ],
   "recent_risks": [
     {
-      "id": "RISK-017",
-      "title": "v0.4.0 post-release lock overclaims distribution or execution readiness",
+      "id": "RISK-018",
+      "title": "v0.5 evidence, distribution, or workspace claims overreach",
       "severity": "high",
       "status": "accepted"
     }
@@ -29,8 +29,8 @@
     "docs/plan/08_delivery_operation.md",
     "docs/plan/11_decision_log.md",
     ".ni/contract.json",
-    ".ni/amendments/AMEND-014.json",
-    ".ni/generated/v0.4.0-post-release.prompt.txt",
+    ".ni/amendments/AMEND-015.json",
+    ".ni/generated/v0.5-roadmap.prompt.txt",
     ".ni/session.json"
   ],
   "authority_order": [

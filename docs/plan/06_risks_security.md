@@ -130,3 +130,16 @@ installer evidence, install docs sync, Planned / deferred Homebrew status, and
 model workspace packs as UX. Do not publish a release, push tags, execute the
 generated prompt, call `codex exec`, add runtime execution, mark Homebrew
 Available, or treat model workspace packs as CLI authority.
+
+## RISK-018: v0.5 evidence, distribution, or workspace claims overreach
+
+Severity: high
+
+Mitigation: Keep v0.5 claims tied to named evidence files, `ni status` proof,
+demo and skill-pack checks, install and release checks, and bounded prompt
+output. Benchmark work must preserve `not_measured` boundaries and avoid fake
+empirical or statistical claims. Homebrew remains Planned until tested.
+Model workspace packs remain Experimental unless host-level install or
+discovery is verified. No-terminal mode remains assisted without trusted CLI
+proof. Downstream integrations remain separate packages, seed exports, or
+target formats rather than `ni-kernel` runtime behavior.
