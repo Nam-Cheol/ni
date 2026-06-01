@@ -11,6 +11,16 @@ It also supports resume mode for long-running planning. Resume mode reconstructs
 or verifies planning continuity from persisted project files, not hidden chat
 memory.
 
+`ni-start` is language-adaptive for user-facing questions. Ask planning
+questions in the language of the user's latest substantive message, or the
+user's latest explicit language preference when one exists. Preserve IDs,
+commands, file paths, schema keys, target names, and status constants exactly:
+`R014`, `OQ-001`, `SYNC-014`, `ni status`, `ni end`, `ni run`,
+`.ni/contract.json`, `READY`, `BLOCKED`, and `READY_WITH_DEFERRALS` must not be
+translated. CLI output may remain English; a model may summarize it in the
+user's language without changing meaning. See
+[`89_LANGUAGE_ADAPTIVE_AUTHORING.md`](89_LANGUAGE_ADAPTIVE_AUTHORING.md).
+
 ```text
 ni init -> ni-start conversation -> docs/plan + .ni/contract.json -> ni status
 ```
@@ -61,6 +71,15 @@ yet. I need three things before execution can safely start: what reality this
 project should change, who it is for, and how it will be delivered.
 
 Implementation has not started. This is still planning.
+```
+
+If the user's latest substantive message is Korean, use the Korean equivalent
+for the human-facing framing and questions while preserving command names,
+IDs, file paths, and status constants. For example:
+
+```text
+ni는 초기 프로젝트 의도가 아직 lock할 만큼 명확하지 않아서 BLOCKED 상태입니다.
+구현은 아직 시작되지 않았고, 지금은 planning 단계입니다.
 ```
 
 Then ask at most three focused questions, grouped around the first-run

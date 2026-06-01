@@ -45,6 +45,13 @@ and compiled a bounded prompt. Its `READY` claim applies only to benchmark
 planning-meeting artifact readiness; dashboard product readiness and product
 outcomes remain `not_measured`.
 
+The research-protocol benchmark package now also includes a resolved
+synthetic-fixture variant. It preserves the original `BLOCKED` proof, applies
+clearly labeled synthetic answers to `OQ-001` through `OQ-005` inside the
+isolated workspace only, reaches `READY`, locks the isolated workspace, and
+compiles a 4000-character bounded prompt. Its `READY` claim is benchmark
+fixture readiness only, not real fieldwork approval or research quality.
+
 ## Case 1 Artifacts: A. Direct-to-Agent Prompt
 
 Source:
@@ -668,36 +675,46 @@ compiled before anyone starts building the dashboard.
 
 ## Research-Protocol Benchmark Package
 
-The selected second v0.5 benchmark case is now checked in under
-`examples/benchmark-report/cases/research-protocol/`. It measures the initial
-readiness of the vague request:
+The selected second v0.5 benchmark case is checked in under
+`examples/benchmark-report/cases/research-protocol/`. It preserves the initial
+readiness measurement for the vague request:
 
 ```text
 Help us plan a summer neighborhood cooling study so we can decide where to
 place shade and cooling interventions.
 ```
 
-The measured status is `BLOCKED`. The isolated workspace records
+The initial measured status was `BLOCKED`. The isolated workspace records
 `product_type=research_protocol` and delivery surfaces `document`, `workflow`,
-and `human_service`. `ni status --proof --next-questions` reports `OQ-001`
-through `OQ-005` as open blockers covering research question, participant or
-observation scope, consent/privacy/data/accessibility boundaries, heat/weather
-field safety, vulnerable-group safeguards, review owner, and acceptance
-evidence. No lock was created, no bounded prompt was compiled, and prompt count
-remains `not_measured`.
+and `human_service`. Initial `ni status --proof --next-questions` reported
+`OQ-001` through `OQ-005` as open blockers covering research question,
+participant or observation scope, consent/privacy/data/accessibility
+boundaries, heat/weather field safety, vulnerable-group safeguards, review
+owner, and acceptance evidence.
 
-The case now includes a blocker analysis, resolution path, and human-fillable
-answer packet:
+The resolved variant applies synthetic benchmark fixture answers to those five
+blockers. The answers are not real fieldwork approval, actual research
+authorization, proof of research quality, or empirical evidence. After those
+answers were reflected in `docs/plan/**`, `.ni/contract.json`, and
+`.ni/session.json`, `ni status --proof --next-questions` reported `READY`,
+`ni end` created `workspace/.ni/plan.lock.json`, and `ni run --max-chars 4000`
+compiled a 4000-character bounded prompt.
+
+The case includes a blocker analysis, resolution path, synthetic answer packet,
+resolved status proof, lock summary, and bounded prompt summary:
 
 - `examples/benchmark-report/cases/research-protocol/08-blocker-analysis.md`
 - `examples/benchmark-report/cases/research-protocol/09-resolution-path.md`
 - `examples/benchmark-report/cases/research-protocol/10-answer-packet.md`
+- `examples/benchmark-report/cases/research-protocol/11-resolved-status-proof.md`
+- `examples/benchmark-report/cases/research-protocol/12-resolved-next-questions.md`
+- `examples/benchmark-report/cases/research-protocol/13-lock-summary.md`
+- `examples/benchmark-report/cases/research-protocol/14-bounded-prompt-summary.md`
 
 Those documents explain why each blocker matters, what kind of future user
-answer would resolve it, which unsafe assumptions are avoided, and how a later
-resolved variant could update only the isolated workspace before running
-`ni status`, `ni end`, and `ni run` in the allowed order. They do not answer
-the blockers or make the current benchmark workspace ready.
+answer would resolve it, which unsafe assumptions are avoided, and how the
+resolved synthetic fixture updated only the isolated workspace before running
+`ni status`, `ni end`, and `ni run` in the allowed order.
 
 This research-protocol case does not claim research protocol quality,
 fieldwork readiness, intervention decision readiness, participant outcomes,
@@ -718,15 +735,16 @@ criteria, delivery surface, meeting acceptance, and non-goals before starting.
 The ni paths did not make the work complete in a production sense. They made
 intent auditable before execution: the refund readiness check blocked on the
 authoritative policy source before reaching `READY_WITH_DEFERRALS`, the
-research-protocol case reached `READY`, both accepted plans carried explicit
-requirements, high-risk mitigations, evaluations, and non-goals, and both
-target handoff prompts stayed under the configured 4,000-character bound. The
-dashboard case adds a real transition proof: the original state stopped at
-`BLOCKED` with four blocker questions, and the answered artifact-readiness
-state reached `READY`, locked only the isolated workspace, and compiled a
-4000-character prompt. It keeps dashboard product readiness, implementation
-quality, downstream agent performance, user impact, adoption, rework
-reduction, cost, latency, and statistical effect as `not_measured`.
+original research-protocol package stopped at `BLOCKED` until all five
+research blockers were answered, the resolved research-protocol fixture reached
+`READY`, and accepted plans carried explicit requirements, high-risk
+mitigations, evaluations, and non-goals. Target handoff prompts stayed under
+the configured 4,000-character bound. The dashboard and research benchmark
+packages both now include transition proof from `BLOCKED` to isolated
+workspace `READY` locks and 4000-character prompts, while keeping product
+readiness, implementation quality, downstream agent performance, user impact,
+adoption, rework reduction, cost, latency, statistical effect, real research
+approval, and fieldwork readiness as `not_measured`.
 
 ## Limits
 
@@ -736,4 +754,6 @@ is statistically better than another. It shows three transparent readiness
 cases where the Intent Lock Protocol exposes unclear intent and, when enough
 answers exist, can produce bounded lock-verified handoff seed material without
 executing downstream work. The dashboard case is artifact-readiness evidence
-only; it does not prove that a dashboard product is ready.
+only; it does not prove that a dashboard product is ready. The
+research-protocol resolved case is synthetic fixture readiness evidence only;
+it does not prove that real fieldwork or research approval is ready.

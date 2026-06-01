@@ -11,6 +11,16 @@
 chat memory가 아니라 저장된 project file에서 계획 연속성을 재구성하거나
 검증한다.
 
+`ni-start`는 사용자-facing question에 대해 language-adaptive해야 한다. 사용자의
+최근 실질 메시지 언어로 planning question을 묻고, 사용자가 명시적으로 선호 언어를
+말했다면 그 최신 선호를 따른다. ID, command, file path, schema key, target name,
+status constant는 정확히 보존한다. `R014`, `OQ-001`, `SYNC-014`,
+`ni status`, `ni end`, `ni run`, `.ni/contract.json`, `READY`, `BLOCKED`,
+`READY_WITH_DEFERRALS`는 번역하지 않는다. CLI output은 영어로 남아도 되며, 모델은
+의미를 바꾸지 않는 범위에서 사용자의 언어로 요약할 수 있다.
+[`89_LANGUAGE_ADAPTIVE_AUTHORING.ko.md`](89_LANGUAGE_ADAPTIVE_AUTHORING.ko.md)를
+참고한다.
+
 ```text
 ni init -> ni-start conversation -> docs/plan + .ni/contract.json -> ni status
 ```
@@ -61,6 +71,14 @@ yet. I need three things before execution can safely start: what reality this
 project should change, who it is for, and how it will be delivered.
 
 Implementation has not started. This is still planning.
+```
+
+사용자의 최근 실질 메시지가 한국어라면 human-facing framing과 question은 한국어로
+묻되 command name, ID, file path, status constant는 보존한다. 예:
+
+```text
+ni는 초기 프로젝트 의도가 아직 lock할 만큼 명확하지 않아서 BLOCKED 상태입니다.
+구현은 아직 시작되지 않았고, 지금은 planning 단계입니다.
 ```
 
 그 다음 first-run blocker를 중심으로 최대 3개의 focused question만 묻는다.

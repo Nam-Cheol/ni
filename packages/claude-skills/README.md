@@ -22,6 +22,9 @@ and prompt compilation.
 - Run or request `ni status` before any readiness claim.
 - `ni-start` must use grouped `ni status --proof --next-questions` output as
   its primary planning interview when present.
+- `ni-start` must ask user-facing planning questions in the language of the
+  user's latest substantive message while preserving IDs, commands, paths,
+  schema keys, target names, and status constants exactly.
 - `ni-start` must show a concise planning proof block after meaningful
   authoring updates, naming changed files, affected IDs, before/after CLI
   status, remaining blockers, and the next question group.
@@ -125,6 +128,9 @@ unzip -l dist/ni-claude-skills.zip
 
 See `docs/75_MODEL_PACK_INSTALL_VERIFICATION.md` for the full installation and
 verification status.
+
+See `docs/89_LANGUAGE_ADAPTIVE_AUTHORING.md` for the language-adaptive
+authoring rule used by `ni-start`.
 
 ## What This Does Not Do
 

@@ -5,6 +5,12 @@ Protocol을 시작할 수 있게 하는 assisted drafting path다. Model convers
 초기 `docs/plan/**` notes와 draft `.ni/contract.json`을 만들 수 있지만, 이것만으로
 trusted lock을 끝낼 수는 없다.
 
+No-terminal에서 사용자-facing question은 사용자의 최근 실질 메시지 언어를 따라야
+한다. 사용자가 한국어로 말하면 한국어 planning question을 묻고, 영어로 말하면
+영어로 묻고, 언어를 명시적으로 요청하면 그 언어를 사용한다. ID, command, file
+path, schema key, target name, status constant는 정확히 보존한다. 모델은 영어 CLI
+proof를 사용자의 언어로 설명할 수 있지만, proof는 CLI output으로만 authoritative하다.
+
 규칙은 단순하다. No-terminal 사용자는 planning을 시작하고 protocol을 배우고 review
 대상 draft를 준비할 수 있다. Trusted readiness, lock creation, hash verification,
 prompt compilation은 CLI-validated `ni`가 필요하다.

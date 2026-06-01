@@ -11,7 +11,7 @@
   "project": {
     "id": "research-protocol-benchmark",
     "name": "Research Protocol Benchmark Case",
-    "purpose": "Prepare an initial benchmark planning workspace for a vague summer neighborhood cooling study request so ni can measure whether required research intent is blocked before any fieldwork, participant recruitment, data collection, intervention decision, downstream agent, or model API call begins.",
+    "purpose": "Prepare a benchmark planning workspace for a vague summer neighborhood cooling study request so ni can measure the transition from unresolved research intent to an explicit, locked planning contract using synthetic benchmark fixture answers before any fieldwork, participant recruitment, data collection, intervention decision, downstream agent, or model API call begins.",
     "status": "draft"
   },
   "non_goals": [
@@ -54,11 +54,12 @@
     },
     {
       "id": "CAP-002",
-      "title": "Make missing research questions, participant scope, consent, data, safety, and acceptance evidence explicit as blocker questions.",
+      "title": "Make missing research questions, participant scope, consent, data, safety, and acceptance evidence explicit, then resolve them only with labeled synthetic fixture answers.",
       "status": "accepted",
       "requirements": [
         "REQ-003",
-        "REQ-004"
+        "REQ-004",
+        "REQ-007"
       ],
       "evaluations": [
         "EVAL-002"
@@ -71,7 +72,9 @@
       ],
       "artifacts": [
         "ART-002",
-        "ART-003"
+        "ART-003",
+        "ART-005",
+        "ART-006"
       ]
     },
     {
@@ -93,6 +96,25 @@
       "artifacts": [
         "ART-004"
       ]
+    },
+    {
+      "id": "CAP-004",
+      "title": "Compile a bounded handoff prompt only after a valid isolated lock.",
+      "status": "accepted",
+      "requirements": [
+        "REQ-005",
+        "REQ-007"
+      ],
+      "evaluations": [
+        "EVAL-004"
+      ],
+      "risks": [
+        "RISK-005"
+      ],
+      "artifacts": [
+        "ART-007",
+        "ART-008"
+      ]
     }
   ],
   "requirements": [
@@ -108,7 +130,7 @@
     },
     {
       "id": "REQ-003",
-      "title": "Research question, decision, final study artifact, participant or observation scope, locations, consent, privacy, data handling, accessibility, field safety, and review ownership gaps must remain open blockers until answered by a user.",
+      "title": "Research question, decision, final study artifact, participant or observation scope, locations, consent, privacy, data handling, accessibility, field safety, and review ownership gaps must remain blockers until answered by the explicitly labeled synthetic benchmark fixture answer set.",
       "status": "accepted"
     },
     {
@@ -125,6 +147,11 @@
       "id": "REQ-006",
       "title": "The case must keep fieldwork, participant recruitment, data collection, analysis, intervention placement, downstream agents, model APIs, runtime execution, and empirical impact claims out of scope.",
       "status": "accepted"
+    },
+    {
+      "id": "REQ-007",
+      "title": "If ni status reports READY or READY_WITH_DEFERRALS after the synthetic fixture answers are applied, ni end and ni run may run only inside the isolated benchmark workspace and ni run must stay within 4000 characters.",
+      "status": "accepted"
     }
   ],
   "decisions": [
@@ -136,11 +163,21 @@
     {
       "id": "DEC-002",
       "title": "Measure the initial vague research-protocol request only; do not resolve blockers in this task.",
-      "status": "accepted"
+      "status": "rejected"
     },
     {
       "id": "DEC-003",
       "title": "Treat any later lock or prompt compilation as out of scope until blocker answers are provided and ni status is rerun.",
+      "status": "rejected"
+    },
+    {
+      "id": "DEC-004",
+      "title": "Apply synthetic benchmark fixture answers to OQ-001 through OQ-005.",
+      "status": "accepted"
+    },
+    {
+      "id": "DEC-005",
+      "title": "Lock and compile only inside the isolated research-protocol benchmark workspace after readiness clears.",
       "status": "accepted"
     }
   ],
@@ -150,52 +187,57 @@
       "title": "A downstream actor could invent the study question, method, locations, or intervention decision criteria.",
       "severity": "high",
       "status": "accepted",
-      "mitigation": "Keep OQ-001 and OQ-002 open blockers until the user accepts the research question, supported decision, final artifact, participant or observation scope, inclusion and exclusion criteria, and locations."
+      "mitigation": "Use only the synthetic benchmark fixture answers for the accepted research question, supported decision, final artifact, participant or observation scope, inclusion and exclusion criteria, and locations. Record that the fixture selects candidate blocks for later design review only and does not choose final intervention locations."
     },
     {
       "id": "RISK-002",
       "title": "Participant privacy, consent, translation, accessibility, or sensitive-data boundaries could be skipped.",
       "severity": "high",
       "status": "accepted",
-      "mitigation": "Keep OQ-003 open as a blocker and require accepted consent, privacy, data handling, translation, accessibility, and sensitive-data boundaries before lock."
+      "mitigation": "Record allowed and prohibited data, non-identifying voluntary comment consent language, segment-level aggregation, 30-day raw note reduction, English and Spanish materials, accessibility expectations, and explicit sensitive-data exclusions before lock."
     },
     {
       "id": "RISK-003",
       "title": "Heat or weather field safety and vulnerable-group safeguards could be under-specified.",
       "severity": "high",
       "status": "accepted",
-      "mitigation": "Keep OQ-004 open as a blocker and require accepted heat or weather stop rules, field-team safety ownership, vulnerable-group safeguards, and escalation path before lock."
+      "mitigation": "Record paired field teams, water, charged phones, public-area-only work, heat/weather stop rules, 30-minute continuous exposure limits, 10-minute rest breaks, maximum 3 outdoor observation hours per field day, vulnerable group safeguards, and emergency escalation path before lock."
     },
     {
       "id": "RISK-004",
       "title": "The benchmark could be misrepresented as fieldwork readiness or intervention decision readiness.",
       "severity": "high",
       "status": "accepted",
-      "mitigation": "State in docs, contract, and case reports that this task measures initial intent readiness only; no fieldwork, participant recruitment, data collection, analysis, intervention placement, or research outcome is validated."
+      "mitigation": "State in docs, contract, evidence files, and case reports that synthetic answers are benchmark fixture data only. No fieldwork, participant recruitment, data collection, analysis, intervention placement, or research outcome is validated."
     },
     {
       "id": "RISK-005",
       "title": "A handoff prompt could be compiled before readiness, making unresolved research intent look actionable.",
       "severity": "high",
       "status": "accepted",
-      "mitigation": "Do not run ni end or ni run while ni status reports BLOCKED; record lock as no, bounded prompt as no, and prompt count as not_measured."
+      "mitigation": "Do not run ni end or ni run while ni status reports BLOCKED. If the resolved fixture reports READY or READY_WITH_DEFERRALS, run ni end and ni run only inside the isolated benchmark workspace and record the evidence without executing downstream work."
     }
   ],
   "evaluations": [
     {
       "id": "EVAL-001",
       "title": "Initial workspace scope review.",
-      "method": "Review docs/plan/** and .ni/contract.json to confirm the case is a research_protocol benchmark with document, workflow, and human_service surfaces and that it records the vague neighborhood cooling study request without inventing blocker answers."
+      "method": "Review docs/plan/** and .ni/contract.json to confirm the case is a research_protocol benchmark with document, workflow, and human_service surfaces and that it labels the resolved answers as synthetic benchmark fixture data, not real research approval."
     },
     {
       "id": "EVAL-002",
-      "title": "Blocker visibility review.",
-      "method": "Run go run ./cmd/ni status --dir examples/benchmark-report/cases/research-protocol/workspace --proof --next-questions and confirm OQ-001 through OQ-005 remain open blockers before any lock or prompt compilation."
+      "title": "Synthetic fixture answer completeness review.",
+      "method": "Run go run ./cmd/ni status --dir examples/benchmark-report/cases/research-protocol/workspace --proof --next-questions and confirm OQ-001 through OQ-005 are resolved only after the synthetic fixture answers are reflected in docs/plan/** and .ni/contract.json."
     },
     {
       "id": "EVAL-003",
       "title": "Non-execution boundary review.",
-      "method": "Confirm the benchmark case records no lockfile, no bounded prompt, no fieldwork, no participant recruitment, no data collection, no analysis, no intervention placement decision, no downstream agent, no model API call, and no empirical outcome claim."
+      "method": "Confirm the benchmark case records no fieldwork, no participant recruitment, no data collection, no analysis, no intervention placement decision, no downstream agent, no model API call, no empirical outcome claim, and no lockfile or bounded prompt unless created only by the allowed isolated CLI commands after readiness cleared."
+    },
+    {
+      "id": "EVAL-004",
+      "title": "Isolated CLI readiness, lock, and prompt proof.",
+      "method": "Run go run ./cmd/ni status --dir examples/benchmark-report/cases/research-protocol/workspace --proof --next-questions; if the CLI reports READY or READY_WITH_DEFERRALS, run go run ./cmd/ni end --dir examples/benchmark-report/cases/research-protocol/workspace and then go run ./cmd/ni run --dir examples/benchmark-report/cases/research-protocol/workspace --max-chars 4000. Record status proof, next questions, lock summary, bounded prompt summary, and prompt character count without executing downstream work."
     }
   ],
   "artifacts": [
@@ -218,38 +260,58 @@
       "id": "ART-004",
       "path": "examples/benchmark-report/cases/research-protocol/05-not-measured.md",
       "kind": "not_measured_boundary"
+    },
+    {
+      "id": "ART-005",
+      "path": "examples/benchmark-report/cases/research-protocol/10-answer-packet.md",
+      "kind": "synthetic_answer_packet"
+    },
+    {
+      "id": "ART-006",
+      "path": "examples/benchmark-report/cases/research-protocol/11-resolved-status-proof.md",
+      "kind": "status_evidence"
+    },
+    {
+      "id": "ART-007",
+      "path": "examples/benchmark-report/cases/research-protocol/13-lock-summary.md",
+      "kind": "lock_evidence"
+    },
+    {
+      "id": "ART-008",
+      "path": "examples/benchmark-report/cases/research-protocol/14-bounded-prompt-summary.md",
+      "kind": "prompt_evidence"
     }
   ],
   "open_questions": [
     {
       "id": "OQ-001",
       "title": "What research question, supported decision, and final study artifact should the neighborhood cooling study produce?",
-      "blocker": true,
-      "status": "open"
+      "blocker": false,
+      "status": "resolved"
     },
     {
       "id": "OQ-002",
       "title": "Which participant or observation scope, inclusion and exclusion criteria, locations, and observation windows are accepted?",
-      "blocker": true,
-      "status": "open"
+      "blocker": false,
+      "status": "resolved"
     },
     {
       "id": "OQ-003",
       "title": "What consent, privacy, data handling, translation, accessibility, and sensitive-data boundaries apply?",
-      "blocker": true,
-      "status": "open"
+      "blocker": false,
+      "status": "resolved"
     },
     {
       "id": "OQ-004",
       "title": "What field-team safety rules, heat or weather stop rules, vulnerable-group safeguards, and escalation path are required?",
-      "blocker": true,
-      "status": "open"
+      "blocker": false,
+      "status": "resolved"
     },
     {
       "id": "OQ-005",
       "title": "Who reviews the protocol, what acceptance evidence is required, and what must be ready before fieldwork can be considered?",
-      "blocker": true,
-      "status": "open"
+      "blocker": false,
+      "status": "resolved"
     }
   ]
 }

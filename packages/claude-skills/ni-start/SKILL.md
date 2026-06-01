@@ -39,6 +39,23 @@ authoritative readiness state.
 Do not create `.ni/plan.lock.json`. Do not edit `.ni/plan.lock.json` manually.
 If a lock hash mismatch exists, stop and report `BLOCKED`.
 
+## Language-Adaptive Questions
+
+Ask user-facing planning questions in the language of the user's latest
+substantive message. If the user explicitly requests a language, use that
+language. If the conversation is mixed, prefer the latest explicit language
+preference.
+
+Preserve IDs, command names, file paths, schema keys, target names, and status
+constants exactly. Do not translate tokens such as `R014`, `OQ-001`,
+`SYNC-014`, `ni status`, `ni end`, `ni run`, `.ni/contract.json`, `READY`,
+`BLOCKED`, or `READY_WITH_DEFERRALS`.
+
+CLI output may remain English. You may explain or summarize CLI proof and
+next-question output in the user's language, but do not alter meaning and do
+not make model-translated text authoritative over the CLI. Do not use
+localization to weaken readiness gates.
+
 ## Start Of Turn
 
 1. Locate the project root from the user's workspace context. Do not assume a
@@ -180,6 +197,10 @@ project should change, who it is for, and how it will be delivered.
 
 Implementation has not started. This is still planning.
 ```
+
+If the user's latest substantive message is Korean, use Korean human-facing
+wording for the framing and questions while preserving `ni`, `BLOCKED`, IDs,
+commands, file paths, schema keys, target names, and status constants.
 
 Then ask:
 

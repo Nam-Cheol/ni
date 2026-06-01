@@ -1,25 +1,36 @@
 {
   "schema": "ni.session.v0",
-  "active_planning_focus": "Initial research-protocol benchmark readiness measurement",
-  "last_planning_summary": "The workspace records a vague summer neighborhood cooling study request and intentionally keeps OQ-001 through OQ-005 unresolved for initial BLOCKED readiness proof.",
-  "pending_questions": [
-    "OQ-001",
-    "OQ-002",
-    "OQ-003",
-    "OQ-004",
-    "OQ-005"
+  "active_planning_focus": "Resolved research-protocol benchmark readiness measurement with synthetic fixture answers",
+  "last_planning_summary": "The workspace records synthetic benchmark fixture answers for OQ-001 through OQ-005. The answers are not real research approval, fieldwork authorization, or proof of research quality.",
+  "pending_questions": [],
+  "recent_decisions": [
+    "DEC-004",
+    "DEC-005"
   ],
-  "recent_decisions": [],
-  "recent_risks": [],
-  "last_readiness_status": "BLOCKED",
-  "last_readiness_blockers": [
-    "OQ-001",
-    "OQ-002",
-    "OQ-003",
-    "OQ-004",
-    "OQ-005"
+  "recent_risks": [
+    "RISK-001",
+    "RISK-002",
+    "RISK-003",
+    "RISK-004",
+    "RISK-005"
   ],
-  "last_updated_docs": [],
+  "last_readiness_status": "READY",
+  "last_readiness_blockers": [],
+  "last_updated_docs": [
+    "docs/plan/00_project_brief.md",
+    "docs/plan/01_actors_outcomes.md",
+    "docs/plan/02_capabilities.md",
+    "docs/plan/03_interaction_contract.md",
+    "docs/plan/04_domain_state.md",
+    "docs/plan/05_constraints.md",
+    "docs/plan/06_risks_security.md",
+    "docs/plan/07_evaluation_contract.md",
+    "docs/plan/08_delivery_operation.md",
+    "docs/plan/09_execution_strategy.md",
+    "docs/plan/10_open_questions.md",
+    "docs/plan/11_decision_log.md",
+    ".ni/contract.json"
+  ],
   "authority_order": [
     ".ni/plan.lock.json",
     ".ni/contract.json",

@@ -7,6 +7,14 @@ The questions are an interview aid for `ni-start`. They do not change readiness
 state, do not resolve gaps, and do not use model judgment. The same readiness
 rules that produce `issues[]` produce `next_questions[]` when requested.
 
+`ni-start` may translate or summarize these deterministic questions into the
+user's current language, but it must preserve the referenced IDs, locations,
+answer shapes, command names, schema keys, target names, and status constants
+exactly. Do not translate tokens such as `R014`, `OQ-001`, `SYNC-014`,
+`ni status`, `.ni/contract.json`, `READY`, `BLOCKED`, or
+`READY_WITH_DEFERRALS`. See
+[`89_LANGUAGE_ADAPTIVE_AUTHORING.md`](89_LANGUAGE_ADAPTIVE_AUTHORING.md).
+
 ## Command
 
 ```bash
@@ -149,6 +157,10 @@ started. Then it should ask:
 2. Who are the primary actors, and what outcome should each one get?
 3. What is the likely delivery surface: CLI, web app, conversation, document,
    workflow, research protocol, human service, or something else?
+
+If the user's latest substantive message is Korean, ask the same three
+human-facing questions in Korean while preserving tokens such as `ni`,
+`BLOCKED`, `CLI`, `docs/plan/**`, and `.ni/contract.json`.
 
 The user's answer should be recorded into both `docs/plan/**` and
 `.ni/contract.json`: purpose in the project brief and `project.purpose`, actors

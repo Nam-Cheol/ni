@@ -5,6 +5,14 @@ using the Intent Lock Protocol before they install or run the `ni` CLI. It can
 help a model conversation create initial `docs/plan/**` notes and a draft
 `.ni/contract.json`, but it cannot finish a trusted lock on its own.
 
+User-facing no-terminal questions should follow the language of the user's
+latest substantive message. If the user speaks Korean, ask Korean planning
+questions; if the user speaks English, ask English planning questions; if the
+user requests a language, use it. Preserve IDs, commands, file paths, schema
+keys, target names, and status constants exactly. A model may explain English
+CLI proof in the user's language, but the proof remains authoritative only as
+CLI output.
+
 The rule is simple: no-terminal users can start planning, learn the protocol,
 and prepare a draft for review. Trusted readiness, lock creation, hash
 verification, and prompt compilation require CLI-validated `ni`.

@@ -2,23 +2,30 @@
 
 ## Actors
 
-- Planning owner: wants to know whether the vague neighborhood cooling study
-  request is ready to hand off.
+- City Resilience Program planning owner: owns the supported decision to select
+  a short list of candidate blocks for later design review.
+- Privacy/safety reviewer: jointly approves whether the protocol memo is ready
+  to move forward as a planning artifact.
+- Community engagement lead: reviews consent language, non-identifying comment
+  boundaries, translation needs, and accessibility expectations.
 - Research lead or field-study planner: would later need accepted research
   questions, method, participant or observation boundaries, safety rules, and
   review evidence.
-- Community or resident stakeholders: may later be affected by study design,
-  participant contact, accessibility choices, and intervention decisions, but
-  their scope is not accepted yet.
-- Field team: may later need safety rules, stop conditions, scripts, and
-  escalation paths, but fieldwork is not authorized in this benchmark task.
+- Optional adult community members: may voluntarily provide non-identifying
+  feedback under the consent and privacy boundary. Minors and targeted
+  vulnerable-group recruitment are excluded.
+- Field team: may later follow public-area observation, paired-work,
+  hydration, rest, weather stop, and escalation rules, but this benchmark does
+  not authorize real fieldwork.
 - CLI: validates readiness and lock state.
 
 ## Outcomes
 
-- The initial benchmark should make unresolved research intent visible before
-  any fieldwork or downstream work starts.
-- The research lead should not receive a handoff prompt until OQ-001 through
-  OQ-005 are answered or explicitly deferred by the user.
+- The resolved benchmark should show that ni can turn explicit answers into
+  auditable readiness proof without claiming research quality or fieldwork
+  authorization.
+- The research lead receives, at most, a bounded prompt seed from a valid lock
+  inside the isolated benchmark workspace.
 - The case should demonstrate that ni can block a non-software research
-  protocol request at the planning boundary.
+  protocol request at the planning boundary and then clear the blockers only
+  after the required intent is recorded.

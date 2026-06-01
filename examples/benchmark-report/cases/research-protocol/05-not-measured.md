@@ -1,12 +1,15 @@
 # What was not measured
 
-This initial research-protocol benchmark case did not measure:
+This resolved research-protocol benchmark case still did not measure:
 
 - fieldwork;
 - participant recruitment;
 - data collection;
 - analysis;
 - intervention placement decisions;
+- research protocol quality;
+- fieldwork readiness in the real world;
+- research approval or ethics approval;
 - downstream agent performance;
 - research outcome validity;
 - adoption;
@@ -21,9 +24,11 @@ downstream agent was run. No research outcome was validated. No adoption, cost,
 latency, rework, or statistical effect was measured.
 
 No model API was called. No generated prompt was executed. No shell adapter,
-queue, telemetry path, runtime harness, release automation, or implementation
-work was added.
+queue, telemetry path, runtime harness, release automation, issue publishing,
+PR automation, or implementation work was added.
 
-Because `ni status --proof --next-questions` reported `BLOCKED`, no lock was
-created, no bounded prompt was compiled, and prompt count remains
-`not_measured`.
+`ni status --proof --next-questions` reported `READY` only after synthetic
+benchmark fixture answers were applied to the isolated workspace. `ni end`
+created a lock inside that workspace, and `ni run --max-chars 4000` compiled a
+bounded prompt seed. Those artifacts prove bounded intent handoff only; they
+do not prove real research approval or real fieldwork readiness.
