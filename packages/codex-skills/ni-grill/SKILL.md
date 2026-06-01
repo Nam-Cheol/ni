@@ -67,26 +67,50 @@ Pressure-test these areas:
 
 ## Finding Format
 
-Ask at most 5 grill questions per turn. Prioritize lock blockers, high-risk
-ambiguity, acceptance evidence gaps, privacy/security/safety risks, scope
-drift, and target handoff ambiguity.
+Use severity labels: `Critical`, `High`, `Medium`, `Low`, and `Note`.
+Severity is advisory planning pressure, not CLI readiness. Skills are UX; CLI
+is authority.
+
+Show at most 5 findings by default and ask at most 5 user-facing questions in
+one turn. If `Critical` or `High` findings exist, show at most 3 of them first.
+Prioritize deterministic CLI blockers, then `Critical`, `High`, acceptance
+evidence gaps, privacy/security/safety risks, claim-boundary risks,
+non-goal/scope drift risks, handoff ambiguity, `Medium`/`Low` editorial issues,
+and `Note` observations. If more findings exist, summarize:
+
+```text
+N additional lower-priority findings were not shown.
+```
+
+When `ni status` is `BLOCKED`, prioritize deterministic blockers and avoid a
+long secondary critique. When `ni status` is `READY` or
+`READY_WITH_DEFERRALS`, focus on claim quality, public handoff, risk clarity,
+and overclaim prevention.
 
 For each finding, use this shape:
 
 ```text
-GRILL-001
-- Affected planning ID or path: CAP-001 / docs/plan/02_capabilities.md
-- Concern: ...
-- Why it matters: ...
-- Question for the user: ...
-- Expected answer shape: ...
-- Blocks ni-end: yes/no
+Grill findings:
+1. GRILL-001 — <severity> — <category>
+   Affected: <file path or planning ID>
+   Concern: <specific concern>
+   Why it matters: <why downstream handoff or lock quality could suffer>
+   Question: <user-facing question>
+   Answer shape: <expected answer form>
+   Suggested action: <resolve / defer / mark non-goal / clarify / keep as note>
+   Blocks ni-end: <CLI decides / likely yes / maybe / no>
 ```
 
+Use `Blocks ni-end: CLI decides` for deterministic readiness findings, `likely
+yes` only for severe planning-quality issues that should be resolved before
+lock, `maybe` for user-confirmable tradeoffs, and `no` for clarity/editorial
+findings.
+
 Ask user-facing grill questions in the user's latest substantive language.
-Preserve IDs, commands, paths, status constants, target names, and schema keys:
-`R014`, `OQ-001`, `SYNC-014`, `GRILL-001`, `ni status`,
-`.ni/contract.json`, `READY`, and `BLOCKED`.
+Preserve IDs, commands, paths, status constants, target names, schema keys, and
+severity labels: `R014`, `OQ-001`, `SYNC-014`, `GRILL-001`, `ni status`,
+`.ni/contract.json`, `READY`, `READY_WITH_DEFERRALS`, `BLOCKED`, `Critical`,
+`High`, `Medium`, `Low`, and `Note`.
 
 ## Updating After Answers
 

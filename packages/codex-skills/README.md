@@ -31,6 +31,12 @@ lock creation, lock hash verification, and prompt compilation.
 - `ni-grill` challenges planning quality before lock. It does not execute work.
 - If `ni status` is `BLOCKED`, `ni-grill` should use deterministic blockers
   before inventing new critique.
+- `ni-grill` must use `Critical`, `High`, `Medium`, `Low`, and `Note`
+  severity labels, show at most 5 findings by default, and show at most 3
+  `Critical`/`High` findings first when they exist.
+- `ni-grill` must ask user-facing questions in the user's latest substantive
+  language while preserving IDs, commands, paths, status constants, and
+  severity labels.
 - `ni-grill` never approves lock by model judgment.
 - Run or request `ni end` before any lock claim.
 - Run or request `ni run` before any compiled handoff prompt claim.

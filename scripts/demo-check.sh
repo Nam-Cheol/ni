@@ -133,8 +133,40 @@ check_ni_grill_docs() {
   require_file examples/ni-grill/03-user-answers.md
   require_file examples/ni-grill/04-docs-contract-delta.md
   require_file examples/ni-grill/05-status-after-grill.md
+  require_file examples/ni-grill/06-internal-dashboard-grill.md
+  require_file examples/ni-grill/06-internal-dashboard-grill.ko.md
+  require_file examples/ni-grill/07-research-protocol-grill.md
+  require_file examples/ni-grill/07-research-protocol-grill.ko.md
+  require_file examples/ni-grill/08-grill-lessons.md
+  require_file examples/ni-grill/08-grill-lessons.ko.md
+  require_file docs/92_NI_GRILL_OUTPUT_BUDGET.md
+  require_file docs/92_NI_GRILL_OUTPUT_BUDGET.ko.md
+  require_output "Skills are UX; CLI is authority" "docs/92_NI_GRILL_OUTPUT_BUDGET.md"
+  require_output "Critical" "docs/92_NI_GRILL_OUTPUT_BUDGET.md"
+  require_output "High" "docs/92_NI_GRILL_OUTPUT_BUDGET.md"
+  require_output "at most 5 findings" "docs/92_NI_GRILL_OUTPUT_BUDGET.md"
+  require_output "at most 3" "docs/92_NI_GRILL_OUTPUT_BUDGET.md"
+  require_output "Blocks ni-end: <CLI decides / likely yes / maybe / no>" "docs/92_NI_GRILL_OUTPUT_BUDGET.md"
   require_output "Expected \`ni status\`: not claimed" "examples/ni-grill/README.md"
   require_output "GRILL-001" "examples/ni-grill/02-grill-questions.md"
+  require_output "GRILL-001 — Critical" "examples/ni-grill/02-grill-questions.md"
+  require_output "Suggested action:" "examples/ni-grill/02-grill-questions.md"
+  require_output "Grill findings" "examples/ni-grill/06-internal-dashboard-grill.md"
+  require_output "GRILL-001 — Critical" "examples/ni-grill/06-internal-dashboard-grill.md"
+  require_output "GRILL-003 — High" "examples/ni-grill/06-internal-dashboard-grill.md"
+  require_output "Suggested action:" "examples/ni-grill/06-internal-dashboard-grill.md"
+  require_output "not_measured" "examples/ni-grill/06-internal-dashboard-grill.md"
+  require_output "do not execute generated prompts" "examples/ni-grill/06-internal-dashboard-grill.md"
+  require_output "Grill findings" "examples/ni-grill/07-research-protocol-grill.md"
+  require_output "GRILL-001 — Critical" "examples/ni-grill/07-research-protocol-grill.md"
+  require_output "GRILL-003 — High" "examples/ni-grill/07-research-protocol-grill.md"
+  require_output "Suggested action:" "examples/ni-grill/07-research-protocol-grill.md"
+  require_output "real research approval" "examples/ni-grill/07-research-protocol-grill.md"
+  require_output "do not execute generated prompts" "examples/ni-grill/07-research-protocol-grill.md"
+  require_output "\`READY\` means deterministic readiness gates passed" "examples/ni-grill/08-grill-lessons.md"
+  require_output "at most 5 findings" "examples/ni-grill/08-grill-lessons.md"
+  require_output "must not create new empirical claims" "examples/ni-grill/08-grill-lessons.md"
+  require_output "at most 5 findings" "examples/ni-grill/README.md"
   require_output "Skills are UX; CLI is authority" "examples/ni-grill/README.md"
   require_output "does not execute work" "examples/ni-grill/README.md"
 }

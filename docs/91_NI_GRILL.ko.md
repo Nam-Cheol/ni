@@ -43,6 +43,9 @@ docs/contract drift, risky handoff ambiguity, unsupported claims를 찾을 수
 - risks, non-goals, target handoff가 덜 구체적일 때;
 - benchmark, proof, readiness claims에 `measured` 또는 `not_measured` label이
   필요할 때.
+- benchmark case가 이미 `READY`에 도달했지만 public handoff 전에 evidence
+  tables, bounded prompt summaries, `not_measured` sections를 pressure-test해야
+  할 때.
 
 First-run brainstorming substitute로 쓰지 않는다. First-run blockers 또는 sync
 diagnostics가 있으면 deterministic CLI questions를 먼저 묻는다.
@@ -92,30 +95,77 @@ content에 extra pressure questions를 추가한다.
 - claims: benchmark 또는 proof claims가 supported이고 measured 또는
   not_measured로 label되어 있는지.
 
+## Benchmark Use
+
+`ni-grill`은 checked-in benchmark case에도 사용할 수 있다. 먼저 isolated benchmark
+workspace에 대해 `ni status --dir <case>/workspace --proof --next-questions`를
+실행한다.
+
+CLI가 `READY`를 보고하면, grill은 strict하게 보이려고 blocker를 만들어내면 안
+된다. Findings는 claim boundaries, acceptance evidence, risk and non-goal clarity,
+prompt boundary review, `not_measured` sections의 visibility에 대한 pre-handoff
+hardening questions로 frame해야 한다.
+
+Benchmark evidence에서 `ni-grill`은 reader가 artifact readiness를 product
+readiness, downstream-agent success, real research approval, fieldwork
+authorization, research quality, empirical effect와 혼동할 수 있는지 challenge할 수
+있다. 하지만 new empirical claims를 만들거나, existing boundaries를 약화하거나,
+generated prompts를 실행하거나, skill을 CLI보다 authoritative하게 만들어서는 안
+된다.
+
+## Severity And Output Budget
+
+`ni-grill`은 advisory severity labels인 `Critical`, `High`, `Medium`, `Low`,
+`Note`를 사용한다. Severity는 planning pressure이며 CLI readiness가 아니다. CLI만
+`BLOCKED`, `READY_WITH_DEFERRALS`, `READY`, lock creation의 authority다.
+
+기본적으로 grill turn은 최대 5 findings를 보여주고, 5 questions를 넘게 묻지
+않아야 한다. `Critical` 또는 `High` findings가 있으면 최대 3개까지만 먼저
+보여준다. 더 많은 findings가 있으면 전부 나열하지 않고 요약한다:
+
+```text
+N additional lower-priority findings were not shown.
+```
+
+`ni status`가 `BLOCKED`이면 deterministic blockers를 먼저 다루고 advisory
+critique는 짧게 유지한다. `ni status`가 `READY` 또는
+`READY_WITH_DEFERRALS`이면 claim quality, public handoff, risk clarity,
+overclaim prevention에 집중한다.
+
+전체 severity model, prioritization rules, examples는
+[`92_NI_GRILL_OUTPUT_BUDGET.md`](92_NI_GRILL_OUTPUT_BUDGET.md)를 본다.
+
 ## Finding Shape
 
 각 grill finding은 concrete하고 answerable해야 한다:
 
 ```text
-GRILL-001
-- Affected planning ID or path: CAP-001 / docs/plan/02_capabilities.md
-- Concern: Capability가 "usable report"라고 하지만 누가 accept하는지 정의하지 않는다.
-- Why it matters: downstream work가 wrong reviewer에 맞춰질 수 있다.
-- Question for the user: CAP-001은 누가 approve해야 하며 어떤 evidence가 completion proof인가?
-- Expected answer shape: reviewer role plus test, review checklist, demo condition, user approval, protocol check, or manual inspection
-- Blocks ni-end: yes
+Grill findings:
+1. GRILL-001 — High — acceptance evidence
+   Affected: CAP-001 / docs/plan/02_capabilities.md
+   Concern: Capability가 "usable report"라고 하지만 누가 accept하는지 정의하지
+   않는다.
+   Why it matters: downstream work가 wrong reviewer에 맞춰질 수 있다.
+   Question: CAP-001은 누가 approve해야 하며 어떤 evidence가 completion proof인가?
+   Answer shape: reviewer role plus test, review checklist, demo condition,
+   user approval, protocol check, or manual inspection
+   Suggested action: clarify
+   Blocks ni-end: maybe
 ```
 
-한 turn에서 grill questions는 최대 5개만 묻는다. Issue가 더 많으면 lock
-blockers, high-risk ambiguity, acceptance evidence gaps,
-privacy/security/safety risks, scope drift, target handoff ambiguity를 우선한다.
+Finding이 deterministic readiness와 대응하면 `Blocks ni-end: CLI decides`를
+사용한다. Lock 전에 해결해야 할 severe planning-quality issues에만
+`Blocks ni-end: likely yes`를 사용한다. User-confirmable tradeoffs에는
+`Blocks ni-end: maybe`를 사용한다. Clarity/editorial findings에는
+`Blocks ni-end: no`를 사용한다.
 
 ## Language Behavior
 
 User-facing grill questions는 사용자의 latest substantive message 언어로 묻는다.
 단, `R014`, `OQ-001`, `SYNC-014`, `GRILL-001`, `ni status`,
-`.ni/contract.json`, `READY`, `BLOCKED` 같은 IDs, commands, paths, status
-constants, target names, schema keys는 그대로 preserve한다.
+`.ni/contract.json`, `READY`, `READY_WITH_DEFERRALS`, `BLOCKED`, `Critical`,
+`High`, `Medium`, `Low`, `Note` 같은 IDs, commands, paths, status constants,
+target names, schema keys, severity labels는 그대로 preserve한다.
 
 CLI output은 English여도 된다. Model은 의미를 바꾸지 않는 선에서 사용자의
 언어로 설명할 수 있다.

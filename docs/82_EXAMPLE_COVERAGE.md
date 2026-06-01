@@ -30,7 +30,7 @@ bash scripts/quality.sh
 | `examples/conversation-authoring/` | Sustained model-user authoring updates docs, contract, and session while CLI proof catches stale sync. | `conversation_product` | `conversation`, `document` | `BLOCKED` | Runs status, checks `R012`, and compiles from the historical lock only. | No, blocked fixture with historical lock material. | Yes |
 | `examples/namba-ai-upgrade/` | ni can plan upstream of an existing harness/workflow project without becoming that harness. | `software` | `cli`, `document`, `workflow` | `BLOCKED` | Runs status, checks `R012`, and compiles Codex prompt from the historical lock only. | No, blocked fixture with historical lock material. | Yes |
 | `examples/ni-start-dogfood/` | First-run card, grouped next questions, docs/contract/session update, and re-status loop. | `conversation_product` | `conversation`, `document` | `READY_WITH_DEFERRALS` | Runs status, grouped proof, and compiles `human-team` prompt from the existing lock. | No, locked workspace fixture. | Yes |
-| `examples/ni-grill/` | Pre-lock planning challenge UX: deterministic blockers first, then focused `GRILL-*` questions against accepted or nearly accepted content. | draft `conversation_product` | draft `conversation`, `document` | Not claimed | Verifies required docs and non-execution boundary wording only. | Yes, transcript fixture. | Yes |
+| `examples/ni-grill/` | Pre-lock planning challenge UX: deterministic blockers first, then severity-labeled, budgeted `GRILL-*` questions against accepted or nearly accepted content. Also dogfoods benchmark grills after isolated `READY` proof to test claim boundaries and `not_measured` visibility without making new empirical claims. | draft `conversation_product`; benchmark evidence review | draft `conversation`, `document`; benchmark workspaces remain isolated | Not claimed | Verifies required docs, benchmark grill files, severity-labeled `GRILL-*` findings, lessons, and non-execution boundary wording only. | Yes, transcript fixture plus benchmark review transcripts. | Yes |
 | `examples/benchmark-report/` | Benchmark/case-study reporting method with `not_measured` boundaries, plus measured dashboard and research-protocol cases. The dashboard case packages a blocked-to-ready artifact-readiness transition; the research-protocol case preserves initial `BLOCKED` readiness, then applies synthetic fixture answers and reaches isolated-workspace `READY` with lock and bounded prompt proof. | Dashboard artifact case: `document_product`; research case: `research_protocol` | Dashboard: `document`; research: `document`, `workflow`, `human_service` | Dashboard case: `READY` for benchmark artifact readiness only; research case: `READY` for synthetic benchmark fixture readiness only | Verifies required docs, dashboard historical blocked/resolved proof, research initial blocked proof, research resolved proof, blocker/next-question evidence, blocker analysis, resolution path, answer packets, lock/prompt summaries, before/after evidence, lessons, and remaining `not_measured` boundaries for product/runtime/research claims. | Partial: report template is docs-only; dashboard case has a locked ni workspace; research case now has a locked isolated benchmark workspace after synthetic fixture answers. | Yes |
 | `examples/no-terminal-assisted/` | Assisted planning can draft docs and contract before local CLI validation, show a model-workspace start flow, and hand off to later CLI proof without deterministic readiness claims. | draft `workflow` | draft `document` | Not claimed | Verifies required files, docs-only status, and boundary wording only. | Yes, assisted draft. | Yes |
 
@@ -55,6 +55,8 @@ The grouped `ni status --proof --next-questions` UX is shown directly in:
 - `examples/ni-start-dogfood/README.md`
 - `examples/ni-grill/02-grill-questions.md`
 - `examples/ni-grill/05-status-after-grill.md`
+- `examples/ni-grill/06-internal-dashboard-grill.md`
+- `examples/ni-grill/07-research-protocol-grill.md`
 
 The expected model behavior is to preserve group labels, ask the
 highest-priority group first, use CLI answer shapes, update `docs/plan/**`,
@@ -81,3 +83,8 @@ The no-terminal assisted example remains docs-only by design. It demonstrates
 drafting, team handoff, and graduation to full `ni`, but it does not run
 `ni status`, `ni end`, or `ni run` because no-terminal mode is not a trusted
 CLI workspace.
+
+The ni-grill benchmark transcripts are also non-execution examples. They record
+isolated `ni status` proof and challenge benchmark claim boundaries, but they
+do not run generated prompts, call model APIs, perform fieldwork, implement
+products, or create empirical claims.

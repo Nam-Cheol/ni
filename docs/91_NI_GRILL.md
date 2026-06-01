@@ -40,6 +40,9 @@ Good moments:
 - risks, non-goals, or target handoff are under-specified;
 - benchmark, proof, or readiness claims need labels such as `measured` or
   `not_measured`.
+- a benchmark case has already reached `READY`, but its evidence tables,
+  bounded prompt summaries, or `not_measured` sections need pressure-testing
+  before public handoff.
 
 Avoid using it as a first-run brainstorming substitute. If first-run blockers
 or sync diagnostics exist, ask the deterministic CLI questions first.
@@ -89,30 +92,78 @@ extra pressure questions against accepted or nearly accepted planning content.
 - claims: benchmark or proof claims are supported and labeled measured or
   not_measured.
 
+## Benchmark Use
+
+`ni-grill` can be used on checked-in benchmark cases after running
+`ni status --dir <case>/workspace --proof --next-questions` against the
+isolated benchmark workspace.
+
+When the CLI reports `READY`, the grill should not invent blockers merely to
+sound strict. It should frame findings as pre-handoff hardening questions about
+claim boundaries, acceptance evidence, risk and non-goal clarity, prompt
+boundary review, and whether `not_measured` sections are visible enough.
+
+For benchmark evidence, `ni-grill` may challenge whether a reader could confuse
+artifact readiness with product readiness, downstream-agent success, real
+research approval, fieldwork authorization, research quality, or empirical
+effect. It must not create new empirical claims, weaken existing boundaries,
+execute generated prompts, or make the skill authoritative over the CLI.
+
+## Severity And Output Budget
+
+`ni-grill` uses advisory severity labels: `Critical`, `High`, `Medium`, `Low`,
+and `Note`. Severity is planning pressure, not CLI readiness. The CLI remains
+the only authority for `BLOCKED`, `READY_WITH_DEFERRALS`, `READY`, and lock
+creation.
+
+By default, a grill turn should show at most 5 findings and ask no more than 5
+questions. If `Critical` or `High` findings exist, show at most 3 of them
+first. If more findings exist, summarize them instead of listing them all:
+
+```text
+N additional lower-priority findings were not shown.
+```
+
+When `ni status` is `BLOCKED`, deterministic blockers come first and advisory
+critique stays short. When `ni status` is `READY` or
+`READY_WITH_DEFERRALS`, focus on claim quality, public handoff, risk clarity,
+and overclaim prevention.
+
+See [`92_NI_GRILL_OUTPUT_BUDGET.md`](92_NI_GRILL_OUTPUT_BUDGET.md) for the full
+severity model, prioritization rules, and examples.
+
 ## Finding Shape
 
 Each grill finding must be concrete and answerable:
 
 ```text
-GRILL-001
-- Affected planning ID or path: CAP-001 / docs/plan/02_capabilities.md
-- Concern: The capability says "usable report" but does not define who accepts it.
-- Why it matters: downstream work may optimize for the wrong reviewer.
-- Question for the user: Who must approve CAP-001, and what evidence counts?
-- Expected answer shape: reviewer role plus test, review checklist, demo condition, user approval, protocol check, or manual inspection
-- Blocks ni-end: yes
+Grill findings:
+1. GRILL-001 — High — acceptance evidence
+   Affected: CAP-001 / docs/plan/02_capabilities.md
+   Concern: The capability says "usable report" but does not define who
+   accepts it.
+   Why it matters: downstream work may optimize for the wrong reviewer.
+   Question: Who must approve CAP-001, and what evidence counts?
+   Answer shape: reviewer role plus test, review checklist, demo condition,
+   user approval, protocol check, or manual inspection
+   Suggested action: clarify
+   Blocks ni-end: maybe
 ```
 
-Ask at most five grill questions in one turn. If more issues exist, prioritize
-lock blockers, high-risk ambiguity, acceptance evidence gaps,
-privacy/security/safety risks, scope drift, and target handoff ambiguity.
+Use `Blocks ni-end: CLI decides` when the finding corresponds to deterministic
+readiness. Use `Blocks ni-end: likely yes` only for severe planning-quality
+issues that should be resolved before lock. Use `Blocks ni-end: maybe` for
+user-confirmable tradeoffs. Use `Blocks ni-end: no` for clarity/editorial
+findings.
 
 ## Language Behavior
 
 Ask user-facing grill questions in the language of the user's latest
 substantive message. Preserve IDs, commands, paths, status constants, target
 names, and schema keys exactly, including `R014`, `OQ-001`, `SYNC-014`,
-`GRILL-001`, `ni status`, `.ni/contract.json`, `READY`, and `BLOCKED`.
+`GRILL-001`, `ni status`, `.ni/contract.json`, `READY`,
+`READY_WITH_DEFERRALS`, `BLOCKED`, `Critical`, `High`, `Medium`, `Low`, and
+`Note`.
 
 CLI output may remain English. A model may explain it in the user's language
 without changing its meaning.
