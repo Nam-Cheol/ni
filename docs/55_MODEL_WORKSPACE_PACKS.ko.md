@@ -241,6 +241,8 @@ Lock hash mismatch가 있으면 모든 pack은 stop하고 `BLOCKED`를 report해
 - Future package installer work는 real implementation과 validation path가 있기
   전까지 planned로 남아야 한다.
 
-Current verification command, install paths, status language는
+Broad Experimental status와 not_verified host/provider boundaries는
+[Model Workspace Status](99_MODEL_WORKSPACE_STATUS.ko.md)를 참고하고, 현재
+verification commands와 install-path evidence는
 [Model Pack Install Verification](75_MODEL_PACK_INSTALL_VERIFICATION.ko.md)를
 참고한다.

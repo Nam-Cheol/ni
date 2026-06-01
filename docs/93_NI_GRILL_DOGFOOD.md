@@ -15,7 +15,7 @@
 | GRILL-002 | High | distribution status | `docs/80_HOMEBREW_DECISION.md`; CAP-020 / DEC-016 | clarify | maybe |
 | GRILL-003 | Medium | acceptance evidence | CAP-019 / EVAL-023; `docs/51_POST_RELEASE_ROADMAP.md` | addressed by `docs/95_V0_5_ACCEPTANCE_EVIDENCE.md` | no |
 | GRILL-004 | Low | benchmark claim boundary | `docs/77_BENCHMARK_CASE_STUDY.md`; `docs/97_BENCHMARK_CLAIM_BOUNDARIES.md`; `examples/benchmark-report/**` | addressed by `docs/97_BENCHMARK_CLAIM_BOUNDARIES.md` | no |
-| GRILL-005 | Note | model workspace status | `docs/55_MODEL_WORKSPACE_PACKS.md`; `docs/75_MODEL_PACK_INSTALL_VERIFICATION.md`; `packages/*-skills/**` | keep as note | no |
+| GRILL-005 | Note | model workspace status | `docs/55_MODEL_WORKSPACE_PACKS.md`; `docs/75_MODEL_PACK_INSTALL_VERIFICATION.md`; `docs/99_MODEL_WORKSPACE_STATUS.md`; `packages/*-skills/**` | addressed by `docs/99_MODEL_WORKSPACE_STATUS.md`; host verification remains future work | no |
 
 ## Full findings
 
@@ -58,7 +58,7 @@ Grill findings:
    Why it matters: a reader may quote a `READY` transition without the nearby `not_measured` limits, even though those limits are present elsewhere.
    Question: Should future benchmark summaries keep the `not_measured` boundary next to every `READY` table or transition row?
    Answer shape: yes/no plus a compact summary rule for future benchmark pages
-   Suggested action: keep as note
+   Suggested action: addressed by `docs/99_MODEL_WORKSPACE_STATUS.md`; keep host-level verification as future work
    Blocks ni-end: no
 
    Resolution note: addressed by
@@ -70,9 +70,9 @@ Grill findings:
 
 5. GRILL-005 — Note — model workspace status
    Affected: `docs/55_MODEL_WORKSPACE_PACKS.md`; `docs/75_MODEL_PACK_INSTALL_VERIFICATION.md`; `packages/claude-skills/**`; `packages/codex-skills/**`
-   Concern: Model workspace pack statuses are currently factual: source and zip paths are available where verified, global host discovery remains unverified, no-terminal is assisted, and the skills repeatedly say "Skills are UX; CLI is authority."
+   Concern: Model workspace pack statuses are currently factual: repo-local source files, package roots, metadata checks, and zip packaging are verified repository evidence; broad model workspace status remains Experimental; global host discovery remains unverified; no-terminal is assisted; and the skills repeatedly say "Skills are UX; CLI is authority."
    Why it matters: preserving this wording prevents model packs from being mistaken for CLI authority or execution adapters.
-   Question: Should future model-pack edits preserve the current status split: Available source/zip paths, Experimental broad product path, Unverified global host discovery, and CLI authority?
+   Question: Should future model-pack edits preserve the current status split: verified repository evidence, Experimental broad product path, not_verified global host discovery/provider behavior, and CLI authority?
    Answer shape: yes/no, or a narrower status vocabulary if product language changes later
    Suggested action: keep as note
    Blocks ni-end: no
@@ -87,7 +87,10 @@ GRILL-001 and GRILL-002 are addressed by the Task 172 roadmap and distribution
 documentation alignment. GRILL-003 is addressed by
 `docs/95_V0_5_ACCEPTANCE_EVIDENCE.md` as an evidence-criteria clarification.
 GRILL-004 is addressed by `docs/97_BENCHMARK_CLAIM_BOUNDARIES.md`, and
-GRILL-005 remains a model workspace status preservation note.
+GRILL-005 is addressed by `docs/99_MODEL_WORKSPACE_STATUS.md` as a status
+preservation boundary. Actual host-level install and provider behavior
+verification remains future work, and model workspace packs remain
+Experimental as a broad product path.
 
 ## What ni-grill did not do
 

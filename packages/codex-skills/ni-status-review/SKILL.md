@@ -13,6 +13,8 @@ readiness gate.
 
 ## Authority Boundary
 
+Skills are UX; CLI is authority.
+
 `ni status` is the authority for `BLOCKED`, `READY_WITH_DEFERRALS`, and
 `READY`.
 

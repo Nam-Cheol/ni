@@ -30,7 +30,7 @@ execution service, or multi-agent execution layer.
 | Local binary | Available | Built from this checkout; local install path. |
 | Release binary | Available | Verified v0.4.0 assets. |
 | Curl installer | Available | Verified against v0.4.0 release assets. |
-| Model workspace packs | Experimental | UX layer; CLI remains authority; global host install is not overclaimed. |
+| Model workspace packs | Experimental | UX layer; CLI remains authority; host-level/global install and provider behavior remain unverified unless documented. |
 | No-terminal method | Experimental / assisted | Drafting only; deterministic validation requires CLI proof from a trusted runner. |
 | Homebrew | Planned / v0.5 candidate | Deferred, not guaranteed; not Available until a tap/formula exists and `brew install`, `ni --help`, and `ni version` are tested. |
 | Runtime execution, shell adapters, Codex exec, queues, PR automation | Not included | Not part of `ni-kernel`; future downstream integration must be separate packages, target exports, or seed formats. |
@@ -127,9 +127,9 @@ path.
 
 ### 6. Model workspace mode
 
-Model workspace mode is experimental today in repo-local form. The repository
-contains model-facing skill material for planning, locking, and prompt
-compilation, but the CLI remains the authority.
+Model workspace mode is experimental today. The repository contains
+model-facing skill material for planning, locking, and prompt compilation, but
+the CLI remains the authority.
 
 The intended user is someone working in Codex, Claude, or a similar model
 workspace. The model helps author `docs/plan/**` and `.ni/contract.json`, then
@@ -143,8 +143,13 @@ ni run
 
 or source equivalents as the deterministic gates.
 
-Portable skill packs are planned distribution work. They should package UX and
-instructions, not bypass readiness, lock, or hash verification.
+Repo-local skill files, package source folders, zip packaging scripts, and
+metadata checks are verified repository evidence. Host-level/global install,
+provider runtime behavior, and cross-machine installation remain unverified
+unless a host-specific verification document records otherwise. Portable skill
+packs package UX and instructions; they must not bypass readiness, lock, or hash
+verification. See [Model Workspace Status](99_MODEL_WORKSPACE_STATUS.md) for
+the status vocabulary.
 
 ### 7. No-terminal mode
 
@@ -178,6 +183,10 @@ planning conversation -> docs contract -> readiness gate -> lockfile -> prompt
   experimental until a downloadable model pack and proof-oriented workflow
   exist; it must not be described as deterministic validation without CLI
   proof.
+- Model workspace packs must remain Experimental as a broad product path until
+  host-level install and usage verification exists for a specific host path.
+  Do not claim global Codex or Claude install, provider behavior, or
+  cross-machine compatibility without recorded evidence.
 
 ## Boundary Rules
 

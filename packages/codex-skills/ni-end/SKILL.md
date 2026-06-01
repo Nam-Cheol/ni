@@ -10,6 +10,8 @@ plan, or asks to lock a ready NI plan.
 
 ## Authority boundary
 
+Skills are UX; CLI is authority.
+
 You are not the authority for completion. `ni status` and `ni end` are the authority.
 
 Do not create, edit, or repair `.ni/plan.lock.json` by hand. The CLI is the only lock writer.

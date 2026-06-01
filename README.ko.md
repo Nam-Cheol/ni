@@ -92,7 +92,7 @@ go run ./cmd/ni run --dir ./my-plan --target generic --max-chars 4000
 | Local binary | Available | `make build && ./bin/ni --help` | 이 checkout에서 `./bin/ni` 또는 local install을 원할 때. |
 | Release binary | Available | [v0.4.0 release](https://github.com/Nam-Cheol/ni/releases/tag/v0.4.0) | Go 없이 설치하고 checksum을 직접 검증하고 싶을 때. |
 | Curl installer | Available | `sh install.sh --dry-run --version 0.4.0` | Script를 먼저 inspect한 뒤 작은 shell installer를 쓰고 싶을 때. |
-| Model workspaces | Experimental | [Model Workspace Packs](docs/55_MODEL_WORKSPACE_PACKS.md) | Codex 또는 Claude source/zip skill packs로 docs와 contract records draft를 돕게 하고 싶을 때; global host install은 unverified이고 CLI가 authority입니다. |
+| Model workspaces | Experimental | [Model Workspace Status](docs/99_MODEL_WORKSPACE_STATUS.ko.md) | Supported model workspace 안에서 `ni-start`, `ni-grill`, `ni-end`, `ni-run` guidance를 사용한다. Skills are UX; the CLI is authority. Host-level/global install은 documented되기 전까지 unverified이다. |
 | No-terminal method | Experimental | [터미널 없이 계획하기](docs/no-terminal.ko.md) | Trusted runner가 CLI proof를 만들기 전 docs와 contract assisted drafting을 하고 싶을 때; model judgment는 lock이 아닙니다. |
 | Homebrew | Planned | [Homebrew Decision](docs/80_HOMEBREW_DECISION.ko.md) | Package manager를 선호할 때; implementation은 v0.5로 defer되었고 published 또는 tested tap/formula는 없습니다. |
 
@@ -128,6 +128,7 @@ License: `ni`는 [MIT License](LICENSE)로 배포됩니다.
 
 자세한 내용은 [Install ni](docs/22_INSTALL.md),
 [터미널 없이 계획하기](docs/no-terminal.ko.md),
+[Model Workspace Status](docs/99_MODEL_WORKSPACE_STATUS.ko.md),
 [Model Workspace Packs](docs/55_MODEL_WORKSPACE_PACKS.md),
 [Model Pack Install Verification](docs/75_MODEL_PACK_INSTALL_VERIFICATION.ko.md)를
 참고하세요.

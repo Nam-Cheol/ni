@@ -245,5 +245,7 @@ If a lock hash mismatch exists, every pack must stop and report `BLOCKED`.
 - Future package installer work must stay planned until there is a real
   implementation and validation path.
 
-See [Model Pack Install Verification](75_MODEL_PACK_INSTALL_VERIFICATION.md)
-for the current verification command, install paths, and status language.
+See [Model Workspace Status](99_MODEL_WORKSPACE_STATUS.md) for the broad
+Experimental status and not_verified host/provider boundaries, and
+[Model Pack Install Verification](75_MODEL_PACK_INSTALL_VERIFICATION.md) for
+the current verification commands and install-path evidence.

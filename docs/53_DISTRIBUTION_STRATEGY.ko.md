@@ -29,7 +29,7 @@ execution service, multi-agent execution layer로 바꾸면 안 된다.
 | Local binary | Available | 이 checkout에서 build되는 local install path. |
 | Release binary | Available | Verified v0.4.0 assets. |
 | Curl installer | Available | v0.4.0 release assets에 대해 verified. |
-| Model workspace packs | Experimental | UX layer; CLI remains authority; global host install은 overclaim하지 않는다. |
+| Model workspace packs | Experimental | UX layer; CLI remains authority; host-level/global install과 provider behavior는 documented되기 전까지 unverified이다. |
 | No-terminal method | Experimental / assisted | Drafting only; deterministic validation에는 trusted runner의 CLI proof가 필요하다. |
 | Homebrew | Planned / v0.5 candidate | Deferred이며 guaranteed가 아니다. Tap/formula가 존재하고 `brew install`, `ni --help`, `ni version`이 tested되기 전까지 Available이 아니다. |
 | Runtime execution, shell adapters, Codex exec, queues, PR automation | Not included | `ni-kernel`의 일부가 아니다. Future downstream integration은 separate packages, target exports, seed formats로만 존재해야 한다. |
@@ -124,9 +124,9 @@ Homebrew는 tap/formula가 존재하고 해당 package path에서 `brew install`
 
 ### 6. Model workspace mode
 
-Model workspace mode는 오늘 repo-local form의 experimental path다. Repository에는
-planning, locking, prompt compilation을 위한 model-facing skill material이
-있지만 CLI가 계속 authority다.
+Model workspace mode는 오늘 experimental path다. Repository에는 planning,
+locking, prompt compilation을 위한 model-facing skill material이 있지만 CLI가
+계속 authority다.
 
 대상 user는 Codex, Claude 또는 비슷한 model workspace에서 작업하는 사람이다.
 Model은 `docs/plan/**`과 `.ni/contract.json` authoring을 돕고, 그 뒤 deterministic
@@ -140,8 +140,13 @@ ni run
 
 또는 source equivalents를 사용한다.
 
-Portable skill packs는 planned distribution work다. UX와 instructions를
-packaging해야 하며 readiness, lock, hash verification을 우회하면 안 된다.
+Repo-local skill files, package source folders, zip packaging scripts, metadata
+checks는 verified repository evidence다. Host-level/global install, provider
+runtime behavior, cross-machine installation은 host-specific verification
+document가 따로 기록하지 않는 한 unverified로 남는다. Portable skill packs는 UX와
+instructions를 packaging한다. Readiness, lock, hash verification을 우회하면 안
+된다. Status vocabulary는 [Model Workspace Status](99_MODEL_WORKSPACE_STATUS.ko.md)를
+참고한다.
 
 ### 7. No-terminal mode
 
@@ -173,6 +178,10 @@ planning conversation -> docs contract -> readiness gate -> lockfile -> prompt
 - No-terminal mode는 downloadable model pack과 proof-oriented workflow가 있기
   전까지 assisted 또는 experimental로만 설명할 수 있다. CLI proof 없이
   deterministic validation으로 설명하면 안 된다.
+- Model workspace packs는 specific host path의 host-level install과 usage
+  verification이 생기기 전까지 broad product path로 Experimental이어야 한다.
+  Recorded evidence 없이 global Codex 또는 Claude install, provider behavior,
+  cross-machine compatibility를 claim하지 않는다.
 
 ## Boundary Rules
 

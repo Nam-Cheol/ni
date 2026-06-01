@@ -10,14 +10,23 @@ runtime execution.
 
 ## Current Status
 
-| Pack | Repo-local usage | Manual copy usage | Zip package usage | Dry-run install | Global install claim |
-| --- | --- | --- | --- | --- | --- |
-| Codex skills | Available | Available | Available | Planned | Unverified |
-| Claude skills | Available as repository files | Available | Available | Available with user-provided target | Unverified |
+Overall model workspace pack status: **Experimental** as a product path.
 
-Overall model workspace pack status: **Experimental** as a product path,
-because global host discovery and global install locations are not verified.
-The source packs and zip packaging paths listed above are **Available**.
+Use the more specific status evidence below. Source files, package roots,
+metadata checks, and zip packaging are verified. Host-level/global install,
+provider runtime behavior, and cross-machine installation are not verified by
+this repository unless a later host-specific verification document says so.
+
+| Pack | Repo-local source | Manual copy workflow | Zip package | Dry-run install | Global install claim |
+| --- | --- | --- | --- | --- | --- |
+| Codex skills | Verified | Experimental unless host target is verified | Verified | Planned | not_verified |
+| Claude skills | Verified | Experimental unless host target is verified | Verified | Verified only for user-provided target dry run | not_verified |
+
+Do not describe model workspace packs as **Available** as a broad product path.
+Use **Available** only for a specific host path after install and usage
+verification for that path. See
+[Model Workspace Status](99_MODEL_WORKSPACE_STATUS.md) for the status
+vocabulary.
 
 ## Verified Source Layout
 
@@ -92,9 +101,10 @@ or execute downstream work. The skills must run or request `ni status`,
 
 ### Manual Copy Usage
 
-Manual copy is available for both packs. Copy the skill directories from the
-matching package root into a model-workspace skill folder that the user has
-verified for that host.
+Manual copy is an experimental workflow unless the user has verified the
+specific target folder and the host loading behavior. Copy the skill
+directories from the matching package root into that verified
+model-workspace skill folder.
 
 This repository does not claim a global Codex or Claude skill path. If the host
 environment cannot load skills from the copied files, the user may still read
@@ -219,10 +229,14 @@ Every model workspace pack must keep these rules visible:
 
 Use this status language until more host-specific verification exists:
 
-- **Available:** source packs, manual copy from verified source paths, Codex zip
-  packaging, Claude zip packaging, and Claude target-directory dry-run install.
 - **Experimental:** model workspace packs as a broad product path, because
-  global host discovery and no-terminal operation still depend on external
-  host behavior.
+  host-level install, global discovery, no-terminal operation, and provider
+  behavior still depend on external host behavior.
+- **Verified:** repo-local skill files, package source roots, metadata checks,
+  and zip package scripts that pass in this repository.
+- **Available:** only for a specific host path after install and usage
+  verification for that path.
+- **not_verified:** global Codex install, global Claude install, provider
+  runtime behavior, and cross-machine installation.
 - **Planned:** Codex dry-run installer and any future package-manager-like
   model pack installer.

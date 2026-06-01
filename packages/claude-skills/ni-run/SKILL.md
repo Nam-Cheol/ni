@@ -12,6 +12,8 @@ locked NI plan.
 
 ## Authority Boundary
 
+Skills are UX; CLI is authority.
+
 Do not reimplement prompt compilation in the skill.
 
 The `ni` CLI verifies lock hashes and enforces the prompt budget. If `ni run`

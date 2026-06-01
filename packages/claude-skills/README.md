@@ -7,6 +7,18 @@ review, lock, and compile NI planning contracts. They are UX only. The `ni`
 CLI remains the authority for readiness, lock creation, lock hash verification,
 and prompt compilation.
 
+## Status
+
+Status: Experimental.
+
+Verified: source files, package zip, metadata checks, and guarded dry-run copy
+to a user-provided target.
+
+Not verified: global host install, provider behavior, cross-machine install,
+or global Claude skill discovery.
+
+Boundary: Skills are UX; CLI is authority.
+
 ## Skills
 
 | Skill | Purpose |
@@ -141,6 +153,9 @@ unzip -l dist/ni-claude-skills.zip
 
 See `docs/75_MODEL_PACK_INSTALL_VERIFICATION.md` for the full installation and
 verification status.
+
+See `docs/99_MODEL_WORKSPACE_STATUS.md` for the Experimental broad product
+status and not_verified host/provider boundaries.
 
 See `docs/89_LANGUAGE_ADAPTIVE_AUTHORING.md` for the language-adaptive
 authoring rule used by `ni-start`.

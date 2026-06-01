@@ -31,7 +31,7 @@ bounded prompts from valid locks.
 | ni-grill quality | `ni-grill` challenges planning quality without becoming a readiness gate. | `docs/91_NI_GRILL.md`; `docs/92_NI_GRILL_OUTPUT_BUDGET.md`; ni-grill examples; severity and budget rules; CLI authority boundary. | `examples/ni-grill/**`; `bash scripts/demo-check.sh`; `bash scripts/check-skill-packs.sh` | `advisory`; `severity-labeled`; `CLI decides` | Real reduction in planning defects; user satisfaction |
 | Change-control UX | Locked plan changes are easier to understand and audit. | Amended docs; amendment record; status proof; relock behavior; stale lock or hash mismatch examples. | Future docs, tests, or examples that show amendment/relock and stale-lock proof | `Planned`; `audited`; `verified` | Team-scale merge success; production workflow adoption |
 | Homebrew | Homebrew is available only after tested tap/formula evidence. | Tap repository; formula; sha256; `brew install` output; `ni --help`; `ni version`. | `docs/80_HOMEBREW_DECISION.md`; future Homebrew verification doc | Current status: `Planned` / v0.5 candidate; later `Experimental` or `Available` only with evidence | Package-manager adoption; long-term formula maintenance |
-| Model workspace packs | Skill packs are easier to install or use in supported model workspaces. | Package scripts; zip contents; `SKILL.md` files; host-level install verification if claiming `Available`. | `bash scripts/check-skill-packs.sh`; `bash scripts/package-claude-skills.sh`; `bash scripts/package-codex-skills.sh`; `docs/75_MODEL_PACK_INSTALL_VERIFICATION.md` | `Experimental`; `Available` only when host-level install is verified | Model provider behavior; global host compatibility unless tested |
+| Model workspace packs | Skill packs are easier to install or use in supported model workspaces. | Package scripts; zip contents; `SKILL.md` files; status-preservation doc; host-level install verification if claiming `Available`. | `bash scripts/check-skill-packs.sh`; `bash scripts/package-claude-skills.sh`; `bash scripts/package-codex-skills.sh`; `docs/75_MODEL_PACK_INSTALL_VERIFICATION.md`; `docs/99_MODEL_WORKSPACE_STATUS.md` | `Experimental`; `Available` only for a specific host path after host-level install and usage verification | Model provider behavior; global host compatibility unless tested |
 | No-terminal assisted workflow | Users can start drafting without CLI, but trusted validation still requires CLI. | `docs/no-terminal.md`; `examples/no-terminal-assisted/**`; clear not-deterministic warning. | `docs/no-terminal.md`; `bash scripts/demo-check.sh` | `Experimental`; `assisted`; `not deterministic` | Trusted readiness; lock; hash verification; prompt compilation without CLI |
 | Product surface expansion | NI supports more than software planning. | Examples for research protocol, operations process, education program, document product, physical product planning, or similar; status proof or docs-only boundary. | `examples/**`; `docs/82_EXAMPLE_COVERAGE.md` | `example-backed`; `docs-only`; `measured` | Real-world adoption; downstream implementation quality |
 | Downstream integrations | Downstream integrations remain separate packages, seed exports, or target formats. | Separate package or docs; no `ni-kernel` runtime execution; target/export conformance. | `docs/45_TARGET_STORY.md`; target conformance docs/tests when present; `bash scripts/smoke.sh` | `seed`; `export`; `separate package`; `not ni-kernel runtime` | Downstream execution success |
@@ -53,7 +53,10 @@ evidence requirements that future tasks must satisfy before claiming completion.
 
 GRILL-004 is addressed by `docs/97_BENCHMARK_CLAIM_BOUNDARIES.md`, which keeps
 benchmark claim limits visible next to the case-study and example surfaces.
-GRILL-005 remains a model workspace status preservation note.
+GRILL-005 is addressed by `docs/99_MODEL_WORKSPACE_STATUS.md`, which preserves
+the Experimental broad product path, names verified repository evidence, and
+keeps host-level/global install and provider behavior as unverified unless
+documented.
 
 ## How to use this document
 

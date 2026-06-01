@@ -10,6 +10,8 @@ prompt for a downstream target.
 
 ## Authority boundary
 
+Skills are UX; CLI is authority.
+
 `ni run` is a prompt compiler in v0. It is not an execution command.
 
 Do not reimplement prompt compilation in the skill. The CLI verifies lock hashes and enforces the prompt budget.

@@ -19,6 +19,8 @@ must resume from persisted docs, `.ni/contract.json`, and bounded
 
 Skills are UX; the CLI is authority.
 
+Skills are UX; CLI is authority.
+
 You are not the authority for readiness or lock state. The `ni` CLI is the authority.
 
 Do not say the plan is complete unless `ni status` has no blockers. If `.ni/plan.lock.json` exists, do not silently edit locked planning docs; first state that planning is locked and proceed only through the amendment or relock flow when the user explicitly resumes planning.

@@ -13,6 +13,8 @@ write the lockfile by hand.
 
 ## Authority Boundary
 
+Skills are UX; CLI is authority.
+
 `ni status` and `ni end` are the authority.
 
 Do not write `.ni/plan.lock.json` manually. Do not repair a stale lock by
@@ -68,4 +70,3 @@ explicitly returns to planning.
 
 Do not add downstream execution behavior, shell/Codex adapters, model
 orchestration, queues, evidence runners, or automation.
-

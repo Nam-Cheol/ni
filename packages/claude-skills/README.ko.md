@@ -7,6 +7,18 @@
 계속 `ni` CLI에 있다. Readiness, lock 생성, lock hash verification, prompt
 compilation은 CLI result를 기준으로 판단한다.
 
+## Status
+
+Status: Experimental.
+
+Verified: source files, package zip, metadata checks, user-provided target에
+대한 guarded dry-run copy.
+
+Not verified: global host install, provider behavior, cross-machine install,
+global Claude skill discovery.
+
+Boundary: Skills are UX; CLI is authority.
+
 ## Skills
 
 | Skill | Purpose |
@@ -131,6 +143,9 @@ unzip -l dist/ni-claude-skills.zip
 
 Full installation과 verification status는
 `docs/75_MODEL_PACK_INSTALL_VERIFICATION.ko.md`를 참고한다.
+
+Broad product path의 Experimental status와 not_verified host/provider boundaries는
+`docs/99_MODEL_WORKSPACE_STATUS.ko.md`를 참고한다.
 
 ## What This Does Not Do
 

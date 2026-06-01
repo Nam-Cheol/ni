@@ -18,6 +18,8 @@ must resume from persisted docs, `.ni/contract.json`, and bounded
 
 ## Authority Boundary
 
+Skills are UX; CLI is authority.
+
 Skills are UX; the `ni` CLI is authority.
 
 You may draft, review, and update:

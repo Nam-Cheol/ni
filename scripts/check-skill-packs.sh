@@ -51,6 +51,7 @@ check_skill() {
   require_text "$file" "name: $skill"
   require_text "$file" "description:"
   require_text "$file" "Authority"
+  require_text "$file" "Skills are UX; CLI is authority."
   if [[ "$skill" == "ni-run" ]]; then
     require_text "$file" "ni run"
   else
@@ -79,6 +80,9 @@ check_pack() {
   done
 
   require_text "$pack/README.md" "Skills are UX"
+  require_text "$pack/README.md" "Status: Experimental."
+  require_text "$pack/README.md" "Not verified: global host install"
+  require_text "$pack/README.md" "Boundary: Skills are UX; CLI is authority."
   require_text "$pack/README.md" "CLI remains the authority"
   require_text "$pack/README.md" "Copy This Folder"
   require_text "$pack/README.md" "Verify The Pack"
@@ -87,6 +91,9 @@ check_pack() {
   require_text "$pack/README.md" "Does not replace"
   require_text "$pack/README.md" "unzip -l dist/"
   require_text "$pack/README.ko.md" "Skills are UX"
+  require_text "$pack/README.ko.md" "Status: Experimental."
+  require_text "$pack/README.ko.md" "Not verified: global host install"
+  require_text "$pack/README.ko.md" "Boundary: Skills are UX; CLI is authority."
   require_text "$pack/README.ko.md" "CLI is authority"
   require_text "$pack/README.ko.md" "Copy This Folder"
   require_text "$pack/README.ko.md" "Verify The Pack"
@@ -107,22 +114,49 @@ check_pack() {
 check_pack "Claude" "packages/claude-skills" "scripts/package-claude-skills.sh"
 check_pack "Codex" "packages/codex-skills" "scripts/package-codex-skills.sh"
 
+echo "checking repo-local Codex-style skills"
+for skill in ni-start ni-grill ni-end ni-run; do
+  check_skill ".agents/skills" "$skill"
+done
+
 require_file "scripts/install-claude-skills.sh"
 require_text "scripts/install-claude-skills.sh" "--dry-run"
 require_text "scripts/install-claude-skills.sh" "--target"
 require_text "scripts/install-claude-skills.sh" "This script does not assume a global Claude skill path"
 require_text "README.md" "| Model workspaces | Experimental |"
-require_text "README.md" "global host install is unverified"
+require_text "README.md" "Host-level/global install remains unverified unless documented"
 require_text "README.ko.md" "| Model workspaces | Experimental |"
-require_text "README.ko.md" "global host install은 unverified"
+require_text "README.ko.md" "Host-level/global install은 documented되기 전까지 unverified"
+require_file "docs/99_MODEL_WORKSPACE_STATUS.md"
+require_file "docs/99_MODEL_WORKSPACE_STATUS.ko.md"
+require_text "docs/99_MODEL_WORKSPACE_STATUS.md" "Model workspace packs are **Experimental**"
+require_text "docs/99_MODEL_WORKSPACE_STATUS.md" "Global Claude install | not_verified"
+require_text "docs/99_MODEL_WORKSPACE_STATUS.md" "Global Codex install | not_verified"
+require_text "docs/99_MODEL_WORKSPACE_STATUS.md" "Provider runtime behavior | not_verified"
+require_text "docs/99_MODEL_WORKSPACE_STATUS.md" "Skills are UX; CLI is authority."
+require_text "docs/99_MODEL_WORKSPACE_STATUS.ko.md" "Model workspace packs는 broad product path로 **Experimental**"
+require_text "docs/99_MODEL_WORKSPACE_STATUS.ko.md" "Global Claude install | not_verified"
+require_text "docs/99_MODEL_WORKSPACE_STATUS.ko.md" "Global Codex install | not_verified"
+require_text "docs/99_MODEL_WORKSPACE_STATUS.ko.md" "Provider runtime behavior | not_verified"
+require_text "docs/99_MODEL_WORKSPACE_STATUS.ko.md" "Skills are UX; CLI is authority."
 require_text "docs/75_MODEL_PACK_INSTALL_VERIFICATION.md" "Overall model workspace pack status: **Experimental**"
 require_text "docs/75_MODEL_PACK_INSTALL_VERIFICATION.md" "Global install claim"
-require_text "docs/75_MODEL_PACK_INSTALL_VERIFICATION.md" "Unverified"
+require_text "docs/75_MODEL_PACK_INSTALL_VERIFICATION.md" "not_verified"
 require_text "docs/75_MODEL_PACK_INSTALL_VERIFICATION.md" "What This Does Not Do"
 require_text "docs/75_MODEL_PACK_INSTALL_VERIFICATION.ko.md" "전체 model workspace pack status는 product path로는 **Experimental**"
 require_text "docs/75_MODEL_PACK_INSTALL_VERIFICATION.ko.md" "Global install claim"
-require_text "docs/75_MODEL_PACK_INSTALL_VERIFICATION.ko.md" "Unverified"
+require_text "docs/75_MODEL_PACK_INSTALL_VERIFICATION.ko.md" "not_verified"
 require_text "docs/75_MODEL_PACK_INSTALL_VERIFICATION.ko.md" "What This Does Not Do"
+
+for doc in README.md README.ko.md docs/53_DISTRIBUTION_STRATEGY.md docs/53_DISTRIBUTION_STRATEGY.ko.md packages/claude-skills/README.md packages/claude-skills/README.ko.md packages/codex-skills/README.md packages/codex-skills/README.ko.md; do
+  require_no_text "$doc" "| Model workspaces | Available |"
+  require_no_text "$doc" "| Model workspace packs | Available |"
+  require_no_text "$doc" "| Model workspace mode | Available |"
+  require_no_text "$doc" "global host install is verified"
+  require_no_text "$doc" "global host install은 verified"
+  require_no_text "$doc" "global Codex install is verified"
+  require_no_text "$doc" "global Claude install is verified"
+done
 
 dry_target="$(mktemp -d "${TMPDIR:-/tmp}/ni-skill-pack-check.XXXXXX")"
 trap 'rm -rf "$dry_target"' EXIT
@@ -138,6 +172,6 @@ if [[ "$failed" -ne 0 ]]; then
   exit 1
 fi
 
-pass "Claude skill pack source is Available through manual copy, zip packaging, and dry-run target install"
-pass "Codex skill pack source is Available through repo-local/manual copy and zip packaging; global install remains unverified"
+pass "Claude skill pack repository evidence is verified through source files, zip packaging, and dry-run target install"
+pass "Codex skill pack repository evidence is verified through repo-local source files and zip packaging; global install remains unverified"
 echo "skill pack checks passed"

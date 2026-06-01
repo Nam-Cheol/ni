@@ -148,7 +148,9 @@ and explain CLI blockers.
 They do not execute downstream work. They do not call model APIs as part of
 `ni`. They do not override CLI readiness. They do not create a real lock.
 Global install may remain Experimental unless host-specific loading and
-discovery have been verified.
+discovery have been verified. See
+[Model Workspace Status](99_MODEL_WORKSPACE_STATUS.md) for the current
+Experimental status and not_verified host/provider boundaries.
 
 ## Example
 

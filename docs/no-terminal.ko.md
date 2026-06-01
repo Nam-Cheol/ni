@@ -145,7 +145,8 @@ blockers를 설명하는 데 도움이 된다.
 그 pack들은 downstream work를 실행하지 않는다. `ni`의 일부로 model APIs를 호출하지
 않는다. CLI readiness를 override하지 않는다. 실제 lock을 만들지 않는다. Global
 install은 host-specific loading과 discovery가 verified되기 전까지 Experimental로
-남을 수 있다.
+남을 수 있다. 현재 Experimental status와 not_verified host/provider boundary는
+[Model Workspace Status](99_MODEL_WORKSPACE_STATUS.ko.md)를 참고한다.
 
 ## Example
 

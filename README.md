@@ -92,7 +92,7 @@ go run ./cmd/ni run --dir ./my-plan --target generic --max-chars 4000
 | Local binary | Available | `make build && ./bin/ni --help` | You want `./bin/ni` or a local install from this checkout. |
 | Release binary | Available | [v0.4.0 release](https://github.com/Nam-Cheol/ni/releases/tag/v0.4.0) | You want `ni` without Go and prefer manual checksum verification. |
 | Curl installer | Available | `sh install.sh --dry-run --version 0.4.0` | You want a small shell installer after inspecting the script. |
-| Model workspaces | Experimental | [Model Workspace Packs](docs/55_MODEL_WORKSPACE_PACKS.md) | You want Codex or Claude source/zip skill packs to help draft docs and contract records; global host install is unverified and the CLI remains authority. |
+| Model workspaces | Experimental | [Model Workspace Status](docs/99_MODEL_WORKSPACE_STATUS.md) | Use `ni-start`, `ni-grill`, `ni-end`, and `ni-run` guidance inside supported model workspaces. Skills are UX; the CLI is authority. Host-level/global install remains unverified unless documented. |
 | No-terminal method | Experimental | [No-Terminal Planning](docs/no-terminal.md) | You want assisted docs and contract drafting before a trusted runner produces CLI proof; model judgment is not a lock. |
 | Homebrew | Planned | [Homebrew Decision](docs/80_HOMEBREW_DECISION.md) | You prefer a package manager; implementation is deferred to v0.5 and no tap or formula is published or tested. |
 
@@ -128,6 +128,7 @@ is not available yet.
 License: `ni` is licensed under the [MIT License](LICENSE).
 
 See [Install ni](docs/22_INSTALL.md), [No-Terminal Planning](docs/no-terminal.md),
+[Model Workspace Status](docs/99_MODEL_WORKSPACE_STATUS.md),
 [Model Workspace Packs](docs/55_MODEL_WORKSPACE_PACKS.md), and
 [Model Pack Install Verification](docs/75_MODEL_PACK_INSTALL_VERIFICATION.md)
 for details.
