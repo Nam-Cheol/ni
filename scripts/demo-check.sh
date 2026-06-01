@@ -106,6 +106,10 @@ check_benchmark_report_docs() {
   require_file examples/benchmark-report/cases/research-protocol/12-resolved-next-questions.md
   require_file examples/benchmark-report/cases/research-protocol/13-lock-summary.md
   require_file examples/benchmark-report/cases/research-protocol/14-bounded-prompt-summary.md
+  require_file examples/benchmark-report/cases/research-protocol/15-before-after-evidence.md
+  require_file examples/benchmark-report/cases/research-protocol/15-before-after-evidence.ko.md
+  require_file examples/benchmark-report/cases/research-protocol/16-lessons.md
+  require_file examples/benchmark-report/cases/research-protocol/16-lessons.ko.md
   require_file examples/benchmark-report/cases/research-protocol/workspace/.ni/contract.json
   require_file examples/benchmark-report/cases/research-protocol/workspace/.ni/plan.lock.json
   require_file docs/43_BENCHMARK_PROTOCOL.md
@@ -238,6 +242,12 @@ require_first_line "NI Intent Readiness: READY" "$DEMO_TMP/research-protocol-pro
 require_output "No blocker open questions are present." "$DEMO_TMP/research-protocol-proof.out"
 require_output "Expected \`ni status\`: not applicable" "examples/benchmark-report/README.md"
 require_output "not_measured" "examples/benchmark-report/README.md"
+require_output "not_measured" "examples/benchmark-report/cases/research-protocol/15-before-after-evidence.md"
+require_output "real research approval" "examples/benchmark-report/cases/research-protocol/15-before-after-evidence.md"
+require_output "fieldwork is authorized" "examples/benchmark-report/cases/research-protocol/15-before-after-evidence.md"
+require_output "Synthetic answered protocol artifact | READY | Yes, isolated workspace only | Yes | 4000" "examples/benchmark-report/cases/research-protocol/15-before-after-evidence.md"
+require_output "The research-protocol case matters" "examples/benchmark-report/cases/research-protocol/16-lessons.md"
+require_output "4000" "examples/benchmark-report/cases/research-protocol/14-bounded-prompt-summary.md"
 require_output "not_measured" "examples/benchmark-report/README.ko.md"
 require_output "not_measured" "examples/benchmark-report/sample-report.md"
 require_output "not_measured" "examples/benchmark-report/cases/internal-dashboard/05-not-measured.md"

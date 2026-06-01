@@ -55,7 +55,21 @@ quality, and not empirical evidence.
 - `13-lock-summary.md`: isolated workspace lock evidence.
 - `14-bounded-prompt-summary.md`: bounded prompt command and 4000 character
   count.
+- `15-before-after-evidence.md`: before/after proof from vague request
+  `BLOCKED` state to synthetic fixture `READY` lock and bounded prompt.
+- `15-before-after-evidence.ko.md`: Korean companion for the before/after
+  evidence package.
+- `16-lessons.md`: lessons from applying ni to a non-software research-planning
+  case.
+- `16-lessons.ko.md`: Korean companion for the lessons.
 - `workspace/`: isolated ni workspace for this benchmark case.
+
+## Readiness Transition
+
+| Stage | Readiness | Lock | ni-run prompt | Prompt count | Meaning |
+| --- | --- | --- | --- | --- | --- |
+| Vague research request | BLOCKED | No | No | not_measured | Not safe to hand off |
+| Synthetic answered protocol artifact | READY | Yes, isolated workspace only | Yes | 4000 | Safe to hand off as benchmark planning artifact |
 
 ## Non-execution boundary
 

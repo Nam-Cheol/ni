@@ -52,6 +52,20 @@ isolated workspace only, reaches `READY`, locks the isolated workspace, and
 compiles a 4000-character bounded prompt. Its `READY` claim is benchmark
 fixture readiness only, not real fieldwork approval or research quality.
 
+## v0.5 Benchmark Report Package Summary
+
+The checked-in benchmark report package now summarizes two before/after cases:
+
+| Case | What it proves | Boundary |
+| --- | --- | --- |
+| `internal-dashboard` | Artifact-readiness gating around a dashboard-adjacent planning-meeting case. ni exposes unclear users, account signals, data boundaries, meeting evidence, and product-readiness claims before handoff. | `READY` applies only to benchmark planning-meeting artifact readiness, not dashboard product readiness. |
+| `research-protocol` | Non-software research-planning gating. ni exposes unclear research questions, participant or observation scope, privacy/consent/data boundaries, field safety, reviewer ownership, and acceptance evidence before handoff. | `READY` applies only to synthetic benchmark protocol planning artifact readiness, not real research approval, fieldwork authorization, research quality, or intervention effectiveness. |
+
+Both cases preserve the original `BLOCKED` proof, record the answered
+benchmark-artifact path to `READY`, lock only an isolated workspace, compile a
+bounded 4000-character prompt, and keep runtime, product, research, and
+downstream-agent outcomes as `not_measured`.
+
 ## Case 1 Artifacts: A. Direct-to-Agent Prompt
 
 Source:
@@ -710,11 +724,16 @@ resolved status proof, lock summary, and bounded prompt summary:
 - `examples/benchmark-report/cases/research-protocol/12-resolved-next-questions.md`
 - `examples/benchmark-report/cases/research-protocol/13-lock-summary.md`
 - `examples/benchmark-report/cases/research-protocol/14-bounded-prompt-summary.md`
+- `examples/benchmark-report/cases/research-protocol/15-before-after-evidence.md`
+- `examples/benchmark-report/cases/research-protocol/16-lessons.md`
 
 Those documents explain why each blocker matters, what kind of future user
 answer would resolve it, which unsafe assumptions are avoided, and how the
 resolved synthetic fixture updated only the isolated workspace before running
-`ni status`, `ni end`, and `ni run` in the allowed order.
+`ni status`, `ni end`, and `ni run` in the allowed order. The before/after
+evidence file records the readiness transition and claim boundary tables; the
+lessons file explains why the case strengthens ni's positioning as a
+pre-runtime intent gate for non-software research planning.
 
 This research-protocol case does not claim research protocol quality,
 fieldwork readiness, intervention decision readiness, participant outcomes,

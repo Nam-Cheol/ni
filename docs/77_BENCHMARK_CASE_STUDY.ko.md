@@ -52,6 +52,20 @@ Research-protocol benchmark package도 resolved synthetic-fixture variant를
 `READY` claim은 benchmark fixture readiness에만 적용되며 real fieldwork approval
 또는 research quality가 아니다.
 
+## v0.5 Benchmark Report Package Summary
+
+체크인된 benchmark report package는 이제 두 before/after case를 요약한다.
+
+| Case | What it proves | Boundary |
+| --- | --- | --- |
+| `internal-dashboard` | Dashboard-adjacent planning-meeting case에서 artifact-readiness gating을 보여준다. ni는 handoff 전에 unclear user, account signal, data boundary, meeting evidence, product-readiness claim을 드러낸다. | `READY`는 benchmark planning-meeting artifact readiness에만 적용되며 dashboard product readiness가 아니다. |
+| `research-protocol` | Non-software research-planning gating을 보여준다. ni는 handoff 전에 unclear research question, participant 또는 observation scope, privacy/consent/data boundary, field safety, reviewer ownership, acceptance evidence를 드러낸다. | `READY`는 synthetic benchmark protocol planning artifact readiness에만 적용되며 real research approval, fieldwork authorization, research quality, intervention effectiveness가 아니다. |
+
+두 case 모두 original `BLOCKED` proof를 보존하고, 답변이 적용된
+benchmark-artifact path가 `READY`에 도달한 증거를 기록하며, isolated workspace만
+lock하고, 4000자 bounded prompt를 compile하고, runtime, product, research,
+downstream-agent outcome은 `not_measured`로 남긴다.
+
 ## 사례 1 산출물: A. 직접 에이전트 프롬프트
 
 출처:
@@ -706,11 +720,16 @@ status proof, lock summary, bounded prompt summary가 포함된다.
 - `examples/benchmark-report/cases/research-protocol/12-resolved-next-questions.md`
 - `examples/benchmark-report/cases/research-protocol/13-lock-summary.md`
 - `examples/benchmark-report/cases/research-protocol/14-bounded-prompt-summary.md`
+- `examples/benchmark-report/cases/research-protocol/15-before-after-evidence.md`
+- `examples/benchmark-report/cases/research-protocol/16-lessons.md`
 
 이 문서들은 각 blocker가 왜 중요한지, later user answer가 어떤 방식으로
 resolve할 수 있는지, 어떤 unsafe assumption을 피하는지, resolved synthetic
 fixture가 isolated workspace만 update한 뒤 허용된 순서로 `ni status`, `ni end`,
-`ni run`을 실행했음을 설명한다.
+`ni run`을 실행했음을 설명한다. Before/after evidence file은 readiness
+transition과 claim boundary table을 기록하고, lessons file은 이 case가
+non-software research planning을 위한 pre-runtime intent gate로서 ni의 positioning을
+어떻게 강화하는지 설명한다.
 
 이 research-protocol case는 research protocol quality, fieldwork readiness,
 intervention decision readiness, participant outcome, adoption, rework

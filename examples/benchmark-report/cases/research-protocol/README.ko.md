@@ -53,7 +53,21 @@ actual research authorization, proof of research quality, empirical evidence가
 - `12-resolved-next-questions.md`: 남은 next question이 없음을 기록한다.
 - `13-lock-summary.md`: isolated workspace lock evidence.
 - `14-bounded-prompt-summary.md`: bounded prompt command와 4000 character count.
+- `15-before-after-evidence.md`: vague request `BLOCKED` state에서 synthetic
+  fixture `READY` lock 및 bounded prompt로 이어지는 before/after proof.
+- `15-before-after-evidence.ko.md`: before/after evidence package의 Korean
+  companion.
+- `16-lessons.md`: non-software research-planning case에 ni를 적용하며 얻은
+  lesson.
+- `16-lessons.ko.md`: lessons의 Korean companion.
 - `workspace/`: isolated ni workspace for this benchmark case.
+
+## Readiness Transition
+
+| Stage | Readiness | Lock | ni-run prompt | Prompt count | Meaning |
+| --- | --- | --- | --- | --- | --- |
+| Vague research request | BLOCKED | No | No | not_measured | Not safe to hand off |
+| Synthetic answered protocol artifact | READY | Yes, isolated workspace only | Yes | 4000 | Safe to hand off as benchmark planning artifact |
 
 ## Non-execution boundary
 

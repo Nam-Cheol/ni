@@ -27,6 +27,11 @@ run, and prompt-count evidence must remain `not_measured`.
   `BLOCKED` proof, then records a resolved artifact-readiness variant with an
   isolated lock and bounded prompt. `READY` applies only to benchmark
   planning-meeting artifact readiness.
+- The research-protocol case shows the same blocked-to-ready evidence pattern
+  outside software. It preserves the vague request `BLOCKED` proof, applies
+  clearly labeled synthetic fixture answers, records `READY`, lock, and
+  4000-character prompt proof, and keeps real research approval, fieldwork
+  authorization, and research quality as `not_measured`.
 
 ## 3. Product type / surface
 
@@ -45,11 +50,12 @@ run, and prompt-count evidence must remain `not_measured`.
   dashboard request, with an isolated ni workspace, checked-in blocked status
   proof, blocker analysis, resolved `READY` proof, isolated lock evidence,
   bounded prompt evidence, before/after evidence, and lessons.
-- `cases/research-protocol/`: initial readiness measurement for a vague
+- `cases/research-protocol/`: manual qualitative readiness drill for a vague
   non-software neighborhood cooling study request, with an isolated ni
   workspace, checked-in `BLOCKED` status proof, next-question evidence,
-  blocker analysis, resolution path, human-fillable answer packet, and explicit
-  `not_measured` research/runtime boundaries.
+  blocker analysis, resolution path, synthetic fixture answer packet, resolved
+  `READY` proof, isolated lock evidence, bounded prompt evidence, before/after
+  evidence, lessons, and explicit `not_measured` research/runtime boundaries.
 - `../../docs/88_SECOND_BENCHMARK_CASE_SELECTION.md`: selection plan for the
   second v0.5 benchmark case. It recommends a research-protocol case but does
   not report new benchmark results.
@@ -78,6 +84,11 @@ test -f examples/benchmark-report/cases/research-protocol/07-ni-next-questions.m
 test -f examples/benchmark-report/cases/research-protocol/08-blocker-analysis.md
 test -f examples/benchmark-report/cases/research-protocol/09-resolution-path.md
 test -f examples/benchmark-report/cases/research-protocol/10-answer-packet.md
+test -f examples/benchmark-report/cases/research-protocol/11-resolved-status-proof.md
+test -f examples/benchmark-report/cases/research-protocol/13-lock-summary.md
+test -f examples/benchmark-report/cases/research-protocol/14-bounded-prompt-summary.md
+test -f examples/benchmark-report/cases/research-protocol/15-before-after-evidence.md
+test -f examples/benchmark-report/cases/research-protocol/16-lessons.md
 test -f docs/43_BENCHMARK_PROTOCOL.md
 go run ./cmd/ni status --dir examples/benchmark-report/cases/internal-dashboard/workspace --proof --next-questions
 go run ./cmd/ni status --dir examples/benchmark-report/cases/research-protocol/workspace --proof --next-questions
@@ -93,26 +104,27 @@ resolved internal-dashboard artifact workspace. The historical blocked proof
 remains checked in at `cases/internal-dashboard/06-ni-status-proof.md`.
 
 The research-protocol `ni status` command should report
-`NI Intent Readiness: BLOCKED` for the initial isolated workspace. No lockfile
-should exist for that research workspace.
+`NI Intent Readiness: READY` for the resolved synthetic fixture workspace. The
+historical blocked proof remains checked in at
+`cases/research-protocol/06-ni-status-proof.md`. The lock summary and bounded
+prompt summary remain checked in at `13-lock-summary.md` and
+`14-bounded-prompt-summary.md`.
 
 The `rg` command should show `not_measured` markers in this template and
 dashboard and research cases, the checked-in blocked and resolved status
-proofs, blocker and next-question evidence, plus non-execution and
-prompt-boundedness markers in the benchmark protocol.
+proofs, blocker and next-question evidence, before/after evidence, plus
+non-execution and prompt-boundedness markers in the benchmark protocol.
 
 ## 7. demo-check coverage
 
 Covered by `bash scripts/demo-check.sh`.
 
 The demo check verifies required files, runs `ni status` for the isolated
-internal-dashboard workspace, and checks that historical blocked proof,
-resolved READY proof, isolated lock evidence, bounded prompt evidence, and
-remaining `not_measured` claim boundaries are present. It also verifies the
-research-protocol initial `BLOCKED` proof, blocker analysis, resolution path,
-answer packet, and absence of a research lockfile. It does not run `ni end`,
-the generated prompt, dashboard code, research fieldwork, model APIs, or
-downstream agents.
+internal-dashboard and research-protocol workspaces, and checks that historical
+blocked proof, resolved READY proof, isolated lock evidence, bounded prompt
+evidence, before/after evidence, lessons, and remaining `not_measured` claim
+boundaries are present. It does not run `ni end`, the generated prompt,
+dashboard code, research fieldwork, model APIs, or downstream agents.
 
 ## 8. Korean companion
 
