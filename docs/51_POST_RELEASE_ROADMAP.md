@@ -82,6 +82,11 @@ and better supported by real planning evidence:
 - keep downstream integrations as separate packages, target exports, seed
   formats, or downstream-owned notes rather than `ni-kernel` behavior.
 
+Before a v0.5 task claims completion, use the acceptance evidence matrix in
+[`95_V0_5_ACCEPTANCE_EVIDENCE.md`](95_V0_5_ACCEPTANCE_EVIDENCE.md). The matrix
+defines the minimum files, commands, review proof, status vocabulary, and
+`not_measured` boundaries for each lane.
+
 This phase may improve target seed quality and conformance as supporting work.
 It must not make targets into executable adapters inside `ni-kernel`.
 

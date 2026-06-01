@@ -20,6 +20,10 @@ Run the broader repository check:
 bash scripts/quality.sh
 ```
 
+For v0.5 example work, use the lane-specific acceptance criteria in
+[`95_V0_5_ACCEPTANCE_EVIDENCE.md`](95_V0_5_ACCEPTANCE_EVIDENCE.md) before
+claiming that an example lane is complete.
+
 ## Coverage matrix
 
 | Example | Proves | Product type | Delivery surface | Expected status | demo-check coverage | Docs-only? | Korean companion |

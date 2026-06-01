@@ -80,6 +80,11 @@ evidence로 뒷받침하는 데 집중한다:
 - downstream integrations는 separate packages, target exports, seed formats,
   downstream-owned notes로만 유지하고 `ni-kernel` behavior로 만들지 않기.
 
+v0.5 task가 completion을 claim하기 전에는
+[`95_V0_5_ACCEPTANCE_EVIDENCE.md`](95_V0_5_ACCEPTANCE_EVIDENCE.md)의 acceptance
+evidence matrix를 사용한다. 이 matrix는 lane별 minimum files, commands, review
+proof, status vocabulary, `not_measured` boundaries를 정의한다.
+
 이 phase는 supporting work로 target seed quality와 conformance를 개선할 수 있다.
 하지만 targets를 `ni-kernel` 내부의 executable adapters로 만들면 안 된다.
 

@@ -66,6 +66,10 @@ benchmark-artifact path to `READY`, lock only an isolated workspace, compile a
 bounded 4000-character prompt, and keep runtime, product, research, and
 downstream-agent outcomes as `not_measured`.
 
+Future v0.5 benchmark cases should use the benchmark lane in
+[`95_V0_5_ACCEPTANCE_EVIDENCE.md`](95_V0_5_ACCEPTANCE_EVIDENCE.md) before
+claiming completion.
+
 ## Case 1 Artifacts: A. Direct-to-Agent Prompt
 
 Source:

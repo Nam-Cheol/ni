@@ -13,7 +13,7 @@
 | --- | --- | --- | --- | --- | --- |
 | GRILL-001 | High | roadmap specificity | `docs/51_POST_RELEASE_ROADMAP.md`; CAP-019 / DEC-015 | clarify | maybe |
 | GRILL-002 | High | distribution status | `docs/80_HOMEBREW_DECISION.md`; CAP-020 / DEC-016 | clarify | maybe |
-| GRILL-003 | Medium | acceptance evidence | CAP-019 / EVAL-023; `docs/51_POST_RELEASE_ROADMAP.md` | clarify | no |
+| GRILL-003 | Medium | acceptance evidence | CAP-019 / EVAL-023; `docs/51_POST_RELEASE_ROADMAP.md` | `docs/95_V0_5_ACCEPTANCE_EVIDENCE.md`로 addressed | no |
 | GRILL-004 | Low | benchmark claim boundary | `docs/77_BENCHMARK_CASE_STUDY.md`; `examples/benchmark-report/**` | keep as note | no |
 | GRILL-005 | Note | model workspace status | `docs/55_MODEL_WORKSPACE_PACKS.md`; `docs/75_MODEL_PACK_INSTALL_VERIFICATION.md`; `packages/*-skills/**` | keep as note | no |
 
@@ -47,6 +47,11 @@ Grill findings:
    Suggested action: clarify
    Blocks ni-end: no
 
+   Resolution note: `docs/95_V0_5_ACCEPTANCE_EVIDENCE.md`로 addressed되었다. 이
+   문서는 v0.5 work를 위한 lane별 completion evidence, status vocabulary,
+   verification references, `not_measured` boundaries를 정의한다. 이것은 어떤
+   v0.5 lane이 complete라는 뜻이 아니다.
+
 4. GRILL-004 — Low — benchmark claim boundary
    Affected: `docs/77_BENCHMARK_CASE_STUDY.md`; `examples/benchmark-report/**`
    Concern: Benchmark claims는 대체로 잘 scoped되어 있다. Report는 manual qualitative work라고 말하고, `not_measured` boundaries를 label하며, dashboard `READY`는 artifact readiness로, research `READY`는 synthetic fixture readiness로 제한한다. 남은 pressure는 visibility다. 긴 case-study page에서는 detailed status와 prompt excerpt 아래로 boundary가 묻힐 수 있다.
@@ -72,9 +77,10 @@ Minor editorial parity checks는 roadmap과 distribution-status findings가 이�
 ## Follow-up
 
 GRILL-001과 GRILL-002는 Task 172의 roadmap 및 distribution documentation
-alignment로 addressed되었다. GRILL-003은 medium acceptance-evidence note로,
-GRILL-004는 low benchmark claim-boundary note로, GRILL-005는 model workspace
-status preservation note로 남는다.
+alignment로 addressed되었다. GRILL-003은 evidence-criteria clarification으로
+`docs/95_V0_5_ACCEPTANCE_EVIDENCE.md`에서 addressed되었다. GRILL-004는 low
+benchmark claim-boundary note로, GRILL-005는 model workspace status preservation
+note로 남는다.
 
 ## What ni-grill did not do
 

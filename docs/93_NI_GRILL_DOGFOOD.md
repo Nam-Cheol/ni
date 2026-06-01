@@ -13,7 +13,7 @@
 | --- | --- | --- | --- | --- | --- |
 | GRILL-001 | High | roadmap specificity | `docs/51_POST_RELEASE_ROADMAP.md`; CAP-019 / DEC-015 | clarify | maybe |
 | GRILL-002 | High | distribution status | `docs/80_HOMEBREW_DECISION.md`; CAP-020 / DEC-016 | clarify | maybe |
-| GRILL-003 | Medium | acceptance evidence | CAP-019 / EVAL-023; `docs/51_POST_RELEASE_ROADMAP.md` | clarify | no |
+| GRILL-003 | Medium | acceptance evidence | CAP-019 / EVAL-023; `docs/51_POST_RELEASE_ROADMAP.md` | addressed by `docs/95_V0_5_ACCEPTANCE_EVIDENCE.md` | no |
 | GRILL-004 | Low | benchmark claim boundary | `docs/77_BENCHMARK_CASE_STUDY.md`; `examples/benchmark-report/**` | keep as note | no |
 | GRILL-005 | Note | model workspace status | `docs/55_MODEL_WORKSPACE_PACKS.md`; `docs/75_MODEL_PACK_INSTALL_VERIFICATION.md`; `packages/*-skills/**` | keep as note | no |
 
@@ -47,6 +47,11 @@ Grill findings:
    Suggested action: clarify
    Blocks ni-end: no
 
+   Resolution note: addressed by
+   `docs/95_V0_5_ACCEPTANCE_EVIDENCE.md`, which defines lane-by-lane completion
+   evidence, status vocabulary, verification references, and `not_measured`
+   boundaries for v0.5 work. This does not mean any v0.5 lane is complete.
+
 4. GRILL-004 — Low — benchmark claim boundary
    Affected: `docs/77_BENCHMARK_CASE_STUDY.md`; `examples/benchmark-report/**`
    Concern: Benchmark claims are generally well-scoped: the report calls the work manual and qualitative, labels `not_measured` boundaries, limits dashboard `READY` to artifact readiness, and limits research `READY` to synthetic fixture readiness. The remaining pressure is visibility: the long case-study page can bury those boundaries below detailed status and prompt excerpts.
@@ -72,7 +77,8 @@ Minor editorial parity checks were not promoted because the top pressure is alre
 ## Follow-up
 
 GRILL-001 and GRILL-002 are addressed by the Task 172 roadmap and distribution
-documentation alignment. GRILL-003 remains a medium acceptance-evidence note,
+documentation alignment. GRILL-003 is addressed by
+`docs/95_V0_5_ACCEPTANCE_EVIDENCE.md` as an evidence-criteria clarification.
 GRILL-004 remains a low benchmark claim-boundary note, and GRILL-005 remains a
 model workspace status preservation note.
 
