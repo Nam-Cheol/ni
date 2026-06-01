@@ -120,12 +120,12 @@ REQUIRED_MARKERS = {
         "verified된 curl installer path만 claim",
     ],
     "docs/51_POST_RELEASE_ROADMAP.md": [
-        "after the v0.3.0 release and installer",
-        "release verification docs, and distribution docs aligned",
+        "after the v0.4.0 release, release-asset",
+        "distribution docs accurate for the verified v0.4.0 state",
     ],
     "docs/51_POST_RELEASE_ROADMAP.ko.md": [
-        "v0.3.0 release와 installer verification work 이후",
-        "release verification docs, distribution docs 정렬 유지",
+        "v0.4.0 release, release-asset verification",
+        "verified v0.4.0 state에 맞게 release",
     ],
     "docs/68_RELEASE_NOTES_v0.3.0.md": [
         "Tag suggestion: `v0.3.0`",

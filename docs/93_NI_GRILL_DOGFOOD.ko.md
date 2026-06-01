@@ -69,6 +69,13 @@ Grill findings:
 
 Minor editorial parity checks는 roadmap과 distribution-status findings가 이미 top pressure를 덮기 때문에 promoted하지 않았다.
 
+## Follow-up
+
+GRILL-001과 GRILL-002는 Task 172의 roadmap 및 distribution documentation
+alignment로 addressed되었다. GRILL-003은 medium acceptance-evidence note로,
+GRILL-004는 low benchmark claim-boundary note로, GRILL-005는 model workspace
+status preservation note로 남는다.
+
 ## What ni-grill did not do
 
 - did not change readiness

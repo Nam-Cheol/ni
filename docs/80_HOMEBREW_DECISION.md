@@ -4,9 +4,9 @@ Date: 2026-05-29
 
 ## Current distribution state
 
-- Release binary: Available for the verified v0.3.0 GitHub Release archives and
+- Release binary: Available for the verified v0.4.0 GitHub Release archives and
   checksums.
-- Curl installer: Available for the verified v0.3.0 release assets.
+- Curl installer: Available for the verified v0.4.0 release assets.
 - Homebrew: Planned. No tap or formula is published or tested.
 - Model workspace packs: Experimental as a broad product path; source packs,
   manual copy, zip packaging, and the Claude target-directory dry-run path are

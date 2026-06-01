@@ -1,7 +1,7 @@
 # Post-Release Roadmap
 
-이 roadmap은 v0.3.0 release와 installer verification work 이후의 다음 단계를
-정의한다. `ni`는 계속 `ni-kernel`이어야 한다. 즉 AI Agents를 위한 Project
+이 roadmap은 v0.4.0 release, release-asset verification, curl-installer
+verification work 이후의 다음 단계들을 정의한다. `ni`는 계속 `ni-kernel`이어야 한다. 즉 AI Agents를 위한 Project
 Intent Compiler이며, accepted project intent를 위한 deterministic pre-runtime
 control layer다.
 
@@ -25,18 +25,18 @@ evidence collection loops, release workflows의 owner가 되면 안 된다.
 
 ## Phases
 
-### v0.3.x: release distribution stabilization
+### v0.4.x: post-release stabilization
 
 현재 kernel을 더 신뢰하기 쉽게 만드는 작은 post-release fixes에 집중한다:
 
-- source, local binary, release binary, curl installer users가 발견한 launch
-  issues 수정;
+- source, local binary, release binary, curl installer, model-workspace,
+  no-terminal-assisted users가 발견한 adoption/documentation issues 수정;
+- verified v0.4.0 state에 맞게 release, curl installer, install, README,
+  verification, distribution docs를 정확하게 유지;
+- benchmark evidence를 과장하지 않으면서 examples와 benchmark readability 개선;
 - Intent Lock Protocol, source-of-truth rules, target boundaries 관련 docs polish;
-- examples 확장, 특히 non-software examples와 locked handoff samples;
 - validation, locking, prompt compilation, target export, command output의 bug
-  fixes;
-- release notes, README links, examples, public launch docs, install docs, release
-  verification docs, distribution docs 정렬 유지.
+  fixes.
 
 이 phase는 runtime execution behavior를 추가하면 안 된다. `ni run`은 계속 prompt
 compilation only다.
@@ -57,38 +57,49 @@ sustained model-user planning을 더 안전하고 auditable하게 만드는 데 
 
 CLI가 계속 authority다. Skills와 models는 계속 UX다.
 
-### v0.5: target seed quality and conformance
+### v0.5: evidence, authoring reliability, and adoption surfaces
 
-locked-plan seed material을 더 유용하게 만들되 inert 상태를 유지하는 데 집중한다:
+현재 pre-runtime kernel을 더 credible하고 adopt하기 쉽게 만들며, real planning
+evidence로 뒷받침하는 데 집중한다:
 
-- built-in targets의 target seed formats 안정화;
-- target conformance checks와 explanations 개선;
-- human-team 및 tool-specific consumption shapes를 위한 더 명확한 handoff
-  packets 추가;
-- derived seed material을 보여주되 kernel-owned execution state로 바꾸지 않는
-  examples 확장;
-- generated work graphs, harness proposals, evaluation notes, adapter notes를
-  mutable and downstream-owned 상태로 유지.
+- `not_measured` boundaries를 보존하고 fake empirical claims, statistical
+  significance claims, implementation-quality claims, downstream-agent-performance
+  claims를 하지 않는 real benchmark evidence와 case studies 공개;
+- docs/contract/session synchronization, grouped repair questions, proof capture,
+  assumptions/decisions/risks/evaluations/non-goals 보존을 포함한
+  conversation-authoring reliability 개선;
+- `ni-grill`을 `ni` planning에 dogfood하고, `ni status` readiness authority를
+  대체하지 않으면서 planning challenge quality 개선;
+- locked-plan change control, amendment, relock, changed-intent UX를 개선하되
+  lock/hash verification은 deterministic하게 유지;
+- tap 또는 formula가 존재하고 `brew install`, `ni --help`, `ni version`이
+  tested된 뒤에만 Homebrew를 optional distribution candidate로 검토;
+- host-level install 또는 discovery가 proof될 때만 model workspace packs를
+  verify하고, 그렇지 않으면 Experimental과 CLI-authority boundary를 유지;
+- 특히 non-software planning examples 같은 product surfaces 확장;
+- downstream integrations는 separate packages, target exports, seed formats,
+  downstream-owned notes로만 유지하고 `ni-kernel` behavior로 만들지 않기.
 
-이 phase는 seed quality를 개선할 수 있다. 하지만 targets를 `ni-kernel` 내부의
-executable adapters로 만들면 안 된다.
+이 phase는 supporting work로 target seed quality와 conformance를 개선할 수 있다.
+하지만 targets를 `ni-kernel` 내부의 executable adapters로 만들면 안 된다.
 
 v0.5는 Homebrew tap implementation을 distribution infrastructure로 다룰 수 있는
 가장 이른 scheduled point이기도 하다. External tap, formula, checksums, audit,
 local formula install, published tap install, `ni --help` / `ni version`
-validation이 모두 통과하기 전까지 Homebrew는 Planned로 남는다.
+validation이 모두 통과하기 전까지 Homebrew는 Planned and deferred로 남는다.
 
-### v0.6: benchmark data and case studies
+### v0.6 or later: broader adoption evidence and ecosystem work
 
-downstream agents를 실행하지 않고 planning quality에 관한 evidence를 쌓는 데
-집중한다:
+v0.5 credibility baseline 이후의 evidence와 optional ecosystem work에 집중한다:
 
-- existing benchmark protocol을 사용해 real benchmark reports 공개;
-- direct-to-agent prompts와 locked `ni` intent를 ambiguity, traceability, risk
-  coverage, handoff clarity 기준으로 비교;
+- v0.5 case studies가 유용한 measurement patterns를 보여준 경우 broader
+  benchmark data 공개;
+- README와 install docs만으로 adoption이 부족한 경우에만 landing page 검토;
+- downstream package ecosystem은 `ni-kernel` 밖에서만 탐색;
+- real users와 maintained examples에서 stronger adoption evidence 추가;
 - human-team handoff evaluation cases 추가;
-- 더 많은 non-software product examples 추가;
-- readiness rules가 도움이 된 곳, noisy했던 곳, revision이 필요한 곳 문서화.
+- readiness rules가 도움이 된 곳, noisy했던 곳, revision이 필요한 곳 문서화;
+- `ni-kernel` runtime execution은 계속 제외.
 
 Benchmarks는 intent quality와 handoff readiness를 평가해야 한다. execution
 benchmarks나 runtime performance claims가 되면 안 된다.

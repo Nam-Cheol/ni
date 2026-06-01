@@ -22,6 +22,19 @@ Distribution automation may help users obtain or invoke the CLI. It must not
 turn `ni` into a task runner, shell adapter, package release runtime, hosted
 execution service, or multi-agent execution layer.
 
+## Current Factual Status
+
+| Path | Status | Notes |
+| --- | --- | --- |
+| Source / Go | Available | Developer path. |
+| Local binary | Available | Built from this checkout; local install path. |
+| Release binary | Available | Verified v0.4.0 assets. |
+| Curl installer | Available | Verified against v0.4.0 release assets. |
+| Model workspace packs | Experimental | UX layer; CLI remains authority; global host install is not overclaimed. |
+| No-terminal method | Experimental / assisted | Drafting only; deterministic validation requires CLI proof from a trusted runner. |
+| Homebrew | Planned / v0.5 candidate | Deferred, not guaranteed; not Available until a tap/formula exists and `brew install`, `ni --help`, and `ni version` are tested. |
+| Runtime execution, shell adapters, Codex exec, queues, PR automation | Not included | Not part of `ni-kernel`; future downstream integration must be separate packages, target exports, or seed formats. |
+
 ## Distribution Matrix
 
 | Track | Status | User type | Required dependency | Trust model | Implementation work needed |
@@ -99,7 +112,7 @@ the real v0.4.0 darwin/arm64 release archive and checksum file on 2026-05-29.
 
 ### 5. Package manager mode
 
-Package manager mode is planned, not available yet.
+Package manager mode is planned and deferred, not available yet.
 
 Homebrew is the first likely package manager because it matches the initial
 developer audience and local macOS usage. Scoop can be considered later if
@@ -108,6 +121,9 @@ assets and checksums.
 
 Package publishing is external repository infrastructure. It is not part of the
 Intent Lock Protocol and must not become kernel-owned execution state.
+Homebrew can become Available only after a tap/formula exists and `brew
+install`, `ni --help`, and `ni version` have been tested against that package
+path.
 
 ### 6. Model workspace mode
 

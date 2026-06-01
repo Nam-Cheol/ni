@@ -1,7 +1,7 @@
 # Post-Release Roadmap
 
-This roadmap defines the next phase after the v0.3.0 release and installer
-verification work. It preserves
+This roadmap defines the next phases after the v0.4.0 release, release-asset
+verification, and curl-installer verification work. It preserves
 `ni` as `ni-kernel`: a Project Intent Compiler for AI Agents and a
 deterministic pre-runtime control layer for accepted project intent.
 
@@ -25,19 +25,20 @@ queues, adapters, evidence collection loops, or release workflows.
 
 ## Phases
 
-### v0.3.x: release distribution stabilization
+### v0.4.x: post-release stabilization
 
 Focus on small post-release fixes that make the current kernel easier to trust:
 
-- fix launch issues found by source, local binary, release binary, or curl
-  installer users;
+- fix adoption and documentation issues found by source, local binary, release
+  binary, curl installer, model-workspace, or no-terminal-assisted users;
+- keep release, curl installer, install, README, verification, and
+  distribution docs accurate for the verified v0.4.0 state;
+- improve examples and benchmark readability without overstating benchmark
+  evidence;
 - polish documentation around the Intent Lock Protocol, source-of-truth rules,
   and target boundaries;
-- expand examples, especially non-software examples and locked handoff samples;
 - fix bugs in validation, locking, prompt compilation, target export, and
-  command output;
-- keep release notes, README links, examples, public launch docs, install docs,
-  release verification docs, and distribution docs aligned.
+  command output.
 
 This phase must not add runtime execution behavior. `ni run` remains prompt
 compilation only.
@@ -58,38 +59,52 @@ Focus on making sustained model-user planning safer and more auditable:
 
 The CLI remains the authority. Skills and models remain UX.
 
-### v0.5: target seed quality and conformance
+### v0.5: evidence, authoring reliability, and adoption surfaces
 
-Focus on making locked-plan seed material more useful while keeping it inert:
+Focus on making the current pre-runtime kernel more credible, easier to adopt,
+and better supported by real planning evidence:
 
-- stabilize target seed formats for built-in targets;
-- improve target conformance checks and explanations;
-- add clearer handoff packets for human-team and tool-specific consumption
-  shapes;
-- expand examples that show derived seed material without turning it into
-  kernel-owned execution state;
-- keep generated work graphs, harness proposals, evaluation notes, and adapter
-  notes mutable and downstream-owned.
+- publish real benchmark evidence and case studies that preserve
+  `not_measured` boundaries and make no fake empirical, statistical
+  significance, implementation-quality, or downstream-agent-performance claims;
+- improve conversation-authoring reliability, especially docs/contract/session
+  synchronization, grouped repair questions, proof capture, and preservation of
+  assumptions, decisions, risks, evaluations, and non-goals;
+- dogfood `ni-grill` against `ni` planning and improve planning challenge
+  quality without replacing `ni status` as readiness authority;
+- improve locked-plan change control, amendment, relock, and changed-intent UX
+  while keeping lock and hash verification deterministic;
+- consider Homebrew only as an optional distribution candidate after a tap or
+  formula exists and `brew install`, `ni --help`, and `ni version` are tested;
+- verify model workspace packs only where host-level install or discovery can
+  be proved; otherwise keep them Experimental and CLI-authority bounded;
+- expand product surfaces, especially non-software planning examples;
+- keep downstream integrations as separate packages, target exports, seed
+  formats, or downstream-owned notes rather than `ni-kernel` behavior.
 
-This phase may improve seed quality. It must not make targets into executable
-adapters inside `ni-kernel`.
+This phase may improve target seed quality and conformance as supporting work.
+It must not make targets into executable adapters inside `ni-kernel`.
 
 v0.5 is also the earliest scheduled point for Homebrew tap implementation as
-distribution infrastructure. Homebrew remains Planned until the external tap,
-formula, checksums, audit, local formula install, published tap install, and
-`ni --help` / `ni version` validation have all passed.
+distribution infrastructure. Homebrew remains Planned and deferred until the
+external tap, formula, checksums, audit, local formula install, published tap
+install, and `ni --help` / `ni version` validation have all passed.
 
-### v0.6: benchmark data and case studies
+### v0.6 or later: broader adoption evidence and ecosystem work
 
-Focus on evidence about planning quality without running downstream agents:
+Focus on evidence and optional ecosystem work that should follow the v0.5
+credibility baseline:
 
-- publish real benchmark reports using the existing benchmark protocol;
-- compare direct-to-agent prompts against locked `ni` intent for ambiguity,
-  traceability, risk coverage, and handoff clarity;
+- publish broader benchmark data if v0.5 case studies show useful measurement
+  patterns;
+- add a landing page only if README and install docs are insufficient for
+  adoption;
+- explore a downstream package ecosystem only outside `ni-kernel`;
+- add stronger adoption evidence from real users and maintained examples;
 - add human-team handoff evaluation cases;
-- add more non-software product examples;
 - document where readiness rules helped, where they were noisy, and where they
-  need revision.
+  need revision;
+- continue to exclude `ni-kernel` runtime execution.
 
 Benchmarks should evaluate intent quality and handoff readiness. They must not
 become execution benchmarks or runtime performance claims.

@@ -4,9 +4,9 @@ Date: 2026-05-29
 
 ## Current distribution state
 
-- Release binary: verified v0.3.0 GitHub Release archives와 checksums에 대해
+- Release binary: verified v0.4.0 GitHub Release archives와 checksums에 대해
   Available.
-- Curl installer: verified v0.3.0 release assets에 대해 Available.
+- Curl installer: verified v0.4.0 release assets에 대해 Available.
 - Homebrew: Planned. Published 또는 tested tap/formula가 없다.
 - Model workspace packs: broad product path로는 Experimental. Source packs,
   manual copy, zip packaging, Claude target-directory dry-run path는
