@@ -76,12 +76,17 @@ research-planning readiness gaps before handoff.
 
 ## Table 2: Claim Boundary
 
+| Measured | Not measured |
+| --- | --- |
+| `BLOCKED` before synthetic answers; `READY` after synthetic benchmark protocol artifact answers; isolated workspace lock; 4000-character prompt | real research approval; fieldwork authorization; research quality; intervention effectiveness; downstream agent performance; rework reduction; adoption; cost; latency; statistical effect |
+
 | Claim | Supported? | Evidence | Notes |
 | --- | --- | --- | --- |
 | ni exposes unclear research intent | Yes | BLOCKED proof with OQ-001~OQ-005 | Pre-runtime evidence |
 | ni prevents premature research handoff | Yes | No lock/no prompt before answers | Planning evidence |
 | ni can produce bounded handoff after lock | Yes | 4000-char prompt after isolated lock | Synthetic benchmark artifact only |
 | research protocol is approved | No | not_measured | Out of scope |
+| real research approval exists | No | not_measured | Synthetic benchmark only |
 | fieldwork is authorized | No | not_measured | Out of scope |
 | downstream agent will perform well | No | not_measured | No downstream execution |
 

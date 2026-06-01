@@ -51,6 +51,12 @@ safety, privacy, consent, field operation에 영향을 줄 수 있는 작업을 
 ## Practical Takeaways
 
 - Original `BLOCKED` proof와 resolved fixture proof를 나란히 보존한다.
+- 모든 `READY` statement 근처에 measured/not_measured boundary를 보이게 둔다.
+  Measured는 synthetic answer 전 `BLOCKED`, synthetic benchmark protocol artifact
+  answer 뒤 `READY`, isolated lock, 4000-character prompt를 뜻한다.
+  Not_measured에는 real research approval, fieldwork authorization, research
+  quality, intervention effectiveness, downstream agent performance, rework,
+  adoption, cost, latency, statistical effect가 포함된다.
 - Workspace가 `READY`에 도달한 뒤에도 `not_measured` boundary를 보존한다.
 - Research approval과 fieldwork authorization은 ni readiness의 side effect가
   아니라 external governance step으로 다룬다.

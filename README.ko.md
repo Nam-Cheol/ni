@@ -162,6 +162,7 @@ checks, prompt compilation을 소유합니다.
 | [Why ni exists](docs/product-story.ko.md) | Compile-before-run 뒤의 짧은 product story. |
 | [Intent Lock Protocol](docs/42_INTENT_LOCK_PROTOCOL.md) | Readiness, locking, hash trust, blocked handoff의 깊은 규칙. |
 | [Install ni](docs/22_INSTALL.md) | Source, local build, release binary, curl installer details. |
+| [Benchmark Claim Boundaries](docs/97_BENCHMARK_CLAIM_BOUNDARIES.ko.md) | Benchmark `READY`, `not_measured`, 4000-character prompt evidence가 무엇을 증명하고 무엇을 증명하지 않는지. |
 | [Homebrew Decision](docs/80_HOMEBREW_DECISION.ko.md) | Homebrew는 Planned로 유지하며 tap implementation은 v0.5로 defer. |
 | [Homebrew Tap Plan](docs/72_HOMEBREW_TAP_PLAN.ko.md) | Planned Homebrew route; package-manager availability claim 없음. |
 | [Command reference](docs/commands.ko.md) | Implemented CLI surface. |

@@ -113,6 +113,8 @@ check_benchmark_report_docs() {
   require_file examples/benchmark-report/cases/research-protocol/workspace/.ni/contract.json
   require_file examples/benchmark-report/cases/research-protocol/workspace/.ni/plan.lock.json
   require_file docs/43_BENCHMARK_PROTOCOL.md
+  require_file docs/97_BENCHMARK_CLAIM_BOUNDARIES.md
+  require_file docs/97_BENCHMARK_CLAIM_BOUNDARIES.ko.md
 }
 
 check_no_terminal_assisted_docs() {
@@ -297,7 +299,12 @@ require_first_line "NI Intent Readiness: READY" "$DEMO_TMP/research-protocol-pro
 require_output "No blocker open questions are present." "$DEMO_TMP/research-protocol-proof.out"
 require_output "Expected \`ni status\`: not applicable" "examples/benchmark-report/README.md"
 require_output "not_measured" "examples/benchmark-report/README.md"
+require_output "docs/97_BENCHMARK_CLAIM_BOUNDARIES.md" "examples/benchmark-report/README.md"
+require_output "not_measured" "docs/97_BENCHMARK_CLAIM_BOUNDARIES.md"
+require_output "Dashboard product is ready | No | artifact-readiness only" "docs/97_BENCHMARK_CLAIM_BOUNDARIES.md"
+require_output "Fieldwork is authorized | No | no real review/authorization" "docs/97_BENCHMARK_CLAIM_BOUNDARIES.md"
 require_output "not_measured" "examples/benchmark-report/cases/research-protocol/15-before-after-evidence.md"
+require_output "synthetic benchmark" "examples/benchmark-report/cases/research-protocol/15-before-after-evidence.md"
 require_output "real research approval" "examples/benchmark-report/cases/research-protocol/15-before-after-evidence.md"
 require_output "fieldwork is authorized" "examples/benchmark-report/cases/research-protocol/15-before-after-evidence.md"
 require_output "Synthetic answered protocol artifact | READY | Yes, isolated workspace only | Yes | 4000" "examples/benchmark-report/cases/research-protocol/15-before-after-evidence.md"
@@ -313,6 +320,9 @@ require_output "no next-question groups were returned" "examples/benchmark-repor
 require_output "locked plan at examples/benchmark-report/cases/internal-dashboard/workspace/.ni/plan.lock.json" "examples/benchmark-report/cases/internal-dashboard/13-lock-summary.md"
 require_output "Prompt character count: \`4000\`" "examples/benchmark-report/cases/internal-dashboard/14-bounded-prompt-summary.md"
 require_output "Answered artifact-readiness case | READY | Yes, isolated workspace only | Yes | 4000" "examples/benchmark-report/cases/internal-dashboard/15-before-after-evidence.md"
+require_output "artifact-readiness" "examples/benchmark-report/cases/internal-dashboard/15-before-after-evidence.md"
+require_output "dashboard product readiness" "examples/benchmark-report/cases/internal-dashboard/15-before-after-evidence.md"
+require_output "not_measured" "examples/benchmark-report/cases/internal-dashboard/15-before-after-evidence.md"
 require_output "dashboard product is ready | No | not_measured" "examples/benchmark-report/cases/internal-dashboard/15-before-after-evidence.md"
 require_output "dashboard implementation quality | not_measured | no dashboard was built" "examples/benchmark-report/cases/internal-dashboard/15-before-after-evidence.md"
 require_output "The 4000-character prompt proves bounded handoff seed generation" "examples/benchmark-report/cases/internal-dashboard/16-lessons.md"

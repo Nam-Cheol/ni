@@ -143,6 +143,9 @@ Use the same rubric for both paths.
 - Do not claim empirical results unless actual benchmark runs exist.
 - Do not fake numbers, averages, percentages, or examples.
 - Mark unmeasured cells as `not_measured`.
+- Keep the claim-boundary labels in
+  [`97_BENCHMARK_CLAIM_BOUNDARIES.md`](97_BENCHMARK_CLAIM_BOUNDARIES.md)
+  visible next to benchmark summaries and `READY` transitions.
 - Keep request text, reviewer notes, status output, and prompt character counts
   auditable.
 - Separate observations from conclusions.
@@ -165,3 +168,7 @@ The benchmark remains inside `ni-kernel`:
 The benchmark is successful when it makes intent readiness visible before
 execution. It is not responsible for proving that downstream implementation
 quality improved.
+
+For the required claim-boundary vocabulary, case-specific limits, and
+review checklist, see
+[`97_BENCHMARK_CLAIM_BOUNDARIES.md`](97_BENCHMARK_CLAIM_BOUNDARIES.md).

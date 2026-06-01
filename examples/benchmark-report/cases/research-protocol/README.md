@@ -31,6 +31,16 @@ The synthetic answers are benchmark fixture data only. They are not real
 fieldwork approval, not actual research authorization, not proof of research
 quality, and not empirical evidence.
 
+## Claim boundary
+
+| Measured | Not measured |
+| --- | --- |
+| `BLOCKED` before synthetic answers; `READY` after synthetic protocol artifact answers; isolated lock; 4000-character prompt | real research approval; fieldwork authorization; research quality; intervention effectiveness; downstream agent performance; rework reduction; adoption; cost; latency; statistical effect |
+
+`READY` means synthetic benchmark protocol planning artifact readiness only. It
+keeps explicit no downstream execution, no implementation claim, and no
+statistical claim boundaries.
+
 ## Files
 
 - `01-original-request.md`: the vague research-protocol request.

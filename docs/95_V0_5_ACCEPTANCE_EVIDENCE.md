@@ -26,7 +26,7 @@ bounded prompts from valid locks.
 
 | Lane | Completion claim | Required evidence | Verification command or file | Status vocabulary | Not measured / not claimed |
 | --- | --- | --- | --- | --- | --- |
-| Real benchmark evidence | v0.5 benchmark cases show how NI exposes readiness gaps before handoff. | Case workspace or docs; status proof; next questions; before/after evidence if resolved; `not_measured` table; no downstream execution statement. | `docs/77_BENCHMARK_CASE_STUDY.md`; `examples/benchmark-report/**`; `bash scripts/demo-check.sh` | `measured`; `not_measured`; `BLOCKED`; `READY` for artifact-readiness only | Implementation quality; downstream agent performance; adoption; cost; latency; statistical effect size |
+| Real benchmark evidence | v0.5 benchmark cases show how NI exposes readiness gaps before handoff. | Case workspace or docs; status proof; next questions; before/after evidence if resolved; `not_measured` table; no downstream execution statement; visible claim-boundary markers. | `docs/77_BENCHMARK_CASE_STUDY.md`; `docs/97_BENCHMARK_CLAIM_BOUNDARIES.md`; `examples/benchmark-report/**`; `bash scripts/demo-check.sh` | `measured`; `not_measured`; `BLOCKED`; `READY` for artifact-readiness only | Implementation quality; downstream agent performance; adoption; cost; latency; statistical effect size |
 | Conversation-authoring reliability | `ni-start` / `ni-grill` / `ni-end` flow is easier to follow and safer. | First-run card docs; grouped next questions; planning proof capture; examples; skill pack wording. | `docs/31_NI_START_BEHAVIOR.md`; `docs/83_CONVERSATION_PROOF_CAPTURE.md`; `examples/ni-start-dogfood/**`; `bash scripts/check-skill-packs.sh` | `documented`; `verified by examples`; `Experimental` | Real user success rate; model quality across providers |
 | ni-grill quality | `ni-grill` challenges planning quality without becoming a readiness gate. | `docs/91_NI_GRILL.md`; `docs/92_NI_GRILL_OUTPUT_BUDGET.md`; ni-grill examples; severity and budget rules; CLI authority boundary. | `examples/ni-grill/**`; `bash scripts/demo-check.sh`; `bash scripts/check-skill-packs.sh` | `advisory`; `severity-labeled`; `CLI decides` | Real reduction in planning defects; user satisfaction |
 | Change-control UX | Locked plan changes are easier to understand and audit. | Amended docs; amendment record; status proof; relock behavior; stale lock or hash mismatch examples. | Future docs, tests, or examples that show amendment/relock and stale-lock proof | `Planned`; `audited`; `verified` | Team-scale merge success; production workflow adoption |
@@ -51,8 +51,9 @@ GRILL-003 is addressed by this acceptance evidence matrix. That does not mean
 every v0.5 lane is complete. It means each lane now has clearer completion
 evidence requirements that future tasks must satisfy before claiming completion.
 
-GRILL-004 remains a benchmark claim-boundary note. GRILL-005 remains a model
-workspace status preservation note.
+GRILL-004 is addressed by `docs/97_BENCHMARK_CLAIM_BOUNDARIES.md`, which keeps
+benchmark claim limits visible next to the case-study and example surfaces.
+GRILL-005 remains a model workspace status preservation note.
 
 ## How to use this document
 

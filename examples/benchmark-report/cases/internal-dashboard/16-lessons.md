@@ -30,6 +30,11 @@ questions were answered and accepted.
 
 ## Practical Takeaways
 
+- Keep the measured/not_measured boundary visible near every `READY` statement:
+  measured means `BLOCKED` before answers, `READY` after artifact-readiness
+  answers, isolated lock, and a 4000-character prompt; not_measured includes
+  dashboard product readiness, implementation quality, downstream agent
+  performance, rework, adoption, cost, latency, and statistical effect.
 - Keep direct-to-agent risk notes next to CLI proof so the reader can see what
   was prevented.
 - Preserve `not_measured` cells instead of filling them with optimism.

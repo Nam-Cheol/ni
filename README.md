@@ -161,6 +161,7 @@ checks, and prompt compilation.
 | [Why ni exists](docs/product-story.md) | The short product story behind compile-before-run. |
 | [Intent Lock Protocol](docs/42_INTENT_LOCK_PROTOCOL.md) | The deeper rules for readiness, locking, hash trust, and blocked handoff. |
 | [Install ni](docs/22_INSTALL.md) | Source, local build, release binary, and curl installer details. |
+| [Benchmark Claim Boundaries](docs/97_BENCHMARK_CLAIM_BOUNDARIES.md) | What benchmark `READY`, `not_measured`, and 4000-character prompt evidence do and do not prove. |
 | [Homebrew Decision](docs/80_HOMEBREW_DECISION.md) | Homebrew remains Planned; tap implementation is deferred to v0.5. |
 | [Homebrew Tap Plan](docs/72_HOMEBREW_TAP_PLAN.md) | Planned Homebrew route; no package-manager availability claim. |
 | [Command reference](docs/commands.md) | The implemented CLI surface. |

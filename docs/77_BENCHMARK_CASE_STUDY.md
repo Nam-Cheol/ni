@@ -38,6 +38,16 @@ It does not measure implementation quality, model quality, downstream agent
 performance, user satisfaction, runtime safety, cost, latency, statistical
 effect size, or production outcomes.
 
+For the standing vocabulary and review checklist, see
+[`97_BENCHMARK_CLAIM_BOUNDARIES.md`](97_BENCHMARK_CLAIM_BOUNDARIES.md).
+
+## Benchmark Claims at a Glance
+
+| Case | Measured readiness transition | Supported claim | Boundary |
+| --- | --- | --- | --- |
+| `internal-dashboard` | `BLOCKED` vague request -> answered artifact-readiness case -> `READY` isolated lock -> 4000-character bounded prompt | ni exposes dashboard-planning blockers and can produce bounded seed material after artifact-readiness answers. | Measured readiness transition, not measured product success. Dashboard product readiness, implementation quality, downstream agent performance, rework, adoption, cost, latency, and statistical effect remain `not_measured`. |
+| `research-protocol` | `BLOCKED` vague research request -> synthetic answered protocol artifact -> `READY` isolated lock -> 4000-character bounded prompt | ni exposes research-planning blockers and can produce bounded seed material after synthetic fixture answers. | Measured readiness transition, not measured research approval. Real research approval, fieldwork authorization, research quality, intervention effectiveness, downstream agent performance, rework, adoption, cost, latency, and statistical effect remain `not_measured`. |
+
 Case 3 now includes a before/after artifact-readiness package: it preserves the
 original `BLOCKED` dashboard request proof, then records the answered
 benchmark-artifact variant that reached `READY`, locked an isolated workspace,

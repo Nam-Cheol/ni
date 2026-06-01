@@ -31,6 +31,16 @@ Synthetic answer는 benchmark fixture data일 뿐이다. Real fieldwork approval
 actual research authorization, proof of research quality, empirical evidence가
 아니다.
 
+## Claim boundary
+
+| Measured | Not measured |
+| --- | --- |
+| synthetic answer 전 `BLOCKED`; synthetic protocol artifact answer 뒤 `READY`; isolated lock; 4000-character prompt | real research approval; fieldwork authorization; research quality; intervention effectiveness; downstream agent performance; rework reduction; adoption; cost; latency; statistical effect |
+
+`READY`는 synthetic benchmark protocol planning artifact readiness만 의미한다.
+No downstream execution, no implementation claim, no statistical claim boundary를
+명시적으로 유지한다.
+
 ## Files
 
 - `01-original-request.md`: vague research-protocol request.

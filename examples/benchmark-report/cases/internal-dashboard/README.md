@@ -23,6 +23,16 @@ The provided answers resolve the benchmark artifact blockers, not the real
 dashboard product requirements. This case does not implement a dashboard,
 execute a downstream agent, call a model API, or run dashboard build commands.
 
+## Claim boundary
+
+| Measured | Not measured |
+| --- | --- |
+| `BLOCKED` before answers; `READY` after artifact-readiness answers; isolated lock; 4000-character prompt | dashboard product readiness; dashboard implementation quality; downstream agent performance; rework reduction; adoption; cost; latency; statistical effect |
+
+`READY` means benchmark planning-meeting artifact readiness only. The case
+keeps explicit no implementation claim, no downstream execution, and no
+statistical claim boundaries.
+
 Added blocker evidence:
 
 - `08-blocker-analysis.md` explains why `OQ-001` through `OQ-004` block lock,

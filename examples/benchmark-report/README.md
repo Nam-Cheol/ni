@@ -11,6 +11,9 @@ protocol on a specific request. Do not invent values for empty cells. Case
 directories may include manual qualitative readiness drills. Unavailable lock,
 run, and prompt-count evidence must remain `not_measured`.
 
+For the shared boundary vocabulary, see
+`docs/97_BENCHMARK_CLAIM_BOUNDARIES.md`.
+
 ## 2. What this proves
 
 - Benchmark reporting stays pre-runtime and evidence-based.
@@ -32,6 +35,16 @@ run, and prompt-count evidence must remain `not_measured`.
   clearly labeled synthetic fixture answers, records `READY`, lock, and
   4000-character prompt proof, and keeps real research approval, fieldwork
   authorization, and research quality as `not_measured`.
+- Both resolved cases measure readiness transitions only. They do not measure
+  product success, implementation quality, downstream agent performance,
+  rework reduction, adoption, cost, latency, or statistical effect.
+
+## 2a. Claim boundary summary
+
+| Case | Measured | Not measured |
+| --- | --- | --- |
+| `internal-dashboard` | `BLOCKED` before answers; `READY` after artifact-readiness answers; isolated lock; 4000-character prompt | dashboard product readiness; dashboard implementation quality; downstream agent performance; rework reduction; adoption; cost; latency; statistical effect |
+| `research-protocol` | `BLOCKED` before synthetic answers; `READY` after synthetic protocol artifact answers; isolated lock; 4000-character prompt | real research approval; fieldwork authorization; research quality; intervention effectiveness; downstream agent performance; rework reduction; adoption; cost; latency; statistical effect |
 
 ## 3. Product type / surface
 

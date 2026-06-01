@@ -31,6 +31,11 @@ handoff가 준비되지 않았음을 보여줬다.
 
 ## Practical Takeaways
 
+- 모든 `READY` statement 근처에 measured/not_measured boundary를 보이게 둔다.
+  Measured는 answer 전 `BLOCKED`, artifact-readiness answer 뒤 `READY`, isolated
+  lock, 4000-character prompt를 뜻한다. Not_measured에는 dashboard product
+  readiness, implementation quality, downstream agent performance, rework,
+  adoption, cost, latency, statistical effect가 포함된다.
 - Reader가 무엇이 방지되었는지 볼 수 있도록 direct-to-agent risk note를 CLI
   proof 옆에 둔다.
 - 낙관으로 채우는 대신 `not_measured` cell을 보존한다.

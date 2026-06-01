@@ -38,6 +38,17 @@ ni 계획 예제를 `docs/43_BENCHMARK_PROTOCOL.md`의 루브릭으로 비교한
 사용자 만족도, 런타임 안전성, 비용, 지연 시간, 통계적 효과 크기,
 프로덕션 결과다.
 
+상시 vocabulary와 review checklist는
+[`97_BENCHMARK_CLAIM_BOUNDARIES.ko.md`](97_BENCHMARK_CLAIM_BOUNDARIES.ko.md)를
+참고한다.
+
+## Benchmark Claims at a Glance
+
+| Case | Measured readiness transition | Supported claim | Boundary |
+| --- | --- | --- | --- |
+| `internal-dashboard` | `BLOCKED` vague request -> answered artifact-readiness case -> `READY` isolated lock -> 4000-character bounded prompt | ni가 dashboard-planning blocker를 드러내고 artifact-readiness answer 뒤 bounded seed material을 만들 수 있음을 보여준다. | Measured readiness transition이지 measured product success가 아니다. Dashboard product readiness, implementation quality, downstream agent performance, rework, adoption, cost, latency, statistical effect는 `not_measured`로 남는다. |
+| `research-protocol` | `BLOCKED` vague research request -> synthetic answered protocol artifact -> `READY` isolated lock -> 4000-character bounded prompt | ni가 research-planning blocker를 드러내고 synthetic fixture answer 뒤 bounded seed material을 만들 수 있음을 보여준다. | Measured readiness transition이지 measured research approval이 아니다. Real research approval, fieldwork authorization, research quality, intervention effectiveness, downstream agent performance, rework, adoption, cost, latency, statistical effect는 `not_measured`로 남는다. |
+
 사례 3은 이제 before/after artifact-readiness package를 포함한다. Original
 `BLOCKED` dashboard request proof를 보존하고, 답변이 적용된 benchmark-artifact
 variant가 `READY`에 도달해 isolated workspace를 lock하고 bounded prompt를

@@ -52,6 +52,12 @@ makes premature handoff riskier than simply building the wrong screen.
 ## Practical Takeaways
 
 - Keep the original `BLOCKED` proof beside the resolved fixture proof.
+- Keep the measured/not_measured boundary visible near every `READY` statement:
+  measured means `BLOCKED` before synthetic answers, `READY` after synthetic
+  benchmark protocol artifact answers, isolated lock, and a 4000-character
+  prompt; not_measured includes real research approval, fieldwork
+  authorization, research quality, intervention effectiveness, downstream
+  agent performance, rework, adoption, cost, latency, and statistical effect.
 - Preserve `not_measured` boundaries even after a workspace reaches `READY`.
 - Treat research approval and fieldwork authorization as external governance
   steps, not as side effects of ni readiness.

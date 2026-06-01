@@ -61,12 +61,17 @@ lock되었으며, 정확히 4000자의 bounded generic prompt를 만들었다.
 
 ## Claim Boundary
 
+| Measured | Not measured |
+| --- | --- |
+| answer 전 `BLOCKED`; artifact-readiness answer 뒤 `READY`; isolated workspace lock; 4000-character prompt | dashboard product readiness; dashboard implementation quality; downstream agent performance; rework reduction; adoption; cost; latency; statistical effect |
+
 | Claim | Supported? | Evidence | Notes |
 | --- | --- | --- | --- |
 | ni exposes unclear intent | Yes | BLOCKED proof with OQ-001~OQ-004 | Pre-runtime evidence |
 | ni prevents premature handoff | Yes | No lock/no prompt before answers | Planning evidence |
 | ni can produce bounded handoff after lock | Yes | 4000-char prompt after isolated lock | Artifact-readiness only |
 | dashboard product is ready | No | not_measured | Out of scope |
+| dashboard product readiness is proven | No | not_measured | Artifact-readiness only |
 | downstream agent will perform well | No | not_measured | No downstream execution |
 
 ## Remaining not_measured
@@ -74,10 +79,12 @@ lock되었으며, 정확히 4000자의 bounded generic prompt를 만들었다.
 | Area | Status | Reason |
 | --- | --- | --- |
 | dashboard implementation quality | not_measured | no dashboard was built |
+| dashboard product readiness | not_measured | no dashboard product was validated |
 | downstream agent performance | not_measured | no agent was run |
 | rework reduction | not_measured | no repeated trial |
 | adoption | not_measured | no external usage data |
 | cost/latency | not_measured | no runtime measurement |
+| statistical effect | not_measured | no repeated quantitative study |
 
 ## Critical Scope Note
 

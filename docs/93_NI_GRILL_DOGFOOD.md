@@ -14,7 +14,7 @@
 | GRILL-001 | High | roadmap specificity | `docs/51_POST_RELEASE_ROADMAP.md`; CAP-019 / DEC-015 | clarify | maybe |
 | GRILL-002 | High | distribution status | `docs/80_HOMEBREW_DECISION.md`; CAP-020 / DEC-016 | clarify | maybe |
 | GRILL-003 | Medium | acceptance evidence | CAP-019 / EVAL-023; `docs/51_POST_RELEASE_ROADMAP.md` | addressed by `docs/95_V0_5_ACCEPTANCE_EVIDENCE.md` | no |
-| GRILL-004 | Low | benchmark claim boundary | `docs/77_BENCHMARK_CASE_STUDY.md`; `examples/benchmark-report/**` | keep as note | no |
+| GRILL-004 | Low | benchmark claim boundary | `docs/77_BENCHMARK_CASE_STUDY.md`; `docs/97_BENCHMARK_CLAIM_BOUNDARIES.md`; `examples/benchmark-report/**` | addressed by `docs/97_BENCHMARK_CLAIM_BOUNDARIES.md` | no |
 | GRILL-005 | Note | model workspace status | `docs/55_MODEL_WORKSPACE_PACKS.md`; `docs/75_MODEL_PACK_INSTALL_VERIFICATION.md`; `packages/*-skills/**` | keep as note | no |
 
 ## Full findings
@@ -61,6 +61,13 @@ Grill findings:
    Suggested action: keep as note
    Blocks ni-end: no
 
+   Resolution note: addressed by
+   `docs/97_BENCHMARK_CLAIM_BOUNDARIES.md`, which defines required
+   claim-boundary labels, status vocabulary, case-specific dashboard and
+   research limits, and a review checklist. `docs/77_BENCHMARK_CASE_STUDY.md`,
+   `docs/82_EXAMPLE_COVERAGE.md`, and the benchmark report examples now point
+   at that boundary and keep `not_measured` markers beside `READY` transitions.
+
 5. GRILL-005 — Note — model workspace status
    Affected: `docs/55_MODEL_WORKSPACE_PACKS.md`; `docs/75_MODEL_PACK_INSTALL_VERIFICATION.md`; `packages/claude-skills/**`; `packages/codex-skills/**`
    Concern: Model workspace pack statuses are currently factual: source and zip paths are available where verified, global host discovery remains unverified, no-terminal is assisted, and the skills repeatedly say "Skills are UX; CLI is authority."
@@ -79,8 +86,8 @@ Minor editorial parity checks were not promoted because the top pressure is alre
 GRILL-001 and GRILL-002 are addressed by the Task 172 roadmap and distribution
 documentation alignment. GRILL-003 is addressed by
 `docs/95_V0_5_ACCEPTANCE_EVIDENCE.md` as an evidence-criteria clarification.
-GRILL-004 remains a low benchmark claim-boundary note, and GRILL-005 remains a
-model workspace status preservation note.
+GRILL-004 is addressed by `docs/97_BENCHMARK_CLAIM_BOUNDARIES.md`, and
+GRILL-005 remains a model workspace status preservation note.
 
 ## What ni-grill did not do
 

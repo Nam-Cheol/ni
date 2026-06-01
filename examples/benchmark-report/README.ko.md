@@ -11,6 +11,9 @@ template은 empirical result를 포함하지 않는다. 특정 request에 protoc
 directory는 manual qualitative readiness drill을 포함할 수 있다. lock, run,
 prompt-count evidence가 없으면 반드시 `not_measured`로 남긴다.
 
+Shared boundary vocabulary는 `docs/97_BENCHMARK_CLAIM_BOUNDARIES.ko.md`를
+참고한다.
+
 ## 2. 증명하는 것
 
 - benchmark reporting은 pre-runtime이고 evidence-based 상태로 남는다.
@@ -32,6 +35,16 @@ prompt-count evidence가 없으면 반드시 `not_measured`로 남긴다.
   synthetic fixture answer를 적용하며, `READY`, lock, 4000-character prompt
   proof를 기록한다. Real research approval, fieldwork authorization, research
   quality는 `not_measured`로 남긴다.
+- 두 resolved case는 readiness transition만 측정한다. Product success,
+  implementation quality, downstream agent performance, rework reduction,
+  adoption, cost, latency, statistical effect는 측정하지 않는다.
+
+## 2a. Claim boundary summary
+
+| Case | Measured | Not measured |
+| --- | --- | --- |
+| `internal-dashboard` | answer 전 `BLOCKED`; artifact-readiness answer 뒤 `READY`; isolated lock; 4000-character prompt | dashboard product readiness; dashboard implementation quality; downstream agent performance; rework reduction; adoption; cost; latency; statistical effect |
+| `research-protocol` | synthetic answer 전 `BLOCKED`; synthetic protocol artifact answer 뒤 `READY`; isolated lock; 4000-character prompt | real research approval; fieldwork authorization; research quality; intervention effectiveness; downstream agent performance; rework reduction; adoption; cost; latency; statistical effect |
 
 ## 3. 제품 유형 / 표면
 
