@@ -666,6 +666,13 @@ become a runtime demo, shell adapter, dashboard scaffold, queue, telemetry
 collector, or downstream agent harness. Its job is to show why intent should be
 compiled before anyone starts building the dashboard.
 
+## Next Planned Benchmark Case
+
+The selected second v0.5 benchmark case is a research protocol for a summer
+neighborhood cooling study. The selection rationale is documented in
+`docs/88_SECOND_BENCHMARK_CASE_SELECTION.md`. This is a plan for the next
+benchmark evidence task, not a measured result.
+
 ## Observations
 
 All three direct prompts are plausible but not ready to hand to a downstream actor.

@@ -45,6 +45,9 @@ run, and prompt-count evidence must remain `not_measured`.
   dashboard request, with an isolated ni workspace, checked-in blocked status
   proof, blocker analysis, resolved `READY` proof, isolated lock evidence,
   bounded prompt evidence, before/after evidence, and lessons.
+- `../../docs/88_SECOND_BENCHMARK_CASE_SELECTION.md`: selection plan for the
+  second v0.5 benchmark case. It recommends a research-protocol case but does
+  not report new benchmark results.
 - `../../docs/43_BENCHMARK_PROTOCOL.md`: the benchmark protocol that defines
   the scoring method.
 

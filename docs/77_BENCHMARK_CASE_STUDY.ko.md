@@ -663,6 +663,13 @@ shell adapter, dashboard scaffold, queue, telemetry collector, downstream agent
 harness가 되면 안 된다. 이 사례의 역할은 누군가 dashboard를 만들기 전에
 intent를 compile해야 하는 이유를 보여주는 것이다.
 
+## 다음 계획된 벤치마크 사례
+
+선택된 두 번째 v0.5 benchmark case는 summer neighborhood cooling study를 위한
+research protocol이다. 선택 근거는
+`docs/88_SECOND_BENCHMARK_CASE_SELECTION.ko.md`에 기록되어 있다. 이것은 다음
+benchmark evidence task를 위한 계획이며 measured result가 아니다.
+
 ## 관찰
 
 세 직접 프롬프트는 그럴듯하지만 다운스트림 액터에게 넘길 준비가 되지

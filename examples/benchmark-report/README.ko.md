@@ -44,6 +44,9 @@ prompt-count evidence가 없으면 반드시 `not_measured`로 남긴다.
   qualitative readiness drill. isolated ni workspace, checked-in blocked
   status proof, blocker analysis, resolved `READY` proof, isolated lock
   evidence, bounded prompt evidence, before/after evidence, lessons를 포함한다.
+- `../../docs/88_SECOND_BENCHMARK_CASE_SELECTION.ko.md`: 두 번째 v0.5 benchmark
+  case를 위한 selection plan. Research-protocol case를 추천하지만 새 benchmark
+  result를 보고하지 않는다.
 - `../../docs/43_BENCHMARK_PROTOCOL.md`: scoring method를 정의하는 benchmark
   protocol.
 
