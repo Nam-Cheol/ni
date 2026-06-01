@@ -2,9 +2,12 @@
 
 ## Actors
 
-- Customer team: requested as the audience, but the exact role group is still a
-  blocker because "customer team" could mean customer success, support, sales,
-  account management, or leadership.
+- Planning meeting owner, product lead, or internal operations lead: primary
+  user who needs to decide whether the internal-dashboard benchmark case is
+  ready to use in a planning meeting.
+- Engineering lead, QA or reviewer, documentation maintainer, and relevant
+  stakeholders: secondary users who need to understand the benchmark result
+  without inspecting implementation details directly.
 - Planning model: records the vague request, visible assumptions, risks, and
   blocker questions in `docs/plan/**`, `.ni/contract.json`, and
   `.ni/session.json`.
@@ -13,10 +16,14 @@
 
 ## Outcomes
 
-- The customer-team actor should eventually know which accounts need attention,
-  but the decision definition and observable account signals are not accepted
-  yet.
-- The planning state should make hidden assumptions visible before a downstream
-  actor starts building.
-- Execution must not start while the target users, source systems, data
-  boundary, and review evidence remain unresolved.
+- The supported decision is whether the internal-dashboard benchmark case has
+  enough structure, evidence, and acceptance criteria to be used in a planning
+  meeting.
+- The decision timing is before or during the next planning meeting where the
+  benchmark case is reviewed for readiness.
+- The packet must not decide final product direction, implementation scope,
+  production release readiness, unresolved blocker resolution, or dashboard
+  implementation quality.
+- Execution must not start from this benchmark workspace; it may only produce
+  planning evidence, an isolated lock if allowed, and a bounded prompt if a
+  valid lock exists.

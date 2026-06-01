@@ -1,8 +1,10 @@
 # Internal dashboard benchmark answer packet
 
-This packet is for collecting user answers to the current internal-dashboard
-benchmark blockers. It does not resolve the blockers by itself. The benchmark remains `BLOCKED` until these answers are provided, the isolated benchmark
-workspace is updated, and `ni status` reports readiness that allows lock.
+This packet was created to collect user answers to the internal-dashboard
+benchmark blockers. It did not resolve the blockers by itself. At packet
+creation time, the benchmark remained `BLOCKED` until answers were provided,
+the isolated benchmark workspace was updated, and `ni status` reported
+readiness that allowed lock.
 
 Use these answers only inside:
 
@@ -12,12 +14,20 @@ examples/benchmark-report/cases/internal-dashboard/workspace/
 
 Do not apply them to the repository-root planning lock or root `.ni/` state.
 
-## Status
+## Original Status Before Answers
 
-- Current readiness: `BLOCKED`
+- Readiness: `BLOCKED`
 - Lock created: no
 - `ni-run` prompt compiled: no
 - Required answers: `OQ-001` through `OQ-004`
+
+## Resolved Status After Answers
+
+Task 161 applied user-provided answers for `OQ-001` through `OQ-004` to the
+isolated workspace as benchmark planning-meeting artifact readiness. The
+measured resolved status is recorded in `11-resolved-status-proof.md`; lock and
+prompt evidence are recorded in `13-lock-summary.md` and
+`14-bounded-prompt-summary.md`.
 
 ## How to use this packet
 

@@ -1,8 +1,9 @@
 # Blocker Analysis
 
-This note explains why the internal-dashboard benchmark remains `BLOCKED`.
-It does not answer the blocker questions, resolve them, defer them, lock the
-workspace, compile a prompt, or authorize downstream dashboard work.
+This note explains why the internal-dashboard benchmark was `BLOCKED` before
+the user-provided answers were applied. It did not answer the blocker
+questions, resolve them, defer them, lock the workspace, compile a prompt, or
+authorize downstream dashboard work.
 
 `BLOCKED` is a valid benchmark result. In this case, ni prevented premature
 handoff by making readiness gaps explicit before implementation. The case did
@@ -28,10 +29,17 @@ statistical effect, downstream agent performance, or dashboard quality. It also
 does not show that a future implementation would be correct. It shows that
 `ni status` refused to treat ambiguous intent as ready.
 
-## Current Result
+## Original Measured Result
 
 - Readiness: `BLOCKED`
 - Workspace locked: no
 - Bounded prompt compiled: no
 - Prompt character count: `not_measured`
 - Downstream execution: none
+
+## Resolved Variant
+
+Task 161 applied user answers for `OQ-001` through `OQ-004` to the isolated
+workspace as benchmark planning-meeting artifact readiness. The resolved status
+is recorded in `11-resolved-status-proof.md`. That later result does not change
+the historical blocker analysis and does not claim dashboard product readiness.

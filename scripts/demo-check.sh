@@ -69,7 +69,12 @@ check_benchmark_report_docs() {
   require_file examples/benchmark-report/cases/internal-dashboard/09-resolution-path.ko.md
   require_file examples/benchmark-report/cases/internal-dashboard/10-answer-packet.md
   require_file examples/benchmark-report/cases/internal-dashboard/10-answer-packet.ko.md
+  require_file examples/benchmark-report/cases/internal-dashboard/11-resolved-status-proof.md
+  require_file examples/benchmark-report/cases/internal-dashboard/12-resolved-next-questions.md
+  require_file examples/benchmark-report/cases/internal-dashboard/13-lock-summary.md
+  require_file examples/benchmark-report/cases/internal-dashboard/14-bounded-prompt-summary.md
   require_file examples/benchmark-report/cases/internal-dashboard/workspace/.ni/contract.json
+  require_file examples/benchmark-report/cases/internal-dashboard/workspace/.ni/plan.lock.json
   require_file docs/43_BENCHMARK_PROTOCOL.md
 }
 
@@ -187,29 +192,34 @@ require_output "Sync repairs:" "$DEMO_TMP/namba-ai-upgrade-proof.out"
 run_demo "namba-ai upgrade codex prompt compiles from existing lock" \
   run_if_locked "examples/namba-ai-upgrade" "codex" "$DEMO_TMP/namba-ai-upgrade-codex.prompt.md"
 
-run_demo "benchmark report internal dashboard remains blocked pre-runtime" bash -c '
+run_demo "benchmark report internal dashboard resolved artifact readiness" bash -c '
   go run ./cmd/ni status --dir examples/benchmark-report/cases/internal-dashboard/workspace >"$1/internal-dashboard-status.out"
   go run ./cmd/ni status --dir examples/benchmark-report/cases/internal-dashboard/workspace --proof --next-questions >"$1/internal-dashboard-proof.out"
 ' bash "$DEMO_TMP"
 check_benchmark_report_docs
-require_first_line "BLOCKED" "$DEMO_TMP/internal-dashboard-status.out"
-require_output "blocker R009: OQ-001 is a blocker open question" "$DEMO_TMP/internal-dashboard-status.out"
-require_output "NI Intent Readiness: BLOCKED" "$DEMO_TMP/internal-dashboard-proof.out"
-require_output "Open blockers:" "$DEMO_TMP/internal-dashboard-proof.out"
-require_output "OQ-001: OQ-001 is blocking readiness" "$DEMO_TMP/internal-dashboard-proof.out"
+require_first_line "READY" "$DEMO_TMP/internal-dashboard-status.out"
+require_output "NI Intent Readiness: READY" "$DEMO_TMP/internal-dashboard-proof.out"
+require_output "No blocker open questions are present." "$DEMO_TMP/internal-dashboard-proof.out"
 require_output "Expected \`ni status\`: not applicable" "examples/benchmark-report/README.md"
 require_output "not_measured" "examples/benchmark-report/README.md"
 require_output "not_measured" "examples/benchmark-report/README.ko.md"
 require_output "not_measured" "examples/benchmark-report/sample-report.md"
-require_output "not_measured" "examples/benchmark-report/cases/internal-dashboard/04-measurement-table.md"
+require_output "not_measured" "examples/benchmark-report/cases/internal-dashboard/05-not-measured.md"
 require_output "No downstream agent was executed" "examples/benchmark-report/cases/internal-dashboard/05-not-measured.md"
 require_output "NI Intent Readiness: BLOCKED" "examples/benchmark-report/cases/internal-dashboard/06-ni-status-proof.md"
+require_output "NI Intent Readiness: READY" "examples/benchmark-report/cases/internal-dashboard/11-resolved-status-proof.md"
+require_output "no next-question groups were returned" "examples/benchmark-report/cases/internal-dashboard/12-resolved-next-questions.md"
+require_output "locked plan at examples/benchmark-report/cases/internal-dashboard/workspace/.ni/plan.lock.json" "examples/benchmark-report/cases/internal-dashboard/13-lock-summary.md"
+require_output "Prompt character count: \`4000\`" "examples/benchmark-report/cases/internal-dashboard/14-bounded-prompt-summary.md"
 require_output "\`BLOCKED\` is a valid benchmark result" "examples/benchmark-report/cases/internal-dashboard/08-blocker-analysis.md"
-require_output "The current benchmark remains \`BLOCKED\`" "examples/benchmark-report/cases/internal-dashboard/09-resolution-path.md"
-require_output "This packet is for collecting user answers" "examples/benchmark-report/cases/internal-dashboard/10-answer-packet.md"
-require_output "benchmark remains \`BLOCKED\`" "examples/benchmark-report/cases/internal-dashboard/10-answer-packet.md"
+require_output "Task 161 later followed this" "examples/benchmark-report/cases/internal-dashboard/09-resolution-path.md"
+require_output "This packet was created to collect user answers" "examples/benchmark-report/cases/internal-dashboard/10-answer-packet.md"
+require_output "creation time, the benchmark remained \`BLOCKED\`" "examples/benchmark-report/cases/internal-dashboard/10-answer-packet.md"
 require_output "must not execute downstream agents" "docs/43_BENCHMARK_PROTOCOL.md"
 require_output "Target prompt boundedness" "docs/43_BENCHMARK_PROTOCOL.md"
+
+run_demo "benchmark report internal dashboard generic prompt compiles if locked" \
+  run_if_locked "examples/benchmark-report/cases/internal-dashboard/workspace" "generic" "$DEMO_TMP/internal-dashboard-generic.prompt.txt"
 
 run_demo "no-terminal assisted remains docs-only" check_no_terminal_assisted_docs
 

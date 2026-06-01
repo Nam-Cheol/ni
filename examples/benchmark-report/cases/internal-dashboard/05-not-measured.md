@@ -1,9 +1,7 @@
 # What Was Not Measured
 
-This dashboard case did not measure:
+This resolved dashboard benchmark case did not measure:
 
-- actual `ni end` output;
-- actual `ni run` output or prompt character count;
 - dashboard implementation quality;
 - downstream agent performance;
 - user satisfaction;
@@ -16,6 +14,12 @@ No downstream agent was executed. No model API was called. No dashboard was
 implemented. No queue, shell adapter, telemetry path, or runtime harness was
 added.
 
-The case now includes actual `ni status --proof --next-questions` output in
-`06-ni-status-proof.md`. Because that output is `BLOCKED`, lock creation,
-prompt compilation, and prompt character count remain `not_measured`.
+The case includes historical blocked `ni status --proof --next-questions`
+output in `06-ni-status-proof.md`, resolved `READY` status output in
+`11-resolved-status-proof.md`, lock evidence in `13-lock-summary.md`, and a
+bounded prompt character count in `14-bounded-prompt-summary.md`.
+
+The readiness result applies only to benchmark planning-meeting artifact
+readiness. Dashboard product readiness, implementation quality, downstream
+agent behavior, rework reduction, adoption, cost, latency, and statistical
+effect size remain `not_measured`.

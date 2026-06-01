@@ -1,9 +1,9 @@
 # Resolution Path
 
-This path describes how a future resolved variant could move from `BLOCKED` to
-`READY` or `READY_WITH_DEFERRALS` without weakening ni's gates. It is not a
-resolution of the current benchmark case. The current workspace remains
-blocked, unlocked, and without a compiled prompt.
+This path describes how a resolved variant could move from `BLOCKED` to
+`READY` or `READY_WITH_DEFERRALS` without weakening ni's gates. It was written
+before the user-provided answers were applied. Task 161 later followed this
+path for benchmark planning-meeting artifact readiness only.
 
 ## Required Answers
 
@@ -56,8 +56,10 @@ hashes are valid, the requested target is supported, and the compiled prompt
 can stay within the configured character bound. If intent changes after lock,
 execution must stop until the amendment or relock flow restores a valid lock.
 
-## Current Boundary
+## Original Boundary
 
-The current benchmark remains `BLOCKED`. No lock or prompt was created. The
-resolution path is planning guidance for a future variant, not evidence that
-the current case is ready.
+At the time this path was created, the benchmark remained `BLOCKED`; no lock or
+prompt had been created. After Task 161, the resolved variant is measured in
+`11-resolved-status-proof.md`, `13-lock-summary.md`, and
+`14-bounded-prompt-summary.md`. The resolved variant is evidence of benchmark
+artifact readiness only, not dashboard product readiness.

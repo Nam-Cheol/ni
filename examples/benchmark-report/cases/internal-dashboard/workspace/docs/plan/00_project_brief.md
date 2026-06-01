@@ -2,28 +2,31 @@
 
 ## Product type
 
-Software dashboard.
+Document product: benchmark planning artifact.
 
 ## Delivery surfaces
 
-- Web.
+- Document.
 
 ## Purpose
 
-Plan an internal customer-account dashboard before implementation so the
-customer team can decide which accounts need attention without downstream actors
-inventing users, account signals, data boundaries, or meeting acceptance
-criteria.
+Prepare the internal-dashboard benchmark case as a planning-meeting artifact so
+a planning owner, product lead, internal operations lead, reviewer, and
+stakeholders can decide whether the case has enough structure, evidence, and
+acceptance criteria to use in a planning meeting.
 
 ## Problem
 
-The original request asks for a dashboard for "the customer team" to see what
-is going on with accounts and know who needs attention. That is plausible
-implementation input, but the users, source systems, attention criteria,
-privacy boundary, review evidence, and next-meeting scope are still unresolved.
+The original request asked for a dashboard for "the customer team" to see what
+is going on with accounts and know who needs attention. The user-provided
+answers for `OQ-001` through `OQ-004` clarify benchmark artifact readiness, not
+dashboard product readiness. The workspace must therefore preserve the product
+unknowns as non-goals while evaluating whether the benchmark planning packet is
+ready for review.
 
 ## Success definition
 
-This benchmark workspace succeeds when the vague request is captured as
-pre-runtime planning evidence and `ni status --proof --next-questions` reports
-the unresolved intent as `BLOCKED` before any dashboard work starts.
+This benchmark workspace succeeds if the provided answers are captured in
+`docs/plan/**` and `.ni/contract.json`, `ni status --proof --next-questions`
+honestly reports the resulting readiness, and any lock or bounded prompt is
+created only inside this isolated workspace after the CLI allows it.

@@ -9,17 +9,19 @@ It now includes an isolated ni planning workspace:
 examples/benchmark-report/cases/internal-dashboard/workspace/
 ```
 
-Measured ni-path result:
+Measured ni-path result after applying the user-provided answers for `OQ-001`
+through `OQ-004`:
 
 - Command: `go run ./cmd/ni status --dir examples/benchmark-report/cases/internal-dashboard/workspace --proof --next-questions`
-- Readiness: `BLOCKED`
-- Lock created: no
-- Bounded prompt compiled: no
-- Prompt character count: `not_measured`
+- Readiness: `READY`
+- Scope of readiness: benchmark planning-meeting artifact readiness only
+- Lock created: yes, inside `workspace/.ni/plan.lock.json`
+- Bounded prompt compiled: yes
+- Prompt character count: `4000`
 
-Because readiness is `BLOCKED`, this case does not run `ni end` or `ni run`.
-It does not implement a dashboard, execute a downstream agent, call a model API,
-or run dashboard build commands.
+The provided answers resolve the benchmark artifact blockers, not the real
+dashboard product requirements. This case does not implement a dashboard,
+execute a downstream agent, call a model API, or run dashboard build commands.
 
 Added blocker evidence:
 
@@ -32,6 +34,13 @@ Added blocker evidence:
 - `10-answer-packet.md` and `10-answer-packet.ko.md` provide fillable
   user-facing answer packets for `OQ-001` through `OQ-004` without resolving
   the blockers or changing benchmark readiness.
+- `11-resolved-status-proof.md` records the measured `READY` status after the
+  answers were applied to the isolated workspace.
+- `12-resolved-next-questions.md` records that no next-question groups remained
+  after the resolved status run.
+- `13-lock-summary.md` records the isolated workspace lock.
+- `14-bounded-prompt-summary.md` records the bounded prompt command and 4000
+  character count.
 
 The benchmark evidence is qualitative and auditable. It does not claim
 statistical significance, adoption metrics, rework reduction, or downstream

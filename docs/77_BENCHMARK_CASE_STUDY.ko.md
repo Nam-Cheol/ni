@@ -459,6 +459,14 @@ Expected hidden assumptions include:
   `examples/benchmark-report/cases/internal-dashboard/09-resolution-path.md`
 - answer packet:
   `examples/benchmark-report/cases/internal-dashboard/10-answer-packet.md`
+- resolved status proof:
+  `examples/benchmark-report/cases/internal-dashboard/11-resolved-status-proof.md`
+- resolved next-question proof:
+  `examples/benchmark-report/cases/internal-dashboard/12-resolved-next-questions.md`
+- lock summary:
+  `examples/benchmark-report/cases/internal-dashboard/13-lock-summary.md`
+- bounded prompt summary:
+  `examples/benchmark-report/cases/internal-dashboard/14-bounded-prompt-summary.md`
 - planning workspace:
   `examples/benchmark-report/cases/internal-dashboard/workspace/`
 
@@ -474,30 +482,49 @@ Expected hidden assumptions include:
 - What privacy, access-control, or data-freshness constraints apply?
 ```
 
-lock 전 측정된 readiness blocker:
+답변 적용 전 측정된 readiness blocker:
 
-- `OQ-001`: primary dashboard user와 supported decision이 아직 accepted 상태가
-  아니다;
+- `OQ-001`: primary dashboard user와 supported decision이 accepted 상태가
+  아니었다;
 - `OQ-002`: "needs attention"이 observable account signal로 정의되지 않았다;
 - `OQ-003`: source systems, account fields, freshness rules, privacy
-  constraints, access controls가 아직 accepted 상태가 아니다;
-- `OQ-004`: planning-meeting acceptance evidence가 아직 accepted 상태가 아니다.
+  constraints, access controls가 accepted 상태가 아니었다;
+- `OQ-004`: planning-meeting acceptance evidence가 accepted 상태가 아니었다.
+
+사용자 답변 적용 후 측정된 readiness:
+
+- `OQ-001`부터 `OQ-004`는 benchmark planning-meeting artifact readiness에
+  대해서만 resolved 상태다.
+- accepted delivery surface는 dashboard delivery가 아니라 `document`다.
+- `ni status --proof --next-questions`는 blocker와 deferral 없이 `READY`를
+  보고한다.
+- `ni end`는 isolated workspace lock
+  `examples/benchmark-report/cases/internal-dashboard/workspace/.ni/plan.lock.json`을
+  만들었다.
+- `ni run --max-chars 4000`은 4000자 generic prompt를 compile했다.
+- 이 case는 여전히 dashboard implementation quality, production readiness,
+  downstream agent performance, rework reduction, adoption, cost, latency,
+  statistical effect size를 claim하지 않는다.
 
 체크인된 docs/contract records:
 
-- `docs/plan/01_actors_outcomes.md`는 requested customer-team actor를 기록하고
-  exact role/outcome은 blocker intent로 남긴다.
-- `docs/plan/02_capabilities.md`와 `.ni/contract.json`은 request capture와
-  readiness blocking을 위한 accepted planning capability를 기록한다.
-- `docs/plan/06_risks_security.md`와 `.ni/contract.json`은 blocker를 보존하는
-  mitigation을 가진 high-severity risk 3개를 기록한다.
-- `docs/plan/07_evaluation_contract.md`는 planning-capture review와
-  blocked-readiness proof를 기록한다.
-- `docs/plan/08_delivery_operation.md`는 web surface를 기록하고 이 benchmark
-  case에서 dashboard delivery가 허가되지 않았다고 명시한다.
-- `docs/plan/10_open_questions.md`는 blocker open question 4개를 유지한다.
+- `docs/plan/01_actors_outcomes.md`는 planning owner, product lead, internal
+  operations lead를 primary benchmark artifact user로 기록한다.
+- `docs/plan/02_capabilities.md`와 `.ni/contract.json`은 artifact readiness,
+  answer-packet review, non-execution boundary, lock 후 bounded prompt compile
+  capability를 기록한다.
+- `docs/plan/06_risks_security.md`와 `.ni/contract.json`은 false
+  product-readiness claim을 포함한 high-severity risk 4개와 mitigation을
+  기록한다.
+- `docs/plan/07_evaluation_contract.md`는 scope review, answer-packet
+  completeness, privacy/freshness review, isolated CLI readiness/prompt proof를
+  기록한다.
+- `docs/plan/08_delivery_operation.md`는 document surface를 기록하고 이
+  benchmark case에서 dashboard delivery가 허가되지 않았다고 명시한다.
+- `docs/plan/10_open_questions.md`는 `OQ-001`부터 `OQ-004`를 benchmark artifact
+  readiness에 대해 resolved/non-blocking으로 표시한다.
 
-2026-05-29에 확인한 `ni status` output excerpt:
+2026-05-29에 확인한 original `ni status` output excerpt:
 
 ```text
 $ go run ./cmd/ni status --dir examples/benchmark-report/cases/internal-dashboard/workspace --proof --next-questions
@@ -525,6 +552,39 @@ Execution must not start.
 Full proof와 next-question output은 `06-ni-status-proof.md`와
 `07-ni-next-questions.md`에 체크인되어 있다.
 
+2026-05-29에 확인한 resolved `ni status` output excerpt:
+
+```text
+$ go run ./cmd/ni status --dir examples/benchmark-report/cases/internal-dashboard/workspace --proof --next-questions
+NI Intent Readiness: READY
+
+Blockers:
+- None.
+
+Deferrals:
+- None.
+
+Warnings:
+- None.
+
+Passed checks:
+- Required docs exist.
+- Contract JSON is valid.
+- Readiness profile definitions are valid.
+- Capability and evaluation traceability rules passed.
+- High-severity risks have mitigation.
+- Decision statuses are valid and accepted decisions do not conflict.
+- No blocker open questions are present.
+- At least one non-goal is recorded.
+- Docs and contract are synchronized.
+
+Execution may proceed only after lock.
+```
+
+Resolved proof, next-question disposition, lock summary, bounded prompt
+summary는 `11-resolved-status-proof.md`, `12-resolved-next-questions.md`,
+`13-lock-summary.md`, `14-bounded-prompt-summary.md`에 체크인되어 있다.
+
 Blocker analysis와 resolution path는 `08-blocker-analysis.md`와
 `09-resolution-path.md`에 체크인되어 있다. 이 문서들은 각 blocker가 왜 lock을
 막는지, later에 어떤 user answer가 필요한지, 어떤 unsafe assumption을 피하는지,
@@ -550,39 +610,40 @@ Blocker analysis와 resolution path는 `08-blocker-analysis.md`와
 
 ## 사례 3 수동 측정표
 
-이 표는 dashboard request에 대한 한 리뷰어의 수동 정성 평가다. 반복
-benchmark data가 아니다. ni path evidence는 blocked pre-runtime workspace에
-대한 실제 status proof이며, 완료된 lock/run 측정이 아니다.
+이 표는 user answer를 적용한 뒤 dashboard request에 대한 한 리뷰어의 수동
+정성 평가다. 반복 benchmark data가 아니다. ni path evidence는 benchmark
+artifact readiness에 대한 실제 status, lock, prompt proof이며 dashboard product
+readiness가 아니다.
 
 | Criterion | Direct-to-agent risk | ni-path evidence | Improved? | Evidence |
 | --- | --- | --- | --- | --- |
-| Missing acceptance criteria | account health, priority ranking, freshness, performance, usability, meeting acceptance의 pass/fail check가 빠져 있다. | `OQ-002`, `OQ-003`, `OQ-004`가 signal definition, data freshness, meeting evidence를 lock 전 blocker로 유지한다. | yes | `workspace/docs/plan/10_open_questions.md`; `06-ni-status-proof.md` |
-| Unmitigated high-risk items | customer data exposure, incorrect prioritization, stale account signal risk가 보이지만 mitigation이 없다. | `RISK-001`부터 `RISK-003`은 high severity이고 mitigation을 갖는다. `ni status`도 high-severity risks have mitigation을 보고한다. | yes | `workspace/docs/plan/06_risks_security.md`; `workspace/.ni/contract.json`; `06-ni-status-proof.md` |
-| Unresolved blockers | primary users, source systems, required fields, meeting date, launch surface가 unknown이다. | `ni status --proof --next-questions`가 four blocker open questions와 `Execution must not start`를 보고한다. | yes | `06-ni-status-proof.md`; `07-ni-next-questions.md` |
-| Hidden assumptions | users, metrics, source systems, privacy review, deadline, visualization format을 downstream actor가 발명해야 한다. | workspace는 그 assumption들을 accepted dashboard scope가 아니라 blocker questions 또는 non-goals로 기록한다. | yes | `workspace/docs/plan/01_actors_outcomes.md`; `workspace/docs/plan/10_open_questions.md`; `workspace/.ni/contract.json` |
-| Non-goal coverage | CRM replacement, workflow automation, forecasting, write-back behavior, downstream agents, live integration 제외가 없다. | `NG-001`부터 `NG-003`은 dashboard implementation, live customer-system integration, CRM write-back, runtime state, downstream agents, model APIs, queues, PR/release automation을 제외한다. | yes | `workspace/.ni/contract.json`; `workspace/docs/plan/08_delivery_operation.md` |
-| Delivery surface clarity | web dashboard라고 가정하지만 prototype, report, embedded CRM view, planning document가 구분되지 않는다. | workspace는 requested surface를 `web`으로 기록하고 `OQ-004`로 실제 meeting evidence와 deliverable readiness를 계속 block한다. | yes | `workspace/docs/plan/00_project_brief.md`; `workspace/docs/plan/08_delivery_operation.md`; `06-ni-status-proof.md` |
-| Actor/outcome clarity | "Customer team"과 "who needs attention"은 implementation을 이끌기엔 너무 넓다. | `OQ-001`과 `OQ-002`가 actor, decision, attention signals가 accepted 되기 전 readiness를 block한다. | yes | `workspace/docs/plan/01_actors_outcomes.md`; `workspace/docs/plan/10_open_questions.md`; `07-ni-next-questions.md` |
-| Evaluation evidence clarity | correctness, freshness, access, meeting readiness evidence가 없다. | `EVAL-001`과 `EVAL-002`는 planning capture와 blocked-readiness proof를 다루며 product evidence는 `OQ-002`부터 `OQ-004`로 계속 block된다. | yes | `workspace/docs/plan/07_evaluation_contract.md`; `06-ni-status-proof.md` |
-| Bounded handoff prompt availability | 없음; 직접 프롬프트에는 lock 검증된 compiled target prompt가 없다. | `ni status`가 `BLOCKED`이므로 bounded prompt는 compile하지 않았다. prompt character count는 `not_measured`로 남는다. | no | `06-ni-status-proof.md`; no `08-ni-lock-summary.md`; no `09-ni-run-prompt-summary.md` |
+| Missing acceptance criteria | account health, priority ranking, freshness, performance, usability, meeting acceptance의 pass/fail check가 빠져 있다. | resolved workspace는 benchmark planning-meeting artifact readiness에 한해 required OQ fields complete, supported decision clear, testable criteria, explicit privacy boundary, unresolved blockers visible을 pass/fail criteria로 정의한다. | yes | `workspace/docs/plan/04_domain_state.md`; `workspace/docs/plan/07_evaluation_contract.md`; `11-resolved-status-proof.md` |
+| Unmitigated high-risk items | customer data exposure, incorrect prioritization, stale signal, false product-readiness claim risk가 보이지만 mitigation이 없다. | `RISK-001`부터 `RISK-004`는 high severity이고 mitigation을 갖는다. `ni status`도 high-severity risks have mitigation을 보고한다. | yes | `workspace/docs/plan/06_risks_security.md`; `workspace/.ni/contract.json`; `11-resolved-status-proof.md` |
+| Unresolved blockers | primary users, source systems, required fields, meeting date, launch surface가 unknown이다. | `OQ-001`부터 `OQ-004`는 benchmark artifact readiness에 대해 resolved이고 `ni status --proof --next-questions`는 blocker/deferral 없이 `READY`를 보고한다. | yes | `workspace/docs/plan/10_open_questions.md`; `11-resolved-status-proof.md`; `12-resolved-next-questions.md` |
+| Hidden assumptions | users, metrics, source systems, privacy review, deadline, visualization format을 downstream actor가 발명해야 한다. | workspace는 scope shift를 `DEC-003`으로 기록하고 artifact answer를 product answer로 취급하지 않는다. Dashboard product readiness, implementation quality, empirical impact는 out of scope다. | yes | `workspace/docs/plan/11_decision_log.md`; `workspace/docs/plan/05_constraints.md`; `workspace/.ni/contract.json` |
+| Non-goal coverage | CRM replacement, workflow automation, forecasting, write-back behavior, downstream agents, live integration 제외가 없다. | `NG-001`부터 `NG-004`는 dashboard implementation, live integration, runtime state, downstream agents, model APIs, automation, release work, dashboard product readiness, empirical impact claim을 제외한다. | yes | `workspace/.ni/contract.json`; `workspace/docs/plan/05_constraints.md`; `workspace/docs/plan/08_delivery_operation.md` |
+| Delivery surface clarity | web dashboard라고 가정하지만 prototype, report, embedded CRM view, planning document가 구분되지 않는다. | resolved workspace는 accepted delivery surface를 isolated benchmark planning workspace/report evidence인 `document`로 바꾸고 web dashboard delivery는 unauthorized로 유지한다. | yes | `workspace/docs/plan/00_project_brief.md`; `workspace/docs/plan/08_delivery_operation.md`; `11-resolved-status-proof.md` |
+| Actor/outcome clarity | "Customer team"과 "who needs attention"은 implementation을 이끌기엔 너무 넓다. | Actor/outcome clarity는 benchmark artifact audience와 supported decision에 대해 accepted이고 customer-dashboard product actor/outcome은 readiness claim 밖에 남는다. | yes | `workspace/docs/plan/01_actors_outcomes.md`; `workspace/docs/plan/10_open_questions.md`; `12-resolved-next-questions.md` |
+| Evaluation evidence clarity | correctness, freshness, access, meeting readiness evidence가 없다. | `EVAL-001`부터 `EVAL-004`는 scope review, answer packet completeness, privacy/freshness boundary review, status proof, lock proof, bounded prompt proof를 다룬다. | yes | `workspace/docs/plan/07_evaluation_contract.md`; `11-resolved-status-proof.md`; `13-lock-summary.md`; `14-bounded-prompt-summary.md` |
+| Bounded handoff prompt availability | 없음; 직접 프롬프트에는 lock 검증된 compiled target prompt가 없다. | isolated workspace는 `ni end`로 locked 되었고 `ni run --max-chars 4000`이 4000자 generic prompt를 compile했다. | yes | `13-lock-summary.md`; `14-bounded-prompt-summary.md` |
 
 ## 사례 3에서 개선된 것
 
 개선은 dashboard가 설계되거나 구현되었다는 뜻이 아니다. 개선은 benchmark가
-왜 실행을 기다려야 하는지 드러낸다는 뜻이다. 직접 요청은 users, outcomes,
-data boundaries, risks, evaluation evidence, non-goals를 숨긴다. ni path는
-그 항목들을 synchronized docs/contract records로 만들고, high risks를 blocker
-preservation으로 mitigate하며, plan을 blocked 상태로 남겼다. 따라서
-`BLOCKED`는 유용한 result다. ni는 premature handoff를 막고 readiness gap을
-명시적으로 만들었지만 implementation quality를 증명하지는 않았다.
+먼저 왜 실행을 기다려야 하는지 드러낸 뒤, user answer를 artifact-readiness
+boundary에서만 accepted했다는 뜻이다. 직접 요청은 users, outcomes, data
+boundaries, risks, evaluation evidence, non-goals를 숨긴다. ni path는 그
+항목들을 synchronized docs/contract records로 만들고 scope shift를 기록했으며,
+CLI가 `READY`를 보고한 뒤에만 lock하고 bounded prompt seed material을
+compile했다.
 
 ## 사례 3에서 측정하지 않은 것
 
-이 사례는 lockfile creation, compiled prompt availability, prompt character
-count, agent behavior, dashboard quality, development time, user adoption,
-reduced rework, statistical effect를 측정하지 않았다. Cost, latency,
-downstream agent performance도 측정하지 않았다. `ni end`, `ni run`, model API,
-dashboard implementation, downstream agent를 실행하지 않았다.
+이 사례는 CLI가 `READY`를 보고한 뒤 isolated lockfile creation, compiled
+prompt availability, prompt character count를 측정했다. Agent behavior,
+dashboard quality, development time, user adoption, reduced rework, cost,
+latency, downstream agent performance, statistical effect는 측정하지 않았다.
+Model API, dashboard implementation, downstream agent는 실행하지 않았다.
 
 ## 사례 3 실행하지 않는 경계
 

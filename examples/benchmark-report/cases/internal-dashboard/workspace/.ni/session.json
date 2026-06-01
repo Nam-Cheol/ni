@@ -1,29 +1,8 @@
 {
   "schema": "ni.session.v0",
-  "active_planning_focus": "Resolve dashboard benchmark blocker questions before lock",
-  "last_planning_summary": "The vague internal dashboard request has been captured as pre-runtime planning state. Readiness remains blocked until the primary user, needs-attention signals, allowed source systems, privacy/access constraints, and planning-meeting evidence are answered.",
-  "pending_questions": [
-    {
-      "id": "OQ-001",
-      "title": "Who exactly is the primary dashboard user, and what decision should the dashboard support?",
-      "blocker": true
-    },
-    {
-      "id": "OQ-002",
-      "title": "What does needs attention mean in observable account signals?",
-      "blocker": true
-    },
-    {
-      "id": "OQ-003",
-      "title": "Which source systems, account fields, freshness rules, privacy constraints, and access controls may v0 use?",
-      "blocker": true
-    },
-    {
-      "id": "OQ-004",
-      "title": "What acceptance evidence must be ready for the next planning meeting?",
-      "blocker": true
-    }
-  ],
+  "active_planning_focus": "Measure resolved internal-dashboard benchmark artifact readiness",
+  "last_planning_summary": "User answers for OQ-001 through OQ-004 were applied as benchmark planning-meeting artifact readiness, not dashboard product readiness. The workspace now records resolved OQs, explicit scope boundaries, acceptance criteria, privacy constraints, and non-execution limits before measuring readiness with ni status.",
+  "pending_questions": [],
   "recent_decisions": [
     {
       "id": "DEC-001",
@@ -34,35 +13,46 @@
       "id": "DEC-002",
       "title": "Use the benchmark workspace only for ni CLI readiness proof.",
       "status": "accepted"
+    },
+    {
+      "id": "DEC-003",
+      "title": "Scope readiness to the benchmark planning artifact.",
+      "status": "accepted"
+    },
+    {
+      "id": "DEC-004",
+      "title": "Keep approval role explicit even when the named person is unassigned.",
+      "status": "accepted"
     }
   ],
   "recent_risks": [
     {
       "id": "RISK-001",
-      "title": "A downstream actor could build around guessed users, metrics, charts, deadlines, and success criteria.",
+      "title": "A downstream actor could treat benchmark artifact answers as dashboard implementation requirements.",
       "severity": "high",
       "status": "accepted"
     },
     {
       "id": "RISK-002",
-      "title": "Customer account signals could be exposed to the wrong audience if the privacy and access-control boundary is guessed.",
+      "title": "Sensitive data could be copied into the benchmark packet or evidence files.",
       "severity": "high",
       "status": "accepted"
     },
     {
       "id": "RISK-003",
-      "title": "Account prioritization could be incorrect or stale if needs-attention signals are undefined.",
+      "title": "Meeting-readiness ranking could hide acceptance-critical gaps.",
+      "severity": "high",
+      "status": "accepted"
+    },
+    {
+      "id": "RISK-004",
+      "title": "The resolved benchmark case could be falsely presented as product-readiness evidence.",
       "severity": "high",
       "status": "accepted"
     }
   ],
-  "last_readiness_status": "BLOCKED",
-  "last_readiness_blockers": [
-    "OQ-001 is marked as blocker.",
-    "OQ-002 is marked as blocker.",
-    "OQ-003 is marked as blocker.",
-    "OQ-004 is marked as blocker."
-  ],
+  "last_readiness_status": "READY",
+  "last_readiness_blockers": [],
   "last_updated_docs": [
     "docs/plan/00_project_brief.md",
     "docs/plan/01_actors_outcomes.md",

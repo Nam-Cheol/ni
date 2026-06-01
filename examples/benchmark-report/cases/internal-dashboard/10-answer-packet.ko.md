@@ -1,9 +1,10 @@
 # Internal dashboard benchmark answer packet
 
-이 packet은 현재 internal-dashboard benchmark blocker에 대한 사용자 답변을
-수집하기 위한 문서이다. 이 문서만으로 blocker가 해결되지는 않는다. 답변이
-제공되고, isolated benchmark workspace가 갱신되며, `ni status`가 lock 가능한
-readiness를 보고하기 전까지 benchmark는 계속 `BLOCKED` 상태이다.
+이 packet은 internal-dashboard benchmark blocker에 대한 사용자 답변을 수집하기
+위해 만들어진 문서이다. 이 문서만으로 blocker가 해결되지는 않았다. Packet
+작성 시점에는 답변이 제공되고, isolated benchmark workspace가 갱신되며,
+`ni status`가 lock 가능한 readiness를 보고하기 전까지 benchmark가 `BLOCKED`
+상태였다.
 
 이 답변은 다음 위치 안에서만 사용한다.
 
@@ -13,12 +14,19 @@ examples/benchmark-report/cases/internal-dashboard/workspace/
 
 repository-root planning lock이나 root `.ni/` state에는 적용하지 않는다.
 
-## Status
+## Original Status Before Answers
 
-- Current readiness: `BLOCKED`
+- Readiness: `BLOCKED`
 - Lock created: no
 - `ni-run` prompt compiled: no
 - Required answers: `OQ-001` through `OQ-004`
+
+## Resolved Status After Answers
+
+Task 161은 `OQ-001`부터 `OQ-004`에 대한 사용자 답변을 isolated workspace에
+benchmark planning-meeting artifact readiness로 적용했다. 측정된 resolved
+status는 `11-resolved-status-proof.md`에, lock과 prompt evidence는
+`13-lock-summary.md`와 `14-bounded-prompt-summary.md`에 기록되어 있다.
 
 ## How to use this packet
 

@@ -1,13 +1,15 @@
 {
   "schema": "ni.contract.v0",
   "readiness_profile": "prototype",
-  "product_type": "software",
-  "delivery_surfaces": ["web"],
+  "product_type": "document_product",
+  "delivery_surfaces": [
+    "document"
+  ],
   "interaction_mode": "human_to_system",
   "project": {
     "id": "internal-dashboard-benchmark",
     "name": "Internal Dashboard Benchmark Case",
-    "purpose": "Plan an internal customer-account dashboard before implementation so the customer team can decide which accounts need attention without downstream actors inventing users, account signals, data boundaries, or meeting acceptance criteria.",
+    "purpose": "Prepare the internal-dashboard benchmark case as a planning-meeting artifact so a planning owner, product lead, internal operations lead, reviewer, and stakeholders can decide whether the case has enough structure, evidence, and acceptance criteria to use in a planning meeting.",
     "status": "draft"
   },
   "non_goals": [
@@ -22,12 +24,16 @@
     {
       "id": "NG-003",
       "title": "Do not run downstream agents, model APIs, shell adapters, queues, PR automation, or release automation."
+    },
+    {
+      "id": "NG-004",
+      "title": "Do not claim dashboard product readiness, production release readiness, implementation quality, downstream agent performance, or empirical impact."
     }
   ],
   "capabilities": [
     {
       "id": "CAP-001",
-      "title": "Capture the vague dashboard request as planning state.",
+      "title": "Capture the benchmark artifact readiness scope as planning state.",
       "status": "accepted",
       "requirements": [
         "REQ-001"
@@ -36,7 +42,8 @@
         "EVAL-001"
       ],
       "risks": [
-        "RISK-001"
+        "RISK-001",
+        "RISK-004"
       ],
       "artifacts": [
         "ART-001"
@@ -44,33 +51,92 @@
     },
     {
       "id": "CAP-002",
-      "title": "Block readiness while dashboard intent is unresolved.",
+      "title": "Validate the answer packet against planning-meeting readiness criteria.",
       "status": "accepted",
       "requirements": [
-        "REQ-002"
+        "REQ-002",
+        "REQ-003"
       ],
       "evaluations": [
         "EVAL-002"
       ],
       "risks": [
         "RISK-001",
-        "RISK-002",
         "RISK-003"
       ],
       "artifacts": [
         "ART-002"
+      ]
+    },
+    {
+      "id": "CAP-003",
+      "title": "Preserve the non-execution benchmark boundary.",
+      "status": "accepted",
+      "requirements": [
+        "REQ-004",
+        "REQ-005"
+      ],
+      "evaluations": [
+        "EVAL-003"
+      ],
+      "risks": [
+        "RISK-002",
+        "RISK-004"
+      ],
+      "artifacts": [
+        "ART-003"
+      ]
+    },
+    {
+      "id": "CAP-004",
+      "title": "Compile a bounded handoff prompt only after a valid isolated lock.",
+      "status": "accepted",
+      "requirements": [
+        "REQ-006"
+      ],
+      "evaluations": [
+        "EVAL-004"
+      ],
+      "risks": [
+        "RISK-004"
+      ],
+      "artifacts": [
+        "ART-004",
+        "ART-005",
+        "ART-006",
+        "ART-007"
       ]
     }
   ],
   "requirements": [
     {
       "id": "REQ-001",
-      "title": "The plan must record the original dashboard request, visible assumptions, non-goals, risks, and blocker questions without treating them as implementation instructions.",
+      "title": "The plan must record that OQ-001 through OQ-004 resolve benchmark planning-meeting artifact readiness only, not dashboard product readiness.",
       "status": "accepted"
     },
     {
       "id": "REQ-002",
-      "title": "The readiness gate must remain blocked while the primary actor, attention definition, source systems, privacy boundary, and planning-meeting evidence are unresolved.",
+      "title": "The answer packet must fill every required OQ field, make the supported decision explicit, and define testable pass/fail criteria.",
+      "status": "accepted"
+    },
+    {
+      "id": "REQ-003",
+      "title": "Meeting-readiness ranking must prioritize supported decision, pass/fail criteria, minimum artifact, approval owner, and source/privacy constraints over optional notes.",
+      "status": "accepted"
+    },
+    {
+      "id": "REQ-004",
+      "title": "The packet must use only approved benchmark validation sources and non-sensitive fields, with stale or unknown source status marked stale or TBD.",
+      "status": "accepted"
+    },
+    {
+      "id": "REQ-005",
+      "title": "The benchmark must not include personal data, credentials, tokens, private customer data, confidential business metrics, production secrets, sensitive raw logs, or unrelated production telemetry.",
+      "status": "accepted"
+    },
+    {
+      "id": "REQ-006",
+      "title": "If ni status reports READY or READY_WITH_DEFERRALS, ni end and ni run may run only inside the isolated benchmark workspace, and ni run must stay within 4000 characters.",
       "status": "accepted"
     }
   ],
@@ -84,41 +150,68 @@
       "id": "DEC-002",
       "title": "Use the benchmark workspace only for ni CLI readiness proof.",
       "status": "accepted"
+    },
+    {
+      "id": "DEC-003",
+      "title": "Scope readiness to the benchmark planning artifact.",
+      "status": "accepted"
+    },
+    {
+      "id": "DEC-004",
+      "title": "Keep approval role explicit even when the named person is unassigned.",
+      "status": "accepted"
     }
   ],
   "risks": [
     {
       "id": "RISK-001",
-      "title": "A downstream actor could build around guessed users, metrics, charts, deadlines, and success criteria.",
+      "title": "A downstream actor could treat benchmark artifact answers as dashboard implementation requirements.",
       "severity": "high",
       "status": "accepted",
-      "mitigation": "Keep actor, attention-definition, source-system, and acceptance questions as blocker open questions until the user answers or explicitly defers them with rationale."
+      "mitigation": "Record the scope decision that OQ-001 through OQ-004 resolve benchmark artifact readiness only, preserve dashboard implementation and product quality as non-goals, and require testable planning-meeting pass/fail criteria before lock."
     },
     {
       "id": "RISK-002",
-      "title": "Customer account signals could be exposed to the wrong audience if the privacy and access-control boundary is guessed.",
+      "title": "Sensitive data could be copied into the benchmark packet or evidence files.",
       "severity": "high",
       "status": "accepted",
-      "mitigation": "Block lock until allowed source systems, required fields, data freshness, privacy review, and access-control constraints are explicit."
+      "mitigation": "Restrict the packet to project documentation, benchmark case files, review notes, planning artifacts, issue or PR references, approved source material required for benchmark validation, non-sensitive operational context, and minimal evidence references; prohibit personal data, credentials, tokens, private customer data, confidential business metrics, production secrets, sensitive raw logs, and unrelated production telemetry."
     },
     {
       "id": "RISK-003",
-      "title": "Account prioritization could be incorrect or stale if needs-attention signals are undefined.",
+      "title": "Meeting-readiness ranking could hide acceptance-critical gaps.",
       "severity": "high",
       "status": "accepted",
-      "mitigation": "Block lock until needs-attention signals, freshness expectations, and review evidence for planning-meeting use are explicit."
+      "mitigation": "Define attention and ranking only for planning-meeting readiness: decision supported, pass/fail criteria, minimum artifact, approval owner, and source/privacy constraints rank above optional notes; mark stale or uncertain source status as stale or TBD instead of treating it as current."
+    },
+    {
+      "id": "RISK-004",
+      "title": "The resolved benchmark case could be falsely presented as product-readiness evidence.",
+      "severity": "high",
+      "status": "accepted",
+      "mitigation": "State in the plan, contract, evidence files, and benchmark docs that readiness applies only to the benchmark planning artifact. Do not claim dashboard implementation quality, downstream agent performance, production release readiness, rework reduction, adoption, cost, latency, or statistical effect size."
     }
   ],
   "evaluations": [
     {
       "id": "EVAL-001",
-      "title": "Planning capture review.",
-      "method": "Review docs/plan/** and .ni/contract.json to confirm the vague dashboard request is represented as planning state, not executable dashboard implementation scope."
+      "title": "Benchmark artifact scope review.",
+      "method": "Review docs/plan/** and .ni/contract.json to confirm OQ-001 through OQ-004 are resolved only for benchmark planning-meeting artifact readiness and not as dashboard product readiness."
     },
     {
       "id": "EVAL-002",
-      "title": "Blocked readiness proof.",
-      "method": "Run go run ./cmd/ni status --dir examples/benchmark-report/cases/internal-dashboard/workspace --proof --next-questions and verify it reports BLOCKED with blocker open questions before downstream work starts."
+      "title": "Answer packet completeness review.",
+      "method": "Confirm every required answer field is filled, the supported decision is explicit, pass/fail criteria are testable, privacy boundaries are explicit, and unresolved blockers are marked instead of answered implicitly."
+    },
+    {
+      "id": "EVAL-003",
+      "title": "Privacy and freshness boundary review.",
+      "method": "Confirm the packet includes only allowed benchmark validation fields, excludes sensitive data categories, states freshness expectations, and marks stale or unknown source status as stale or TBD."
+    },
+    {
+      "id": "EVAL-004",
+      "title": "Isolated CLI readiness and prompt proof.",
+      "method": "Run go run ./cmd/ni status --dir examples/benchmark-report/cases/internal-dashboard/workspace --proof --next-questions; if the CLI reports READY or READY_WITH_DEFERRALS, run go run ./cmd/ni end --dir examples/benchmark-report/cases/internal-dashboard/workspace and then go run ./cmd/ni run --dir examples/benchmark-report/cases/internal-dashboard/workspace --max-chars 4000. Record the status proof, next questions, lock summary, bounded prompt summary, and prompt character count without executing downstream work."
     }
   ],
   "artifacts": [
@@ -129,34 +222,59 @@
     },
     {
       "id": "ART-002",
-      "path": "examples/benchmark-report/cases/internal-dashboard/06-ni-status-proof.md",
+      "path": "examples/benchmark-report/cases/internal-dashboard/10-answer-packet.md",
+      "kind": "answer_packet"
+    },
+    {
+      "id": "ART-003",
+      "path": "docs/plan/05_constraints.md",
+      "kind": "privacy_boundary"
+    },
+    {
+      "id": "ART-004",
+      "path": "examples/benchmark-report/cases/internal-dashboard/11-resolved-status-proof.md",
       "kind": "status_evidence"
+    },
+    {
+      "id": "ART-005",
+      "path": "examples/benchmark-report/cases/internal-dashboard/12-resolved-next-questions.md",
+      "kind": "next_questions_evidence"
+    },
+    {
+      "id": "ART-006",
+      "path": "examples/benchmark-report/cases/internal-dashboard/13-lock-summary.md",
+      "kind": "lock_evidence"
+    },
+    {
+      "id": "ART-007",
+      "path": "examples/benchmark-report/cases/internal-dashboard/14-bounded-prompt-summary.md",
+      "kind": "prompt_evidence"
     }
   ],
   "open_questions": [
     {
       "id": "OQ-001",
-      "title": "Who exactly is the primary dashboard user, and what decision should the dashboard support?",
-      "blocker": true,
-      "status": "open"
+      "title": "Who is the primary benchmark artifact user, and what decision should the artifact support?",
+      "blocker": false,
+      "status": "resolved"
     },
     {
       "id": "OQ-002",
-      "title": "What does needs attention mean in observable account signals?",
-      "blocker": true,
-      "status": "open"
+      "title": "What artifact signals need attention, and how should they be ranked?",
+      "blocker": false,
+      "status": "resolved"
     },
     {
       "id": "OQ-003",
-      "title": "Which source systems, account fields, freshness rules, privacy constraints, and access controls may v0 use?",
-      "blocker": true,
-      "status": "open"
+      "title": "Which source systems, fields, freshness rules, privacy constraints, and access roles may the benchmark packet use?",
+      "blocker": false,
+      "status": "resolved"
     },
     {
       "id": "OQ-004",
-      "title": "What acceptance evidence must be ready for the next planning meeting?",
-      "blocker": true,
-      "status": "open"
+      "title": "What acceptance evidence must be ready for the planning meeting?",
+      "blocker": false,
+      "status": "resolved"
     }
   ]
 }
