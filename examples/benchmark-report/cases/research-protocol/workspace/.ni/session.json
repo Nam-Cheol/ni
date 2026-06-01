@@ -1,0 +1,36 @@
+{
+  "schema": "ni.session.v0",
+  "active_planning_focus": "Initial research-protocol benchmark readiness measurement",
+  "last_planning_summary": "The workspace records a vague summer neighborhood cooling study request and intentionally keeps OQ-001 through OQ-005 unresolved for initial BLOCKED readiness proof.",
+  "pending_questions": [
+    "OQ-001",
+    "OQ-002",
+    "OQ-003",
+    "OQ-004",
+    "OQ-005"
+  ],
+  "recent_decisions": [],
+  "recent_risks": [],
+  "last_readiness_status": "BLOCKED",
+  "last_readiness_blockers": [
+    "OQ-001",
+    "OQ-002",
+    "OQ-003",
+    "OQ-004",
+    "OQ-005"
+  ],
+  "last_updated_docs": [],
+  "authority_order": [
+    ".ni/plan.lock.json",
+    ".ni/contract.json",
+    "docs/plan/**",
+    ".ni/session.json",
+    "chat history"
+  ],
+  "notes": {
+    "planning_aid_only": "Session state is a planning aid, not authority.",
+    "locked_docs": "Session state must not override locked docs.",
+    "completion": "Session state must not mark docs complete.",
+    "raw_transcript": "Raw transcript is not the source of truth."
+  }
+}

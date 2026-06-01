@@ -665,10 +665,28 @@ intent를 compile해야 하는 이유를 보여주는 것이다.
 
 ## 다음 계획된 벤치마크 사례
 
-선택된 두 번째 v0.5 benchmark case는 summer neighborhood cooling study를 위한
-research protocol이다. 선택 근거는
-`docs/88_SECOND_BENCHMARK_CASE_SELECTION.ko.md`에 기록되어 있다. 이것은 다음
-benchmark evidence task를 위한 계획이며 measured result가 아니다.
+선택된 두 번째 v0.5 benchmark case는
+`examples/benchmark-report/cases/research-protocol/`에 체크인되어 있다. 이 case는
+다음 vague request의 initial readiness를 측정한다.
+
+```text
+Help us plan a summer neighborhood cooling study so we can decide where to
+place shade and cooling interventions.
+```
+
+측정된 status는 `BLOCKED`다. Isolated workspace는
+`product_type=research_protocol`과 delivery surfaces `document`, `workflow`,
+`human_service`를 기록한다. `ni status --proof --next-questions`는 research
+question, participant 또는 observation scope, consent/privacy/data/accessibility
+boundary, heat/weather field safety, vulnerable-group safeguard, review owner,
+acceptance evidence를 다루는 `OQ-001`부터 `OQ-005`를 open blocker로 보고한다.
+Lock은 만들지 않았고 bounded prompt도 compile하지 않았으며 prompt count는
+`not_measured`로 남는다.
+
+이 research-protocol case는 research protocol quality, fieldwork readiness,
+intervention decision readiness, participant outcome, adoption, rework
+reduction, cost, latency, downstream agent performance, statistical effect를
+주장하지 않는다.
 
 ## 관찰
 

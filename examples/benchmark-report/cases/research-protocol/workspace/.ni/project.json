@@ -1,0 +1,14 @@
+{
+  "schema": "ni.project.v0",
+  "id": "research-protocol-benchmark",
+  "name": "Research Protocol Benchmark Case",
+  "created_for": "initial BLOCKED readiness measurement",
+  "kernel_phase": "planning",
+  "commands": [
+    "init",
+    "status",
+    "end",
+    "run"
+  ],
+  "prompt_max_chars": 4000
+}

@@ -668,10 +668,28 @@ compiled before anyone starts building the dashboard.
 
 ## Next Planned Benchmark Case
 
-The selected second v0.5 benchmark case is a research protocol for a summer
-neighborhood cooling study. The selection rationale is documented in
-`docs/88_SECOND_BENCHMARK_CASE_SELECTION.md`. This is a plan for the next
-benchmark evidence task, not a measured result.
+The selected second v0.5 benchmark case is now checked in under
+`examples/benchmark-report/cases/research-protocol/`. It measures the initial
+readiness of the vague request:
+
+```text
+Help us plan a summer neighborhood cooling study so we can decide where to
+place shade and cooling interventions.
+```
+
+The measured status is `BLOCKED`. The isolated workspace records
+`product_type=research_protocol` and delivery surfaces `document`, `workflow`,
+and `human_service`. `ni status --proof --next-questions` reports `OQ-001`
+through `OQ-005` as open blockers covering research question, participant or
+observation scope, consent/privacy/data/accessibility boundaries, heat/weather
+field safety, vulnerable-group safeguards, review owner, and acceptance
+evidence. No lock was created, no bounded prompt was compiled, and prompt count
+remains `not_measured`.
+
+This research-protocol case does not claim research protocol quality,
+fieldwork readiness, intervention decision readiness, participant outcomes,
+adoption, rework reduction, cost, latency, downstream agent performance, or
+statistical effect.
 
 ## Observations
 

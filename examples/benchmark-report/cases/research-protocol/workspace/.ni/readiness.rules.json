@@ -1,0 +1,88 @@
+{
+  "schema": "ni.readiness.rules.v0",
+  "statuses": [
+    "BLOCKED",
+    "READY_WITH_DEFERRALS",
+    "READY"
+  ],
+  "blocking_rules": [
+    {
+      "id": "R001",
+      "title": "required planning docs exist"
+    },
+    {
+      "id": "R002",
+      "title": ".ni/contract.json is valid JSON"
+    },
+    {
+      "id": "R003",
+      "title": "at least one capability exists"
+    },
+    {
+      "id": "R004",
+      "title": "every accepted capability has at least one linked evaluation"
+    },
+    {
+      "id": "R005",
+      "title": "every evaluation has a method"
+    },
+    {
+      "id": "R006",
+      "title": "every high-severity risk has mitigation"
+    },
+    {
+      "id": "R007",
+      "title": "every accepted capability has at least one artifact or requirement"
+    },
+    {
+      "id": "R008",
+      "title": "decision status is accepted, deferred, rejected, or not_applicable"
+    },
+    {
+      "id": "R009",
+      "title": "blocker open questions prevent lock"
+    },
+    {
+      "id": "R010",
+      "title": "at least one non-goal exists"
+    },
+    {
+      "id": "R011",
+      "title": "readiness profile definitions are valid"
+    },
+    {
+      "id": "R012",
+      "title": "planning docs and contract are synchronized"
+    },
+    {
+      "id": "R013",
+      "title": "accepted decisions do not contradict each other"
+    },
+    {
+      "id": "R014",
+      "title": "project purpose is concrete"
+    },
+    {
+      "id": "R015",
+      "title": "actors and outcomes are specified"
+    },
+    {
+      "id": "R016",
+      "title": "delivery surface is specified"
+    }
+  ],
+  "required_docs": [
+    "docs/plan/00_project_brief.md",
+    "docs/plan/01_actors_outcomes.md",
+    "docs/plan/02_capabilities.md",
+    "docs/plan/03_interaction_contract.md",
+    "docs/plan/04_domain_state.md",
+    "docs/plan/05_constraints.md",
+    "docs/plan/06_risks_security.md",
+    "docs/plan/07_evaluation_contract.md",
+    "docs/plan/08_delivery_operation.md",
+    "docs/plan/09_execution_strategy.md",
+    "docs/plan/10_open_questions.md",
+    "docs/plan/11_decision_log.md"
+  ]
+}

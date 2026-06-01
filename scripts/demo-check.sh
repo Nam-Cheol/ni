@@ -51,6 +51,14 @@ require_file() {
   fi
 }
 
+require_no_file() {
+  local path="$1"
+  if [[ -f "$path" ]]; then
+    echo "demo-check failed: file should not exist: $path" >&2
+    return 1
+  fi
+}
+
 check_benchmark_report_docs() {
   require_file examples/benchmark-report/README.md
   require_file examples/benchmark-report/README.ko.md
@@ -79,6 +87,17 @@ check_benchmark_report_docs() {
   require_file examples/benchmark-report/cases/internal-dashboard/16-lessons.ko.md
   require_file examples/benchmark-report/cases/internal-dashboard/workspace/.ni/contract.json
   require_file examples/benchmark-report/cases/internal-dashboard/workspace/.ni/plan.lock.json
+  require_file examples/benchmark-report/cases/research-protocol/README.md
+  require_file examples/benchmark-report/cases/research-protocol/README.ko.md
+  require_file examples/benchmark-report/cases/research-protocol/01-original-request.md
+  require_file examples/benchmark-report/cases/research-protocol/02-direct-to-agent-risk.md
+  require_file examples/benchmark-report/cases/research-protocol/03-ni-path.md
+  require_file examples/benchmark-report/cases/research-protocol/04-measurement-table.md
+  require_file examples/benchmark-report/cases/research-protocol/05-not-measured.md
+  require_file examples/benchmark-report/cases/research-protocol/06-ni-status-proof.md
+  require_file examples/benchmark-report/cases/research-protocol/07-ni-next-questions.md
+  require_file examples/benchmark-report/cases/research-protocol/workspace/.ni/contract.json
+  require_no_file examples/benchmark-report/cases/research-protocol/workspace/.ni/plan.lock.json
   require_file docs/43_BENCHMARK_PROTOCOL.md
 }
 
@@ -199,11 +218,14 @@ run_demo "namba-ai upgrade codex prompt compiles from existing lock" \
 run_demo "benchmark report internal dashboard resolved artifact readiness" bash -c '
   go run ./cmd/ni status --dir examples/benchmark-report/cases/internal-dashboard/workspace >"$1/internal-dashboard-status.out"
   go run ./cmd/ni status --dir examples/benchmark-report/cases/internal-dashboard/workspace --proof --next-questions >"$1/internal-dashboard-proof.out"
+  go run ./cmd/ni status --dir examples/benchmark-report/cases/research-protocol/workspace --proof --next-questions >"$1/research-protocol-proof.out"
 ' bash "$DEMO_TMP"
 check_benchmark_report_docs
 require_first_line "READY" "$DEMO_TMP/internal-dashboard-status.out"
 require_output "NI Intent Readiness: READY" "$DEMO_TMP/internal-dashboard-proof.out"
 require_output "No blocker open questions are present." "$DEMO_TMP/internal-dashboard-proof.out"
+require_first_line "NI Intent Readiness: BLOCKED" "$DEMO_TMP/research-protocol-proof.out"
+require_output "OQ-005 is marked as blocker." "$DEMO_TMP/research-protocol-proof.out"
 require_output "Expected \`ni status\`: not applicable" "examples/benchmark-report/README.md"
 require_output "not_measured" "examples/benchmark-report/README.md"
 require_output "not_measured" "examples/benchmark-report/README.ko.md"
@@ -223,6 +245,10 @@ require_output "\`BLOCKED\` is a valid benchmark result" "examples/benchmark-rep
 require_output "Task 161 later followed this" "examples/benchmark-report/cases/internal-dashboard/09-resolution-path.md"
 require_output "This packet was created to collect user answers" "examples/benchmark-report/cases/internal-dashboard/10-answer-packet.md"
 require_output "creation time, the benchmark remained \`BLOCKED\`" "examples/benchmark-report/cases/internal-dashboard/10-answer-packet.md"
+require_output "NI Intent Readiness: BLOCKED" "examples/benchmark-report/cases/research-protocol/06-ni-status-proof.md"
+require_output "OQ-005" "examples/benchmark-report/cases/research-protocol/07-ni-next-questions.md"
+require_output "no bounded prompt was compiled" "examples/benchmark-report/cases/research-protocol/05-not-measured.md"
+require_output "Prompt count: \`not_measured\`" "examples/benchmark-report/cases/research-protocol/04-measurement-table.md"
 require_output "must not execute downstream agents" "docs/43_BENCHMARK_PROTOCOL.md"
 require_output "Target prompt boundedness" "docs/43_BENCHMARK_PROTOCOL.md"
 

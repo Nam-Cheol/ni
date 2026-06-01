@@ -1,0 +1,255 @@
+{
+  "schema": "ni.contract.v0",
+  "readiness_profile": "prototype",
+  "product_type": "research_protocol",
+  "delivery_surfaces": [
+    "document",
+    "workflow",
+    "human_service"
+  ],
+  "interaction_mode": "human_to_human",
+  "project": {
+    "id": "research-protocol-benchmark",
+    "name": "Research Protocol Benchmark Case",
+    "purpose": "Prepare an initial benchmark planning workspace for a vague summer neighborhood cooling study request so ni can measure whether required research intent is blocked before any fieldwork, participant recruitment, data collection, intervention decision, downstream agent, or model API call begins.",
+    "status": "draft"
+  },
+  "non_goals": [
+    {
+      "id": "NG-001",
+      "title": "Do not execute fieldwork, recruit participants, collect data, run analysis, or place shade or cooling interventions from this benchmark case."
+    },
+    {
+      "id": "NG-002",
+      "title": "Do not treat ni readiness as ethics approval, research protocol quality, fieldwork readiness, intervention decision readiness, or real-world outcome evidence."
+    },
+    {
+      "id": "NG-003",
+      "title": "Do not run downstream agents, generated prompts, model APIs, shell adapters, queues, telemetry paths, release automation, or runtime harnesses."
+    },
+    {
+      "id": "NG-004",
+      "title": "Do not claim adoption, rework reduction, cost savings, latency improvement, statistical effect size, or downstream agent quality."
+    }
+  ],
+  "capabilities": [
+    {
+      "id": "CAP-001",
+      "title": "Capture the vague neighborhood cooling study request as an initial research-protocol benchmark workspace.",
+      "status": "accepted",
+      "requirements": [
+        "REQ-001",
+        "REQ-002"
+      ],
+      "evaluations": [
+        "EVAL-001"
+      ],
+      "risks": [
+        "RISK-001",
+        "RISK-004"
+      ],
+      "artifacts": [
+        "ART-001"
+      ]
+    },
+    {
+      "id": "CAP-002",
+      "title": "Make missing research questions, participant scope, consent, data, safety, and acceptance evidence explicit as blocker questions.",
+      "status": "accepted",
+      "requirements": [
+        "REQ-003",
+        "REQ-004"
+      ],
+      "evaluations": [
+        "EVAL-002"
+      ],
+      "risks": [
+        "RISK-001",
+        "RISK-002",
+        "RISK-003",
+        "RISK-005"
+      ],
+      "artifacts": [
+        "ART-002",
+        "ART-003"
+      ]
+    },
+    {
+      "id": "CAP-003",
+      "title": "Preserve the pre-runtime benchmark boundary for research-protocol evidence.",
+      "status": "accepted",
+      "requirements": [
+        "REQ-005",
+        "REQ-006"
+      ],
+      "evaluations": [
+        "EVAL-003"
+      ],
+      "risks": [
+        "RISK-002",
+        "RISK-004",
+        "RISK-005"
+      ],
+      "artifacts": [
+        "ART-004"
+      ]
+    }
+  ],
+  "requirements": [
+    {
+      "id": "REQ-001",
+      "title": "The workspace must identify the product type as research_protocol and the delivery surfaces as document, workflow, and human_service.",
+      "status": "accepted"
+    },
+    {
+      "id": "REQ-002",
+      "title": "The workspace must record the vague request without inventing accepted study questions, neighborhoods, participants, data sources, safety rules, or acceptance evidence.",
+      "status": "accepted"
+    },
+    {
+      "id": "REQ-003",
+      "title": "Research question, decision, final study artifact, participant or observation scope, locations, consent, privacy, data handling, accessibility, field safety, and review ownership gaps must remain open blockers until answered by a user.",
+      "status": "accepted"
+    },
+    {
+      "id": "REQ-004",
+      "title": "The benchmark must make direct-to-agent hidden assumptions visible instead of allowing a downstream actor to invent them.",
+      "status": "accepted"
+    },
+    {
+      "id": "REQ-005",
+      "title": "The case must not run ni end or ni run while ni status reports BLOCKED.",
+      "status": "accepted"
+    },
+    {
+      "id": "REQ-006",
+      "title": "The case must keep fieldwork, participant recruitment, data collection, analysis, intervention placement, downstream agents, model APIs, runtime execution, and empirical impact claims out of scope.",
+      "status": "accepted"
+    }
+  ],
+  "decisions": [
+    {
+      "id": "DEC-001",
+      "title": "Use a fresh isolated benchmark workspace for the research-protocol initial readiness measurement.",
+      "status": "accepted"
+    },
+    {
+      "id": "DEC-002",
+      "title": "Measure the initial vague research-protocol request only; do not resolve blockers in this task.",
+      "status": "accepted"
+    },
+    {
+      "id": "DEC-003",
+      "title": "Treat any later lock or prompt compilation as out of scope until blocker answers are provided and ni status is rerun.",
+      "status": "accepted"
+    }
+  ],
+  "risks": [
+    {
+      "id": "RISK-001",
+      "title": "A downstream actor could invent the study question, method, locations, or intervention decision criteria.",
+      "severity": "high",
+      "status": "accepted",
+      "mitigation": "Keep OQ-001 and OQ-002 open blockers until the user accepts the research question, supported decision, final artifact, participant or observation scope, inclusion and exclusion criteria, and locations."
+    },
+    {
+      "id": "RISK-002",
+      "title": "Participant privacy, consent, translation, accessibility, or sensitive-data boundaries could be skipped.",
+      "severity": "high",
+      "status": "accepted",
+      "mitigation": "Keep OQ-003 open as a blocker and require accepted consent, privacy, data handling, translation, accessibility, and sensitive-data boundaries before lock."
+    },
+    {
+      "id": "RISK-003",
+      "title": "Heat or weather field safety and vulnerable-group safeguards could be under-specified.",
+      "severity": "high",
+      "status": "accepted",
+      "mitigation": "Keep OQ-004 open as a blocker and require accepted heat or weather stop rules, field-team safety ownership, vulnerable-group safeguards, and escalation path before lock."
+    },
+    {
+      "id": "RISK-004",
+      "title": "The benchmark could be misrepresented as fieldwork readiness or intervention decision readiness.",
+      "severity": "high",
+      "status": "accepted",
+      "mitigation": "State in docs, contract, and case reports that this task measures initial intent readiness only; no fieldwork, participant recruitment, data collection, analysis, intervention placement, or research outcome is validated."
+    },
+    {
+      "id": "RISK-005",
+      "title": "A handoff prompt could be compiled before readiness, making unresolved research intent look actionable.",
+      "severity": "high",
+      "status": "accepted",
+      "mitigation": "Do not run ni end or ni run while ni status reports BLOCKED; record lock as no, bounded prompt as no, and prompt count as not_measured."
+    }
+  ],
+  "evaluations": [
+    {
+      "id": "EVAL-001",
+      "title": "Initial workspace scope review.",
+      "method": "Review docs/plan/** and .ni/contract.json to confirm the case is a research_protocol benchmark with document, workflow, and human_service surfaces and that it records the vague neighborhood cooling study request without inventing blocker answers."
+    },
+    {
+      "id": "EVAL-002",
+      "title": "Blocker visibility review.",
+      "method": "Run go run ./cmd/ni status --dir examples/benchmark-report/cases/research-protocol/workspace --proof --next-questions and confirm OQ-001 through OQ-005 remain open blockers before any lock or prompt compilation."
+    },
+    {
+      "id": "EVAL-003",
+      "title": "Non-execution boundary review.",
+      "method": "Confirm the benchmark case records no lockfile, no bounded prompt, no fieldwork, no participant recruitment, no data collection, no analysis, no intervention placement decision, no downstream agent, no model API call, and no empirical outcome claim."
+    }
+  ],
+  "artifacts": [
+    {
+      "id": "ART-001",
+      "path": "docs/plan/00_project_brief.md",
+      "kind": "planning_doc"
+    },
+    {
+      "id": "ART-002",
+      "path": "docs/plan/10_open_questions.md",
+      "kind": "blocker_questions"
+    },
+    {
+      "id": "ART-003",
+      "path": "examples/benchmark-report/cases/research-protocol/06-ni-status-proof.md",
+      "kind": "status_evidence"
+    },
+    {
+      "id": "ART-004",
+      "path": "examples/benchmark-report/cases/research-protocol/05-not-measured.md",
+      "kind": "not_measured_boundary"
+    }
+  ],
+  "open_questions": [
+    {
+      "id": "OQ-001",
+      "title": "What research question, supported decision, and final study artifact should the neighborhood cooling study produce?",
+      "blocker": true,
+      "status": "open"
+    },
+    {
+      "id": "OQ-002",
+      "title": "Which participant or observation scope, inclusion and exclusion criteria, locations, and observation windows are accepted?",
+      "blocker": true,
+      "status": "open"
+    },
+    {
+      "id": "OQ-003",
+      "title": "What consent, privacy, data handling, translation, accessibility, and sensitive-data boundaries apply?",
+      "blocker": true,
+      "status": "open"
+    },
+    {
+      "id": "OQ-004",
+      "title": "What field-team safety rules, heat or weather stop rules, vulnerable-group safeguards, and escalation path are required?",
+      "blocker": true,
+      "status": "open"
+    },
+    {
+      "id": "OQ-005",
+      "title": "Who reviews the protocol, what acceptance evidence is required, and what must be ready before fieldwork can be considered?",
+      "blocker": true,
+      "status": "open"
+    }
+  ]
+}

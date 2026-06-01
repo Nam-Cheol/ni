@@ -45,6 +45,10 @@ run, and prompt-count evidence must remain `not_measured`.
   dashboard request, with an isolated ni workspace, checked-in blocked status
   proof, blocker analysis, resolved `READY` proof, isolated lock evidence,
   bounded prompt evidence, before/after evidence, and lessons.
+- `cases/research-protocol/`: initial readiness measurement for a vague
+  non-software neighborhood cooling study request, with an isolated ni
+  workspace, checked-in `BLOCKED` status proof, next-question evidence, and
+  explicit `not_measured` research/runtime boundaries.
 - `../../docs/88_SECOND_BENCHMARK_CASE_SELECTION.md`: selection plan for the
   second v0.5 benchmark case. It recommends a research-protocol case but does
   not report new benchmark results.
@@ -66,9 +70,14 @@ test -f examples/benchmark-report/cases/internal-dashboard/08-blocker-analysis.m
 test -f examples/benchmark-report/cases/internal-dashboard/09-resolution-path.md
 test -f examples/benchmark-report/cases/internal-dashboard/15-before-after-evidence.md
 test -f examples/benchmark-report/cases/internal-dashboard/16-lessons.md
+test -f examples/benchmark-report/cases/research-protocol/README.md
+test -f examples/benchmark-report/cases/research-protocol/04-measurement-table.md
+test -f examples/benchmark-report/cases/research-protocol/06-ni-status-proof.md
+test -f examples/benchmark-report/cases/research-protocol/07-ni-next-questions.md
 test -f docs/43_BENCHMARK_PROTOCOL.md
 go run ./cmd/ni status --dir examples/benchmark-report/cases/internal-dashboard/workspace --proof --next-questions
-rg -n "not_measured|must not execute downstream agents|Target prompt boundedness|internal-dashboard|NI Intent Readiness: BLOCKED|NI Intent Readiness: READY" examples/benchmark-report/README.md examples/benchmark-report/sample-report.md examples/benchmark-report/cases/internal-dashboard/*.md docs/43_BENCHMARK_PROTOCOL.md
+go run ./cmd/ni status --dir examples/benchmark-report/cases/research-protocol/workspace --proof --next-questions
+rg -n "not_measured|must not execute downstream agents|Target prompt boundedness|internal-dashboard|research-protocol|NI Intent Readiness: BLOCKED|NI Intent Readiness: READY" examples/benchmark-report/README.md examples/benchmark-report/sample-report.md examples/benchmark-report/cases/internal-dashboard/*.md examples/benchmark-report/cases/research-protocol/*.md docs/43_BENCHMARK_PROTOCOL.md
 ```
 
 ## 6. Expected output
@@ -79,9 +88,13 @@ The `ni status` command should report `NI Intent Readiness: READY` for the
 resolved internal-dashboard artifact workspace. The historical blocked proof
 remains checked in at `cases/internal-dashboard/06-ni-status-proof.md`.
 
+The research-protocol `ni status` command should report
+`NI Intent Readiness: BLOCKED` for the initial isolated workspace. No lockfile
+should exist for that research workspace.
+
 The `rg` command should show `not_measured` markers in this template and
-dashboard case, the checked-in blocked and resolved status proofs, the blocker
-analysis and resolution-path evidence, plus non-execution and
+dashboard and research cases, the checked-in blocked and resolved status
+proofs, blocker and next-question evidence, plus non-execution and
 prompt-boundedness markers in the benchmark protocol.
 
 ## 7. demo-check coverage
@@ -91,9 +104,10 @@ Covered by `bash scripts/demo-check.sh`.
 The demo check verifies required files, runs `ni status` for the isolated
 internal-dashboard workspace, and checks that historical blocked proof,
 resolved READY proof, isolated lock evidence, bounded prompt evidence, and
-remaining `not_measured` claim boundaries are present. It does not run
-`ni end`, the generated prompt, dashboard code, model APIs, or downstream
-agents.
+remaining `not_measured` claim boundaries are present. It also verifies the
+research-protocol initial `BLOCKED` proof and absence of a research lockfile.
+It does not run `ni end`, the generated prompt, dashboard code, research
+fieldwork, model APIs, or downstream agents.
 
 ## 8. Korean companion
 
