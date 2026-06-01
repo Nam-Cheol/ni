@@ -47,8 +47,9 @@ run, and prompt-count evidence must remain `not_measured`.
   bounded prompt evidence, before/after evidence, and lessons.
 - `cases/research-protocol/`: initial readiness measurement for a vague
   non-software neighborhood cooling study request, with an isolated ni
-  workspace, checked-in `BLOCKED` status proof, next-question evidence, and
-  explicit `not_measured` research/runtime boundaries.
+  workspace, checked-in `BLOCKED` status proof, next-question evidence,
+  blocker analysis, resolution path, human-fillable answer packet, and explicit
+  `not_measured` research/runtime boundaries.
 - `../../docs/88_SECOND_BENCHMARK_CASE_SELECTION.md`: selection plan for the
   second v0.5 benchmark case. It recommends a research-protocol case but does
   not report new benchmark results.
@@ -74,6 +75,9 @@ test -f examples/benchmark-report/cases/research-protocol/README.md
 test -f examples/benchmark-report/cases/research-protocol/04-measurement-table.md
 test -f examples/benchmark-report/cases/research-protocol/06-ni-status-proof.md
 test -f examples/benchmark-report/cases/research-protocol/07-ni-next-questions.md
+test -f examples/benchmark-report/cases/research-protocol/08-blocker-analysis.md
+test -f examples/benchmark-report/cases/research-protocol/09-resolution-path.md
+test -f examples/benchmark-report/cases/research-protocol/10-answer-packet.md
 test -f docs/43_BENCHMARK_PROTOCOL.md
 go run ./cmd/ni status --dir examples/benchmark-report/cases/internal-dashboard/workspace --proof --next-questions
 go run ./cmd/ni status --dir examples/benchmark-report/cases/research-protocol/workspace --proof --next-questions
@@ -105,9 +109,10 @@ The demo check verifies required files, runs `ni status` for the isolated
 internal-dashboard workspace, and checks that historical blocked proof,
 resolved READY proof, isolated lock evidence, bounded prompt evidence, and
 remaining `not_measured` claim boundaries are present. It also verifies the
-research-protocol initial `BLOCKED` proof and absence of a research lockfile.
-It does not run `ni end`, the generated prompt, dashboard code, research
-fieldwork, model APIs, or downstream agents.
+research-protocol initial `BLOCKED` proof, blocker analysis, resolution path,
+answer packet, and absence of a research lockfile. It does not run `ni end`,
+the generated prompt, dashboard code, research fieldwork, model APIs, or
+downstream agents.
 
 ## 8. Korean companion
 

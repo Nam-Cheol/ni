@@ -96,6 +96,12 @@ check_benchmark_report_docs() {
   require_file examples/benchmark-report/cases/research-protocol/05-not-measured.md
   require_file examples/benchmark-report/cases/research-protocol/06-ni-status-proof.md
   require_file examples/benchmark-report/cases/research-protocol/07-ni-next-questions.md
+  require_file examples/benchmark-report/cases/research-protocol/08-blocker-analysis.md
+  require_file examples/benchmark-report/cases/research-protocol/08-blocker-analysis.ko.md
+  require_file examples/benchmark-report/cases/research-protocol/09-resolution-path.md
+  require_file examples/benchmark-report/cases/research-protocol/09-resolution-path.ko.md
+  require_file examples/benchmark-report/cases/research-protocol/10-answer-packet.md
+  require_file examples/benchmark-report/cases/research-protocol/10-answer-packet.ko.md
   require_file examples/benchmark-report/cases/research-protocol/workspace/.ni/contract.json
   require_no_file examples/benchmark-report/cases/research-protocol/workspace/.ni/plan.lock.json
   require_file docs/43_BENCHMARK_PROTOCOL.md
@@ -247,6 +253,10 @@ require_output "This packet was created to collect user answers" "examples/bench
 require_output "creation time, the benchmark remained \`BLOCKED\`" "examples/benchmark-report/cases/internal-dashboard/10-answer-packet.md"
 require_output "NI Intent Readiness: BLOCKED" "examples/benchmark-report/cases/research-protocol/06-ni-status-proof.md"
 require_output "OQ-005" "examples/benchmark-report/cases/research-protocol/07-ni-next-questions.md"
+require_output "\`BLOCKED\` is a valid benchmark result" "examples/benchmark-report/cases/research-protocol/08-blocker-analysis.md"
+require_output "does not prove research quality" "examples/benchmark-report/cases/research-protocol/08-blocker-analysis.md"
+require_output "User answers \`OQ-005\`" "examples/benchmark-report/cases/research-protocol/09-resolution-path.md"
+require_output "This packet is a human-fillable form" "examples/benchmark-report/cases/research-protocol/10-answer-packet.md"
 require_output "no bounded prompt was compiled" "examples/benchmark-report/cases/research-protocol/05-not-measured.md"
 require_output "Prompt count: \`not_measured\`" "examples/benchmark-report/cases/research-protocol/04-measurement-table.md"
 require_output "must not execute downstream agents" "docs/43_BENCHMARK_PROTOCOL.md"

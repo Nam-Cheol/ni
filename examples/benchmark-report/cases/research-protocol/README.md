@@ -34,6 +34,15 @@ execution.
 - `05-not-measured.md`: explicit non-execution and not_measured boundary.
 - `06-ni-status-proof.md`: exact `ni status --proof --next-questions` output.
 - `07-ni-next-questions.md`: next-question group and blocker names.
+- `08-blocker-analysis.md`: why each blocker matters, what answer would
+  resolve it later, and what would be unsafe to assume.
+- `08-blocker-analysis.ko.md`: Korean companion for the blocker analysis.
+- `09-resolution-path.md`: step-by-step path from `BLOCKED` to possible
+  `READY` or `READY_WITH_DEFERRALS` without inventing answers.
+- `09-resolution-path.ko.md`: Korean companion for the resolution path.
+- `10-answer-packet.md`: human-fillable answer packet for `OQ-001` through
+  `OQ-005`.
+- `10-answer-packet.ko.md`: Korean companion for the answer packet.
 - `workspace/`: isolated ni workspace for this benchmark case.
 
 ## Non-execution boundary

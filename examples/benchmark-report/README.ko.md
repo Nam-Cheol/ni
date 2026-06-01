@@ -46,8 +46,9 @@ prompt-count evidence가 없으면 반드시 `not_measured`로 남긴다.
   evidence, bounded prompt evidence, before/after evidence, lessons를 포함한다.
 - `cases/research-protocol/`: vague non-software neighborhood cooling study
   request에 대한 initial readiness measurement. isolated ni workspace,
-  checked-in `BLOCKED` status proof, next-question evidence, explicit
-  `not_measured` research/runtime boundary를 포함한다.
+  checked-in `BLOCKED` status proof, next-question evidence, blocker analysis,
+  resolution path, human-fillable answer packet, explicit `not_measured`
+  research/runtime boundary를 포함한다.
 - `../../docs/88_SECOND_BENCHMARK_CASE_SELECTION.ko.md`: 두 번째 v0.5 benchmark
   case를 위한 selection plan. Research-protocol case를 추천하지만 새 benchmark
   result를 보고하지 않는다.
@@ -74,6 +75,9 @@ test -f examples/benchmark-report/cases/research-protocol/README.md
 test -f examples/benchmark-report/cases/research-protocol/04-measurement-table.md
 test -f examples/benchmark-report/cases/research-protocol/06-ni-status-proof.md
 test -f examples/benchmark-report/cases/research-protocol/07-ni-next-questions.md
+test -f examples/benchmark-report/cases/research-protocol/08-blocker-analysis.md
+test -f examples/benchmark-report/cases/research-protocol/09-resolution-path.md
+test -f examples/benchmark-report/cases/research-protocol/10-answer-packet.md
 test -f docs/43_BENCHMARK_PROTOCOL.md
 go run ./cmd/ni status --dir examples/benchmark-report/cases/internal-dashboard/workspace --proof --next-questions
 go run ./cmd/ni status --dir examples/benchmark-report/cases/research-protocol/workspace --proof --next-questions
@@ -104,9 +108,10 @@ prompt-boundedness marker를 보여야 한다.
 demo check는 required file을 확인하고 isolated internal-dashboard workspace에
 대해 `ni status`를 실행한다. Historical blocked proof, resolved READY proof,
 isolated lock evidence, bounded prompt evidence, 남은 `not_measured` claim
-boundary가 존재하는지 확인한다. Research-protocol initial `BLOCKED` proof와
-research lockfile absence도 확인한다. `ni end`, generated prompt, dashboard code,
-research fieldwork, model API, downstream agent는 실행하지 않는다.
+boundary가 존재하는지 확인한다. Research-protocol initial `BLOCKED` proof,
+blocker analysis, resolution path, answer packet, research lockfile absence도
+확인한다. `ni end`, generated prompt, dashboard code, research fieldwork, model
+API, downstream agent는 실행하지 않는다.
 
 ## 8. Korean companion
 

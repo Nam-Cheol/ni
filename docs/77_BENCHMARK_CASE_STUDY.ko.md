@@ -663,7 +663,7 @@ shell adapter, dashboard scaffold, queue, telemetry collector, downstream agent
 harness가 되면 안 된다. 이 사례의 역할은 누군가 dashboard를 만들기 전에
 intent를 compile해야 하는 이유를 보여주는 것이다.
 
-## 다음 계획된 벤치마크 사례
+## Research-Protocol Benchmark Package
 
 선택된 두 번째 v0.5 benchmark case는
 `examples/benchmark-report/cases/research-protocol/`에 체크인되어 있다. 이 case는
@@ -682,6 +682,19 @@ boundary, heat/weather field safety, vulnerable-group safeguard, review owner,
 acceptance evidence를 다루는 `OQ-001`부터 `OQ-005`를 open blocker로 보고한다.
 Lock은 만들지 않았고 bounded prompt도 compile하지 않았으며 prompt count는
 `not_measured`로 남는다.
+
+이 case에는 이제 blocker analysis, resolution path, human-fillable answer
+packet도 포함된다.
+
+- `examples/benchmark-report/cases/research-protocol/08-blocker-analysis.md`
+- `examples/benchmark-report/cases/research-protocol/09-resolution-path.md`
+- `examples/benchmark-report/cases/research-protocol/10-answer-packet.md`
+
+이 문서들은 각 blocker가 왜 중요한지, later user answer가 어떤 방식으로
+resolve할 수 있는지, 어떤 unsafe assumption을 피하는지, later resolved variant가
+isolated workspace만 update한 뒤 허용된 순서로 `ni status`, `ni end`, `ni run`을
+실행할 수 있는지 설명한다. 이 문서들은 blocker에 답하거나 현재 benchmark
+workspace를 ready로 만들지 않는다.
 
 이 research-protocol case는 research protocol quality, fieldwork readiness,
 intervention decision readiness, participant outcome, adoption, rework

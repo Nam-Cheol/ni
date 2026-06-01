@@ -666,7 +666,7 @@ become a runtime demo, shell adapter, dashboard scaffold, queue, telemetry
 collector, or downstream agent harness. Its job is to show why intent should be
 compiled before anyone starts building the dashboard.
 
-## Next Planned Benchmark Case
+## Research-Protocol Benchmark Package
 
 The selected second v0.5 benchmark case is now checked in under
 `examples/benchmark-report/cases/research-protocol/`. It measures the initial
@@ -685,6 +685,19 @@ observation scope, consent/privacy/data/accessibility boundaries, heat/weather
 field safety, vulnerable-group safeguards, review owner, and acceptance
 evidence. No lock was created, no bounded prompt was compiled, and prompt count
 remains `not_measured`.
+
+The case now includes a blocker analysis, resolution path, and human-fillable
+answer packet:
+
+- `examples/benchmark-report/cases/research-protocol/08-blocker-analysis.md`
+- `examples/benchmark-report/cases/research-protocol/09-resolution-path.md`
+- `examples/benchmark-report/cases/research-protocol/10-answer-packet.md`
+
+Those documents explain why each blocker matters, what kind of future user
+answer would resolve it, which unsafe assumptions are avoided, and how a later
+resolved variant could update only the isolated workspace before running
+`ni status`, `ni end`, and `ni run` in the allowed order. They do not answer
+the blockers or make the current benchmark workspace ready.
 
 This research-protocol case does not claim research protocol quality,
 fieldwork readiness, intervention decision readiness, participant outcomes,
