@@ -34,6 +34,8 @@ CLI workspace가 아니다.
   `research-protocol` case에 적용한 benchmark grill.
 - `08-grill-lessons.md`: benchmark evidence에 `ni-grill`을 dogfood하며 얻은
   lessons.
+- `09-ni-project-grill.md`: ni 자체의 current planning state에 `ni-grill`을
+  적용한 read-only dogfood report.
 
 ## Boundary
 

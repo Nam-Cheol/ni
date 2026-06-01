@@ -139,6 +139,10 @@ check_ni_grill_docs() {
   require_file examples/ni-grill/07-research-protocol-grill.ko.md
   require_file examples/ni-grill/08-grill-lessons.md
   require_file examples/ni-grill/08-grill-lessons.ko.md
+  require_file examples/ni-grill/09-ni-project-grill.md
+  require_file examples/ni-grill/09-ni-project-grill.ko.md
+  require_file docs/93_NI_GRILL_DOGFOOD.md
+  require_file docs/93_NI_GRILL_DOGFOOD.ko.md
   require_file docs/92_NI_GRILL_OUTPUT_BUDGET.md
   require_file docs/92_NI_GRILL_OUTPUT_BUDGET.ko.md
   require_output "Skills are UX; CLI is authority" "docs/92_NI_GRILL_OUTPUT_BUDGET.md"
@@ -166,6 +170,11 @@ check_ni_grill_docs() {
   require_output "\`READY\` means deterministic readiness gates passed" "examples/ni-grill/08-grill-lessons.md"
   require_output "at most 5 findings" "examples/ni-grill/08-grill-lessons.md"
   require_output "must not create new empirical claims" "examples/ni-grill/08-grill-lessons.md"
+  require_output "CLI readiness: \`READY\`" "examples/ni-grill/09-ni-project-grill.md"
+  require_output "GRILL-001 | High | roadmap specificity" "examples/ni-grill/09-ni-project-grill.md"
+  require_output "Improve roadmap specificity" "examples/ni-grill/09-ni-project-grill.md"
+  require_output "did not execute generated prompt" "docs/93_NI_GRILL_DOGFOOD.md"
+  require_output "GRILL-002 | High | distribution status" "docs/93_NI_GRILL_DOGFOOD.md"
   require_output "at most 5 findings" "examples/ni-grill/README.md"
   require_output "Skills are UX; CLI is authority" "examples/ni-grill/README.md"
   require_output "does not execute work" "examples/ni-grill/README.md"

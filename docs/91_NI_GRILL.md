@@ -132,6 +132,13 @@ and overclaim prevention.
 See [`92_NI_GRILL_OUTPUT_BUDGET.md`](92_NI_GRILL_OUTPUT_BUDGET.md) for the full
 severity model, prioritization rules, and examples.
 
+## Dogfood Report
+
+The ni project dogfoods this skill against its own current planning state in
+[`93_NI_GRILL_DOGFOOD.md`](93_NI_GRILL_DOGFOOD.md). The report preserves CLI
+authority, records `ni status --proof --next-questions`, and frames findings as
+planning-quality pressure rather than a second readiness gate.
+
 ## Finding Shape
 
 Each grill finding must be concrete and answerable:

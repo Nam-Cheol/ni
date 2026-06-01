@@ -135,6 +135,13 @@ overclaim prevention에 집중한다.
 전체 severity model, prioritization rules, examples는
 [`92_NI_GRILL_OUTPUT_BUDGET.md`](92_NI_GRILL_OUTPUT_BUDGET.md)를 본다.
 
+## Dogfood Report
+
+ni project는 이 skill을 자체 current planning state에 dogfood한 결과를
+[`93_NI_GRILL_DOGFOOD.md`](93_NI_GRILL_DOGFOOD.md)에 기록한다. Report는 CLI
+authority를 preserve하고, `ni status --proof --next-questions`를 기록하며,
+findings를 second readiness gate가 아니라 planning-quality pressure로 다룬다.
+
 ## Finding Shape
 
 각 grill finding은 concrete하고 answerable해야 한다:

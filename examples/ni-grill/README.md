@@ -34,6 +34,8 @@ trusted CLI workspace.
   `research-protocol` case after isolated `READY` proof.
 - `08-grill-lessons.md`: lessons from dogfooding `ni-grill` on benchmark
   evidence.
+- `09-ni-project-grill.md`: read-only dogfood report from applying `ni-grill`
+  to ni's own current planning state.
 
 ## Boundary
 
