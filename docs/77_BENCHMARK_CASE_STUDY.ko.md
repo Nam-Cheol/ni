@@ -38,9 +38,12 @@ ni 계획 예제를 `docs/43_BENCHMARK_PROTOCOL.md`의 루브릭으로 비교한
 사용자 만족도, 런타임 안전성, 비용, 지연 시간, 통계적 효과 크기,
 프로덕션 결과다.
 
-사례 3은 사례 1과 2보다 의도적으로 가볍다. 완료된 lock/run 측정이
-아니라 docs-only 수동 readiness drill이다. 사용할 수 없는 cell은
-`not_measured`로 남긴다.
+사례 3은 이제 before/after artifact-readiness package를 포함한다. Original
+`BLOCKED` dashboard request proof를 보존하고, 답변이 적용된 benchmark-artifact
+variant가 `READY`에 도달해 isolated workspace를 lock하고 bounded prompt를
+compile한 증거를 기록한다. 이 `READY` claim은 benchmark planning-meeting
+artifact readiness에만 적용된다. Dashboard product readiness와 product outcome은
+`not_measured`로 남는다.
 
 ## 사례 1 산출물: A. 직접 에이전트 프롬프트
 
@@ -390,19 +393,20 @@ Accepted requirements:
 - 채점일: 2026-05-29
 - 비교 대상:
   - A. 직접 에이전트에 전달하는 프롬프트 준비도
-  - B. `ni-start -> ni status` 준비도 경로. `BLOCKED`에서 멈춘다.
+  - B. `BLOCKED`에서 answered artifact readiness, isolated lock, bounded
+    prompt로 이어지는 before/after ni readiness 경로
 
-세 번째 사례는 software dashboard request에 대한 수동 정성 readiness
-drill이다. Internal dashboard는 downstream actor가 너무 일찍 만들기 쉬운
-예시다. web surface가 뻔해 보여도 users, decisions, account signals,
-privacy constraints, data freshness, success criteria, risks, non-goals가
-빠져 있을 수 있다.
+세 번째 사례는 software dashboard request에 대한 수동 정성 before/after
+readiness package다. Internal dashboard는 downstream actor가 너무 일찍 만들기
+쉬운 예시다. web surface가 뻔해 보여도 users, decisions, account signals,
+privacy constraints, data freshness, success criteria, risks, non-goals가 빠져
+있을 수 있다.
 
-사례 1과 2와 달리 이 사례는 locked workspace가 아니며 handoff prompt를
-compile하지 않는다. 대신 checked-in ni planning workspace와 실제
-`ni status --proof --next-questions` 출력을 포함한다. authoritative status가
-`BLOCKED`이므로 `ni end`나 `ni run`은 실행하지 않았고 prompt character count는
-`not_measured`로 남긴다.
+이 case는 original `BLOCKED` proof와 이후 answered artifact-readiness proof를
+함께 보존한다. 이후 proof는 isolated benchmark workspace만 lock했고 bounded
+prompt만 compile했다. Dashboard를 구현하지 않았고, generated prompt를 실행하지
+않았으며, downstream agent를 호출하거나 dashboard product readiness를 주장하지
+않았다.
 
 ## 사례 3 산출물: A. 직접 에이전트 프롬프트
 
@@ -467,6 +471,10 @@ Expected hidden assumptions include:
   `examples/benchmark-report/cases/internal-dashboard/13-lock-summary.md`
 - bounded prompt summary:
   `examples/benchmark-report/cases/internal-dashboard/14-bounded-prompt-summary.md`
+- before/after evidence:
+  `examples/benchmark-report/cases/internal-dashboard/15-before-after-evidence.md`
+- lessons:
+  `examples/benchmark-report/cases/internal-dashboard/16-lessons.md`
 - planning workspace:
   `examples/benchmark-report/cases/internal-dashboard/workspace/`
 
@@ -585,6 +593,9 @@ Resolved proof, next-question disposition, lock summary, bounded prompt
 summary는 `11-resolved-status-proof.md`, `12-resolved-next-questions.md`,
 `13-lock-summary.md`, `14-bounded-prompt-summary.md`에 체크인되어 있다.
 
+Before/after evidence package와 lessons는 `15-before-after-evidence.md`와
+`16-lessons.md`에 체크인되어 있다.
+
 Blocker analysis와 resolution path는 `08-blocker-analysis.md`와
 `09-resolution-path.md`에 체크인되어 있다. 이 문서들은 각 blocker가 왜 lock을
 막는지, later에 어떤 user answer가 필요한지, 어떤 unsafe assumption을 피하는지,
@@ -668,16 +679,19 @@ source에서 멈춘 뒤 `READY_WITH_DEFERRALS`에 도달했고, research-protoco
 사례는 `READY`에 도달했다. 두 accepted plan은 명시적인 requirement,
 high-risk mitigation, evaluation, non-goal을 포함했으며, 두 target
 handoff prompt 모두 설정된 4,000자 한도 안에 있었다. dashboard case는 실제
-blocked status proof를 추가한다. docs와 contract는 synchronized이고, high
-risks는 mitigation을 가지며, non-goals는 explicit하지만 blocker question 4개가
-open 상태라 execution은 멈춘다. lock, run, prompt character count는
-`not_measured`로 남긴다.
+transition proof를 추가한다. Original state는 blocker question 4개와 함께
+`BLOCKED`에서 멈췄고, answered artifact-readiness state는 `READY`에 도달해
+isolated workspace만 lock하고 4000자 prompt를 compile했다. Dashboard product
+readiness, implementation quality, downstream agent performance, user impact,
+adoption, rework reduction, cost, latency, statistical effect는 `not_measured`로
+남긴다.
 
 ## 한계
 
 이 사례 연구 보고서는 의도적으로 좁다. 모든 ni plan이 개선된다는 것,
 다운스트림 구현이 성공한다는 것, 또는 어떤 프로세스가 통계적으로 더
-낫다는 것을 증명하지 않는다. 이 문서는 Intent Lock Protocol이 두 개의
-모호한 prompt를 다운스트림 실행 없이 bounded, lock-verified handoff로
-바꾸는 투명한 before/after 사례와, fake lock/run evidence를 만들지 않고
-`BLOCKED`에서 멈추는 measured dashboard readiness case를 보여준다.
+낫다는 것을 증명하지 않는다. 이 문서는 Intent Lock Protocol이 unclear intent를
+드러내고, 충분한 답변이 있을 때 downstream work를 실행하지 않은 채 bounded,
+lock-verified handoff seed material을 만들 수 있음을 보여주는 세 개의 투명한
+readiness case를 기록한다. Dashboard case는 artifact-readiness evidence일 뿐
+dashboard product가 ready임을 증명하지 않는다.

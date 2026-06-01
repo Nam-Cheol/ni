@@ -38,9 +38,12 @@ It does not measure implementation quality, model quality, downstream agent
 performance, user satisfaction, runtime safety, cost, latency, statistical
 effect size, or production outcomes.
 
-Case 3 is intentionally lighter than Cases 1 and 2: it is a docs-only manual
-readiness drill, not a completed lock/run measurement. Its unavailable cells
-stay marked as `not_measured`.
+Case 3 now includes a before/after artifact-readiness package: it preserves the
+original `BLOCKED` dashboard request proof, then records the answered
+benchmark-artifact variant that reached `READY`, locked an isolated workspace,
+and compiled a bounded prompt. Its `READY` claim applies only to benchmark
+planning-meeting artifact readiness; dashboard product readiness and product
+outcomes remain `not_measured`.
 
 ## Case 1 Artifacts: A. Direct-to-Agent Prompt
 
@@ -392,19 +395,20 @@ not repeated numeric benchmark data.
 - Scoring date: 2026-05-29
 - Comparison:
   - A. direct-to-agent prompt readiness
-  - B. `ni-start -> ni status` readiness path that stops at `BLOCKED`
+  - B. before/after ni readiness path from `BLOCKED` to answered artifact
+    readiness, isolated lock, and bounded prompt
 
-This third case is a manual, qualitative readiness drill for a software
-dashboard request. It is included because internal dashboards are easy for a
-downstream actor to start building too early: a web surface feels obvious while
-the users, decisions, account signals, privacy constraints, data freshness,
-success criteria, risks, and non-goals are still missing.
+This third case is a manual, qualitative before/after readiness package for a
+software dashboard request. It is included because internal dashboards are easy
+for a downstream actor to start building too early: a web surface feels obvious
+while the users, decisions, account signals, privacy constraints, data
+freshness, success criteria, risks, and non-goals are still missing.
 
-Unlike Cases 1 and 2, this case is not locked and does not compile a handoff
-prompt. It does include a checked-in ni planning workspace and actual
-`ni status --proof --next-questions` output. Because the authoritative status
-is `BLOCKED`, it does not run `ni end` or `ni run`, and prompt character count
-stays `not_measured`.
+The case preserves the original `BLOCKED` proof and the later answered
+artifact-readiness proof. The later proof locked only the isolated benchmark
+workspace and compiled a bounded prompt. It did not implement the dashboard,
+execute the generated prompt, call a downstream agent, or claim dashboard
+product readiness.
 
 ## Case 3 Artifacts: A. Direct-to-Agent Prompt
 
@@ -469,6 +473,10 @@ The checked-in case artifact records the measured pre-runtime ni path:
   `examples/benchmark-report/cases/internal-dashboard/13-lock-summary.md`
 - bounded prompt summary:
   `examples/benchmark-report/cases/internal-dashboard/14-bounded-prompt-summary.md`
+- before/after evidence:
+  `examples/benchmark-report/cases/internal-dashboard/15-before-after-evidence.md`
+- lessons:
+  `examples/benchmark-report/cases/internal-dashboard/16-lessons.md`
 - planning workspace:
   `examples/benchmark-report/cases/internal-dashboard/workspace/`
 
@@ -587,6 +595,9 @@ summary are checked in under `11-resolved-status-proof.md`,
 `12-resolved-next-questions.md`, `13-lock-summary.md`, and
 `14-bounded-prompt-summary.md`.
 
+The before/after evidence package and lessons are checked in under
+`15-before-after-evidence.md` and `16-lessons.md`.
+
 The blocker analysis, resolution path, and fillable answer packet are checked
 in under `08-blocker-analysis.md`, `09-resolution-path.md`, and
 `10-answer-packet.md`. They explain why each blocker prevents lock, what kind
@@ -672,17 +683,19 @@ authoritative policy source before reaching `READY_WITH_DEFERRALS`, the
 research-protocol case reached `READY`, both accepted plans carried explicit
 requirements, high-risk mitigations, evaluations, and non-goals, and both
 target handoff prompts stayed under the configured 4,000-character bound. The
-dashboard case adds a real blocked status proof: docs and contract synchronize,
-high risks have mitigations, non-goals are explicit, and execution is stopped
-because four blocker questions remain open. It keeps lock, run, and prompt
-character count as `not_measured`.
+dashboard case adds a real transition proof: the original state stopped at
+`BLOCKED` with four blocker questions, and the answered artifact-readiness
+state reached `READY`, locked only the isolated workspace, and compiled a
+4000-character prompt. It keeps dashboard product readiness, implementation
+quality, downstream agent performance, user impact, adoption, rework
+reduction, cost, latency, and statistical effect as `not_measured`.
 
 ## Limits
 
 This case study report is intentionally narrow. It does not prove that every
 ni plan improves, that downstream implementation succeeds, or that one process
-is statistically better than another. It shows two transparent before/after
-cases where the Intent Lock Protocol converts a vague prompt into a bounded,
-lock-verified handoff without executing downstream work, plus one measured
-dashboard readiness case that deliberately stops at `BLOCKED` instead of faking
-lock/run evidence.
+is statistically better than another. It shows three transparent readiness
+cases where the Intent Lock Protocol exposes unclear intent and, when enough
+answers exist, can produce bounded lock-verified handoff seed material without
+executing downstream work. The dashboard case is artifact-readiness evidence
+only; it does not prove that a dashboard product is ready.

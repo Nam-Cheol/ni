@@ -41,7 +41,17 @@ Added blocker evidence:
 - `13-lock-summary.md` records the isolated workspace lock.
 - `14-bounded-prompt-summary.md` records the bounded prompt command and 4000
   character count.
+- `15-before-after-evidence.md` and `15-before-after-evidence.ko.md` package
+  the transition from `BLOCKED` vague request to `READY` isolated
+  artifact-readiness lock and bounded prompt.
+- `16-lessons.md` and `16-lessons.ko.md` record the reusable lessons without
+  expanding the claim beyond pre-runtime benchmark evidence.
 
 The benchmark evidence is qualitative and auditable. It does not claim
 statistical significance, adoption metrics, rework reduction, or downstream
 implementation quality.
+
+Critical boundary: `READY` means benchmark planning-meeting artifact readiness
+only. Dashboard product readiness, dashboard implementation quality,
+downstream agent performance, real user impact, cost, latency, adoption, and
+rework reduction remain `not_measured`.

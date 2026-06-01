@@ -23,8 +23,10 @@ prompt-count evidence가 없으면 반드시 `not_measured`로 남긴다.
   주장하지 않는다.
 - internal-dashboard case는 그럴듯한 dashboard request가 users, success
   criteria, data boundaries, risks, non-goals, handoff evidence를 어떻게 숨길
-  수 있는지 실행 전에 보여준다. 이 case는 실제 `ni status` evidence를
-  포함하며 `BLOCKED`에서 멈춘다.
+  수 있는지 실행 전에 보여준다. 이 case는 historical `BLOCKED` proof를 보존하고
+  resolved artifact-readiness variant의 isolated lock과 bounded prompt도
+  기록한다. `READY`는 benchmark planning-meeting artifact readiness에만
+  적용된다.
 
 ## 3. 제품 유형 / 표면
 
@@ -39,8 +41,9 @@ prompt-count evidence가 없으면 반드시 `not_measured`로 남긴다.
 - `README.ko.md`: Korean companion guide.
 - `sample-report.md`: `not_measured` placeholder를 가진 fillable template.
 - `cases/internal-dashboard/`: vague dashboard request에 대한 manual
-  qualitative readiness drill. isolated ni workspace와 checked-in blocked
-  status proof, blocker analysis, future resolution path를 포함한다.
+  qualitative readiness drill. isolated ni workspace, checked-in blocked
+  status proof, blocker analysis, resolved `READY` proof, isolated lock
+  evidence, bounded prompt evidence, before/after evidence, lessons를 포함한다.
 - `../../docs/43_BENCHMARK_PROTOCOL.md`: scoring method를 정의하는 benchmark
   protocol.
 
@@ -58,29 +61,34 @@ test -f examples/benchmark-report/cases/internal-dashboard/06-ni-status-proof.md
 test -f examples/benchmark-report/cases/internal-dashboard/07-ni-next-questions.md
 test -f examples/benchmark-report/cases/internal-dashboard/08-blocker-analysis.md
 test -f examples/benchmark-report/cases/internal-dashboard/09-resolution-path.md
+test -f examples/benchmark-report/cases/internal-dashboard/15-before-after-evidence.md
+test -f examples/benchmark-report/cases/internal-dashboard/16-lessons.md
 test -f docs/43_BENCHMARK_PROTOCOL.md
 go run ./cmd/ni status --dir examples/benchmark-report/cases/internal-dashboard/workspace --proof --next-questions
-rg -n "not_measured|must not execute downstream agents|Target prompt boundedness|internal-dashboard|NI Intent Readiness: BLOCKED" examples/benchmark-report/README.md examples/benchmark-report/README.ko.md examples/benchmark-report/sample-report.md examples/benchmark-report/cases/internal-dashboard/*.md docs/43_BENCHMARK_PROTOCOL.md
+rg -n "not_measured|must not execute downstream agents|Target prompt boundedness|internal-dashboard|NI Intent Readiness: BLOCKED|NI Intent Readiness: READY" examples/benchmark-report/README.md examples/benchmark-report/README.ko.md examples/benchmark-report/sample-report.md examples/benchmark-report/cases/internal-dashboard/*.md docs/43_BENCHMARK_PROTOCOL.md
 ```
 
 ## 6. 예상 출력
 
 `test` 명령은 성공해야 한다.
 
-`ni status` 명령은 internal-dashboard workspace에 대해
-`NI Intent Readiness: BLOCKED`를 보고해야 한다.
+`ni status` 명령은 resolved internal-dashboard artifact workspace에 대해
+`NI Intent Readiness: READY`를 보고해야 한다. Historical blocked proof는
+`cases/internal-dashboard/06-ni-status-proof.md`에 남아 있다.
 
 `rg` 명령은 template과 dashboard case의 `not_measured` marker, checked-in
-blocked status proof, blocker analysis와 resolution-path evidence, benchmark
-protocol의 non-execution 및 prompt-boundedness marker를 보여야 한다.
+blocked/resolved status proof, blocker analysis와 resolution-path evidence,
+benchmark protocol의 non-execution 및 prompt-boundedness marker를 보여야 한다.
 
 ## 7. demo-check coverage
 
 `bash scripts/demo-check.sh`가 이 예시를 검증한다.
 
 demo check는 required file을 확인하고 isolated internal-dashboard workspace에
-대해 `ni status`를 실행한다. `ni end`, `ni run`, dashboard code, downstream
-agent는 실행하지 않는다.
+대해 `ni status`를 실행한다. Historical blocked proof, resolved READY proof,
+isolated lock evidence, bounded prompt evidence, 남은 `not_measured` claim
+boundary가 존재하는지 확인한다. `ni end`, generated prompt, dashboard code,
+model API, downstream agent는 실행하지 않는다.
 
 ## 8. Korean companion
 

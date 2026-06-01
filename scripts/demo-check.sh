@@ -73,6 +73,10 @@ check_benchmark_report_docs() {
   require_file examples/benchmark-report/cases/internal-dashboard/12-resolved-next-questions.md
   require_file examples/benchmark-report/cases/internal-dashboard/13-lock-summary.md
   require_file examples/benchmark-report/cases/internal-dashboard/14-bounded-prompt-summary.md
+  require_file examples/benchmark-report/cases/internal-dashboard/15-before-after-evidence.md
+  require_file examples/benchmark-report/cases/internal-dashboard/15-before-after-evidence.ko.md
+  require_file examples/benchmark-report/cases/internal-dashboard/16-lessons.md
+  require_file examples/benchmark-report/cases/internal-dashboard/16-lessons.ko.md
   require_file examples/benchmark-report/cases/internal-dashboard/workspace/.ni/contract.json
   require_file examples/benchmark-report/cases/internal-dashboard/workspace/.ni/plan.lock.json
   require_file docs/43_BENCHMARK_PROTOCOL.md
@@ -211,6 +215,10 @@ require_output "NI Intent Readiness: READY" "examples/benchmark-report/cases/int
 require_output "no next-question groups were returned" "examples/benchmark-report/cases/internal-dashboard/12-resolved-next-questions.md"
 require_output "locked plan at examples/benchmark-report/cases/internal-dashboard/workspace/.ni/plan.lock.json" "examples/benchmark-report/cases/internal-dashboard/13-lock-summary.md"
 require_output "Prompt character count: \`4000\`" "examples/benchmark-report/cases/internal-dashboard/14-bounded-prompt-summary.md"
+require_output "Answered artifact-readiness case | READY | Yes, isolated workspace only | Yes | 4000" "examples/benchmark-report/cases/internal-dashboard/15-before-after-evidence.md"
+require_output "dashboard product is ready | No | not_measured" "examples/benchmark-report/cases/internal-dashboard/15-before-after-evidence.md"
+require_output "dashboard implementation quality | not_measured | no dashboard was built" "examples/benchmark-report/cases/internal-dashboard/15-before-after-evidence.md"
+require_output "The 4000-character prompt proves bounded handoff seed generation" "examples/benchmark-report/cases/internal-dashboard/16-lessons.md"
 require_output "\`BLOCKED\` is a valid benchmark result" "examples/benchmark-report/cases/internal-dashboard/08-blocker-analysis.md"
 require_output "Task 161 later followed this" "examples/benchmark-report/cases/internal-dashboard/09-resolution-path.md"
 require_output "This packet was created to collect user answers" "examples/benchmark-report/cases/internal-dashboard/10-answer-packet.md"

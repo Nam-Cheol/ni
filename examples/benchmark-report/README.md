@@ -23,8 +23,10 @@ run, and prompt-count evidence must remain `not_measured`.
   significance.
 - The internal-dashboard case shows how a plausible dashboard request hides
   users, success criteria, data boundaries, risks, non-goals, and handoff
-  evidence before any downstream work starts. It includes real `ni status`
-  evidence and stops at `BLOCKED`.
+  evidence before any downstream work starts. It preserves the historical
+  `BLOCKED` proof, then records a resolved artifact-readiness variant with an
+  isolated lock and bounded prompt. `READY` applies only to benchmark
+  planning-meeting artifact readiness.
 
 ## 3. Product type / surface
 
@@ -40,8 +42,9 @@ run, and prompt-count evidence must remain `not_measured`.
 - `sample-report.md`: a fillable sample/template report with `not_measured`
   placeholders.
 - `cases/internal-dashboard/`: manual qualitative readiness drill for a vague
-  dashboard request, with an isolated ni workspace and checked-in blocked
-  status proof, blocker analysis, and future resolution path.
+  dashboard request, with an isolated ni workspace, checked-in blocked status
+  proof, blocker analysis, resolved `READY` proof, isolated lock evidence,
+  bounded prompt evidence, before/after evidence, and lessons.
 - `../../docs/43_BENCHMARK_PROTOCOL.md`: the benchmark protocol that defines
   the scoring method.
 
@@ -58,31 +61,36 @@ test -f examples/benchmark-report/cases/internal-dashboard/06-ni-status-proof.md
 test -f examples/benchmark-report/cases/internal-dashboard/07-ni-next-questions.md
 test -f examples/benchmark-report/cases/internal-dashboard/08-blocker-analysis.md
 test -f examples/benchmark-report/cases/internal-dashboard/09-resolution-path.md
+test -f examples/benchmark-report/cases/internal-dashboard/15-before-after-evidence.md
+test -f examples/benchmark-report/cases/internal-dashboard/16-lessons.md
 test -f docs/43_BENCHMARK_PROTOCOL.md
 go run ./cmd/ni status --dir examples/benchmark-report/cases/internal-dashboard/workspace --proof --next-questions
-rg -n "not_measured|must not execute downstream agents|Target prompt boundedness|internal-dashboard|NI Intent Readiness: BLOCKED" examples/benchmark-report/README.md examples/benchmark-report/sample-report.md examples/benchmark-report/cases/internal-dashboard/*.md docs/43_BENCHMARK_PROTOCOL.md
+rg -n "not_measured|must not execute downstream agents|Target prompt boundedness|internal-dashboard|NI Intent Readiness: BLOCKED|NI Intent Readiness: READY" examples/benchmark-report/README.md examples/benchmark-report/sample-report.md examples/benchmark-report/cases/internal-dashboard/*.md docs/43_BENCHMARK_PROTOCOL.md
 ```
 
 ## 6. Expected output
 
 The `test` commands should exit successfully.
 
-The `ni status` command should report `NI Intent Readiness: BLOCKED` for the
-internal-dashboard workspace.
+The `ni status` command should report `NI Intent Readiness: READY` for the
+resolved internal-dashboard artifact workspace. The historical blocked proof
+remains checked in at `cases/internal-dashboard/06-ni-status-proof.md`.
 
 The `rg` command should show `not_measured` markers in this template and
-dashboard case, the checked-in blocked status proof, the blocker analysis and
-resolution-path evidence, plus non-execution and prompt-boundedness markers in
-the benchmark protocol.
+dashboard case, the checked-in blocked and resolved status proofs, the blocker
+analysis and resolution-path evidence, plus non-execution and
+prompt-boundedness markers in the benchmark protocol.
 
 ## 7. demo-check coverage
 
 Covered by `bash scripts/demo-check.sh`.
 
 The demo check verifies required files, runs `ni status` for the isolated
-internal-dashboard workspace, and checks that lock/run evidence remains absent
-or `not_measured`. It does not run `ni end`, `ni run`, dashboard code, or
-downstream agents.
+internal-dashboard workspace, and checks that historical blocked proof,
+resolved READY proof, isolated lock evidence, bounded prompt evidence, and
+remaining `not_measured` claim boundaries are present. It does not run
+`ni end`, the generated prompt, dashboard code, model APIs, or downstream
+agents.
 
 ## 8. Korean companion
 
