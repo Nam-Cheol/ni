@@ -31,6 +31,14 @@ required_phrases = {
         'ni status --dir . --proof --next-questions',
         'Do not edit `.ni/plan.lock.json` manually',
     ],
+    'ni-grill': [
+        'Skills are UX; CLI is authority.',
+        '`ni-grill` challenges planning quality before lock. It does not execute work.',
+        'If ni status is BLOCKED, ni-grill should use deterministic blockers before',
+        '`ni-grill` never approves lock by model judgment.',
+        'ni status --dir . --proof --next-questions',
+        'Do not execute downstream work.',
+    ],
 }
 
 skill_roots = [

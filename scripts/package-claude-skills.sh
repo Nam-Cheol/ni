@@ -17,6 +17,7 @@ for required in \
   README.md \
   README.ko.md \
   ni-start/SKILL.md \
+  ni-grill/SKILL.md \
   ni-end/SKILL.md \
   ni-run/SKILL.md \
   ni-status-review/SKILL.md
@@ -37,6 +38,7 @@ mkdir -p "$STAGING" "$DIST_DIR"
 cp -R "$PACK_ROOT/README.md" "$STAGING/README.md"
 cp -R "$PACK_ROOT/README.ko.md" "$STAGING/README.ko.md"
 cp -R "$PACK_ROOT/ni-start" "$STAGING/ni-start"
+cp -R "$PACK_ROOT/ni-grill" "$STAGING/ni-grill"
 cp -R "$PACK_ROOT/ni-end" "$STAGING/ni-end"
 cp -R "$PACK_ROOT/ni-run" "$STAGING/ni-run"
 cp -R "$PACK_ROOT/ni-status-review" "$STAGING/ni-status-review"
@@ -49,4 +51,3 @@ rm -f "$OUT"
 rm -rf "$STAGING_PARENT"
 
 echo "created $OUT"
-

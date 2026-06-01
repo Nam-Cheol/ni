@@ -54,6 +54,8 @@ Immediate documentation and skill-pack influence:
 - `grill-with-docs` becomes a ni planning grill pattern: challenge vague intent
   against docs and contract records, preserve terminology, ask one focused
   readiness question at a time, and update planning state visibly.
+  The repository adaptation is `ni-grill`; see
+  [`91_NI_GRILL.md`](91_NI_GRILL.md).
 - `tdd` reinforces behavior-first tests through public CLI and package
   interfaces.
 - `zoom-out` can shape model-pack orientation when a contributor or model needs

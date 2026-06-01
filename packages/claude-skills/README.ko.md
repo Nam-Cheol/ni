@@ -12,6 +12,7 @@ compilation은 CLI result를 기준으로 판단한다.
 | Skill | Purpose |
 | --- | --- |
 | `ni-start` | Conversation-driven planning을 계속하고 `docs/plan/**`, `.ni/contract.json`, `.ni/session.json`을 함께 유지한다. |
+| `ni-grill` | Lock 전에 accepted 또는 nearly accepted planning content를 challenge한다; downstream work를 execute하거나 model judgment로 readiness를 approve하지 않는다. |
 | `ni-status-review` | `ni status --proof` output을 설명하고 다음 planning question을 찾되 second readiness engine이 되지 않는다. |
 | `ni-end` | CLI readiness를 review하고 explicit confirmation 뒤에만 `ni end`로 lock한다. |
 | `ni-run` | Valid lock에서 bounded handoff prompt를 compile하고 downstream work는 실행하지 않는다. |
@@ -25,6 +26,10 @@ compilation은 CLI result를 기준으로 판단한다.
 - `ni-start`는 의미 있는 authoring update 뒤 changed files, affected IDs,
   before/after CLI status, remaining blockers, next question group을 담은 concise
   planning proof block을 보여야 한다.
+- `ni-grill` challenges planning quality before lock. It does not execute work.
+- `ni status`가 `BLOCKED`이면 `ni-grill`은 새로운 critique를 만들기 전에
+  deterministic blockers를 먼저 사용해야 한다.
+- `ni-grill`은 model judgment로 lock을 approve하지 않는다.
 - Lock claim 전에는 `ni end`를 run 또는 request한다.
 - Handoff prompt claim 전에는 `ni run`을 run 또는 request한다.
 - `.ni/plan.lock.json`을 manually edit하지 않는다.
@@ -60,6 +65,7 @@ repository는 global path를 assume하지 않는다.
 TARGET=/path/to/verified/claude-skills
 mkdir -p "$TARGET"
 cp -R packages/claude-skills/ni-start "$TARGET/"
+cp -R packages/claude-skills/ni-grill "$TARGET/"
 cp -R packages/claude-skills/ni-status-review "$TARGET/"
 cp -R packages/claude-skills/ni-end "$TARGET/"
 cp -R packages/claude-skills/ni-run "$TARGET/"
@@ -70,6 +76,7 @@ Zip archive에서 사용할 때는 먼저 unpack한 뒤 같은 skill folder를 c
 ```bash
 unzip -q dist/ni-claude-skills.zip -d /tmp/ni-claude-skills-unpacked
 cp -R /tmp/ni-claude-skills-unpacked/ni-claude-skills/ni-start "$TARGET/"
+cp -R /tmp/ni-claude-skills-unpacked/ni-claude-skills/ni-grill "$TARGET/"
 cp -R /tmp/ni-claude-skills-unpacked/ni-claude-skills/ni-status-review "$TARGET/"
 cp -R /tmp/ni-claude-skills-unpacked/ni-claude-skills/ni-end "$TARGET/"
 cp -R /tmp/ni-claude-skills-unpacked/ni-claude-skills/ni-run "$TARGET/"

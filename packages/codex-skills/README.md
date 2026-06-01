@@ -11,6 +11,7 @@ lock creation, lock hash verification, and prompt compilation.
 | Skill | Purpose |
 | --- | --- |
 | `ni-start` | Continue conversation-driven planning and keep `docs/plan/**`, `.ni/contract.json`, and `.ni/session.json` synchronized. |
+| `ni-grill` | Challenge accepted or nearly accepted planning content before lock; it does not execute work or approve readiness by model judgment. |
 | `ni-status-review` | Explain `ni status --proof` output and identify the next planning question without becoming a second readiness engine. |
 | `ni-end` | Review CLI readiness, ask for explicit confirmation, and lock only through `ni end`. |
 | `ni-run` | Compile a bounded handoff prompt from a valid lock without executing downstream work. |
@@ -27,6 +28,10 @@ lock creation, lock hash verification, and prompt compilation.
 - `ni-start` must show a concise planning proof block after meaningful
   authoring updates, naming changed files, affected IDs, before/after CLI
   status, remaining blockers, and the next question group.
+- `ni-grill` challenges planning quality before lock. It does not execute work.
+- If `ni status` is `BLOCKED`, `ni-grill` should use deterministic blockers
+  before inventing new critique.
+- `ni-grill` never approves lock by model judgment.
 - Run or request `ni end` before any lock claim.
 - Run or request `ni run` before any compiled handoff prompt claim.
 - Never edit `.ni/plan.lock.json` manually.
@@ -58,6 +63,7 @@ into a workspace-local `.agents/skills/` directory:
 ```bash
 mkdir -p .agents/skills
 cp -R packages/codex-skills/ni-start .agents/skills/
+cp -R packages/codex-skills/ni-grill .agents/skills/
 cp -R packages/codex-skills/ni-status-review .agents/skills/
 cp -R packages/codex-skills/ni-end .agents/skills/
 cp -R packages/codex-skills/ni-run .agents/skills/
@@ -69,6 +75,7 @@ From the zip archive, unpack first, then copy the same skill folders:
 unzip -q dist/ni-codex-skills.zip -d /tmp/ni-codex-skills-unpacked
 mkdir -p .agents/skills
 cp -R /tmp/ni-codex-skills-unpacked/ni-codex-skills/ni-start .agents/skills/
+cp -R /tmp/ni-codex-skills-unpacked/ni-codex-skills/ni-grill .agents/skills/
 cp -R /tmp/ni-codex-skills-unpacked/ni-codex-skills/ni-status-review .agents/skills/
 cp -R /tmp/ni-codex-skills-unpacked/ni-codex-skills/ni-end .agents/skills/
 cp -R /tmp/ni-codex-skills-unpacked/ni-codex-skills/ni-run .agents/skills/

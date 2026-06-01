@@ -26,6 +26,17 @@ ni status --dir . -> conversational summary -> explicit confirmation -> ni end -
 
 The model must never create, edit, repair, or synthesize `.ni/plan.lock.json`.
 
+## Optional Pre-Lock Grill
+
+Before starting this confirmation flow, a user may run `ni-grill` to challenge
+the draft plan. `ni-grill` is optional UX: it can ask focused questions about
+weak assumptions, vague decisions, missing acceptance evidence, risks,
+non-goals, handoff ambiguity, and docs/contract sync.
+
+`ni-grill` does not replace this flow. If it changes planning state, the plan
+must pass `ni status --dir .` again before `ni-end` summarizes it for lock
+confirmation.
+
 ## Summary Contents
 
 The pre-lock summary should be compact but complete enough for a user to know

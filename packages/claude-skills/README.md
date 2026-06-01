@@ -12,6 +12,7 @@ and prompt compilation.
 | Skill | Purpose |
 | --- | --- |
 | `ni-start` | Continue conversation-driven planning and keep `docs/plan/**`, `.ni/contract.json`, and `.ni/session.json` synchronized. |
+| `ni-grill` | Challenge accepted or nearly accepted planning content before lock; it does not execute work or approve readiness by model judgment. |
 | `ni-status-review` | Explain `ni status --proof` output and identify the next planning question without becoming a second readiness engine. |
 | `ni-end` | Review CLI readiness, ask for explicit confirmation, and lock only through `ni end`. |
 | `ni-run` | Compile a bounded handoff prompt from a valid lock without executing downstream work. |
@@ -28,6 +29,10 @@ and prompt compilation.
 - `ni-start` must show a concise planning proof block after meaningful
   authoring updates, naming changed files, affected IDs, before/after CLI
   status, remaining blockers, and the next question group.
+- `ni-grill` challenges planning quality before lock. It does not execute work.
+- If `ni status` is `BLOCKED`, `ni-grill` should use deterministic blockers
+  before inventing new critique.
+- `ni-grill` never approves lock by model judgment.
 - Run or request `ni end` before any lock claim.
 - Run or request `ni run` before any compiled handoff prompt claim.
 - Never edit `.ni/plan.lock.json` manually.
@@ -63,6 +68,7 @@ verified. Copy only the skill folders into that target:
 TARGET=/path/to/verified/claude-skills
 mkdir -p "$TARGET"
 cp -R packages/claude-skills/ni-start "$TARGET/"
+cp -R packages/claude-skills/ni-grill "$TARGET/"
 cp -R packages/claude-skills/ni-status-review "$TARGET/"
 cp -R packages/claude-skills/ni-end "$TARGET/"
 cp -R packages/claude-skills/ni-run "$TARGET/"
@@ -73,6 +79,7 @@ From the zip archive, unpack first, then copy the same skill folders:
 ```bash
 unzip -q dist/ni-claude-skills.zip -d /tmp/ni-claude-skills-unpacked
 cp -R /tmp/ni-claude-skills-unpacked/ni-claude-skills/ni-start "$TARGET/"
+cp -R /tmp/ni-claude-skills-unpacked/ni-claude-skills/ni-grill "$TARGET/"
 cp -R /tmp/ni-claude-skills-unpacked/ni-claude-skills/ni-status-review "$TARGET/"
 cp -R /tmp/ni-claude-skills-unpacked/ni-claude-skills/ni-end "$TARGET/"
 cp -R /tmp/ni-claude-skills-unpacked/ni-claude-skills/ni-run "$TARGET/"

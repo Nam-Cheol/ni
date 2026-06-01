@@ -163,6 +163,18 @@ After the user answers the selected group, `ni-start` updates `docs/plan/**`,
 `.ni/contract.json`, and `.ni/session.json` together, then runs or requests
 `ni status --dir . --proof --next-questions` again.
 
+## Relationship to ni-grill
+
+`ni-start` is the primary authoring mode. `ni-grill` is a later planning
+challenge mode that pressure-tests accepted or nearly accepted planning content
+before `ni-end`.
+
+When deterministic grouped next questions exist, both skills use them first.
+`ni-grill` may add critique only after the CLI blockers are accounted for, and
+any user answers that change planning state still return to the same
+`docs/plan/**`, `.ni/contract.json`, and `.ni/session.json` update discipline
+described here.
+
 ## Planning proof capture
 
 After every meaningful authoring update, `ni-start` should report a concise

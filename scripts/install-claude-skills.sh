@@ -66,7 +66,7 @@ if [[ ! -d "$TARGET" ]]; then
   exit 1
 fi
 
-skills=(ni-start ni-end ni-run ni-status-review)
+skills=(ni-start ni-grill ni-end ni-run ni-status-review)
 
 for skill in "${skills[@]}"; do
   src="$PACK_ROOT/$skill"
@@ -101,4 +101,3 @@ if [[ "$DRY_RUN" -eq 1 ]]; then
 else
   echo "installed NI Claude skills to $TARGET"
 fi
-

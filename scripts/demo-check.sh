@@ -125,6 +125,20 @@ check_no_terminal_assisted_docs() {
   require_output "It does not run" "examples/no-terminal-assisted/README.md"
 }
 
+check_ni_grill_docs() {
+  require_file examples/ni-grill/README.md
+  require_file examples/ni-grill/README.ko.md
+  require_file examples/ni-grill/01-draft-plan.md
+  require_file examples/ni-grill/02-grill-questions.md
+  require_file examples/ni-grill/03-user-answers.md
+  require_file examples/ni-grill/04-docs-contract-delta.md
+  require_file examples/ni-grill/05-status-after-grill.md
+  require_output "Expected \`ni status\`: not claimed" "examples/ni-grill/README.md"
+  require_output "GRILL-001" "examples/ni-grill/02-grill-questions.md"
+  require_output "Skills are UX; CLI is authority" "examples/ni-grill/README.md"
+  require_output "does not execute work" "examples/ni-grill/README.md"
+}
+
 run_if_locked() {
   local example_dir="$1"
   local target="$2"
@@ -287,6 +301,8 @@ run_demo "benchmark report research protocol generic prompt compiles if locked" 
   run_if_locked "examples/benchmark-report/cases/research-protocol/workspace" "generic" "$DEMO_TMP/research-protocol-generic.prompt.txt"
 
 run_demo "no-terminal assisted remains docs-only" check_no_terminal_assisted_docs
+
+run_demo "ni-grill planning challenge remains docs-only" check_ni_grill_docs
 
 for export_target in hyper-run namba-ai ouroboros spec-kit; do
   run_demo "conversation product $export_target export stays seed-only if locked" \

@@ -74,7 +74,7 @@ check_pack() {
   require_file "$pack/README.ko.md"
   require_file "$package_script"
 
-  for skill in ni-start ni-status-review ni-end ni-run; do
+  for skill in ni-start ni-grill ni-status-review ni-end ni-run; do
     check_skill "$pack" "$skill"
   done
 
@@ -97,6 +97,7 @@ check_pack() {
   require_text "$package_script" "README.md"
   require_text "$package_script" "README.ko.md"
   require_text "$package_script" "ni-start/SKILL.md"
+  require_text "$package_script" "ni-grill/SKILL.md"
   require_text "$package_script" "ni-status-review/SKILL.md"
   require_text "$package_script" "ni-end/SKILL.md"
   require_text "$package_script" "ni-run/SKILL.md"

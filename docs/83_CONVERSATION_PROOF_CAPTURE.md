@@ -76,6 +76,17 @@ changed, write `No planning artifacts were updated.` If command execution is
 unavailable, the proof block should say that the before or after status is
 pending exact CLI output from the user or a trusted runner.
 
+## ni-grill Proof Use
+
+`ni-grill` uses the same planning proof shape after the user answers grill
+questions and the model updates planning artifacts. The proof should name the
+`GRILL-*` findings addressed, the records changed, the before/after
+`ni status --proof --next-questions` result, and the next question group.
+
+If `ni-grill` only critiques and asks questions without changing files, it
+should say `No planning artifacts were updated.` It must not present critique
+as readiness proof or lock approval.
+
 ## How Users Should Read It
 
 Users should check the proof in this order:
