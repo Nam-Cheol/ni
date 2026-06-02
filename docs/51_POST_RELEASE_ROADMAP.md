@@ -159,6 +159,12 @@ to verify release artifact, install, build, version/help, script, and hosted
 availability boundaries using dry-run/check-only evidence before any release
 action.
 
+For the v0.5 release publication checklist, use
+[`114_V0_5_RELEASE_PUBLICATION_CHECKLIST.md`](114_V0_5_RELEASE_PUBLICATION_CHECKLIST.md)
+to keep future human-controlled release actions gated, explicitly not run in
+the checklist task, and separated from Homebrew, hosted-artifact, and
+cross-platform verification deferrals.
+
 This phase may improve target seed quality and conformance as supporting work.
 It must not make targets into executable adapters inside `ni-kernel`.
 

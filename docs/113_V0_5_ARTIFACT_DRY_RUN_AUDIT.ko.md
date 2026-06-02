@@ -233,6 +233,10 @@ safe한 단계는 maintainer가 tag, publish, upload assets, availability claims
 전에 필요한 exact gated actions와 evidence를 정리하는 non-executing publication
 checklist다.
 
+Follow-up publication checklist:
+[`114_V0_5_RELEASE_PUBLICATION_CHECKLIST.ko.md`](114_V0_5_RELEASE_PUBLICATION_CHECKLIST.ko.md)가
+그 non-executing checklist를 기록하고 publication actions를 future-gated로 유지한다.
+
 ## Next task prompt
 
 ```text

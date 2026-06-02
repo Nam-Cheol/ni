@@ -233,6 +233,10 @@ step is a non-executing publication checklist that lists the exact gated actions
 and evidence required before a maintainer tags, publishes, uploads assets, or
 updates availability claims.
 
+Follow-up publication checklist:
+[`114_V0_5_RELEASE_PUBLICATION_CHECKLIST.md`](114_V0_5_RELEASE_PUBLICATION_CHECKLIST.md)
+records that non-executing checklist and keeps publication actions future-gated.
+
 ## Next task prompt
 
 ```text

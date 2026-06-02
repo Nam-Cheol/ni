@@ -156,6 +156,12 @@ v0.5 artifact dry-run audit에는
 사용해 release action 전에 dry-run/check-only evidence로 release artifact,
 install, build, version/help, script, hosted availability boundaries를 verify한다.
 
+v0.5 release publication checklist에는
+[`114_V0_5_RELEASE_PUBLICATION_CHECKLIST.ko.md`](114_V0_5_RELEASE_PUBLICATION_CHECKLIST.ko.md)를
+사용해 future human-controlled release actions를 gated 상태로 유지하고,
+checklist task에서 explicitly not run으로 표시하며, Homebrew, hosted-artifact,
+cross-platform verification deferrals와 분리한다.
+
 이 phase는 supporting work로 target seed quality와 conformance를 개선할 수 있다.
 하지만 targets를 `ni-kernel` 내부의 executable adapters로 만들면 안 된다.
 
