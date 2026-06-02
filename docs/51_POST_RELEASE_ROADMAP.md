@@ -171,6 +171,12 @@ to keep the final human decision explicit, unselected by Codex, and separated
 from any tag, GitHub release creation, asset upload, checksum publication,
 Homebrew work, generated prompt execution, or availability-claim upgrade.
 
+For the README onboarding repair and visual prompt pack, use
+[`116_README_ONBOARDING_AND_VISUAL_PROMPT_PASS.md`](116_README_ONBOARDING_AND_VISUAL_PROMPT_PASS.md)
+to preserve the DO_NOT_APPROVE_FIX_FIRST fix-first context, bounded macOS and
+Windows install/uninstall wording, README image prompt reproducibility, and
+non-execution claim boundaries before publication approval is revisited.
+
 This phase may improve target seed quality and conformance as supporting work.
 It must not make targets into executable adapters inside `ni-kernel`.
 

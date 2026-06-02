@@ -84,6 +84,46 @@ go run ./cmd/ni end --dir ./my-plan
 go run ./cmd/ni run --dir ./my-plan --target generic --max-chars 4000
 ```
 
+## 5분 첫 project
+
+`ni`가 무엇을 구현하게 하지 않고 안전하게 시험하려면 이 flow를 사용하세요:
+
+1. Planning workspace를 만듭니다.
+
+```bash
+go run ./cmd/ni init --dir ./my-plan --profile prototype
+```
+
+2. 실행 전에 model-user planning conversation을 진행합니다. Planning workflow는
+   purpose, actors, requirements, risks, evaluations, non-goals, decisions,
+   artifacts, open questions를 `docs/plan/**`, `.ni/contract.json`,
+   `.ni/session.json`에 기록하거나 업데이트합니다.
+
+3. CLI에 authoritative readiness proof를 요청합니다.
+
+```bash
+go run ./cmd/ni status --dir ./my-plan --proof --next-questions
+```
+
+4. `BLOCKED` questions나 gaps가 있으면 planning conversation에서 해결합니다.
+   Model은 update를 draft할 수 있지만 readiness는 `ni status`가 결정합니다.
+
+5. CLI가 plan ready를 보고한 뒤에만 lock합니다.
+
+```bash
+go run ./cmd/ni end --dir ./my-plan
+```
+
+6. Bounded downstream handoff prompt를 compile합니다.
+
+```bash
+go run ./cmd/ni run --dir ./my-plan --target generic --max-chars 4000
+```
+
+`ni run`은 `.ni/plan.lock.json`에서 prompt를 compile합니다. Prompt를 실행하거나,
+agents, shell commands, downstream work를 실행하지 않으며 product readiness를
+증명하지 않습니다.
+
 ## Choose your path
 
 | Path | Status | Start with | Use it when |
@@ -123,6 +163,64 @@ archive checksum을 verify하고, 압축을 해제한 뒤 `ni --help`와 `ni ver
 Release status: v0.4.0 release binaries는 asset과 checksum 검증 후 Available입니다.
 Curl installer는 실제 v0.4.0 release assets에 대해 검증된 뒤 Available입니다.
 Homebrew를 포함한 package-manager distribution은 아직 Available이 아닙니다.
+
+## macOS install / uninstall
+
+권장 verified path는 v0.4.0 curl installer를 inspect한 뒤 사용하는 것입니다.
+`install.sh`는 기본적으로 `ni` binary만 `$HOME/.local/bin/ni`에 설치합니다.
+다른 directory를 쓰려면 `BINDIR`를 지정합니다.
+
+```bash
+VERSION="0.4.0"
+curl -fsSLO https://raw.githubusercontent.com/Nam-Cheol/ni/main/install.sh
+sed -n '1,320p' install.sh
+sh install.sh --dry-run --version "$VERSION"
+BINDIR="$HOME/.local/bin" sh install.sh --version "$VERSION"
+"$HOME/.local/bin/ni" --help
+"$HOME/.local/bin/ni" version
+```
+
+`ni`를 command name으로 찾지 못하면 선택한 `BINDIR`를 `PATH`에 추가하세요.
+
+Installer로 설치된 binary는 정확한 설치 파일을 삭제해 uninstall합니다:
+
+```bash
+rm -f "$HOME/.local/bin/ni"
+```
+
+다른 `BINDIR`에 설치했다면 그 directory의 `ni`를 삭제하세요. `ni`만을 위해
+추가한 `PATH` line이 있다면 shell profile에서 직접 제거하세요. Homebrew:
+Planned / v0.5 candidate 상태이므로 아직 `brew install`을 사용하지 않습니다.
+
+## Windows install / uninstall
+
+Verified public Windows package-manager installer는 아직 문서화되어 있지 않습니다.
+현재 문서화된 Windows path는 `windows/amd64`용 v0.4.0 release binary archive입니다.
+MSI, winget, Chocolatey, Scoop, Homebrew path는 claim하지 않습니다.
+
+```powershell
+$Version = "0.4.0"
+Invoke-WebRequest "https://github.com/Nam-Cheol/ni/releases/download/v$Version/ni_$($Version)_windows_amd64.zip" -OutFile "ni_$($Version)_windows_amd64.zip"
+Invoke-WebRequest "https://github.com/Nam-Cheol/ni/releases/download/v$Version/ni_$($Version)_checksums.txt" -OutFile "ni_$($Version)_checksums.txt"
+Get-FileHash "ni_$($Version)_windows_amd64.zip" -Algorithm SHA256
+Select-String "ni_$($Version)_windows_amd64.zip" "ni_$($Version)_checksums.txt"
+Expand-Archive "ni_$($Version)_windows_amd64.zip" -DestinationPath "ni_$($Version)_windows_amd64"
+.\ni_$($Version)_windows_amd64\ni.exe --help
+.\ni_$($Version)_windows_amd64\ni.exe version
+```
+
+Extracted binary를 trust하기 전에 hash output과 checksum line을 비교하세요.
+반복 사용하려면 직접 관리하는 directory에 `ni.exe`를 두고 그 directory를 user
+`PATH`에 추가합니다.
+
+Uninstall은 복사해 둔 executable을 그 directory에서 삭제하는 것입니다:
+
+```powershell
+Remove-Item "$HOME\bin\ni.exe"
+```
+
+실제로 `ni.exe`를 둔 path를 사용하세요. User `PATH` entry는 `ni`만을 위해
+추가한 경우에만 제거하세요.
 
 License: `ni`는 [MIT License](LICENSE)로 배포됩니다.
 

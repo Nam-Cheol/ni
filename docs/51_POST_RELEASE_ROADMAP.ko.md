@@ -168,6 +168,12 @@ v0.5 publication human approval packet에는
 tag, GitHub release creation, asset upload, checksum publication, Homebrew work,
 generated prompt execution, availability-claim upgrade와 분리한다.
 
+README onboarding repair and visual prompt pack에는
+[`116_README_ONBOARDING_AND_VISUAL_PROMPT_PASS.ko.md`](116_README_ONBOARDING_AND_VISUAL_PROMPT_PASS.ko.md)를
+사용해 DO_NOT_APPROVE_FIX_FIRST fix-first context, bounded macOS and Windows
+install/uninstall wording, README image prompt reproducibility,
+non-execution claim boundaries를 publication approval 재검토 전에 보존한다.
+
 이 phase는 supporting work로 target seed quality와 conformance를 개선할 수 있다.
 하지만 targets를 `ni-kernel` 내부의 executable adapters로 만들면 안 된다.
 

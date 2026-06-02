@@ -84,6 +84,45 @@ go run ./cmd/ni end --dir ./my-plan
 go run ./cmd/ni run --dir ./my-plan --target generic --max-chars 4000
 ```
 
+## First project in 5 minutes
+
+Use this flow to try `ni` safely without asking it to implement anything:
+
+1. Create a planning workspace.
+
+```bash
+go run ./cmd/ni init --dir ./my-plan --profile prototype
+```
+
+2. Have the model-user planning conversation before execution. The planning
+   workflow records purpose, actors, requirements, risks, evaluations,
+   non-goals, decisions, artifacts, and open questions in `docs/plan/**`,
+   `.ni/contract.json`, and `.ni/session.json`.
+
+3. Ask the CLI for the authoritative readiness proof.
+
+```bash
+go run ./cmd/ni status --dir ./my-plan --proof --next-questions
+```
+
+4. Resolve any `BLOCKED` questions or gaps in the planning conversation. A
+   model can draft updates, but `ni status` decides readiness.
+
+5. Lock only after the CLI reports the plan is ready.
+
+```bash
+go run ./cmd/ni end --dir ./my-plan
+```
+
+6. Compile a bounded downstream handoff prompt.
+
+```bash
+go run ./cmd/ni run --dir ./my-plan --target generic --max-chars 4000
+```
+
+`ni run` compiles the prompt from `.ni/plan.lock.json`; it does not execute the
+prompt, run agents, run shell commands, or prove product readiness.
+
 ## Choose your path
 
 | Path | Status | Start with | Use it when |
@@ -124,6 +163,65 @@ Release status: v0.4.0 release binaries are available after asset and checksum
 verification. The curl installer is available after verification against the
 real v0.4.0 release assets. Package-manager distribution, including Homebrew,
 is not available yet.
+
+## macOS install / uninstall
+
+Recommended verified path: use the v0.4.0 curl installer after inspecting it.
+By default, `install.sh` installs only the `ni` binary to
+`$HOME/.local/bin/ni`; set `BINDIR` to choose a different directory.
+
+```bash
+VERSION="0.4.0"
+curl -fsSLO https://raw.githubusercontent.com/Nam-Cheol/ni/main/install.sh
+sed -n '1,320p' install.sh
+sh install.sh --dry-run --version "$VERSION"
+BINDIR="$HOME/.local/bin" sh install.sh --version "$VERSION"
+"$HOME/.local/bin/ni" --help
+"$HOME/.local/bin/ni" version
+```
+
+If `ni` is not found by name, add the chosen `BINDIR` to your `PATH`.
+
+Uninstall the installer-installed binary by removing the exact installed file:
+
+```bash
+rm -f "$HOME/.local/bin/ni"
+```
+
+If you installed to another `BINDIR`, remove `ni` from that directory instead.
+If you added a `PATH` line only for `ni`, remove that shell profile line
+manually. Homebrew remains Planned / v0.5 candidate; do not use `brew install`
+for `ni` yet.
+
+## Windows install / uninstall
+
+Verified public Windows package-manager installers are not documented yet. The
+currently documented Windows path is the v0.4.0 release binary archive for
+`windows/amd64`; no MSI, winget, Chocolatey, Scoop, or Homebrew path is claimed.
+
+```powershell
+$Version = "0.4.0"
+Invoke-WebRequest "https://github.com/Nam-Cheol/ni/releases/download/v$Version/ni_$($Version)_windows_amd64.zip" -OutFile "ni_$($Version)_windows_amd64.zip"
+Invoke-WebRequest "https://github.com/Nam-Cheol/ni/releases/download/v$Version/ni_$($Version)_checksums.txt" -OutFile "ni_$($Version)_checksums.txt"
+Get-FileHash "ni_$($Version)_windows_amd64.zip" -Algorithm SHA256
+Select-String "ni_$($Version)_windows_amd64.zip" "ni_$($Version)_checksums.txt"
+Expand-Archive "ni_$($Version)_windows_amd64.zip" -DestinationPath "ni_$($Version)_windows_amd64"
+.\ni_$($Version)_windows_amd64\ni.exe --help
+.\ni_$($Version)_windows_amd64\ni.exe version
+```
+
+Compare the hash output with the checksum line before trusting the extracted
+binary. To install for repeated use, place `ni.exe` in a directory you control
+and add that directory to your user `PATH`.
+
+Uninstall by removing the copied executable from that directory:
+
+```powershell
+Remove-Item "$HOME\bin\ni.exe"
+```
+
+Use the path where you actually placed `ni.exe`. Remove a user `PATH` entry
+only if you added one specifically for `ni`.
 
 License: `ni` is licensed under the [MIT License](LICENSE).
 
