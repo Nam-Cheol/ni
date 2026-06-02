@@ -3,13 +3,15 @@ set -euo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 QUICKSTART_TMP="$(mktemp -d "${TMPDIR:-/tmp}/ni-release-check.XXXXXX")"
-RELEASE_VERSION="v0.4.0"
+CURRENT_RELEASE_VERSION="v0.4.0"
+PLANNED_RELEASE_VERSION="v0.5.0"
 
 trap 'rm -rf "$QUICKSTART_TMP"' EXIT
 
 cd "$ROOT"
 
-echo "release-check: planned release version $RELEASE_VERSION" >&2
+echo "release-check: current release version $CURRENT_RELEASE_VERSION" >&2
+echo "release-check: planned release version $PLANNED_RELEASE_VERSION" >&2
 
 run_step() {
   local label="$1"
@@ -241,6 +243,145 @@ for path in required_paths:
     for claim in forbidden_claims:
         if claim in text:
             raise SystemExit(f"{path} appears to make a forbidden v0.4.0 claim: {claim}")
+PY
+
+run_step "v0.5.0 release candidate and publication docs are factual" python3 - <<'PY'
+from pathlib import Path
+
+required_paths = [
+    Path("docs/110_V0_5_RELEASE_CANDIDATE_READINESS_AUDIT.md"),
+    Path("docs/110_V0_5_RELEASE_CANDIDATE_READINESS_AUDIT.ko.md"),
+    Path("docs/111_V0_5_RC_POLISH_RELEASE_NOTES_DRAFT.md"),
+    Path("docs/111_V0_5_RC_POLISH_RELEASE_NOTES_DRAFT.ko.md"),
+    Path("docs/112_V0_5_RELEASE_NOTES_FINAL_PREFLIGHT.md"),
+    Path("docs/112_V0_5_RELEASE_NOTES_FINAL_PREFLIGHT.ko.md"),
+    Path("docs/113_V0_5_ARTIFACT_DRY_RUN_AUDIT.md"),
+    Path("docs/113_V0_5_ARTIFACT_DRY_RUN_AUDIT.ko.md"),
+    Path("docs/114_V0_5_RELEASE_PUBLICATION_CHECKLIST.md"),
+    Path("docs/114_V0_5_RELEASE_PUBLICATION_CHECKLIST.ko.md"),
+    Path("docs/115_V0_5_PUBLICATION_HUMAN_APPROVAL_PACKET.md"),
+    Path("docs/115_V0_5_PUBLICATION_HUMAN_APPROVAL_PACKET.ko.md"),
+]
+
+for path in required_paths:
+    if not path.exists():
+        raise SystemExit(f"{path} is missing")
+
+required_markers = {
+    Path("docs/110_V0_5_RELEASE_CANDIDATE_READINESS_AUDIT.md"): [
+        "Decision: `RC_READY_WITH_DEFERRALS`.",
+        "Homebrew: Planned / v0.5 candidate",
+        "Model workspace packs: Experimental",
+        "No-terminal method: Experimental / assisted",
+        "Skills are UX; CLI is authority.",
+    ],
+    Path("docs/110_V0_5_RELEASE_CANDIDATE_READINESS_AUDIT.ko.md"): [
+        "Decision: `RC_READY_WITH_DEFERRALS`.",
+        "Homebrew: Planned / v0.5 candidate",
+        "Model workspace packs: Experimental",
+        "No-terminal method: Experimental / assisted",
+        "Skills are UX; CLI is authority.",
+    ],
+    Path("docs/111_V0_5_RC_POLISH_RELEASE_NOTES_DRAFT.md"): [
+        "# v0.5 RC Polish / Release Notes Draft",
+        "This document is a draft and does not publish, tag, or release v0.5.",
+        "Release binary: Available for verified v0.4.0 release assets.",
+        "Curl installer: Available for verified v0.4.0 release assets.",
+        "Homebrew: Planned / v0.5 candidate.",
+        "No downloadable v0.5 artifacts are claimed by this draft.",
+    ],
+    Path("docs/111_V0_5_RC_POLISH_RELEASE_NOTES_DRAFT.ko.md"): [
+        "# v0.5 RC Polish / Release Notes Draft",
+        "This document is a draft and does not publish, tag, or release v0.5.",
+        "Release binary: verified v0.4.0 release assets에 대해 Available.",
+        "Curl installer: verified v0.4.0 release assets에 대해 Available.",
+        "Homebrew: Planned / v0.5 candidate.",
+        "이 draft는 downloadable v0.5 artifacts가 있다고 claim하지 않는다.",
+    ],
+    Path("docs/112_V0_5_RELEASE_NOTES_FINAL_PREFLIGHT.md"): [
+        "Decision: RELEASE_NOTES_PREFLIGHT_PASS_WITH_NOTES.",
+        "v0.5 is not claimed as published or released.",
+        "No v0.5 artifacts are claimed uploaded.",
+        "Homebrew: Planned / v0.5 candidate.",
+    ],
+    Path("docs/112_V0_5_RELEASE_NOTES_FINAL_PREFLIGHT.ko.md"): [
+        "Decision: RELEASE_NOTES_PREFLIGHT_PASS_WITH_NOTES.",
+        "v0.5가 published 또는 released되었다고 claim하지 않는다.",
+        "Uploaded v0.5 artifacts claim 없음.",
+        "Homebrew: Planned / v0.5 candidate.",
+    ],
+    Path("docs/113_V0_5_ARTIFACT_DRY_RUN_AUDIT.md"): [
+        "Decision: ARTIFACT_DRY_RUN_PASS_WITH_DEFERRALS.",
+        "no v0.5 tag, GitHub release, asset upload, hosted checksum",
+        "Output: `0.0.0-dev`.",
+        "not a v0.5 release claim",
+    ],
+    Path("docs/113_V0_5_ARTIFACT_DRY_RUN_AUDIT.ko.md"): [
+        "Decision: ARTIFACT_DRY_RUN_PASS_WITH_DEFERRALS.",
+        "v0.5 tag, GitHub release, asset upload, hosted checksum",
+        "Output: `0.0.0-dev`.",
+        "v0.5 release claim이 아니다",
+    ],
+    Path("docs/114_V0_5_RELEASE_PUBLICATION_CHECKLIST.md"): [
+        "Decision: PUBLICATION_CHECKLIST_READY_WITH_NOTES.",
+        'Future manual `git tag -a v0.5.0 -m "..."`',
+        "`git push origin v0.5.0`",
+        "Homebrew remains Planned / v0.5 candidate.",
+    ],
+    Path("docs/114_V0_5_RELEASE_PUBLICATION_CHECKLIST.ko.md"): [
+        "Decision: PUBLICATION_CHECKLIST_READY_WITH_NOTES.",
+        'Future manual `git tag -a v0.5.0 -m "..."`',
+        "`git push origin v0.5.0`",
+        "Homebrew remains Planned / v0.5 candidate.",
+    ],
+    Path("docs/115_V0_5_PUBLICATION_HUMAN_APPROVAL_PACKET.md"): [
+        "Decision: HUMAN_APPROVAL_PACKET_READY_WITH_NOTES.",
+        "Decision: APPROVE_PUBLICATION_PREP_ONLY.",
+        "Previous decision: DO_NOT_APPROVE_FIX_FIRST.",
+        "Release tag target: v0.5.0.",
+    ],
+    Path("docs/115_V0_5_PUBLICATION_HUMAN_APPROVAL_PACKET.ko.md"): [
+        "Decision: HUMAN_APPROVAL_PACKET_READY_WITH_NOTES.",
+        "Decision: APPROVE_PUBLICATION_PREP_ONLY.",
+        "Previous decision: DO_NOT_APPROVE_FIX_FIRST.",
+        "Release tag target: v0.5.0.",
+    ],
+}
+
+for path, markers in required_markers.items():
+    text = path.read_text(encoding="utf-8")
+    missing = [marker for marker in markers if marker not in text]
+    if missing:
+        raise SystemExit(f"{path} is missing v0.5.0 publication markers: {missing}")
+
+for path in required_paths:
+    text = path.read_text(encoding="utf-8")
+    forbidden_claims = [
+        "Homebrew: Available",
+        "Model workspace packs: Available",
+        "No-terminal method: Available",
+        "no-terminal deterministic validation passed",
+        "ni run executes downstream work",
+        "benchmark evidence proves implementation quality",
+    ]
+    for claim in forbidden_claims:
+        context = text[max(0, text.find(claim) - 500): text.find(claim) + len(claim) + 160]
+        allowed_negations = [
+            "Do not claim",
+            "Do not",
+            "does not",
+            "not claim",
+            "forbidden",
+            "forbidden claims",
+            "Forbidden",
+            "claim 없음",
+            "claim하지",
+            "금지",
+            "없음",
+            "downstream agent performance",
+        ]
+        if claim in text and not any(marker in context for marker in allowed_negations):
+            raise SystemExit(f"{path} appears to make a forbidden v0.5.0 claim: {claim}")
 PY
 
 run_step "release facts match repository resources" python3 - <<'PY'

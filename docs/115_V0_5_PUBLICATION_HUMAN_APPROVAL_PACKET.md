@@ -26,7 +26,10 @@
 - This packet does not publish, tag, create a GitHub release, upload assets,
   run a release workflow, run GoReleaser publish, create or publish a Homebrew
   formula, execute generated prompts, or mark v0.5 as released.
-- No human approval is granted by this packet.
+- The original packet did not grant approval by itself.
+- Previous human decision after packet creation: DO_NOT_APPROVE_FIX_FIRST.
+- Human decision after fix-first recheck: APPROVE_PUBLICATION_PREP_ONLY.
+- Release tag target: v0.5.0.
 
 ## Approval-packet goal
 
@@ -64,7 +67,7 @@ user validation remains limited.
 | docs/112 | RELEASE_NOTES_PREFLIGHT_PASS_WITH_NOTES | Present and tracked | Final release-note preflight preserves wording, validation, and no-release boundaries. |
 | docs/113 | ARTIFACT_DRY_RUN_PASS_WITH_DEFERRALS | Present and tracked | Dry-run/check-only artifact readiness passed with explicit publication deferrals. |
 | docs/114 | PUBLICATION_CHECKLIST_READY_WITH_NOTES | New in prior checklist task | Non-executing publication checklist; release actions are listed but not run. |
-| docs/115 | HUMAN_APPROVAL_PACKET_READY_WITH_NOTES | New in this task | Human approval packet for a later explicit maintainer decision; no approval is granted here. |
+| docs/115 | HUMAN_APPROVAL_PACKET_READY_WITH_NOTES | New in this task | Human approval packet for a later explicit maintainer decision; later decision is recorded below. |
 
 ## Human approval questions
 
@@ -96,9 +99,29 @@ message. None is selected by this packet.
 
 | Option | Meaning | Selected by this packet? | Allowed next step |
 | --- | --- | --- | --- |
-| APPROVE_PUBLICATION_PREP_ONLY | Human approves a separate publication-prep task that may still be check-only or may prepare commands for human execution, depending on the next prompt. | No | A later explicit prompt must define scope and gates. |
-| DO_NOT_APPROVE_FIX_FIRST | Human declines approval until identified issues are fixed and validations rerun. | No | Fix-only task; no publication action. |
+| APPROVE_PUBLICATION_PREP_ONLY | Human approves a separate publication-prep task that may still be check-only or may prepare commands for human execution, depending on the next prompt. | Yes | Separate publication-prep may proceed after scoped checks. |
+| DO_NOT_APPROVE_FIX_FIRST | Human declines approval until identified issues are fixed and validations rerun. | No | Superseded after fix-first recheck; preserved in the decision record. |
 | DEFER_PUBLICATION | Human defers publication decision. | No | Wait or perform unrelated docs/evidence work. |
+
+## Human decision record
+
+Decision: APPROVE_PUBLICATION_PREP_ONLY.
+
+Previous decision: DO_NOT_APPROVE_FIX_FIRST.
+
+Recorded meaning: publication-prep approval is granted after the fix-first
+recheck found no validation failures and the v0.5.0 release gate was updated to
+separate current verified release status from the planned v0.5.0 publication
+target. Actual publication still requires the later scoped tag/push/release
+step and post-publication hosted asset verification.
+
+Release tag target: v0.5.0.
+
+Still not allowed from this record alone: unscoped tag creation, GitHub release
+creation, asset upload, checksum publication, Homebrew work, generated prompt
+execution, availability-claim upgrade, project-root `ni end`, project-root
+relock, or runtime/release automation beyond the existing tag-triggered
+workflow.
 
 ## Required evidence matrix
 
@@ -109,7 +132,7 @@ message. None is selected by this packet.
 | docs/112 | RELEASE_NOTES_PREFLIGHT_PASS_WITH_NOTES preserved | Required | Yes | Release-note claim boundaries remain explicit. |
 | docs/113 | ARTIFACT_DRY_RUN_PASS_WITH_DEFERRALS preserved | Required | Yes | Dry-run/check-only, not publication. |
 | docs/114 | PUBLICATION_CHECKLIST_READY_WITH_NOTES preserved | Required | Yes | Publication actions listed as future-gated and not run. |
-| docs/115 | HUMAN_APPROVAL_PACKET_READY_WITH_NOTES | New in this task | Yes | No human approval is granted here. |
+| docs/115 | HUMAN_APPROVAL_PACKET_READY_WITH_NOTES | New in this task | Yes | Later human decision is recorded in this packet. |
 | `git status --short` | Expected docs-only changes visible; no unexpected files | Required | Yes | Include docs/110 through docs/115 and docs/51 review. |
 | `git ls-files docs/110_* ... docs/114_*` | docs/110 through docs/114 tracked as expected | Required | Yes | docs/115 is new until added in a later commit. |
 | Protected `.ni` diff | No diff in `.ni/contract.json`, `.ni/session.json`, `.ni/plan.lock.json` | Required | Yes | Any protected root planning diff blocks release actions. |
@@ -131,7 +154,7 @@ message. None is selected by this packet.
 
 | Gate | Later action | Run in this task? | Requires later explicit human approval? | Required verification after action |
 | --- | --- | --- | --- | --- |
-| create release tag | Create the intended v0.5 tag on the approved commit | No | Yes | Tag points to intended commit. |
+| create release tag | Create the intended `v0.5.0` tag on the approved commit | No | Yes | Tag points to intended commit. |
 | push release tag | Push the approved tag | No | Yes | Remote tag exists and matches local tag. |
 | create GitHub release | Create or trigger the release page | No | Yes | Release page matches intended tag and notes. |
 | upload release assets | Upload or publish archives | No | Yes | Expected assets are downloadable. |
@@ -223,7 +246,7 @@ message. None is selected by this packet.
 
 | Claim area | Expected boundary | Packet state | Pass? | Notes |
 | --- | --- | --- | --- | --- |
-| Human approval status | No approval granted unless the human explicitly grants it | Not granted | Yes | This packet asks for later approval only. |
+| Human approval status | No publication approval granted unless the human explicitly grants it | APPROVE_PUBLICATION_PREP_ONLY recorded after fix-first recheck | Yes | Actual tag/push/release still requires scoped publication execution. |
 | Published/released status | Do not claim v0.5 is published or released | Preserved | Yes | Publication is future-gated. |
 | GitHub release status | Do not claim a v0.5 GitHub release exists | Preserved | Yes | Creation is future-gated. |
 | Asset upload status | Do not claim assets were uploaded | Preserved | Yes | Upload is future-gated. |
@@ -294,26 +317,35 @@ message. None is selected by this packet.
 
 ## Recommended next task
 
-Selected next task: A. Wait for human approval.
+Selected next task: Publication execution for `v0.5.0`, scoped to tag/push and
+release workflow verification.
 
-Why: the packet is ready with notes, and the next real step must be a human
-decision outside Codex. No execution prompt is provided here because any release
-or publication-prep action requires explicit maintainer selection of one human
-decision option.
+Why: the maintainer first selected DO_NOT_APPROVE_FIX_FIRST, then asked to
+proceed if no fixes were found. The fix-first recheck found no validation
+failures, and the release gate now records `v0.5.0` as the planned publication
+target. The next step is still limited to publication execution and
+post-publication verification; it must not claim Homebrew Available, model
+workspace Available, no-terminal deterministic validation, benchmark causality,
+or downstream execution.
 
-## Human approval request template
+## Publication execution request template
 
 ```text
-Please review docs/110 through docs/115, the final validation report, and the
-protected .ni diff result.
+Proceed with the scoped v0.5.0 publication execution.
 
-Choose exactly one:
-- APPROVE_PUBLICATION_PREP_ONLY
-- DO_NOT_APPROVE_FIX_FIRST
-- DEFER_PUBLICATION
+Allowed scope:
+- commit the approved release-check and approval-packet updates
+- create tag v0.5.0 on the approved commit
+- push the commit and tag as explicitly approved
+- verify the tag-triggered release workflow and hosted release assets if network
+  access is available
 
-No publication, tag, GitHub release creation, asset upload, checksum
-publication, Homebrew work, generated prompt execution, or availability-claim
-upgrade should occur unless the next message explicitly approves and scopes that
-separate task.
+Still forbidden:
+- Homebrew Available claim
+- model workspace Available claim
+- no-terminal deterministic claim
+- benchmark causality or downstream-quality claim
+- generated prompt execution
+- project-root ni end or relock
+- runtime execution behavior
 ```

@@ -27,7 +27,10 @@
 - 이 packet은 publish, tag, GitHub release creation, asset upload, release
   workflow, GoReleaser publish, Homebrew formula creation/publication, generated
   prompt execution, v0.5 released marking을 수행하지 않는다.
-- 이 packet은 human approval을 grant하지 않는다.
+- Original packet 자체는 approval을 grant하지 않았다.
+- Packet creation 이후 기록된 previous human decision: DO_NOT_APPROVE_FIX_FIRST.
+- Fix-first recheck 이후 human decision: APPROVE_PUBLICATION_PREP_ONLY.
+- Release tag target: v0.5.0.
 
 ## Approval-packet goal
 
@@ -64,7 +67,7 @@ deferred, external user validation은 limited이기 때문에 남는다.
 | docs/112 | RELEASE_NOTES_PREFLIGHT_PASS_WITH_NOTES | Present and tracked | Final release-note preflight가 wording, validation, no-release boundaries를 보존한다. |
 | docs/113 | ARTIFACT_DRY_RUN_PASS_WITH_DEFERRALS | Present and tracked | Dry-run/check-only artifact readiness passed with explicit publication deferrals. |
 | docs/114 | PUBLICATION_CHECKLIST_READY_WITH_NOTES | New in prior checklist task | Non-executing publication checklist; release actions는 listed but not run. |
-| docs/115 | HUMAN_APPROVAL_PACKET_READY_WITH_NOTES | New in this task | Later explicit maintainer decision을 위한 human approval packet; approval은 granted되지 않았다. |
+| docs/115 | HUMAN_APPROVAL_PACKET_READY_WITH_NOTES | New in this task | Later explicit maintainer decision을 위한 human approval packet; later decision은 아래에 기록한다. |
 
 ## Human approval questions
 
@@ -96,9 +99,28 @@ packet은 아무 option도 선택하지 않는다.
 
 | Option | Meaning | Selected by this packet? | Allowed next step |
 | --- | --- | --- | --- |
-| APPROVE_PUBLICATION_PREP_ONLY | Human이 separate publication-prep task를 approve한다. 다음 prompt에 따라 still check-only일 수도 있고 human execution용 commands를 prepare할 수도 있다. | No | Later explicit prompt가 scope와 gates를 정의해야 한다. |
-| DO_NOT_APPROVE_FIX_FIRST | Human이 identified issues를 fix하고 validations를 rerun하기 전까지 approval을 거절한다. | No | Fix-only task; publication action 없음. |
+| APPROVE_PUBLICATION_PREP_ONLY | Human이 separate publication-prep task를 approve한다. 다음 prompt에 따라 still check-only일 수도 있고 human execution용 commands를 prepare할 수도 있다. | Yes | Separate publication-prep may proceed after scoped checks. |
+| DO_NOT_APPROVE_FIX_FIRST | Human이 identified issues를 fix하고 validations를 rerun하기 전까지 approval을 거절한다. | No | Fix-first recheck 이후 superseded; decision record에는 보존한다. |
 | DEFER_PUBLICATION | Human이 publication decision을 defer한다. | No | Wait 또는 unrelated docs/evidence work. |
+
+## Human decision record
+
+Decision: APPROVE_PUBLICATION_PREP_ONLY.
+
+Previous decision: DO_NOT_APPROVE_FIX_FIRST.
+
+Recorded meaning: fix-first recheck에서 validation failures가 발견되지 않았고,
+v0.5.0 release gate가 current verified release status와 planned v0.5.0
+publication target을 분리하도록 updated되었으므로 publication-prep approval이
+granted되었다. Actual publication은 여전히 later scoped tag/push/release step과
+post-publication hosted asset verification을 필요로 한다.
+
+Release tag target: v0.5.0.
+
+이 record만으로는 unscoped tag creation, GitHub release creation, asset upload,
+checksum publication, Homebrew work, generated prompt execution,
+availability-claim upgrade, project-root `ni end`, project-root relock,
+existing tag-triggered workflow 밖의 runtime/release automation이 허용되지 않는다.
 
 ## Required evidence matrix
 
@@ -109,7 +131,7 @@ packet은 아무 option도 선택하지 않는다.
 | docs/112 | RELEASE_NOTES_PREFLIGHT_PASS_WITH_NOTES preserved | Required | Yes | Release-note claim boundaries remain explicit. |
 | docs/113 | ARTIFACT_DRY_RUN_PASS_WITH_DEFERRALS preserved | Required | Yes | Dry-run/check-only, not publication. |
 | docs/114 | PUBLICATION_CHECKLIST_READY_WITH_NOTES preserved | Required | Yes | Publication actions listed as future-gated and not run. |
-| docs/115 | HUMAN_APPROVAL_PACKET_READY_WITH_NOTES | New in this task | Yes | Human approval은 granted되지 않았다. |
+| docs/115 | HUMAN_APPROVAL_PACKET_READY_WITH_NOTES | New in this task | Yes | Later human decision은 이 packet에 기록된다. |
 | `git status --short` | Expected docs-only changes visible; no unexpected files | Required | Yes | docs/110부터 docs/115와 docs/51 review 포함. |
 | `git ls-files docs/110_* ... docs/114_*` | docs/110부터 docs/114 tracked as expected | Required | Yes | docs/115는 later commit 전까지 new. |
 | Protected `.ni` diff | `.ni/contract.json`, `.ni/session.json`, `.ni/plan.lock.json` diff 없음 | Required | Yes | Any protected root planning diff blocks release actions. |
@@ -131,7 +153,7 @@ packet은 아무 option도 선택하지 않는다.
 
 | Gate | Later action | Run in this task? | Requires later explicit human approval? | Required verification after action |
 | --- | --- | --- | --- | --- |
-| create release tag | Approved commit에 intended v0.5 tag 생성 | No | Yes | Tag points to intended commit. |
+| create release tag | Approved commit에 intended `v0.5.0` tag 생성 | No | Yes | Tag points to intended commit. |
 | push release tag | Approved tag push | No | Yes | Remote tag exists and matches local tag. |
 | create GitHub release | Release page create 또는 trigger | No | Yes | Release page matches intended tag and notes. |
 | upload release assets | Archives upload 또는 publish | No | Yes | Expected assets are downloadable. |
@@ -223,7 +245,7 @@ packet은 아무 option도 선택하지 않는다.
 
 | Claim area | Expected boundary | Packet state | Pass? | Notes |
 | --- | --- | --- | --- | --- |
-| Human approval status | Human이 explicitly grant하지 않는 한 approval 없음 | Not granted | Yes | 이 packet은 later approval만 요청한다. |
+| Human approval status | Human이 explicitly grant하지 않는 한 publication approval 없음 | APPROVE_PUBLICATION_PREP_ONLY recorded after fix-first recheck | Yes | Actual tag/push/release still requires scoped publication execution. |
 | Published/released status | v0.5 published/released claim 금지 | Preserved | Yes | Publication is future-gated. |
 | GitHub release status | v0.5 GitHub release exists claim 금지 | Preserved | Yes | Creation is future-gated. |
 | Asset upload status | Assets uploaded claim 금지 | Preserved | Yes | Upload is future-gated. |
@@ -294,25 +316,34 @@ packet은 아무 option도 선택하지 않는다.
 
 ## Recommended next task
 
-Selected next task: A. Wait for human approval.
+Selected next task: Publication execution for `v0.5.0`, scoped to tag/push and
+release workflow verification.
 
-Why: packet이 ready with notes 상태이고, 다음 real step은 Codex 밖의 human decision이어야
-한다. Release 또는 publication-prep action에는 explicit maintainer selection of one
-human decision option이 필요하므로 여기서는 execution prompt를 제공하지 않는다.
+Why: maintainer가 먼저 DO_NOT_APPROVE_FIX_FIRST를 선택했고, 이후 fixes가 없으면
+proceed하라고 요청했다. Fix-first recheck에서는 validation failures가 발견되지
+않았고, release gate는 planned publication target을 `v0.5.0`으로 기록한다. 다음
+step은 여전히 publication execution과 post-publication verification으로 제한되며,
+Homebrew Available, model workspace Available, no-terminal deterministic
+validation, benchmark causality, downstream execution을 claim하면 안 된다.
 
-## Human approval request template
+## Publication execution request template
 
 ```text
-Please review docs/110 through docs/115, the final validation report, and the
-protected .ni diff result.
+Proceed with the scoped v0.5.0 publication execution.
 
-Choose exactly one:
-- APPROVE_PUBLICATION_PREP_ONLY
-- DO_NOT_APPROVE_FIX_FIRST
-- DEFER_PUBLICATION
+Allowed scope:
+- commit the approved release-check and approval-packet updates
+- create tag v0.5.0 on the approved commit
+- push the commit and tag as explicitly approved
+- verify the tag-triggered release workflow and hosted release assets if network
+  access is available
 
-No publication, tag, GitHub release creation, asset upload, checksum
-publication, Homebrew work, generated prompt execution, or availability-claim
-upgrade should occur unless the next message explicitly approves and scopes that
-separate task.
+Still forbidden:
+- Homebrew Available claim
+- model workspace Available claim
+- no-terminal deterministic claim
+- benchmark causality or downstream-quality claim
+- generated prompt execution
+- project-root ni end or relock
+- runtime execution behavior
 ```
