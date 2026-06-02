@@ -85,6 +85,11 @@ v0.5 task가 completion을 claim하기 전에는
 evidence matrix를 사용한다. 이 matrix는 lane별 minimum files, commands, review
 proof, status vocabulary, `not_measured` boundaries를 정의한다.
 
+첫 세 개 v0.5 work packet 이후에는
+[`100_V0_5_WORK_PACKET_COMPLETION_AUDIT.ko.md`](100_V0_5_WORK_PACKET_COMPLETION_AUDIT.ko.md)를
+GRILL-003부터 GRILL-005까지의 closure record와 selected next direction으로
+사용한다.
+
 이 phase는 supporting work로 target seed quality와 conformance를 개선할 수 있다.
 하지만 targets를 `ni-kernel` 내부의 executable adapters로 만들면 안 된다.
 

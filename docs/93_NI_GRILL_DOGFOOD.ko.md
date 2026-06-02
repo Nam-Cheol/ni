@@ -58,7 +58,7 @@ Grill findings:
    Why it matters: boundary가 다른 곳에 있어도 reader가 `READY` transition만 인용할 수 있다.
    Question: Future benchmark summaries에서는 모든 `READY` table 또는 transition row 옆에 `not_measured` boundary를 유지해야 할까?
    Answer shape: yes/no plus future benchmark pages를 위한 compact summary rule
-   Suggested action: `docs/99_MODEL_WORKSPACE_STATUS.ko.md`로 addressed; host-level verification은 future work로 유지
+   Suggested action: `docs/97_BENCHMARK_CLAIM_BOUNDARIES.ko.md`로 addressed; future `READY` summary 근처에 benchmark claim boundary를 visible하게 유지
    Blocks ni-end: no
 
    Resolution note: `docs/97_BENCHMARK_CLAIM_BOUNDARIES.ko.md`로 addressed되었다.
@@ -102,4 +102,5 @@ future work이며 model workspace packs는 broad product path로 Experimental이
 
 ## Recommended next task
 
-Improve roadmap specificity
+[`100_V0_5_WORK_PACKET_COMPLETION_AUDIT.ko.md`](100_V0_5_WORK_PACKET_COMPLETION_AUDIT.ko.md)에서
+선택한 다음 v0.5 direction을 사용한다: conversation proof capture reliability pass.

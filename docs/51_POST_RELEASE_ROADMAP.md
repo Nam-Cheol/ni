@@ -87,6 +87,11 @@ Before a v0.5 task claims completion, use the acceptance evidence matrix in
 defines the minimum files, commands, review proof, status vocabulary, and
 `not_measured` boundaries for each lane.
 
+After the first three v0.5 work packets, use
+[`100_V0_5_WORK_PACKET_COMPLETION_AUDIT.md`](100_V0_5_WORK_PACKET_COMPLETION_AUDIT.md)
+for the GRILL-003 through GRILL-005 closure record and the selected next
+direction.
+
 This phase may improve target seed quality and conformance as supporting work.
 It must not make targets into executable adapters inside `ni-kernel`.
 

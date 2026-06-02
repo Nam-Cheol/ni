@@ -58,7 +58,7 @@ Grill findings:
    Why it matters: a reader may quote a `READY` transition without the nearby `not_measured` limits, even though those limits are present elsewhere.
    Question: Should future benchmark summaries keep the `not_measured` boundary next to every `READY` table or transition row?
    Answer shape: yes/no plus a compact summary rule for future benchmark pages
-   Suggested action: addressed by `docs/99_MODEL_WORKSPACE_STATUS.md`; keep host-level verification as future work
+   Suggested action: addressed by `docs/97_BENCHMARK_CLAIM_BOUNDARIES.md`; keep benchmark claim boundaries visible near future `READY` summaries
    Blocks ni-end: no
 
    Resolution note: addressed by
@@ -103,4 +103,6 @@ Experimental as a broad product path.
 
 ## Recommended next task
 
-Improve roadmap specificity
+Use the selected next v0.5 direction in
+[`100_V0_5_WORK_PACKET_COMPLETION_AUDIT.md`](100_V0_5_WORK_PACKET_COMPLETION_AUDIT.md):
+conversation proof capture reliability pass.
