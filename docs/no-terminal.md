@@ -76,6 +76,9 @@ readiness, prove lock freshness, verify hashes, relock, or compile the
 authoritative bounded handoff without exact CLI output from a trusted runner.
 For examples, see
 [`106_NO_TERMINAL_STALE_LOCK_EXAMPLES.md`](106_NO_TERMINAL_STALE_LOCK_EXAMPLES.md).
+For a checklist that distinguishes unusable, partial, pasted, fixture-only, and
+target-workspace transcripts, see
+[`107_NO_TERMINAL_TRANSCRIPT_QUALITY_CHECKLIST.md`](107_NO_TERMINAL_TRANSCRIPT_QUALITY_CHECKLIST.md).
 
 ## No-Terminal Checklist
 

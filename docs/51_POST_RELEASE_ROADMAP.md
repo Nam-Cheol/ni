@@ -116,6 +116,12 @@ For no-terminal stale-lock examples, use
 to distinguish model-only drafts, pasted CLI output, and trusted runner
 transcripts without claiming deterministic no-terminal validation.
 
+For no-terminal transcript quality, use
+[`107_NO_TERMINAL_TRANSCRIPT_QUALITY_CHECKLIST.md`](107_NO_TERMINAL_TRANSCRIPT_QUALITY_CHECKLIST.md)
+to distinguish unusable, partial, pasted, trusted runner, fixture-only, and
+target-workspace transcripts without treating fixture evidence as project-root
+state.
+
 This phase may improve target seed quality and conformance as supporting work.
 It must not make targets into executable adapters inside `ni-kernel`.
 

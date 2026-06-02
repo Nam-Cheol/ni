@@ -8,6 +8,11 @@
 - Readiness, lock freshness, relock, hash verification, bounded handoff
   compilation을 claim하기 전에는 trusted runner의 exact CLI output이 필요하다.
 
+Transcript quality levels, minimum trusted-runner fields, copy-paste handoff
+template은
+[`107_NO_TERMINAL_TRANSCRIPT_QUALITY_CHECKLIST.ko.md`](107_NO_TERMINAL_TRANSCRIPT_QUALITY_CHECKLIST.ko.md)를
+참고한다.
+
 ## What no-terminal can and cannot prove
 
 | Evidence level | Can support | Cannot support | Required caveat |

@@ -115,6 +115,11 @@ No-terminal stale-lock examples는
 사용해 model-only drafts, pasted CLI output, trusted runner transcripts를 구분하고
 deterministic no-terminal validation claim을 피한다.
 
+No-terminal transcript quality에는
+[`107_NO_TERMINAL_TRANSCRIPT_QUALITY_CHECKLIST.ko.md`](107_NO_TERMINAL_TRANSCRIPT_QUALITY_CHECKLIST.ko.md)를
+사용해 unusable, partial, pasted, trusted runner, fixture-only, target-workspace
+transcripts를 구분하고 fixture evidence를 project-root state로 취급하지 않는다.
+
 이 phase는 supporting work로 target seed quality와 conformance를 개선할 수 있다.
 하지만 targets를 `ni-kernel` 내부의 executable adapters로 만들면 안 된다.
 

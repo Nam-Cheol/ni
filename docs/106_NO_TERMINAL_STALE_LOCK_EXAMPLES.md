@@ -8,6 +8,10 @@
 - Exact CLI output from a trusted runner is required before claiming readiness,
   lock freshness, relock, hash verification, or bounded handoff compilation.
 
+For transcript quality levels, minimum trusted-runner fields, and a copy-paste
+handoff template, see
+[`107_NO_TERMINAL_TRANSCRIPT_QUALITY_CHECKLIST.md`](107_NO_TERMINAL_TRANSCRIPT_QUALITY_CHECKLIST.md).
+
 ## What no-terminal can and cannot prove
 
 | Evidence level | Can support | Cannot support | Required caveat |

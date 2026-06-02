@@ -124,6 +124,8 @@ check_no_terminal_assisted_docs() {
   require_file examples/no-terminal-assisted/.ni/contract.json
   require_file docs/106_NO_TERMINAL_STALE_LOCK_EXAMPLES.md
   require_file docs/106_NO_TERMINAL_STALE_LOCK_EXAMPLES.ko.md
+  require_file docs/107_NO_TERMINAL_TRANSCRIPT_QUALITY_CHECKLIST.md
+  require_file docs/107_NO_TERMINAL_TRANSCRIPT_QUALITY_CHECKLIST.ko.md
   require_output "Expected \`ni status\`: not claimed" "examples/no-terminal-assisted/README.md"
   require_output "docs-only example" "examples/no-terminal-assisted/README.md"
   require_output "It does not run" "examples/no-terminal-assisted/README.md"
@@ -134,6 +136,13 @@ check_no_terminal_assisted_docs() {
   require_output "LOCK-STALE means the existing lock no longer matches current planning inputs." "docs/106_NO_TERMINAL_STALE_LOCK_EXAMPLES.md"
   require_output "compiles a bounded handoff prompt from the current lock; it does not execute downstream work." "docs/106_NO_TERMINAL_STALE_LOCK_EXAMPLES.md"
   require_output "No-terminal method는 Experimental / assisted이다." "docs/106_NO_TERMINAL_STALE_LOCK_EXAMPLES.ko.md"
+  require_output "model-only draft" "docs/107_NO_TERMINAL_TRANSCRIPT_QUALITY_CHECKLIST.md"
+  require_output "trusted runner transcript" "docs/107_NO_TERMINAL_TRANSCRIPT_QUALITY_CHECKLIST.md"
+  require_output "fixture transcript supports only fixture claims" "docs/107_NO_TERMINAL_TRANSCRIPT_QUALITY_CHECKLIST.md"
+  require_output "ni run compiles a bounded handoff prompt" "docs/107_NO_TERMINAL_TRANSCRIPT_QUALITY_CHECKLIST.md"
+  require_output "does not execute downstream work" "docs/107_NO_TERMINAL_TRANSCRIPT_QUALITY_CHECKLIST.md"
+  require_output "Was ni end run on project root? yes/no" "docs/107_NO_TERMINAL_TRANSCRIPT_QUALITY_CHECKLIST.md"
+  require_output "No-terminal method is Experimental / assisted." "docs/107_NO_TERMINAL_TRANSCRIPT_QUALITY_CHECKLIST.ko.md"
 }
 
 check_ni_grill_docs() {

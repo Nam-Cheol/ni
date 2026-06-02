@@ -76,6 +76,9 @@ Practical user workflows는
 No-terminal assisted examples는
 [`106_NO_TERMINAL_STALE_LOCK_EXAMPLES.ko.md`](106_NO_TERMINAL_STALE_LOCK_EXAMPLES.ko.md)를
 참고한다.
+Transcript completeness와 fixture-versus-target boundaries는
+[`107_NO_TERMINAL_TRANSCRIPT_QUALITY_CHECKLIST.ko.md`](107_NO_TERMINAL_TRANSCRIPT_QUALITY_CHECKLIST.ko.md)를
+참고한다.
 
 ## Authority boundary
 

@@ -126,6 +126,9 @@ should compile from the current lock and remain a prompt compiler only.
 For more no-terminal stale-lock cases, evidence levels, and say/do-not-say
 examples, see
 [`106_NO_TERMINAL_STALE_LOCK_EXAMPLES.md`](106_NO_TERMINAL_STALE_LOCK_EXAMPLES.md).
+For a copy-paste checklist that helps trusted runners preserve workspace,
+command, output, file-change, and fixture-versus-target context, see
+[`107_NO_TERMINAL_TRANSCRIPT_QUALITY_CHECKLIST.md`](107_NO_TERMINAL_TRANSCRIPT_QUALITY_CHECKLIST.md).
 
 ## Say this / do not say this
 

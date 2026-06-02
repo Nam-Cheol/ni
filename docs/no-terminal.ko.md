@@ -73,6 +73,10 @@ prove하거나, hashes를 verify하거나, relock하거나, authoritative bounde
 compile할 수 없다. Examples는
 [`106_NO_TERMINAL_STALE_LOCK_EXAMPLES.ko.md`](106_NO_TERMINAL_STALE_LOCK_EXAMPLES.ko.md)를
 참고한다.
+Unusable, partial, pasted, fixture-only, target-workspace transcript를 구분하는
+checklist는
+[`107_NO_TERMINAL_TRANSCRIPT_QUALITY_CHECKLIST.ko.md`](107_NO_TERMINAL_TRANSCRIPT_QUALITY_CHECKLIST.ko.md)를
+참고한다.
 
 ## No-terminal checklist
 
