@@ -135,6 +135,16 @@ Reliability docs release-readiness sweep에는
 사용해 v0.5 reliability set 전반의 consistency, navigation, Korean companion
 parity, validation surface, overclaim boundaries를 verify한다.
 
+v0.5 release-candidate readiness decision에는
+[`110_V0_5_RELEASE_CANDIDATE_READINESS_AUDIT.ko.md`](110_V0_5_RELEASE_CANDIDATE_READINESS_AUDIT.ko.md)를
+사용해 release-note polish 전에 `RC_READY_WITH_DEFERRALS` decision, validation
+evidence, explicit deferrals, claim boundaries를 보존한다.
+
+v0.5 RC polish와 release-note wording에는
+[`111_V0_5_RC_POLISH_RELEASE_NOTES_DRAFT.ko.md`](111_V0_5_RC_POLISH_RELEASE_NOTES_DRAFT.ko.md)를
+사용해 release action 전에 draft-only release-note language, known deferrals,
+validation commands, release-note claim audit을 보존한다.
+
 이 phase는 supporting work로 target seed quality와 conformance를 개선할 수 있다.
 하지만 targets를 `ni-kernel` 내부의 executable adapters로 만들면 안 된다.
 

@@ -138,6 +138,16 @@ For the release-readiness sweep across reliability docs, use
 to verify consistency, navigation, Korean companion parity, validation surface,
 and overclaim boundaries across the v0.5 reliability set.
 
+For the v0.5 release-candidate readiness decision, use
+[`110_V0_5_RELEASE_CANDIDATE_READINESS_AUDIT.md`](110_V0_5_RELEASE_CANDIDATE_READINESS_AUDIT.md)
+to preserve the `RC_READY_WITH_DEFERRALS` decision, validation evidence,
+explicit deferrals, and claim boundaries before release-note polish.
+
+For v0.5 RC polish and release-note wording, use
+[`111_V0_5_RC_POLISH_RELEASE_NOTES_DRAFT.md`](111_V0_5_RC_POLISH_RELEASE_NOTES_DRAFT.md)
+to preserve draft-only release-note language, known deferrals, validation
+commands, and the release-note claim audit before any release action.
+
 This phase may improve target seed quality and conformance as supporting work.
 It must not make targets into executable adapters inside `ni-kernel`.
 
