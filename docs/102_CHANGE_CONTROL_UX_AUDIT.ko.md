@@ -5,6 +5,10 @@
 이 audit은 stale locks, amended intent, relock expectations, downstream handoff
 safety 주변의 ni locked-plan change-control user experience를 검토한다.
 
+Follow-up: Task 183은 [`103_STALE_LOCK_DIAGNOSTIC.ko.md`](103_STALE_LOCK_DIAGNOSTIC.ko.md)에
+문서화된 focused `LOCK-STALE` diagnostic을 구현했다. 이 audit은 해당 diagnostic의
+동기가 된 historical finding으로 남는다.
+
 현재 factual boundaries는 다음과 같다.
 
 - release binary: verified v0.4.0 assets 기준 Available;

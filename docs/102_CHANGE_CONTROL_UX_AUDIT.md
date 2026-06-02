@@ -5,6 +5,10 @@
 This audit reviews ni's locked-plan change-control user experience around stale
 locks, amended intent, relock expectations, and downstream handoff safety.
 
+Follow-up: Task 183 implemented the focused `LOCK-STALE` diagnostic documented
+in [`103_STALE_LOCK_DIAGNOSTIC.md`](103_STALE_LOCK_DIAGNOSTIC.md). This audit
+remains the historical finding that motivated the diagnostic.
+
 Current factual boundaries:
 
 - release binary: Available for verified v0.4.0 assets;

@@ -15,6 +15,14 @@ import (
 
 const Schema = "ni.lock.v0"
 
+const StaleDiagnosticID = "LOCK-STALE"
+
+const StaleStatusWarning = "WARNING: LOCK-STALE existing lock is stale. Current planning inputs differ from .ni/plan.lock.json."
+
+const StaleStatusRecovery = "Review the changed intent, run ni status --proof --next-questions, then run ni end before generating a new ni run handoff."
+
+const StaleRunRecovery = "Review the changed planning inputs, run ni status --proof --next-questions, run ni end to relock after review, then rerun ni run after the lock is current."
+
 type Lockfile struct {
 	Schema        string           `json:"schema"`
 	LockedAt      string           `json:"locked_at"`
@@ -49,6 +57,13 @@ type Mismatch struct {
 	Path     string
 	WantHash string
 	GotHash  string
+}
+
+type ExistingLockState struct {
+	Exists       bool
+	Current      bool
+	Stale        bool
+	Verification Verification
 }
 
 func Create(dir string) (Lockfile, error) {
@@ -173,6 +188,28 @@ func Verify(dir string) (Verification, error) {
 	}
 
 	return Verification{Lockfile: lockfile, Mismatches: mismatches}, nil
+}
+
+func CheckExisting(dir string) (ExistingLockState, error) {
+	root := filepath.Clean(dir)
+	lockPath := filepath.Join(root, ".ni", "plan.lock.json")
+	if _, err := os.Stat(lockPath); err != nil {
+		if os.IsNotExist(err) {
+			return ExistingLockState{}, nil
+		}
+		return ExistingLockState{}, err
+	}
+	verification, err := Verify(root)
+	if err != nil {
+		return ExistingLockState{}, err
+	}
+	stale := len(verification.Mismatches) > 0
+	return ExistingLockState{
+		Exists:       true,
+		Current:      !stale,
+		Stale:        stale,
+		Verification: verification,
+	}, nil
 }
 
 func lockPaths(root string) []string {

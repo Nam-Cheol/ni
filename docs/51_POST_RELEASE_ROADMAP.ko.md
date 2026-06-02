@@ -100,6 +100,11 @@ Locked-plan change-control UX에는
 diagnostics 또는 lock behavior를 바꾸기 전에 intended stale-lock, amended-intent,
 relock, downstream handoff safety model을 보존한다.
 
+구현된 stale-lock CLI diagnostic에는
+[`103_STALE_LOCK_DIAGNOSTIC.ko.md`](103_STALE_LOCK_DIAGNOSTIC.ko.md)를 사용해
+`LOCK-STALE` wording, recovery flow, authority boundaries, test coverage를
+보존한다.
+
 이 phase는 supporting work로 target seed quality와 conformance를 개선할 수 있다.
 하지만 targets를 `ni-kernel` 내부의 executable adapters로 만들면 안 된다.
 

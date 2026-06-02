@@ -49,7 +49,7 @@ func Compile(opts Options) (Result, error) {
 		return Result{}, err
 	}
 	if len(verification.Mismatches) > 0 {
-		return Result{}, fmt.Errorf("BLOCKED: lock hash mismatch for %s", verification.Mismatches[0].Path)
+		return Result{}, fmt.Errorf("BLOCKED: lock hash mismatch for %s. %s", verification.Mismatches[0].Path, lock.StaleRunRecovery)
 	}
 
 	c, err := contract.LoadFile(filepath.Join(filepath.Clean(dir), ".ni", "contract.json"))

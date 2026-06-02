@@ -102,6 +102,10 @@ For locked-plan change-control UX, use
 the intended stale-lock, amended-intent, relock, and downstream handoff safety
 model before changing diagnostics or lock behavior.
 
+For the implemented stale-lock CLI diagnostic, use
+[`103_STALE_LOCK_DIAGNOSTIC.md`](103_STALE_LOCK_DIAGNOSTIC.md) to preserve
+`LOCK-STALE` wording, recovery flow, authority boundaries, and test coverage.
+
 This phase may improve target seed quality and conformance as supporting work.
 It must not make targets into executable adapters inside `ni-kernel`.
 

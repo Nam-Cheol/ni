@@ -612,6 +612,114 @@ func TestEndCreatesLockfile(t *testing.T) {
 	}
 }
 
+func TestStatusStaleLockDiagnostics(t *testing.T) {
+	dir := t.TempDir()
+	if code := run([]string{"init", "--dir", dir}, &bytes.Buffer{}, &bytes.Buffer{}); code != 0 {
+		t.Fatalf("init expected exit code 0, got %d", code)
+	}
+	writeReadyContractForCLI(t, dir)
+
+	var stdout bytes.Buffer
+	code := run([]string{"status", "--dir", dir, "--proof", "--next-questions"}, &stdout, &bytes.Buffer{})
+	if code != 0 {
+		t.Fatalf("expected no-lock status exit code 0, got %d", code)
+	}
+	if strings.Contains(stdout.String(), "LOCK-STALE") || strings.Contains(stdout.String(), "Existing lock is stale") {
+		t.Fatalf("no-lock status should not warn about stale locks, got %q", stdout.String())
+	}
+
+	stdout.Reset()
+	if code := run([]string{"end", "--dir", dir}, &stdout, &bytes.Buffer{}); code != 0 {
+		t.Fatalf("end expected exit code 0, got %d", code)
+	}
+
+	stdout.Reset()
+	code = run([]string{"status", "--dir", dir, "--proof", "--next-questions"}, &stdout, &bytes.Buffer{})
+	if code != 0 {
+		t.Fatalf("expected current-lock status exit code 0, got %d", code)
+	}
+	if strings.Contains(stdout.String(), "LOCK-STALE") || strings.Contains(stdout.String(), "Existing lock is stale") {
+		t.Fatalf("current-lock status should not warn about stale locks, got %q", stdout.String())
+	}
+
+	staleLockedInputForCLI(t, dir)
+	stdout.Reset()
+	code = run([]string{"status", "--dir", dir, "--proof", "--next-questions"}, &stdout, &bytes.Buffer{})
+	if code != 0 {
+		t.Fatalf("expected stale-lock status exit code 0, got %d", code)
+	}
+	out := stdout.String()
+	for _, want := range []string{
+		"NI Intent Readiness: READY",
+		"Warnings:",
+		"WARNING: LOCK-STALE existing lock is stale.",
+		"Current planning inputs differ from .ni/plan.lock.json.",
+		"First mismatch: docs/plan/02_capabilities.md.",
+		"Review the changed intent, run ni status --proof --next-questions, then run ni end before generating a new ni run handoff.",
+		"Why it matters: the current planning contract and the existing locked plan no longer match.",
+	} {
+		if !strings.Contains(out, want) {
+			t.Fatalf("expected stale-lock status output to contain %q, got %q", want, out)
+		}
+	}
+}
+
+func TestStaleLockRunRefusalAndFixtureRecovery(t *testing.T) {
+	dir := t.TempDir()
+	if code := run([]string{"init", "--dir", dir}, &bytes.Buffer{}, &bytes.Buffer{}); code != 0 {
+		t.Fatalf("init expected exit code 0, got %d", code)
+	}
+	writeReadyContractForCLI(t, dir)
+	if code := run([]string{"end", "--dir", dir}, &bytes.Buffer{}, &bytes.Buffer{}); code != 0 {
+		t.Fatalf("end expected exit code 0, got %d", code)
+	}
+	staleLockedInputForCLI(t, dir)
+
+	var stderr bytes.Buffer
+	code := run([]string{"run", "--dir", dir}, &bytes.Buffer{}, &stderr)
+	if code != exitStaleLock {
+		t.Fatalf("expected stale run exit code %d, got %d", exitStaleLock, code)
+	}
+	for _, want := range []string{
+		"BLOCKED: lock hash mismatch for docs/plan/02_capabilities.md",
+		"Review the changed planning inputs",
+		"run ni status --proof --next-questions",
+		"run ni end to relock after review",
+		"rerun ni run after the lock is current",
+	} {
+		if !strings.Contains(stderr.String(), want) {
+			t.Fatalf("expected stale run refusal to contain %q, got %q", want, stderr.String())
+		}
+	}
+
+	var stdout bytes.Buffer
+	code = run([]string{"end", "--dir", dir}, &stdout, &bytes.Buffer{})
+	if code != 0 {
+		t.Fatalf("fixture relock through ni end expected exit code 0, got %d", code)
+	}
+	if !strings.Contains(stdout.String(), "Existing lock is stale; ni end is the CLI-authoritative relock step after changed intent has been reviewed.") {
+		t.Fatalf("expected stale existing-lock ni end wording, got %q", stdout.String())
+	}
+
+	stdout.Reset()
+	code = run([]string{"status", "--dir", dir, "--proof", "--next-questions"}, &stdout, &bytes.Buffer{})
+	if code != 0 {
+		t.Fatalf("expected post-relock status exit code 0, got %d", code)
+	}
+	if strings.Contains(stdout.String(), "LOCK-STALE") || strings.Contains(stdout.String(), "Existing lock is stale") {
+		t.Fatalf("post-relock status should not warn about stale locks, got %q", stdout.String())
+	}
+
+	stdout.Reset()
+	code = run([]string{"run", "--dir", dir, "--max-chars", "4000"}, &stdout, &bytes.Buffer{})
+	if code != 0 {
+		t.Fatalf("expected run after fixture relock exit code 0, got %d", code)
+	}
+	if !strings.Contains(stdout.String(), "Source of truth") {
+		t.Fatalf("expected compiled prompt after fixture relock, got %q", stdout.String())
+	}
+}
+
 func TestRunWritesPrompt(t *testing.T) {
 	dir := t.TempDir()
 	if code := run([]string{"init", "--dir", dir}, &bytes.Buffer{}, &bytes.Buffer{}); code != 0 {
@@ -2110,6 +2218,17 @@ func writeReadyWithDeferralsContractForCLI(t *testing.T, dir string) {
 	openQuestionDoc := "# Open questions\n\n## OQ-001: Non-blocking question\n\nBlocker: false\n\nStatus: open\n"
 	if err := os.WriteFile(filepath.Join(dir, "docs", "plan", "10_open_questions.md"), []byte(openQuestionDoc), 0o644); err != nil {
 		t.Fatalf("writing ready-with-deferrals open question doc: %v", err)
+	}
+}
+
+func staleLockedInputForCLI(t *testing.T, dir string) {
+	t.Helper()
+
+	path := filepath.Join(dir, "docs", "plan", "02_capabilities.md")
+	data := readFileForCLI(t, path)
+	data = append(data, []byte("\n## Fixture post-lock clarification\n\nThis changes a lockable planning input without changing readiness.\n")...)
+	if err := os.WriteFile(path, data, 0o644); err != nil {
+		t.Fatalf("changing locked input: %v", err)
 	}
 }
 

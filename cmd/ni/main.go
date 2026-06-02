@@ -933,6 +933,18 @@ func runEnd(args []string, stdout io.Writer, stderr io.Writer) int {
 		}
 	}
 
+	existingLock, err := lock.CheckExisting(dir)
+	if err != nil {
+		return failCommand(stdout, stderr, "end", err, false)
+	}
+	if existingLock.Exists {
+		if existingLock.Stale {
+			fmt.Fprintln(stdout, "Existing lock is stale; ni end is the CLI-authoritative relock step after changed intent has been reviewed.")
+		} else {
+			fmt.Fprintln(stdout, "Existing lock is current; ni end will refresh the lock through the CLI readiness flow.")
+		}
+	}
+
 	lockfile, err := lock.Create(dir)
 	if err != nil {
 		return failCommand(stdout, stderr, "end", err, false)
@@ -1117,6 +1129,8 @@ func runStatus(args []string, stdout io.Writer, stderr io.Writer) int {
 		questions := readiness.NextQuestions(result)
 		result.NextQuestions = &questions
 	}
+	existingLock, lockErr := lock.CheckExisting(dir)
+	staleLockWarning := lockErr == nil && existingLock.Stale
 	if jsonOutput {
 		encoder := json.NewEncoder(stdout)
 		encoder.SetIndent("", "  ")
@@ -1127,6 +1141,9 @@ func runStatus(args []string, stdout io.Writer, stderr io.Writer) int {
 	}
 
 	if proofOutput {
+		if staleLockWarning {
+			appendStaleLockProof(&result, existingLock)
+		}
 		printStatusProof(stdout, result, nextQuestions)
 		return exitOK
 	}
@@ -1147,6 +1164,9 @@ func runStatus(args []string, stdout io.Writer, stderr io.Writer) int {
 	}
 	for _, issue := range result.Issues {
 		fmt.Fprintf(stdout, "%s %s: %s\n", issue.Severity, issue.RuleID, issue.Message)
+	}
+	if staleLockWarning {
+		fmt.Fprintln(stdout, staleLockWarningText(existingLock))
 	}
 	if nextQuestions {
 		printNextQuestions(stdout, result)
@@ -1248,9 +1268,31 @@ func groupProofItems(result readiness.Result) ([]readiness.ProofItem, []readines
 			} else {
 				deferrals = append(deferrals, item)
 			}
+		case "warning":
+			warnings = append(warnings, item)
 		}
 	}
 	return blockers, deferrals, warnings
+}
+
+func appendStaleLockProof(result *readiness.Result, existingLock lock.ExistingLockState) {
+	if result.Proof == nil {
+		return
+	}
+	proof := append(*result.Proof, readiness.ProofItem{
+		RuleID:   lock.StaleDiagnosticID,
+		Severity: "warning",
+		Message:  staleLockWarningText(existingLock),
+	})
+	result.Proof = &proof
+}
+
+func staleLockWarningText(existingLock lock.ExistingLockState) string {
+	message := lock.StaleStatusWarning
+	if len(existingLock.Verification.Mismatches) > 0 {
+		message += " First mismatch: " + existingLock.Verification.Mismatches[0].Path + "."
+	}
+	return message + " " + lock.StaleStatusRecovery
 }
 
 func printProofItems(stdout io.Writer, title string, items []readiness.ProofItem, includeNext bool) {
@@ -1362,6 +1404,8 @@ func proofWhy(ruleID string) string {
 		return "downstream work must avoid depending on this decision."
 	case "D002":
 		return "the question is non-blocking but still unresolved intent."
+	case lock.StaleDiagnosticID:
+		return "the current planning contract and the existing locked plan no longer match."
 	default:
 		return "this deterministic readiness rule affects whether the plan can be trusted."
 	}
