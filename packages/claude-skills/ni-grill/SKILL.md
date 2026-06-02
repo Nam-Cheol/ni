@@ -129,6 +129,11 @@ again and show planning proof:
 - remaining blockers;
 - next question group.
 
+- Skills may help draft or explain proof-related planning text.
+- Skills do not determine readiness.
+- Skills do not lock plans.
+- Skills do not replace `ni status`, `ni end`, or `ni run`.
+
 ## Do not
 
 - Do not execute downstream work.

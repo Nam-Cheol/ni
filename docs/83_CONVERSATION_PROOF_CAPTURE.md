@@ -9,6 +9,9 @@ It exists so a user can inspect planning progress without trusting model vibes.
 The proof is about intent authoring. It is not execution evidence, does not run
 downstream work, and does not make the model a readiness authority.
 
+For the broader reliability matrix and wording rules, see
+[`101_CONVERSATION_PROOF_CAPTURE_RELIABILITY.md`](101_CONVERSATION_PROOF_CAPTURE_RELIABILITY.md).
+
 ## What Planning Proof Is
 
 Planning proof is a user-visible summary of one authoring turn:
@@ -24,6 +27,36 @@ Planning proof is a user-visible summary of one authoring turn:
 It should be concise. It should not expose hidden chain-of-thought. It should
 not claim file changes, contract IDs, readiness, or lock state that did not
 actually happen.
+
+## Where Proof Text Appears
+
+Conversation proof text may appear in:
+
+- `ni-start` and `ni-grill` planning proof blocks after authoring updates;
+- `ni status --proof --next-questions` readiness explanations;
+- `ni-end` pre-lock summaries that quote the CLI readiness result;
+- checked-in examples that preserve status proof, next questions, lock
+  summaries, and bounded prompt summaries;
+- no-terminal assisted drafts, where proof remains draft-only until a trusted
+  CLI run validates the docs and contract;
+- model workspace skills, where proof wording remains UX guidance and never
+  replaces CLI validation.
+
+## Proof Capture Lifecycle
+
+```text
+planning conversation
+-> docs/plan and .ni/contract.json
+-> ni status --proof --next-questions
+-> readiness explanation
+-> ni end lock
+-> .ni/plan.lock.json
+-> ni run bounded handoff prompt
+```
+
+The lifecycle does not make proof text an execution record. It connects
+conversation, planning artifacts, readiness explanation, lock creation, and
+bounded prompt compilation while preserving CLI authority at each gate.
 
 ## How It Differs From Execution Evidence
 
@@ -114,3 +147,47 @@ The model may summarize edits, but only:
 In no-terminal mode, planning proof is a draft audit trail. It is useful for
 reviewing what the model attempted to change, but it becomes trusted only after
 a CLI run validates the drafted docs and contract.
+
+## Relationship To ni status, ni end, And ni run
+
+`ni status --proof --next-questions` is the authoritative readiness explanation
+surface. Proof capture may summarize that output, but it must preserve the
+reported status and blocker or deferral meaning exactly.
+
+`ni end` is the only lock writer. Proof text may say that the CLI wrote
+`.ni/plan.lock.json` after the command succeeds. It must not say the model
+locked the plan, repaired a stale lock, or approved lock readiness by judgment.
+
+`ni run` is the prompt compiler. Proof text may say that a bounded handoff
+prompt was compiled from a valid lock. It must not say that `ni` executed
+Codex, shell commands, a downstream agent, product implementation, benchmark
+execution, PR automation, or release automation.
+
+## No-Terminal And Model Workspace Wording
+
+No-terminal proof is assisted drafting only until a trusted runner provides
+exact CLI output. Say "draft planning proof" or "pending trusted CLI
+validation"; do not say "deterministic validation" for model-only work.
+
+Model workspace skills may draft or explain proof-related planning text. They
+do not determine readiness, lock plans, or replace `ni status`, `ni end`, or
+`ni run`.
+
+Keep this sentence visible where model workspace proof wording could be
+mistaken for authority:
+
+```text
+Skills are UX; CLI is authority.
+```
+
+## Claim Boundaries
+
+Conversation proof can support claims that intent was captured, required
+questions were asked, answers were preserved, readiness was evaluated by CLI
+surfaces, and a bounded handoff prompt was compiled from a valid lock.
+
+Conversation proof must not claim implementation correctness, downstream agent
+success, product readiness, benchmark effect size, adoption improvement, cost
+reduction, latency reduction, real-world approval, fieldwork authorization,
+Homebrew availability, broad model workspace availability, or deterministic
+validation without CLI.

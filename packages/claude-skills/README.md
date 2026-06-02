@@ -41,6 +41,10 @@ Boundary: Skills are UX; CLI is authority.
 - `ni-start` must show a concise planning proof block after meaningful
   authoring updates, naming changed files, affected IDs, before/after CLI
   status, remaining blockers, and the next question group.
+- Skills may help draft or explain proof-related planning text.
+- Skills do not determine readiness.
+- Skills do not lock plans.
+- Skills do not replace `ni status`, `ni end`, or `ni run`.
 - `ni-grill` challenges planning quality before lock. It does not execute work.
 - If `ni status` is `BLOCKED`, `ni-grill` should use deterministic blockers
   before inventing new critique.

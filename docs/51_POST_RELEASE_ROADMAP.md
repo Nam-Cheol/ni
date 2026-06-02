@@ -92,6 +92,11 @@ After the first three v0.5 work packets, use
 for the GRILL-003 through GRILL-005 closure record and the selected next
 direction.
 
+For the conversation proof capture reliability pass, use
+[`101_CONVERSATION_PROOF_CAPTURE_RELIABILITY.md`](101_CONVERSATION_PROOF_CAPTURE_RELIABILITY.md)
+to keep planning proof, CLI authority, no-terminal draft limits, benchmark
+boundaries, and model workspace skill wording aligned.
+
 This phase may improve target seed quality and conformance as supporting work.
 It must not make targets into executable adapters inside `ni-kernel`.
 

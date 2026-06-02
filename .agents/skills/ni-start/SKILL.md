@@ -248,6 +248,10 @@ Rules:
 - If no files were changed, say no planning artifacts were updated.
 - Do not claim readiness unless CLI status proves it.
 - Do not claim lock unless `ni end` actually created `.ni/plan.lock.json`.
+- Skills may help draft or explain proof-related planning text.
+- Skills do not determine readiness.
+- Skills do not lock plans.
+- Skills do not replace `ni status`, `ni end`, or `ni run`.
 - Keep uncertain user statements as assumptions or open questions.
 - Record clear exclusions as non-goals.
 - If docs and contract disagree, say so and run or request status again.
