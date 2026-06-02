@@ -162,6 +162,12 @@ v0.5 release publication checklist에는
 checklist task에서 explicitly not run으로 표시하며, Homebrew, hosted-artifact,
 cross-platform verification deferrals와 분리한다.
 
+v0.5 publication human approval packet에는
+[`115_V0_5_PUBLICATION_HUMAN_APPROVAL_PACKET.ko.md`](115_V0_5_PUBLICATION_HUMAN_APPROVAL_PACKET.ko.md)를
+사용해 final human decision을 explicit하고 Codex가 unselected로 둔 상태로 유지하며,
+tag, GitHub release creation, asset upload, checksum publication, Homebrew work,
+generated prompt execution, availability-claim upgrade와 분리한다.
+
 이 phase는 supporting work로 target seed quality와 conformance를 개선할 수 있다.
 하지만 targets를 `ni-kernel` 내부의 executable adapters로 만들면 안 된다.
 

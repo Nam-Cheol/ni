@@ -236,6 +236,11 @@ task:
 - downstream execution succeeds
 - benchmark effect size or causal impact
 
+Follow-up human approval packet:
+[`115_V0_5_PUBLICATION_HUMAN_APPROVAL_PACKET.md`](115_V0_5_PUBLICATION_HUMAN_APPROVAL_PACKET.md)
+records the next non-executing human decision surface and keeps approval
+unselected until the maintainer explicitly chooses one decision option.
+
 ## Recommended next task
 
 Selected next task: A. v0.5 publication human approval packet.

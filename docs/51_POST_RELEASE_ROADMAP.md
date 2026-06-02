@@ -165,6 +165,12 @@ to keep future human-controlled release actions gated, explicitly not run in
 the checklist task, and separated from Homebrew, hosted-artifact, and
 cross-platform verification deferrals.
 
+For the v0.5 publication human approval packet, use
+[`115_V0_5_PUBLICATION_HUMAN_APPROVAL_PACKET.md`](115_V0_5_PUBLICATION_HUMAN_APPROVAL_PACKET.md)
+to keep the final human decision explicit, unselected by Codex, and separated
+from any tag, GitHub release creation, asset upload, checksum publication,
+Homebrew work, generated prompt execution, or availability-claim upgrade.
+
 This phase may improve target seed quality and conformance as supporting work.
 It must not make targets into executable adapters inside `ni-kernel`.
 

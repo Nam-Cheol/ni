@@ -236,6 +236,11 @@ task:
 - downstream execution succeeds
 - benchmark effect size or causal impact
 
+Follow-up human approval packet:
+[`115_V0_5_PUBLICATION_HUMAN_APPROVAL_PACKET.ko.md`](115_V0_5_PUBLICATION_HUMAN_APPROVAL_PACKET.ko.md)가
+next non-executing human decision surface를 기록하고, maintainer가 one decision
+option을 explicit하게 선택하기 전까지 approval을 unselected로 유지한다.
+
 ## Recommended next task
 
 Selected next task: A. v0.5 publication human approval packet.
