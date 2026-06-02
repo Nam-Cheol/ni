@@ -175,6 +175,10 @@ Follow-up draft: `docs/111_V0_5_RC_POLISH_RELEASE_NOTES_DRAFT.md` records the
 RC polish and release-note draft while preserving `RC_READY_WITH_DEFERRALS`,
 known deferrals, draft-only wording, and release/non-release boundaries.
 
+Final preflight: `docs/112_V0_5_RELEASE_NOTES_FINAL_PREFLIGHT.md` checks the
+release-note draft, adjacent RC docs, navigation, git visibility, and forbidden
+release or availability claims before any release action.
+
 ## Next task prompt
 
 ```text

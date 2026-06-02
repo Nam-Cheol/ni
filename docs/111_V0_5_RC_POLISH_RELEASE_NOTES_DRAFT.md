@@ -269,6 +269,9 @@ Why: the release-note wording is now drafted and claim-audited, but one final
 preflight should verify the draft, validation commands, protected-file safety,
 and release/non-release boundary before any release action is considered.
 
+Follow-up preflight: `docs/112_V0_5_RELEASE_NOTES_FINAL_PREFLIGHT.md` records
+that final check and preserves the draft-only, no-release boundary.
+
 ## Next task prompt
 
 ```text

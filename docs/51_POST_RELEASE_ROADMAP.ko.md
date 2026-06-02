@@ -145,6 +145,12 @@ v0.5 RC polish와 release-note wording에는
 사용해 release action 전에 draft-only release-note language, known deferrals,
 validation commands, release-note claim audit을 보존한다.
 
+Final v0.5 release-note preflight에는
+[`112_V0_5_RELEASE_NOTES_FINAL_PREFLIGHT.ko.md`](112_V0_5_RELEASE_NOTES_FINAL_PREFLIGHT.ko.md)를
+사용해 release-note wording, adjacent RC docs, Korean companion parity, git
+visibility, validation commands, forbidden release or availability claims를
+verify한다.
+
 이 phase는 supporting work로 target seed quality와 conformance를 개선할 수 있다.
 하지만 targets를 `ni-kernel` 내부의 executable adapters로 만들면 안 된다.
 

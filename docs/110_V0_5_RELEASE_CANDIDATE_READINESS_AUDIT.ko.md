@@ -174,6 +174,10 @@ Follow-up draft: `docs/111_V0_5_RC_POLISH_RELEASE_NOTES_DRAFT.ko.md`는
 release/non-release boundaries를 보존하면서 RC polish and release-note draft를
 기록한다.
 
+Final preflight: `docs/112_V0_5_RELEASE_NOTES_FINAL_PREFLIGHT.ko.md`는 release
+action 전에 release-note draft, adjacent RC docs, navigation, git visibility,
+forbidden release or availability claims를 check한다.
+
 ## Next task prompt
 
 ```text

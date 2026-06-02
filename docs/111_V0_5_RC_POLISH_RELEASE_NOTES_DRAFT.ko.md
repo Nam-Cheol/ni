@@ -264,6 +264,9 @@ Why: release-note wording은 이제 drafted and claim-audited 상태지만, 어�
 action도 고려하기 전에 draft, validation commands, protected-file safety,
 release/non-release boundary를 final preflight로 확인해야 한다.
 
+Follow-up preflight: `docs/112_V0_5_RELEASE_NOTES_FINAL_PREFLIGHT.ko.md`는 그
+final check를 기록하고 draft-only, no-release boundary를 보존한다.
+
 ## Next task prompt
 
 ```text
