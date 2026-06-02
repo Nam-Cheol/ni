@@ -153,6 +153,12 @@ For the final v0.5 release-note preflight, use
 to verify release-note wording, adjacent RC docs, Korean companion parity, git
 visibility, validation commands, and forbidden release or availability claims.
 
+For the v0.5 artifact dry-run audit, use
+[`113_V0_5_ARTIFACT_DRY_RUN_AUDIT.md`](113_V0_5_ARTIFACT_DRY_RUN_AUDIT.md)
+to verify release artifact, install, build, version/help, script, and hosted
+availability boundaries using dry-run/check-only evidence before any release
+action.
+
 This phase may improve target seed quality and conformance as supporting work.
 It must not make targets into executable adapters inside `ni-kernel`.
 

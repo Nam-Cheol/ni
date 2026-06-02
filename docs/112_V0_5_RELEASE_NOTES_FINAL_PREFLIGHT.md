@@ -165,6 +165,10 @@ uncertainty before any release action is whether v0.5 artifacts can be packaged
 and checked in a dry-run path without publishing, tagging, uploading assets, or
 upgrading deferred distribution claims.
 
+Follow-up artifact dry-run audit:
+[`113_V0_5_ARTIFACT_DRY_RUN_AUDIT.md`](113_V0_5_ARTIFACT_DRY_RUN_AUDIT.md)
+records that check and preserves the no-release boundary.
+
 ## Next task prompt
 
 ```text

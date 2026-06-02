@@ -151,6 +151,11 @@ Final v0.5 release-note preflight에는
 visibility, validation commands, forbidden release or availability claims를
 verify한다.
 
+v0.5 artifact dry-run audit에는
+[`113_V0_5_ARTIFACT_DRY_RUN_AUDIT.ko.md`](113_V0_5_ARTIFACT_DRY_RUN_AUDIT.ko.md)를
+사용해 release action 전에 dry-run/check-only evidence로 release artifact,
+install, build, version/help, script, hosted availability boundaries를 verify한다.
+
 이 phase는 supporting work로 target seed quality와 conformance를 개선할 수 있다.
 하지만 targets를 `ni-kernel` 내부의 executable adapters로 만들면 안 된다.
 

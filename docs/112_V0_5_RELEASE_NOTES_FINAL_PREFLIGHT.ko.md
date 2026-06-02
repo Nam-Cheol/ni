@@ -165,6 +165,10 @@ before any release action is whether v0.5 artifacts can be packaged and checked
 in a dry-run path without publishing, tagging, uploading assets, or upgrading
 deferred distribution claims.
 
+Follow-up artifact dry-run audit:
+[`113_V0_5_ARTIFACT_DRY_RUN_AUDIT.ko.md`](113_V0_5_ARTIFACT_DRY_RUN_AUDIT.ko.md)가
+그 check를 기록하고 no-release boundary를 preserve한다.
+
 ## Next task prompt
 
 ```text
