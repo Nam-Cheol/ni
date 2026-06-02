@@ -97,6 +97,11 @@ For the conversation proof capture reliability pass, use
 to keep planning proof, CLI authority, no-terminal draft limits, benchmark
 boundaries, and model workspace skill wording aligned.
 
+For locked-plan change-control UX, use
+[`102_CHANGE_CONTROL_UX_AUDIT.md`](102_CHANGE_CONTROL_UX_AUDIT.md) to preserve
+the intended stale-lock, amended-intent, relock, and downstream handoff safety
+model before changing diagnostics or lock behavior.
+
 This phase may improve target seed quality and conformance as supporting work.
 It must not make targets into executable adapters inside `ni-kernel`.
 
