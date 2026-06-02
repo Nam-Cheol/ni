@@ -110,6 +110,11 @@ relock, downstream handoff safety model을 보존한다.
 사용해 user examples, CLI recovery order, skill boundaries, no-terminal limits,
 non-execution claims를 보존한다.
 
+Model workspace stale-lock wording에는
+[`105_MODEL_WORKSPACE_STALE_LOCK_WORDING_VERIFICATION.ko.md`](105_MODEL_WORKSPACE_STALE_LOCK_WORDING_VERIFICATION.ko.md)를
+사용해 Experimental status, host-verification limits, skill drafting-only
+boundaries, CLI-authoritative recovery order를 보존한다.
+
 No-terminal stale-lock examples는
 [`106_NO_TERMINAL_STALE_LOCK_EXAMPLES.ko.md`](106_NO_TERMINAL_STALE_LOCK_EXAMPLES.ko.md)를
 사용해 model-only drafts, pasted CLI output, trusted runner transcripts를 구분하고
@@ -124,6 +129,11 @@ Broader changed-intent fixture coverage에는
 [`108_CHANGED_INTENT_FIXTURE_COVERAGE.ko.md`](108_CHANGED_INTENT_FIXTURE_COVERAGE.ko.md)를
 사용해 representative stale-lock cases, non-lockable false positives, fixture
 relock recovery, project-root safety를 lock semantics 변경 없이 verify한다.
+
+Reliability docs release-readiness sweep에는
+[`109_V0_5_RELIABILITY_DOCS_RELEASE_READINESS_SWEEP.ko.md`](109_V0_5_RELIABILITY_DOCS_RELEASE_READINESS_SWEEP.ko.md)를
+사용해 v0.5 reliability set 전반의 consistency, navigation, Korean companion
+parity, validation surface, overclaim boundaries를 verify한다.
 
 이 phase는 supporting work로 target seed quality와 conformance를 개선할 수 있다.
 하지만 targets를 `ni-kernel` 내부의 executable adapters로 만들면 안 된다.

@@ -111,6 +111,11 @@ For practical amend/relock workflows after `LOCK-STALE`, use
 to preserve user examples, CLI recovery order, skill boundaries, no-terminal
 limits, and non-execution claims.
 
+For model workspace stale-lock wording, use
+[`105_MODEL_WORKSPACE_STALE_LOCK_WORDING_VERIFICATION.md`](105_MODEL_WORKSPACE_STALE_LOCK_WORDING_VERIFICATION.md)
+to preserve Experimental status, host-verification limits, skill drafting-only
+boundaries, and CLI-authoritative recovery order.
+
 For no-terminal stale-lock examples, use
 [`106_NO_TERMINAL_STALE_LOCK_EXAMPLES.md`](106_NO_TERMINAL_STALE_LOCK_EXAMPLES.md)
 to distinguish model-only drafts, pasted CLI output, and trusted runner
@@ -127,6 +132,11 @@ For broader changed-intent fixture coverage, use
 to verify representative stale-lock cases, non-lockable false positives,
 fixture relock recovery, and project-root safety without changing lock
 semantics.
+
+For the release-readiness sweep across reliability docs, use
+[`109_V0_5_RELIABILITY_DOCS_RELEASE_READINESS_SWEEP.md`](109_V0_5_RELIABILITY_DOCS_RELEASE_READINESS_SWEEP.md)
+to verify consistency, navigation, Korean companion parity, validation surface,
+and overclaim boundaries across the v0.5 reliability set.
 
 This phase may improve target seed quality and conformance as supporting work.
 It must not make targets into executable adapters inside `ni-kernel`.
