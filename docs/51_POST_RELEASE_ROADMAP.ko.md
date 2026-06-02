@@ -110,6 +110,11 @@ relock, downstream handoff safety model을 보존한다.
 사용해 user examples, CLI recovery order, skill boundaries, no-terminal limits,
 non-execution claims를 보존한다.
 
+No-terminal stale-lock examples는
+[`106_NO_TERMINAL_STALE_LOCK_EXAMPLES.ko.md`](106_NO_TERMINAL_STALE_LOCK_EXAMPLES.ko.md)를
+사용해 model-only drafts, pasted CLI output, trusted runner transcripts를 구분하고
+deterministic no-terminal validation claim을 피한다.
+
 이 phase는 supporting work로 target seed quality와 conformance를 개선할 수 있다.
 하지만 targets를 `ni-kernel` 내부의 executable adapters로 만들면 안 된다.
 

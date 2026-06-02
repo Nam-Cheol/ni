@@ -73,6 +73,8 @@ The review step is human and planning-state work. Update `docs/plan/**` and
 `.ni/contract.json` together when intent changes, then rely on the CLI gates.
 For practical user workflows, see
 [`104_AMEND_RELOCK_WORKFLOW_EXAMPLES.md`](104_AMEND_RELOCK_WORKFLOW_EXAMPLES.md).
+For no-terminal assisted examples, see
+[`106_NO_TERMINAL_STALE_LOCK_EXAMPLES.md`](106_NO_TERMINAL_STALE_LOCK_EXAMPLES.md).
 
 ## Authority boundary
 

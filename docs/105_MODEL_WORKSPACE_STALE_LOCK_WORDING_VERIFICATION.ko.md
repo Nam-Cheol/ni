@@ -107,6 +107,10 @@ prose style을 enforce하지 않는다.
 - Future prose changes, examples, provider-specific install claims에는 manual
   audit이 여전히 필요하다.
 
+Follow-up note: no-terminal stale-lock examples는
+[`106_NO_TERMINAL_STALE_LOCK_EXAMPLES.ko.md`](106_NO_TERMINAL_STALE_LOCK_EXAMPLES.ko.md)에
+기록되어 있다.
+
 ## Recommended next task
 
 Selected next task: E. no-terminal stale-lock example pass.

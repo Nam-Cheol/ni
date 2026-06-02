@@ -111,6 +111,11 @@ For practical amend/relock workflows after `LOCK-STALE`, use
 to preserve user examples, CLI recovery order, skill boundaries, no-terminal
 limits, and non-execution claims.
 
+For no-terminal stale-lock examples, use
+[`106_NO_TERMINAL_STALE_LOCK_EXAMPLES.md`](106_NO_TERMINAL_STALE_LOCK_EXAMPLES.md)
+to distinguish model-only drafts, pasted CLI output, and trusted runner
+transcripts without claiming deterministic no-terminal validation.
+
 This phase may improve target seed quality and conformance as supporting work.
 It must not make targets into executable adapters inside `ni-kernel`.
 

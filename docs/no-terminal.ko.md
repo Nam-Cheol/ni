@@ -66,6 +66,14 @@ No-terminal mode에서 planning proof capture는 draft audit trail일 뿐이다.
 무엇을 바꾸었다고 해석했는지는 보여줄 수 있지만 deterministic validation은 아니며,
 drafted docs와 contract를 CLI run이 validate한 뒤에만 trusted 상태가 된다.
 
+Existing lock이 stale일 수 있을 때 no-terminal assistance는 changed intent review를
+draft하거나 pasted `LOCK-STALE` output을 explain할 수 있다. 그래도 trusted
+runner의 exact CLI output 없이는 readiness를 determine하거나, lock freshness를
+prove하거나, hashes를 verify하거나, relock하거나, authoritative bounded handoff를
+compile할 수 없다. Examples는
+[`106_NO_TERMINAL_STALE_LOCK_EXAMPLES.ko.md`](106_NO_TERMINAL_STALE_LOCK_EXAMPLES.ko.md)를
+참고한다.
+
 ## No-terminal checklist
 
 Local CLI 없이 시작할 때 이 checklist를 사용한다:

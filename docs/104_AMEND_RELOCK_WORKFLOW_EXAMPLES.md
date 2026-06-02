@@ -123,6 +123,10 @@ should compile from the current lock and remain a prompt compiler only.
 | What skills may help with | Explain the warning and prepare draft planning amendments for review. |
 | What skills must not claim | No-terminal assistance must not claim deterministic validation, lock freshness, or implementation proof. |
 
+For more no-terminal stale-lock cases, evidence levels, and say/do-not-say
+examples, see
+[`106_NO_TERMINAL_STALE_LOCK_EXAMPLES.md`](106_NO_TERMINAL_STALE_LOCK_EXAMPLES.md).
+
 ## Say this / do not say this
 
 | Say this | Do not say this |

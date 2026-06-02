@@ -73,6 +73,9 @@ Review step은 human 및 planning-state work다. Intent가 바뀌면 `docs/plan/
 Practical user workflows는
 [`104_AMEND_RELOCK_WORKFLOW_EXAMPLES.ko.md`](104_AMEND_RELOCK_WORKFLOW_EXAMPLES.ko.md)를
 참고한다.
+No-terminal assisted examples는
+[`106_NO_TERMINAL_STALE_LOCK_EXAMPLES.ko.md`](106_NO_TERMINAL_STALE_LOCK_EXAMPLES.ko.md)를
+참고한다.
 
 ## Authority boundary
 

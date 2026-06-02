@@ -122,9 +122,18 @@ check_no_terminal_assisted_docs() {
   require_file examples/no-terminal-assisted/README.ko.md
   require_file examples/no-terminal-assisted/docs/plan/00_project_brief.md
   require_file examples/no-terminal-assisted/.ni/contract.json
+  require_file docs/106_NO_TERMINAL_STALE_LOCK_EXAMPLES.md
+  require_file docs/106_NO_TERMINAL_STALE_LOCK_EXAMPLES.ko.md
   require_output "Expected \`ni status\`: not claimed" "examples/no-terminal-assisted/README.md"
   require_output "docs-only example" "examples/no-terminal-assisted/README.md"
   require_output "It does not run" "examples/no-terminal-assisted/README.md"
+  require_output "No-terminal method is Experimental / assisted." "docs/106_NO_TERMINAL_STALE_LOCK_EXAMPLES.md"
+  require_output "model-only draft" "docs/106_NO_TERMINAL_STALE_LOCK_EXAMPLES.md"
+  require_output "pasted CLI output" "docs/106_NO_TERMINAL_STALE_LOCK_EXAMPLES.md"
+  require_output "trusted runner transcript" "docs/106_NO_TERMINAL_STALE_LOCK_EXAMPLES.md"
+  require_output "LOCK-STALE means the existing lock no longer matches current planning inputs." "docs/106_NO_TERMINAL_STALE_LOCK_EXAMPLES.md"
+  require_output "compiles a bounded handoff prompt from the current lock; it does not execute downstream work." "docs/106_NO_TERMINAL_STALE_LOCK_EXAMPLES.md"
+  require_output "No-terminal method는 Experimental / assisted이다." "docs/106_NO_TERMINAL_STALE_LOCK_EXAMPLES.ko.md"
 }
 
 check_ni_grill_docs() {

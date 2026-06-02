@@ -122,6 +122,10 @@ current lock에서 compile해야 하며 prompt compiler only로 남아야 한다
 | What skills may help with | Warning을 explain하고 review용 draft planning amendments를 prepare한다. |
 | What skills must not claim | No-terminal assistance must not claim deterministic validation, lock freshness, or implementation proof. |
 
+추가 no-terminal stale-lock cases, evidence levels, say/do-not-say examples는
+[`106_NO_TERMINAL_STALE_LOCK_EXAMPLES.ko.md`](106_NO_TERMINAL_STALE_LOCK_EXAMPLES.ko.md)를
+참고한다.
+
 ## Say this / do not say this
 
 | Say this | Do not say this |

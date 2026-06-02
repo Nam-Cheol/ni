@@ -70,6 +70,13 @@ show what the model believes it changed, but it is not deterministic validation
 and becomes trusted only after a CLI run validates the drafted docs and
 contract.
 
+If an existing lock may be stale, no-terminal assistance may draft the changed
+intent review or explain pasted `LOCK-STALE` output. It still cannot determine
+readiness, prove lock freshness, verify hashes, relock, or compile the
+authoritative bounded handoff without exact CLI output from a trusted runner.
+For examples, see
+[`106_NO_TERMINAL_STALE_LOCK_EXAMPLES.md`](106_NO_TERMINAL_STALE_LOCK_EXAMPLES.md).
+
 ## No-Terminal Checklist
 
 Use this checklist when you are starting without a local CLI:

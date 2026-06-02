@@ -108,6 +108,9 @@ paragraph or enforce broad prose style.
 - Manual audit is still needed for future prose changes, examples, and
   provider-specific install claims.
 
+Follow-up note: no-terminal stale-lock examples are recorded in
+[`106_NO_TERMINAL_STALE_LOCK_EXAMPLES.md`](106_NO_TERMINAL_STALE_LOCK_EXAMPLES.md).
+
 ## Recommended next task
 
 Selected next task: E. no-terminal stale-lock example pass.
