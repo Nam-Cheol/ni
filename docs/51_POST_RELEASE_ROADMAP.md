@@ -106,6 +106,11 @@ For the implemented stale-lock CLI diagnostic, use
 [`103_STALE_LOCK_DIAGNOSTIC.md`](103_STALE_LOCK_DIAGNOSTIC.md) to preserve
 `LOCK-STALE` wording, recovery flow, authority boundaries, and test coverage.
 
+For practical amend/relock workflows after `LOCK-STALE`, use
+[`104_AMEND_RELOCK_WORKFLOW_EXAMPLES.md`](104_AMEND_RELOCK_WORKFLOW_EXAMPLES.md)
+to preserve user examples, CLI recovery order, skill boundaries, no-terminal
+limits, and non-execution claims.
+
 This phase may improve target seed quality and conformance as supporting work.
 It must not make targets into executable adapters inside `ni-kernel`.
 

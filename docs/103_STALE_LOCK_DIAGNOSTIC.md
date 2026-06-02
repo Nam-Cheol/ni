@@ -71,6 +71,8 @@ review changed intent
 
 The review step is human and planning-state work. Update `docs/plan/**` and
 `.ni/contract.json` together when intent changes, then rely on the CLI gates.
+For practical user workflows, see
+[`104_AMEND_RELOCK_WORKFLOW_EXAMPLES.md`](104_AMEND_RELOCK_WORKFLOW_EXAMPLES.md).
 
 ## Authority boundary
 
@@ -99,7 +101,6 @@ This task adds focused stale-lock coverage for:
 
 ## Remaining follow-up candidates
 
-- Document amend/relock workflow examples.
 - Add broader changed-intent fixtures.
 - Improve no-terminal stale-lock explanation.
 - Add model workspace stale-lock wording verification.

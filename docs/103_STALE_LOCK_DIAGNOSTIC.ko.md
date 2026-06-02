@@ -70,6 +70,9 @@ review changed intent
 
 Review step은 human 및 planning-state work다. Intent가 바뀌면 `docs/plan/**`와
 `.ni/contract.json`을 함께 update하고, 그 다음 CLI gates에 의존한다.
+Practical user workflows는
+[`104_AMEND_RELOCK_WORKFLOW_EXAMPLES.ko.md`](104_AMEND_RELOCK_WORKFLOW_EXAMPLES.ko.md)를
+참고한다.
 
 ## Authority boundary
 
@@ -98,7 +101,6 @@ Review step은 human 및 planning-state work다. Intent가 바뀌면 `docs/plan/
 
 ## Remaining follow-up candidates
 
-- Amend/relock workflow examples 문서화.
 - Broader changed-intent fixtures 추가.
 - No-terminal stale-lock explanation 개선.
 - Model workspace stale-lock wording verification 추가.

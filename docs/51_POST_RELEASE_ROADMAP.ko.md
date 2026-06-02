@@ -105,6 +105,11 @@ relock, downstream handoff safety model을 보존한다.
 `LOCK-STALE` wording, recovery flow, authority boundaries, test coverage를
 보존한다.
 
+`LOCK-STALE` 이후 practical amend/relock workflows에는
+[`104_AMEND_RELOCK_WORKFLOW_EXAMPLES.ko.md`](104_AMEND_RELOCK_WORKFLOW_EXAMPLES.ko.md)를
+사용해 user examples, CLI recovery order, skill boundaries, no-terminal limits,
+non-execution claims를 보존한다.
+
 이 phase는 supporting work로 target seed quality와 conformance를 개선할 수 있다.
 하지만 targets를 `ni-kernel` 내부의 executable adapters로 만들면 안 된다.
 
