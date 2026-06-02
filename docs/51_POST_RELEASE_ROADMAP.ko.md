@@ -120,6 +120,11 @@ No-terminal transcript quality에는
 사용해 unusable, partial, pasted, trusted runner, fixture-only, target-workspace
 transcripts를 구분하고 fixture evidence를 project-root state로 취급하지 않는다.
 
+Broader changed-intent fixture coverage에는
+[`108_CHANGED_INTENT_FIXTURE_COVERAGE.ko.md`](108_CHANGED_INTENT_FIXTURE_COVERAGE.ko.md)를
+사용해 representative stale-lock cases, non-lockable false positives, fixture
+relock recovery, project-root safety를 lock semantics 변경 없이 verify한다.
+
 이 phase는 supporting work로 target seed quality와 conformance를 개선할 수 있다.
 하지만 targets를 `ni-kernel` 내부의 executable adapters로 만들면 안 된다.
 

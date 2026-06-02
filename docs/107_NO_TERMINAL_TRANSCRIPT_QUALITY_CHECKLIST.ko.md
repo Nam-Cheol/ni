@@ -241,12 +241,19 @@ Updated:
 - `docs/104_AMEND_RELOCK_WORKFLOW_EXAMPLES.ko.md`
 - `docs/106_NO_TERMINAL_STALE_LOCK_EXAMPLES.md`
 - `docs/106_NO_TERMINAL_STALE_LOCK_EXAMPLES.ko.md`
+- `docs/108_CHANGED_INTENT_FIXTURE_COVERAGE.md`
+- `docs/108_CHANGED_INTENT_FIXTURE_COVERAGE.ko.md`
 - `scripts/demo-check.sh`
 
 Skill files는 변경하지 않았다. Existing skill wording은 충분했다. Current skill
 pack checks가 이미 `LOCK-STALE`, amended drafting, no-relock, no-lockfile-update,
 recovery order를 보존하기 때문이다. 이 task는 model workspace skill behavior를
 바꾸지 않고 users와 trusted runners를 위한 transcript quality guidance를 추가한다.
+
+Representative changed-intent stale-lock cases와 non-lockable false-positive
+guards에 대한 fixture-level proof는
+[`108_CHANGED_INTENT_FIXTURE_COVERAGE.ko.md`](108_CHANGED_INTENT_FIXTURE_COVERAGE.ko.md)를
+참고한다.
 
 ## Validation and current coverage
 

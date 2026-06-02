@@ -129,6 +129,9 @@ examples, see
 For a copy-paste checklist that helps trusted runners preserve workspace,
 command, output, file-change, and fixture-versus-target context, see
 [`107_NO_TERMINAL_TRANSCRIPT_QUALITY_CHECKLIST.md`](107_NO_TERMINAL_TRANSCRIPT_QUALITY_CHECKLIST.md).
+For fixture tests covering changed intent, stale `ni run` refusal, non-lockable
+false positives, and fixture-only relock recovery, see
+[`108_CHANGED_INTENT_FIXTURE_COVERAGE.md`](108_CHANGED_INTENT_FIXTURE_COVERAGE.md).
 
 ## Say this / do not say this
 

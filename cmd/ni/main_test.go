@@ -720,6 +720,155 @@ func TestStaleLockRunRefusalAndFixtureRecovery(t *testing.T) {
 	}
 }
 
+func TestChangedIntentFixtureStaleLockMatrix(t *testing.T) {
+	cases := []struct {
+		name             string
+		mutate           func(t *testing.T, dir string)
+		wantStale        bool
+		wantMismatchPath string
+		wantReadiness    string
+	}{
+		{
+			name:             "docs plan content change stales lock",
+			mutate:           staleLockedInputForCLI,
+			wantStale:        true,
+			wantMismatchPath: "docs/plan/02_capabilities.md",
+			wantReadiness:    "NI Intent Readiness: READY",
+		},
+		{
+			name: "contract and matching project brief change stales lock",
+			mutate: func(t *testing.T, dir string) {
+				updateContractForCLI(t, dir, func(payload map[string]any) {
+					project := payload["project"].(map[string]any)
+					project["purpose"] = "Exercise changed intent fixture coverage."
+				})
+				if err := os.WriteFile(filepath.Join(dir, "docs", "plan", "00_project_brief.md"), []byte("# Project brief\n\n## Product type\n\nsoftware\n\n## Delivery surfaces\n\n- cli\n\n## Purpose\n\nExercise changed intent fixture coverage.\n"), 0o644); err != nil {
+					t.Fatalf("writing changed project brief: %v", err)
+				}
+			},
+			wantStale:        true,
+			wantMismatchPath: ".ni/contract.json",
+			wantReadiness:    "NI Intent Readiness: READY",
+		},
+		{
+			name:             "deferral planning input change stales lock",
+			mutate:           writeReadyWithDeferralsContractForCLI,
+			wantStale:        true,
+			wantMismatchPath: ".ni/contract.json",
+			wantReadiness:    "NI Intent Readiness: READY_WITH_DEFERRALS",
+		},
+		{
+			name: "new non-required docs plan file does not stale lock",
+			mutate: func(t *testing.T, dir string) {
+				if err := os.WriteFile(filepath.Join(dir, "docs", "plan", "99_fixture_note.md"), []byte("# Fixture note\n\nThis docs/plan file is not in the lockfile's recorded required docs.\n"), 0o644); err != nil {
+					t.Fatalf("writing non-required docs/plan file: %v", err)
+				}
+			},
+			wantReadiness: "NI Intent Readiness: READY",
+		},
+		{
+			name: "session change does not stale lock",
+			mutate: func(t *testing.T, dir string) {
+				path := filepath.Join(dir, ".ni", "session.json")
+				data := readFileForCLI(t, path)
+				data = append(data, []byte("\n")...)
+				if err := os.WriteFile(path, data, 0o644); err != nil {
+					t.Fatalf("writing session state: %v", err)
+				}
+			},
+			wantReadiness: "NI Intent Readiness: READY",
+		},
+		{
+			name: "non lockable readme change does not stale lock",
+			mutate: func(t *testing.T, dir string) {
+				if err := os.WriteFile(filepath.Join(dir, "README.md"), []byte("# Fixture README\n\nNon-lockable fixture note.\n"), 0o644); err != nil {
+					t.Fatalf("writing fixture README: %v", err)
+				}
+			},
+			wantReadiness: "NI Intent Readiness: READY",
+		},
+	}
+
+	for _, tc := range cases {
+		t.Run(tc.name, func(t *testing.T) {
+			dir := lockedReadyFixtureForCLI(t)
+			tc.mutate(t, dir)
+
+			var stdout bytes.Buffer
+			code := run([]string{"status", "--dir", dir, "--proof", "--next-questions"}, &stdout, &bytes.Buffer{})
+			if code != 0 {
+				t.Fatalf("expected status exit code 0, got %d", code)
+			}
+			out := stdout.String()
+			if !strings.Contains(out, tc.wantReadiness) {
+				t.Fatalf("expected readiness %q, got %q", tc.wantReadiness, out)
+			}
+			if tc.wantStale {
+				for _, want := range []string{
+					"WARNING: LOCK-STALE existing lock is stale.",
+					"First mismatch: " + tc.wantMismatchPath + ".",
+					"Review the changed intent, run ni status --proof --next-questions, then run ni end before generating a new ni run handoff.",
+				} {
+					if !strings.Contains(out, want) {
+						t.Fatalf("expected stale status output to contain %q, got %q", want, out)
+					}
+				}
+
+				var stderr bytes.Buffer
+				code = run([]string{"run", "--dir", dir, "--max-chars", "4000"}, &bytes.Buffer{}, &stderr)
+				if code != exitStaleLock {
+					t.Fatalf("expected stale ni run exit code %d, got %d", exitStaleLock, code)
+				}
+				if !strings.Contains(stderr.String(), "BLOCKED: lock hash mismatch for "+tc.wantMismatchPath) {
+					t.Fatalf("expected stale ni run refusal for %s, got %q", tc.wantMismatchPath, stderr.String())
+				}
+				return
+			}
+
+			if strings.Contains(out, "LOCK-STALE") || strings.Contains(out, "Existing lock is stale") {
+				t.Fatalf("non-lockable change should not warn about stale locks, got %q", out)
+			}
+			stdout.Reset()
+			code = run([]string{"run", "--dir", dir, "--max-chars", "4000"}, &stdout, &bytes.Buffer{})
+			if code != 0 {
+				t.Fatalf("expected ni run after non-lockable change exit code 0, got %d", code)
+			}
+			if !strings.Contains(stdout.String(), "Source of truth") {
+				t.Fatalf("expected compiled prompt after non-lockable change, got %q", stdout.String())
+			}
+		})
+	}
+}
+
+func TestFixtureRelockDoesNotModifyProjectRootLock(t *testing.T) {
+	root := projectRootForCLI(t)
+	rootLock := filepath.Join(root, ".ni", "plan.lock.json")
+	before, beforeErr := os.ReadFile(rootLock)
+	if beforeErr != nil && !os.IsNotExist(beforeErr) {
+		t.Fatalf("reading project-root lockfile: %v", beforeErr)
+	}
+
+	dir := lockedReadyFixtureForCLI(t)
+	staleLockedInputForCLI(t, dir)
+	if code := run([]string{"end", "--dir", dir}, &bytes.Buffer{}, &bytes.Buffer{}); code != 0 {
+		t.Fatalf("fixture relock through ni end expected exit code 0, got %d", code)
+	}
+
+	after, afterErr := os.ReadFile(rootLock)
+	if beforeErr != nil && os.IsNotExist(beforeErr) {
+		if !os.IsNotExist(afterErr) {
+			t.Fatalf("fixture relock should not create project-root lockfile, read err: %v", afterErr)
+		}
+		return
+	}
+	if afterErr != nil {
+		t.Fatalf("reading project-root lockfile after fixture relock: %v", afterErr)
+	}
+	if !bytes.Equal(before, after) {
+		t.Fatalf("fixture relock changed project-root .ni/plan.lock.json")
+	}
+}
+
 func TestRunWritesPrompt(t *testing.T) {
 	dir := t.TempDir()
 	if code := run([]string{"init", "--dir", dir}, &bytes.Buffer{}, &bytes.Buffer{}); code != 0 {
@@ -2120,6 +2269,39 @@ func writeAcceptedHarnessPressureForCLI(t *testing.T, dir string) {
 `)
 	if err := os.WriteFile(filepath.Join(dir, ".ni", "pressure.json"), data, 0o644); err != nil {
 		t.Fatalf("writing pressure ledger: %v", err)
+	}
+}
+
+func lockedReadyFixtureForCLI(t *testing.T) string {
+	t.Helper()
+
+	dir := t.TempDir()
+	if code := run([]string{"init", "--dir", dir}, &bytes.Buffer{}, &bytes.Buffer{}); code != 0 {
+		t.Fatalf("init expected exit code 0, got %d", code)
+	}
+	writeReadyContractForCLI(t, dir)
+	if code := run([]string{"end", "--dir", dir}, &bytes.Buffer{}, &bytes.Buffer{}); code != 0 {
+		t.Fatalf("end expected exit code 0, got %d", code)
+	}
+	return dir
+}
+
+func projectRootForCLI(t *testing.T) string {
+	t.Helper()
+
+	dir, err := os.Getwd()
+	if err != nil {
+		t.Fatalf("getting cwd: %v", err)
+	}
+	for {
+		if _, err := os.Stat(filepath.Join(dir, "go.mod")); err == nil {
+			return dir
+		}
+		parent := filepath.Dir(dir)
+		if parent == dir {
+			t.Fatalf("could not find project root from cwd")
+		}
+		dir = parent
 	}
 }
 

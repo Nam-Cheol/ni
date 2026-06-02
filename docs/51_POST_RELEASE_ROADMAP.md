@@ -122,6 +122,12 @@ to distinguish unusable, partial, pasted, trusted runner, fixture-only, and
 target-workspace transcripts without treating fixture evidence as project-root
 state.
 
+For broader changed-intent fixture coverage, use
+[`108_CHANGED_INTENT_FIXTURE_COVERAGE.md`](108_CHANGED_INTENT_FIXTURE_COVERAGE.md)
+to verify representative stale-lock cases, non-lockable false positives,
+fixture relock recovery, and project-root safety without changing lock
+semantics.
+
 This phase may improve target seed quality and conformance as supporting work.
 It must not make targets into executable adapters inside `ni-kernel`.
 

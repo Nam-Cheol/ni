@@ -77,6 +77,8 @@ For no-terminal assisted examples, see
 [`106_NO_TERMINAL_STALE_LOCK_EXAMPLES.md`](106_NO_TERMINAL_STALE_LOCK_EXAMPLES.md).
 For transcript completeness and fixture-versus-target boundaries, see
 [`107_NO_TERMINAL_TRANSCRIPT_QUALITY_CHECKLIST.md`](107_NO_TERMINAL_TRANSCRIPT_QUALITY_CHECKLIST.md).
+For broader changed-intent fixture coverage of stale and non-stale cases, see
+[`108_CHANGED_INTENT_FIXTURE_COVERAGE.md`](108_CHANGED_INTENT_FIXTURE_COVERAGE.md).
 
 ## Authority boundary
 

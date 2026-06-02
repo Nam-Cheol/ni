@@ -129,6 +129,10 @@ Trusted runner가 workspace, command, output, file-change, fixture-versus-target
 context를 보존하게 돕는 copy-paste checklist는
 [`107_NO_TERMINAL_TRANSCRIPT_QUALITY_CHECKLIST.ko.md`](107_NO_TERMINAL_TRANSCRIPT_QUALITY_CHECKLIST.ko.md)를
 참고한다.
+Changed intent, stale `ni run` refusal, non-lockable false positives,
+fixture-only relock recovery를 cover하는 fixture tests는
+[`108_CHANGED_INTENT_FIXTURE_COVERAGE.ko.md`](108_CHANGED_INTENT_FIXTURE_COVERAGE.ko.md)를
+참고한다.
 
 ## Say this / do not say this
 

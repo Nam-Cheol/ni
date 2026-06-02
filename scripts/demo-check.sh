@@ -126,6 +126,8 @@ check_no_terminal_assisted_docs() {
   require_file docs/106_NO_TERMINAL_STALE_LOCK_EXAMPLES.ko.md
   require_file docs/107_NO_TERMINAL_TRANSCRIPT_QUALITY_CHECKLIST.md
   require_file docs/107_NO_TERMINAL_TRANSCRIPT_QUALITY_CHECKLIST.ko.md
+  require_file docs/108_CHANGED_INTENT_FIXTURE_COVERAGE.md
+  require_file docs/108_CHANGED_INTENT_FIXTURE_COVERAGE.ko.md
   require_output "Expected \`ni status\`: not claimed" "examples/no-terminal-assisted/README.md"
   require_output "docs-only example" "examples/no-terminal-assisted/README.md"
   require_output "It does not run" "examples/no-terminal-assisted/README.md"
@@ -143,6 +145,12 @@ check_no_terminal_assisted_docs() {
   require_output "does not execute downstream work" "docs/107_NO_TERMINAL_TRANSCRIPT_QUALITY_CHECKLIST.md"
   require_output "Was ni end run on project root? yes/no" "docs/107_NO_TERMINAL_TRANSCRIPT_QUALITY_CHECKLIST.md"
   require_output "No-terminal method is Experimental / assisted." "docs/107_NO_TERMINAL_TRANSCRIPT_QUALITY_CHECKLIST.ko.md"
+  require_output "\`LOCK-STALE\` is implemented as a CLI diagnostic." "docs/108_CHANGED_INTENT_FIXTURE_COVERAGE.md"
+  require_output "Fixture relock is separate from project-root relock." "docs/108_CHANGED_INTENT_FIXTURE_COVERAGE.md"
+  require_output "non-lockable file change" "docs/108_CHANGED_INTENT_FIXTURE_COVERAGE.md"
+  require_output "TestChangedIntentFixtureStaleLockMatrix" "docs/108_CHANGED_INTENT_FIXTURE_COVERAGE.md"
+  require_output "GOCACHE=/private/tmp/ni-go-cache" "docs/108_CHANGED_INTENT_FIXTURE_COVERAGE.md"
+  require_output "Fixture relock is separate from project-root relock." "docs/108_CHANGED_INTENT_FIXTURE_COVERAGE.ko.md"
 }
 
 check_ni_grill_docs() {

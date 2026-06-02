@@ -79,6 +79,9 @@ No-terminal assisted examples는
 Transcript completeness와 fixture-versus-target boundaries는
 [`107_NO_TERMINAL_TRANSCRIPT_QUALITY_CHECKLIST.ko.md`](107_NO_TERMINAL_TRANSCRIPT_QUALITY_CHECKLIST.ko.md)를
 참고한다.
+Stale 및 non-stale cases에 대한 broader changed-intent fixture coverage는
+[`108_CHANGED_INTENT_FIXTURE_COVERAGE.ko.md`](108_CHANGED_INTENT_FIXTURE_COVERAGE.ko.md)를
+참고한다.
 
 ## Authority boundary
 

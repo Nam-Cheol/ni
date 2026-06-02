@@ -242,6 +242,8 @@ Updated:
 - `docs/104_AMEND_RELOCK_WORKFLOW_EXAMPLES.ko.md`
 - `docs/106_NO_TERMINAL_STALE_LOCK_EXAMPLES.md`
 - `docs/106_NO_TERMINAL_STALE_LOCK_EXAMPLES.ko.md`
+- `docs/108_CHANGED_INTENT_FIXTURE_COVERAGE.md`
+- `docs/108_CHANGED_INTENT_FIXTURE_COVERAGE.ko.md`
 - `scripts/demo-check.sh`
 
 No skill files were changed. Existing skill wording was sufficient because the
@@ -249,6 +251,10 @@ current skill pack checks already preserve `LOCK-STALE`, amended drafting,
 no-relock, no-lockfile-update, and the recovery order. This task adds transcript
 quality guidance for users and trusted runners rather than changing model
 workspace skill behavior.
+
+For fixture-level proof of representative changed-intent stale-lock cases and
+non-lockable false-positive guards, see
+[`108_CHANGED_INTENT_FIXTURE_COVERAGE.md`](108_CHANGED_INTENT_FIXTURE_COVERAGE.md).
 
 ## Validation and current coverage
 
