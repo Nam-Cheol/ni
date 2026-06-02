@@ -42,9 +42,15 @@ Boundary: Skills are UX; CLI is authority.
   authoring updates, naming changed files, affected IDs, before/after CLI
   status, remaining blockers, and the next question group.
 - Skills may help draft or explain proof-related planning text.
+- Skills may help draft amended planning text.
+- Skills may help explain `LOCK-STALE`.
 - Skills do not determine readiness.
 - Skills do not lock plans.
+- Skills do not lock or relock.
 - Skills do not replace `ni status`, `ni end`, or `ni run`.
+- Skills do not update `.ni/plan.lock.json`.
+- `LOCK-STALE` means the existing lock no longer matches current planning
+  inputs; recovery is `review changed intent -> ni status --proof --next-questions -> ni end -> ni run --max-chars 4000`.
 - `ni-grill` challenges planning quality before lock. It does not execute work.
 - If `ni status` is `BLOCKED`, `ni-grill` should use deterministic blockers
   before inventing new critique.

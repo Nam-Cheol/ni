@@ -61,6 +61,11 @@ Each NI skill should state or preserve:
 - Do not execute downstream work.
 - Do not modify `.ni/plan.lock.json` manually.
 - Do not approve readiness by model judgment.
+- Skills may draft amended planning text and explain `LOCK-STALE`, but they do
+  not determine readiness, lock or relock, replace `ni status`, `ni end`, or
+  `ni run`, or update `.ni/plan.lock.json`.
+- When `LOCK-STALE` appears, preserve this recovery order:
+  `review changed intent -> ni status --proof --next-questions -> ni end -> ni run --max-chars 4000`.
 - Run or request `ni status --proof --next-questions` when relevant.
 - Use the user's current language for questions, while preserving IDs,
   commands, file paths, and status constants.

@@ -19,9 +19,16 @@ Skills are UX; CLI is authority.
 `READY`.
 
 - Skills may help draft or explain proof-related planning text.
+- Skills may help draft amended planning text.
+- Skills may help explain `LOCK-STALE`.
 - Skills do not determine readiness.
 - Skills do not lock plans.
+- Skills do not lock or relock.
 - Skills do not replace `ni status`, `ni end`, or `ni run`.
+- Skills do not update `.ni/plan.lock.json`.
+
+`LOCK-STALE` means the existing lock no longer matches current planning inputs.
+Recovery order: `review changed intent -> ni status --proof --next-questions -> ni end -> ni run --max-chars 4000`.
 
 Run or request one of these commands:
 

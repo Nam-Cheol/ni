@@ -23,6 +23,16 @@ stop.
 Do not edit `.ni/plan.lock.json` manually. Do not change locked planning docs
 to make prompt compilation pass.
 
+`LOCK-STALE` means the existing lock no longer matches current planning inputs.
+- Skills may help draft amended planning text.
+- Skills may help explain `LOCK-STALE`.
+- Skills do not determine readiness.
+- Skills do not lock or relock.
+- Skills do not replace `ni status`, `ni end`, or `ni run`.
+- Skills do not update `.ni/plan.lock.json`.
+
+Recovery order: `review changed intent -> ni status --proof --next-questions -> ni end -> ni run --max-chars 4000`.
+
 ## Process
 
 1. Locate the project root from the user's workspace context.

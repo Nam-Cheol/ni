@@ -64,6 +64,12 @@ check_skill() {
   fi
   require_text "$file" "BLOCKED"
   require_text "$file" "Do not"
+  require_text "$file" "LOCK-STALE"
+  require_text "$file" "Skills may help draft amended planning text."
+  require_text "$file" "Skills may help explain \`LOCK-STALE\`."
+  require_text "$file" "Skills do not lock or relock."
+  require_text "$file" "Skills do not update \`.ni/plan.lock.json\`."
+  require_text "$file" "review changed intent -> ni status --proof --next-questions -> ni end -> ni run --max-chars 4000"
   require_no_text "$file" "codex exec --"
   require_no_text "$file" "claude "
   require_no_text "$file" "anthropic "
@@ -95,9 +101,14 @@ check_pack() {
   require_text "$pack/README.md" "Do not execute downstream work"
   require_text "$pack/README.md" "Does not replace"
   require_text "$pack/README.md" "Skills may help draft or explain proof-related planning text."
+  require_text "$pack/README.md" "Skills may help draft amended planning text."
+  require_text "$pack/README.md" 'Skills may help explain `LOCK-STALE`.'
   require_text "$pack/README.md" "Skills do not determine readiness."
   require_text "$pack/README.md" "Skills do not lock plans."
+  require_text "$pack/README.md" "Skills do not lock or relock."
   require_text "$pack/README.md" 'Skills do not replace `ni status`, `ni end`, or `ni run`.'
+  require_text "$pack/README.md" 'Skills do not update `.ni/plan.lock.json`.'
+  require_text "$pack/README.md" "review changed intent -> ni status --proof --next-questions -> ni end -> ni run --max-chars 4000"
   require_text "$pack/README.md" "unzip -l dist/"
   require_text "$pack/README.ko.md" "Skills are UX"
   require_text "$pack/README.ko.md" "Status: Experimental."
@@ -109,9 +120,14 @@ check_pack() {
   require_text "$pack/README.ko.md" "What This Does Not Do"
   require_text "$pack/README.ko.md" "replace하지 않는다"
   require_text "$pack/README.ko.md" "Skills may help draft or explain proof-related planning text."
+  require_text "$pack/README.ko.md" "Skills may help draft amended planning text."
+  require_text "$pack/README.ko.md" 'Skills may help explain `LOCK-STALE`.'
   require_text "$pack/README.ko.md" "Skills do not determine readiness."
   require_text "$pack/README.ko.md" "Skills do not lock plans."
+  require_text "$pack/README.ko.md" "Skills do not lock or relock."
   require_text "$pack/README.ko.md" 'Skills do not replace `ni status`, `ni end`, or `ni run`.'
+  require_text "$pack/README.ko.md" 'Skills do not update `.ni/plan.lock.json`.'
+  require_text "$pack/README.ko.md" "review changed intent -> ni status --proof --next-questions -> ni end -> ni run --max-chars 4000"
   require_text "$pack/README.ko.md" "unzip -l dist/"
   require_text "$package_script" "$pack"
   require_text "$package_script" "README.md"

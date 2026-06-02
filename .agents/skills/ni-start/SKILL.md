@@ -27,6 +27,16 @@ Do not say the plan is complete unless `ni status` has no blockers. If `.ni/plan
 
 If your interpretation conflicts with `ni status`, report the CLI result and stop. Do not override, reinterpret, or soften a CLI `BLOCKED` result.
 
+`LOCK-STALE` means the existing lock no longer matches current planning inputs.
+- Skills may help draft amended planning text.
+- Skills may help explain `LOCK-STALE`.
+- Skills do not determine readiness.
+- Skills do not lock or relock.
+- Skills do not replace `ni status`, `ni end`, or `ni run`.
+- Skills do not update `.ni/plan.lock.json`.
+
+Recovery order: `review changed intent -> ni status --proof --next-questions -> ni end -> ni run --max-chars 4000`.
+
 ## Language-adaptive questions
 
 Ask user-facing planning questions in the language of the user's latest

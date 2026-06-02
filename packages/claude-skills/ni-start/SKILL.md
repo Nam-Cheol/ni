@@ -41,6 +41,16 @@ authoritative readiness state.
 Do not create `.ni/plan.lock.json`. Do not edit `.ni/plan.lock.json` manually.
 If a lock hash mismatch exists, stop and report `BLOCKED`.
 
+`LOCK-STALE` means the existing lock no longer matches current planning inputs.
+- Skills may help draft amended planning text.
+- Skills may help explain `LOCK-STALE`.
+- Skills do not determine readiness.
+- Skills do not lock or relock.
+- Skills do not replace `ni status`, `ni end`, or `ni run`.
+- Skills do not update `.ni/plan.lock.json`.
+
+Recovery order: `review changed intent -> ni status --proof --next-questions -> ni end -> ni run --max-chars 4000`.
+
 ## Language-Adaptive Questions
 
 Ask user-facing planning questions in the language of the user's latest

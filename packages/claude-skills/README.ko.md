@@ -39,9 +39,15 @@ Boundary: Skills are UX; CLI is authority.
   before/after CLI status, remaining blockers, next question group을 담은 concise
   planning proof block을 보여야 한다.
 - Skills may help draft or explain proof-related planning text.
+- Skills may help draft amended planning text.
+- Skills may help explain `LOCK-STALE`.
 - Skills do not determine readiness.
 - Skills do not lock plans.
+- Skills do not lock or relock.
 - Skills do not replace `ni status`, `ni end`, or `ni run`.
+- Skills do not update `.ni/plan.lock.json`.
+- `LOCK-STALE` means the existing lock no longer matches current planning
+  inputs; recovery is `review changed intent -> ni status --proof --next-questions -> ni end -> ni run --max-chars 4000`.
 - `ni-grill` challenges planning quality before lock. It does not execute work.
 - `ni status`가 `BLOCKED`이면 `ni-grill`은 새로운 critique를 만들기 전에
   deterministic blockers를 먼저 사용해야 한다.
