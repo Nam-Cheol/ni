@@ -33,6 +33,11 @@ cannot become Available yet because the public tap repository is absent, no
 formula is published, no real tap install was run, and user-facing install docs
 must remain Planned until full evidence exists.
 
+Follow-up: [`119_HOMEBREW_FORMULA_LOCAL_VERIFICATION.md`](119_HOMEBREW_FORMULA_LOCAL_VERIFICATION.md)
+records the later local verification attempt. That pass kept Homebrew Planned
+and selected `HOMEBREW_FORMULA_LOCAL_BLOCKED` because Homebrew 5.1.14 rejected
+path-based audit and path-based install before any formula binary was installed.
+
 ## Homebrew status audit
 
 | Surface | Observed state | Pass? | Notes |

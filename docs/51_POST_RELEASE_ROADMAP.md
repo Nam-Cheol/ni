@@ -190,6 +190,12 @@ to preserve the local draft formula, source archive sha256 evidence, tap
 absence proof, local Homebrew validation boundaries, and the future availability
 gate before any tap publication or README `brew install` wording.
 
+For local Homebrew formula verification, use
+[`119_HOMEBREW_FORMULA_LOCAL_VERIFICATION.md`](119_HOMEBREW_FORMULA_LOCAL_VERIFICATION.md)
+to preserve the path-audit and path-install blocker, pre-existing environment
+checks, cleanup proof, Homebrew core name-collision warning, and the continued
+Planned / v0.5 candidate boundary before any tap-based validation.
+
 This phase may improve target seed quality and conformance as supporting work.
 It must not make targets into executable adapters inside `ni-kernel`.
 

@@ -187,6 +187,12 @@ Homebrew implementation audit에는
 local Homebrew validation boundaries, future availability gate를 보존한다. Tap
 publication 또는 README `brew install` wording 전까지 이 gate를 유지한다.
 
+Local Homebrew formula verification에는
+[`119_HOMEBREW_FORMULA_LOCAL_VERIFICATION.ko.md`](119_HOMEBREW_FORMULA_LOCAL_VERIFICATION.ko.md)를
+사용해 path-audit와 path-install blocker, pre-existing environment checks,
+cleanup proof, Homebrew core name-collision warning, continued Planned / v0.5
+candidate boundary를 tap-based validation 전에 보존한다.
+
 이 phase는 supporting work로 target seed quality와 conformance를 개선할 수 있다.
 하지만 targets를 `ni-kernel` 내부의 executable adapters로 만들면 안 된다.
 
