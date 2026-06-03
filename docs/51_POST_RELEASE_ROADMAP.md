@@ -184,6 +184,12 @@ current-platform binary output, curl installer proof, README/install sync, and
 remaining deferrals without upgrading Homebrew, model workspace, no-terminal,
 or benchmark claims.
 
+For the Homebrew implementation audit, use
+[`118_HOMEBREW_IMPLEMENTATION_AUDIT.md`](118_HOMEBREW_IMPLEMENTATION_AUDIT.md)
+to preserve the local draft formula, source archive sha256 evidence, tap
+absence proof, local Homebrew validation boundaries, and the future availability
+gate before any tap publication or README `brew install` wording.
+
 This phase may improve target seed quality and conformance as supporting work.
 It must not make targets into executable adapters inside `ni-kernel`.
 

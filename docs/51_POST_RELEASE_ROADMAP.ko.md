@@ -181,6 +181,12 @@ current-platform binary output, curl installer proof, README/install sync,
 remaining deferrals를 보존한다. Homebrew, model workspace, no-terminal,
 benchmark claims는 이 문서만으로 upgrade하지 않는다.
 
+Homebrew implementation audit에는
+[`118_HOMEBREW_IMPLEMENTATION_AUDIT.ko.md`](118_HOMEBREW_IMPLEMENTATION_AUDIT.ko.md)를
+사용해 local draft formula, source archive sha256 evidence, tap absence proof,
+local Homebrew validation boundaries, future availability gate를 보존한다. Tap
+publication 또는 README `brew install` wording 전까지 이 gate를 유지한다.
+
 이 phase는 supporting work로 target seed quality와 conformance를 개선할 수 있다.
 하지만 targets를 `ni-kernel` 내부의 executable adapters로 만들면 안 된다.
 
