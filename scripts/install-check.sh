@@ -65,4 +65,14 @@ require_output "ni is a project intent compiler"
 run_cmd "temporary installed ni version" "$INSTALL_TMP/bin/ni" version
 require_nonempty_output
 
-echo "install-check: source, build, and temporary install paths passed"
+run_cmd "fresh shell resolves temporary ni --help and version" env \
+  PATH="$INSTALL_TMP/bin:$PATH" \
+  sh -c 'command -v ni && ni --help && ni version'
+require_output "ni is a project intent compiler"
+require_nonempty_output
+
+run_cmd "install.sh global install and uninstall behavior" bash scripts/test-install-sh.sh
+
+run_cmd "Windows installer static safety check" python3 scripts/check-install-ps1.py
+
+echo "install-check: source, build, temporary global command, installer, and uninstall checks passed"

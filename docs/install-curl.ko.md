@@ -3,7 +3,8 @@
 `install.sh`는 Go 없이 released `ni` binary를 설치한다. 이것은 release asset
 infrastructure일 뿐이다. Archive를 download하고, release가 checksum을 제공하면
 verify한 뒤, `ni`를 local bin directory에 복사하고 next steps를 출력한다. Model
-skills를 install하지 않으며 downstream work를 실행하지 않는다.
+skills를 install하지 않으며 downstream work를 실행하지 않는다. 명시적으로 opt in하면
+reversible zsh/bash PATH block을 추가할 수 있다.
 
 Status: verified v0.5.0 GitHub Release assets에 대해 Available이다. `install.sh`는
 선택된 archive와 `ni_0.5.0_checksums.txt`를 download하고, local sha256 tool이
@@ -19,9 +20,7 @@ VERSION="0.5.0"
 curl -fsSLO https://raw.githubusercontent.com/Nam-Cheol/ni/main/install.sh
 sed -n '1,320p' install.sh
 sh install.sh --dry-run --version "$VERSION"
-BINDIR="$HOME/.local/bin" sh install.sh --version "$VERSION"
-"$HOME/.local/bin/ni" --help
-"$HOME/.local/bin/ni" version
+BINDIR="$HOME/.local/bin" sh install.sh --update-path --version "$VERSION"
 ```
 
 기본 install 위치는 `~/.local/bin/ni`다. 다른 위치는 `BINDIR`로 지정한다:
@@ -32,12 +31,18 @@ BINDIR="$HOME/bin" sh install.sh --dry-run --version "$VERSION"
 
 `--version`을 생략하면 installer는 GitHub에서 latest release tag를 확인한다.
 [v0.5.0 Post-Release Verification](117_V0_5_0_POST_RELEASE_VERIFICATION.ko.md)이
-검증한 release를 원하면 `VERSION="0.5.0"`으로 고정한다. 설치된 CLI는 help 또는
-version command로만 확인한다:
+검증한 release를 원하면 `VERSION="0.5.0"`으로 고정한다. 설치 후 새 shell을 열고
+global command를 help 또는 version command로 확인한다:
 
 ```bash
-~/.local/bin/ni --help
-~/.local/bin/ni version
+ni --help
+ni version
+```
+
+Binary와, 추가했다면 ni-managed PATH block을 uninstall한다:
+
+```bash
+BINDIR="$HOME/.local/bin" sh install.sh --uninstall
 ```
 
 ## Manual Verification Path
@@ -80,12 +85,13 @@ mkdir -p "$HOME/.local/bin"
 VERSION="<published-version-without-v>"
 tar -xzf "ni_${VERSION}_darwin_arm64.tar.gz"
 install -m 0755 ni "$HOME/.local/bin/ni"
-"$HOME/.local/bin/ni" --help
-"$HOME/.local/bin/ni" version
+PATH="$HOME/.local/bin:$PATH" ni --help
+PATH="$HOME/.local/bin:$PATH" ni version
 ```
 
 자신의 platform에 맞는 archive name을 사용한다. Windows에서는 PowerShell 또는
-trusted unzip tool로 `.zip` archive를 풀고 `ni.exe`를 `PATH`에 둔다.
+trusted unzip tool로 `.zip` archive를 풀고 `ni.exe`를 User PATH에 두거나 repository
+root의 `install.ps1`를 사용한다.
 
 ## Script가 하는 일
 
@@ -97,7 +103,9 @@ trusted unzip tool로 `.zip` archive를 풀고 `ni.exe`를 `PATH`에 둔다.
 - 기본적으로 GitHub Releases에서 download한다.
 - `ni_<version>_checksums.txt`를 download하고 가능하면 archive를 verify한다.
 - `BINDIR`가 없으면 `~/.local/bin`에 install한다.
-- Help/version commands를 next steps로 출력한다.
+- `--update-path`가 passed되면 marked zsh/bash PATH block을 추가한다.
+- `--uninstall`로 installed binary와 marked PATH block만 제거한다.
+- Command-name help/version commands를 next steps로 출력한다.
 
 `ni init`, `ni status`, `ni end`, `ni run`, shell commands, agents, queues,
 runtime execution이 아니다.
@@ -123,4 +131,5 @@ BINDIR="$(mktemp -d)" sh install.sh --version "$VERSION"
 v0.5.0 verification은 2026-06-02에 통과했다. Installer는
 `Verified checksum for ni_0.5.0_darwin_arm64.tar.gz`를 출력했고 temporary
 `BINDIR`에 binary를 install했으며, installed binary는 `ni version`에서 `0.5.0`을
-반환했다.
+반환했다. Global command-name verification은 이제 `bash scripts/install-check.sh`가
+temporary install directory와 fresh shell PATH context로 cover한다.

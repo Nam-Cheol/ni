@@ -204,6 +204,47 @@ require_stdout "ni is a project intent compiler"
 run_cmd "installed ni version" "$INSTALL_DIR/ni" version
 require_stdout "$VERSION"
 
+run_cmd "fresh shell resolves installed ni by command name" env \
+  PATH="$INSTALL_DIR:$PATH" \
+  sh -c 'command -v ni && ni --help && ni version'
+require_stdout "ni is a project intent compiler"
+require_stdout "$VERSION"
+
+PROFILE="$TEST_TMP/home/.zshrc"
+UPDATE_INSTALL_DIR="$TEST_TMP/update-bin"
+run_cmd "install with managed PATH block" env \
+  NI_INSTALL_BASE_URL="$BASE_URL" \
+  NI_INSTALL_SHELL_PROFILE="$PROFILE" \
+  HOME="$TEST_TMP/home" \
+  SHELL="/bin/zsh" \
+  BINDIR="$UPDATE_INSTALL_DIR" \
+  sh ./install.sh --update-path --version "$VERSION"
+require_stdout "Added ni PATH block to $PROFILE"
+
+if ! grep -Fq "# >>> ni installer >>>" "$PROFILE"; then
+  echo "test-install-sh failed: managed PATH block was not written" >&2
+  exit 1
+fi
+
+run_cmd "uninstall removes binary and managed PATH block" env \
+  NI_INSTALL_SHELL_PROFILE="$PROFILE" \
+  HOME="$TEST_TMP/home" \
+  SHELL="/bin/zsh" \
+  BINDIR="$UPDATE_INSTALL_DIR" \
+  sh ./install.sh --uninstall
+require_stdout "Removed $UPDATE_INSTALL_DIR/ni"
+require_stdout "Removed ni PATH block from $PROFILE"
+
+if [[ -e "$UPDATE_INSTALL_DIR/ni" ]]; then
+  echo "test-install-sh failed: uninstall left installed binary" >&2
+  exit 1
+fi
+
+if grep -Fq "# >>> ni installer >>>" "$PROFILE"; then
+  echo "test-install-sh failed: uninstall left managed PATH block" >&2
+  exit 1
+fi
+
 printf 'bad  %s\n' "$ASSET" >"$RELEASE_DIR/$CHECKSUMS"
 run_must_fail "checksum mismatch fails" env \
   NI_INSTALL_BASE_URL="$BASE_URL" \

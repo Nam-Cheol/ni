@@ -157,7 +157,7 @@ For complete source, local binary, release binary, and curl installer steps,
 see [Install ni](docs/22_INSTALL.md). For the manual release path, download
 the matching archive and `ni_0.5.0_checksums.txt` from the same v0.5.0 release,
 verify the archive checksum, extract it, and then run `ni --help` and
-`ni version`.
+`ni version` from a shell whose `PATH` includes the install directory.
 
 Release status: v0.5.0 release binaries are available after asset and checksum
 verification. The curl installer is available after verification against the
@@ -168,63 +168,72 @@ is not available yet.
 
 Recommended verified path: use the v0.5.0 curl installer after inspecting it.
 By default, `install.sh` installs only the `ni` binary to
-`$HOME/.local/bin/ni`; set `BINDIR` to choose a different directory.
+`$HOME/.local/bin/ni`; set `BINDIR` to choose a different directory. If the
+install directory is not on `PATH`, rerun with `--update-path` to add a
+reversible zsh/bash profile block, or update your shell profile manually.
 
 ```bash
 VERSION="0.5.0"
 curl -fsSLO https://raw.githubusercontent.com/Nam-Cheol/ni/main/install.sh
 sed -n '1,320p' install.sh
 sh install.sh --dry-run --version "$VERSION"
-BINDIR="$HOME/.local/bin" sh install.sh --version "$VERSION"
-"$HOME/.local/bin/ni" --help
-"$HOME/.local/bin/ni" version
+BINDIR="$HOME/.local/bin" sh install.sh --update-path --version "$VERSION"
 ```
 
-If `ni` is not found by name, add the chosen `BINDIR` to your `PATH`.
-
-Uninstall the installer-installed binary by removing the exact installed file:
+Open a new terminal, then verify by command name:
 
 ```bash
-rm -f "$HOME/.local/bin/ni"
+ni --help
+ni version
 ```
 
-If you installed to another `BINDIR`, remove `ni` from that directory instead.
-If you added a `PATH` line only for `ni`, remove that shell profile line
-manually. Homebrew remains Planned / v0.5 candidate; do not use `brew install`
-for `ni` yet.
+Uninstall the installer-installed binary and the ni-managed PATH block, if one
+was added:
+
+```bash
+BINDIR="$HOME/.local/bin" sh install.sh --uninstall
+```
+
+If you installed to another `BINDIR`, pass the same `BINDIR` during uninstall.
+If you manually added a `PATH` line, remove only the line you added for `ni`.
+Homebrew remains Planned / v0.5 candidate; do not use `brew install` for `ni`
+yet.
 
 ## Windows install / uninstall
 
-Verified public Windows package-manager installers are not documented yet. The
-currently documented Windows path is the v0.5.0 release binary archive for
-`windows/amd64`; no MSI, winget, Chocolatey, Scoop, or Homebrew path is claimed.
+The Windows PowerShell installer installs `ni.exe` to
+`%LOCALAPPDATA%\ni\bin` by default and updates User PATH only. It does not
+modify System PATH, require admin by default, install model skills, or run
+downstream work. No MSI, winget, Chocolatey, Scoop, or Homebrew path is claimed.
 
 ```powershell
 $Version = "0.5.0"
-Invoke-WebRequest "https://github.com/Nam-Cheol/ni/releases/download/v$Version/ni_$($Version)_windows_amd64.zip" -OutFile "ni_$($Version)_windows_amd64.zip"
-Invoke-WebRequest "https://github.com/Nam-Cheol/ni/releases/download/v$Version/ni_$($Version)_checksums.txt" -OutFile "ni_$($Version)_checksums.txt"
-Get-FileHash "ni_$($Version)_windows_amd64.zip" -Algorithm SHA256
-Select-String "ni_$($Version)_windows_amd64.zip" "ni_$($Version)_checksums.txt"
-Expand-Archive "ni_$($Version)_windows_amd64.zip" -DestinationPath "ni_$($Version)_windows_amd64"
-.\ni_$($Version)_windows_amd64\ni.exe --help
-.\ni_$($Version)_windows_amd64\ni.exe version
+Invoke-WebRequest "https://raw.githubusercontent.com/Nam-Cheol/ni/main/install.ps1" -OutFile "install.ps1"
+Get-Content .\install.ps1
+.\install.ps1 -DryRun -Version $Version
+.\install.ps1 -Version $Version
 ```
 
-Compare the hash output with the checksum line before trusting the extracted
-binary. The release asset and checksum are verified in
-[v0.5.0 Post-Release Verification](docs/117_V0_5_0_POST_RELEASE_VERIFICATION.md),
-but execution on a real Windows host remains a manual verification boundary.
-To install for repeated use, place `ni.exe` in a directory you control and add
-that directory to your user `PATH`.
-
-Uninstall by removing the copied executable from that directory:
+Open a new PowerShell session, then verify by command name:
 
 ```powershell
-Remove-Item "$HOME\bin\ni.exe"
+ni --help
+ni version
 ```
 
-Use the path where you actually placed `ni.exe`. Remove a user `PATH` entry
-only if you added one specifically for `ni`.
+The release asset and checksum are verified in
+[v0.5.0 Post-Release Verification](docs/117_V0_5_0_POST_RELEASE_VERIFICATION.md),
+but execution on a real Windows host remains a manual verification boundary
+until a Windows install transcript exists.
+
+Uninstall the installer-installed binary and the User PATH entry added by `ni`:
+
+```powershell
+.\install.ps1 -Uninstall
+```
+
+The uninstall path removes only `%LOCALAPPDATA%\ni\bin\ni.exe`, removes the
+directory if empty, and removes only the matching `ni` User PATH entry.
 
 License: `ni` is licensed under the [MIT License](LICENSE).
 

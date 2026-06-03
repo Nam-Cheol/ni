@@ -158,7 +158,7 @@ Source, local binary, release binary, curl installer의 전체 절차는
 [Install ni](docs/22_INSTALL.md)를 참고하세요. Manual release path는 같은
 v0.5.0 release에서 matching archive와 `ni_0.5.0_checksums.txt`를 download하고,
 archive checksum을 verify하고, 압축을 해제한 뒤 `ni --help`와 `ni version`을
-실행하는 것이다.
+install directory가 `PATH`에 포함된 shell에서 실행하는 것이다.
 
 Release status: v0.5.0 release binaries는 asset과 checksum 검증 후 Available입니다.
 Curl installer는 실제 v0.5.0 release assets에 대해 검증된 뒤 Available입니다.
@@ -168,62 +168,71 @@ Homebrew를 포함한 package-manager distribution은 아직 Available이 아닙
 
 권장 verified path는 v0.5.0 curl installer를 inspect한 뒤 사용하는 것입니다.
 `install.sh`는 기본적으로 `ni` binary만 `$HOME/.local/bin/ni`에 설치합니다.
-다른 directory를 쓰려면 `BINDIR`를 지정합니다.
+다른 directory를 쓰려면 `BINDIR`를 지정합니다. Install directory가 `PATH`에
+없으면 `--update-path`로 reversible zsh/bash profile block을 추가하거나 shell
+profile을 직접 업데이트합니다.
 
 ```bash
 VERSION="0.5.0"
 curl -fsSLO https://raw.githubusercontent.com/Nam-Cheol/ni/main/install.sh
 sed -n '1,320p' install.sh
 sh install.sh --dry-run --version "$VERSION"
-BINDIR="$HOME/.local/bin" sh install.sh --version "$VERSION"
-"$HOME/.local/bin/ni" --help
-"$HOME/.local/bin/ni" version
+BINDIR="$HOME/.local/bin" sh install.sh --update-path --version "$VERSION"
 ```
 
-`ni`를 command name으로 찾지 못하면 선택한 `BINDIR`를 `PATH`에 추가하세요.
-
-Installer로 설치된 binary는 정확한 설치 파일을 삭제해 uninstall합니다:
+새 terminal을 연 뒤 command name으로 verify합니다:
 
 ```bash
-rm -f "$HOME/.local/bin/ni"
+ni --help
+ni version
 ```
 
-다른 `BINDIR`에 설치했다면 그 directory의 `ni`를 삭제하세요. `ni`만을 위해
-추가한 `PATH` line이 있다면 shell profile에서 직접 제거하세요. Homebrew:
+Installer로 설치된 binary와, 추가했다면 ni-managed PATH block을 uninstall합니다:
+
+```bash
+BINDIR="$HOME/.local/bin" sh install.sh --uninstall
+```
+
+다른 `BINDIR`에 설치했다면 uninstall 때도 같은 `BINDIR`를 전달하세요. 직접
+`PATH` line을 추가했다면 `ni`를 위해 추가한 line만 제거하세요. Homebrew:
 Planned / v0.5 candidate 상태이므로 아직 `brew install`을 사용하지 않습니다.
 
 ## Windows install / uninstall
 
-Verified public Windows package-manager installer는 아직 문서화되어 있지 않습니다.
-현재 문서화된 Windows path는 `windows/amd64`용 v0.5.0 release binary archive입니다.
+Windows PowerShell installer는 기본적으로 `%LOCALAPPDATA%\ni\bin`에 `ni.exe`를
+설치하고 User PATH만 업데이트합니다. System PATH를 수정하지 않고, default로 admin을
+요구하지 않으며, model skills를 install하거나 downstream work를 실행하지 않습니다.
 MSI, winget, Chocolatey, Scoop, Homebrew path는 claim하지 않습니다.
 
 ```powershell
 $Version = "0.5.0"
-Invoke-WebRequest "https://github.com/Nam-Cheol/ni/releases/download/v$Version/ni_$($Version)_windows_amd64.zip" -OutFile "ni_$($Version)_windows_amd64.zip"
-Invoke-WebRequest "https://github.com/Nam-Cheol/ni/releases/download/v$Version/ni_$($Version)_checksums.txt" -OutFile "ni_$($Version)_checksums.txt"
-Get-FileHash "ni_$($Version)_windows_amd64.zip" -Algorithm SHA256
-Select-String "ni_$($Version)_windows_amd64.zip" "ni_$($Version)_checksums.txt"
-Expand-Archive "ni_$($Version)_windows_amd64.zip" -DestinationPath "ni_$($Version)_windows_amd64"
-.\ni_$($Version)_windows_amd64\ni.exe --help
-.\ni_$($Version)_windows_amd64\ni.exe version
+Invoke-WebRequest "https://raw.githubusercontent.com/Nam-Cheol/ni/main/install.ps1" -OutFile "install.ps1"
+Get-Content .\install.ps1
+.\install.ps1 -DryRun -Version $Version
+.\install.ps1 -Version $Version
 ```
 
-Extracted binary를 trust하기 전에 hash output과 checksum line을 비교하세요.
+새 PowerShell session을 연 뒤 command name으로 verify합니다:
+
+```powershell
+ni --help
+ni version
+```
+
 Release asset과 checksum은
 [v0.5.0 Post-Release Verification](docs/117_V0_5_0_POST_RELEASE_VERIFICATION.ko.md)에서
 검증되었지만, 실제 Windows host execution은 manual verification boundary로
-남아 있습니다. 반복 사용하려면 직접 관리하는 directory에 `ni.exe`를 두고 그
-directory를 user `PATH`에 추가합니다.
+남아 있습니다. Windows install transcript가 생기기 전까지 Windows execution
+verified라고 claim하지 않습니다.
 
-Uninstall은 복사해 둔 executable을 그 directory에서 삭제하는 것입니다:
+Installer로 설치된 binary와 `ni`가 추가한 User PATH entry를 uninstall합니다:
 
 ```powershell
-Remove-Item "$HOME\bin\ni.exe"
+.\install.ps1 -Uninstall
 ```
 
-실제로 `ni.exe`를 둔 path를 사용하세요. User `PATH` entry는 `ni`만을 위해
-추가한 경우에만 제거하세요.
+Uninstall path는 `%LOCALAPPDATA%\ni\bin\ni.exe`만 제거하고, directory가 비어 있으면
+그 directory를 제거하며, matching `ni` User PATH entry만 제거합니다.
 
 License: `ni`는 [MIT License](LICENSE)로 배포됩니다.
 

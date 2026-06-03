@@ -3,7 +3,8 @@
 `install.sh` is release asset infrastructure for installing a released `ni`
 binary without requiring Go. It downloads an archive, verifies the checksum when
 the release provides one, copies `ni` into a local bin directory, and prints next
-steps. It does not install model skills or run downstream work.
+steps. With explicit opt-in, it can add a reversible zsh/bash PATH block. It
+does not install model skills or run downstream work.
 
 Status: Available for the verified v0.5.0 GitHub Release assets. `install.sh`
 downloads the selected archive and `ni_0.5.0_checksums.txt`, verifies the
@@ -19,9 +20,7 @@ VERSION="0.5.0"
 curl -fsSLO https://raw.githubusercontent.com/Nam-Cheol/ni/main/install.sh
 sed -n '1,320p' install.sh
 sh install.sh --dry-run --version "$VERSION"
-BINDIR="$HOME/.local/bin" sh install.sh --version "$VERSION"
-"$HOME/.local/bin/ni" --help
-"$HOME/.local/bin/ni" version
+BINDIR="$HOME/.local/bin" sh install.sh --update-path --version "$VERSION"
 ```
 
 By default, the script installs to `~/.local/bin/ni`. Override the destination
@@ -34,11 +33,18 @@ BINDIR="$HOME/bin" sh install.sh --dry-run --version "$VERSION"
 If you omit `--version`, the installer asks GitHub for the latest release tag.
 Pin `VERSION="0.5.0"` when you want the verified release covered by
 [v0.5.0 Post-Release Verification](117_V0_5_0_POST_RELEASE_VERIFICATION.md).
-The installed CLI should only be checked with help or version commands:
+Open a new shell after installation, then check the global command with help or
+version commands:
 
 ```bash
-~/.local/bin/ni --help
-~/.local/bin/ni version
+ni --help
+ni version
+```
+
+Uninstall the binary and the ni-managed PATH block, if one was added:
+
+```bash
+BINDIR="$HOME/.local/bin" sh install.sh --uninstall
 ```
 
 ## Manual Verification Path
@@ -81,13 +87,13 @@ mkdir -p "$HOME/.local/bin"
 VERSION="<published-version-without-v>"
 tar -xzf "ni_${VERSION}_darwin_arm64.tar.gz"
 install -m 0755 ni "$HOME/.local/bin/ni"
-"$HOME/.local/bin/ni" --help
-"$HOME/.local/bin/ni" version
+PATH="$HOME/.local/bin:$PATH" ni --help
+PATH="$HOME/.local/bin:$PATH" ni version
 ```
 
 Use the matching archive name for your platform. On Windows, expand the `.zip`
 archive with PowerShell or another trusted unzip tool and place `ni.exe` on your
-`PATH`.
+User PATH, or use `install.ps1` from the repository root.
 
 ## What The Script Does
 
@@ -98,7 +104,10 @@ archive with PowerShell or another trusted unzip tool and place `ni.exe` on your
 - Downloads from GitHub Releases by default.
 - Downloads `ni_<version>_checksums.txt` and verifies the archive if possible.
 - Installs to `~/.local/bin`, unless `BINDIR` is set.
-- Prints help/version commands as next steps.
+- Optionally adds a marked zsh/bash PATH block when `--update-path` is passed.
+- Removes the installed binary and only the marked PATH block with
+  `--uninstall`.
+- Prints command-name help/version commands as next steps.
 
 It does not run `ni init`, `ni status`, `ni end`, `ni run`, shell commands,
 agents, queues, or runtime execution.
@@ -124,4 +133,6 @@ BINDIR="$(mktemp -d)" sh install.sh --version "$VERSION"
 The v0.5.0 verification passed on 2026-06-02. The installer printed
 `Verified checksum for ni_0.5.0_darwin_arm64.tar.gz`, installed the binary into
 a temporary `BINDIR`, and the installed binary returned `0.5.0` for
-`ni version`.
+`ni version`. Global command-name verification is now covered by
+`bash scripts/install-check.sh` with a temporary install directory and fresh
+shell PATH context.

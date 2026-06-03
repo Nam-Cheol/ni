@@ -54,10 +54,26 @@ REQUIRED_MARKERS = {
     "docs/install-curl.md": [
         "Status: Available for the verified v0.5.0 GitHub Release assets.",
         "The v0.5.0 verification passed on 2026-06-02.",
+        "Open a new shell after installation, then check the global command",
+        "BINDIR=\"$HOME/.local/bin\" sh install.sh --uninstall",
     ],
     "docs/install-curl.ko.md": [
         "Status: verified v0.5.0 GitHub Release assets에 대해 Available이다.",
         "v0.5.0 verification은 2026-06-02에 통과했다.",
+        "설치 후 새 shell을 열고 global command를 help 또는 version command로 확인한다",
+        "BINDIR=\"$HOME/.local/bin\" sh install.sh --uninstall",
+    ],
+    "docs/120_GLOBAL_INSTALL_ACCEPTANCE.md": [
+        "A macOS install is successful only when all of these are true:",
+        "A Windows install is successful only when all of these are true:",
+        "Do not claim Windows execution verified until a Windows PowerShell install",
+        "Skills are UX; CLI is authority.",
+    ],
+    "docs/120_GLOBAL_INSTALL_ACCEPTANCE.ko.md": [
+        "macOS install은 다음이 모두 true일 때만 성공이다:",
+        "Windows install은 다음이 모두 true일 때만 성공이다:",
+        "Windows execution verified라고 claim하지 않는다",
+        "Skills are UX; CLI is authority.",
     ],
     "docs/54_HOMEBREW_DISTRIBUTION.md": [
         "Current status: Planned.",

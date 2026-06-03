@@ -63,7 +63,7 @@ Install to `~/.local/bin/ni` by default:
 
 ```bash
 make install-local
-~/.local/bin/ni version
+PATH="$HOME/.local/bin:$PATH" ni version
 ```
 
 To choose another install location, override `PREFIX` or `BINDIR`:
@@ -80,8 +80,7 @@ install directory.
 ```bash
 tmpdir="$(mktemp -d)"
 make install-local BINDIR="$tmpdir/bin"
-"$tmpdir/bin/ni" --help
-"$tmpdir/bin/ni" version
+PATH="$tmpdir/bin:$PATH" sh -c 'ni --help && ni version'
 ```
 
 ## Release binary
@@ -105,7 +104,8 @@ Use this matrix to choose the archive for your OS and architecture:
 
 Each valid release must include `ni_<version>_checksums.txt`. For v0.5.0,
 download the archive and checksum file from the same release, verify the
-archive, unpack the binary, and then run `ni --help` and `ni version`.
+archive, unpack the binary into a directory on `PATH`, and then run `ni --help`
+and `ni version` by command name.
 
 Linux example:
 
@@ -115,8 +115,9 @@ curl -fSLO "https://github.com/Nam-Cheol/ni/releases/download/v${VERSION}/ni_${V
 curl -fSLO "https://github.com/Nam-Cheol/ni/releases/download/v${VERSION}/ni_${VERSION}_checksums.txt"
 grep " ni_${VERSION}_linux_amd64.tar.gz$" "ni_${VERSION}_checksums.txt" | sha256sum -c -
 tar -xzf "ni_${VERSION}_linux_amd64.tar.gz"
-./ni --help
-./ni version
+install -m 0755 ni "$HOME/.local/bin/ni"
+PATH="$HOME/.local/bin:$PATH" ni --help
+PATH="$HOME/.local/bin:$PATH" ni version
 ```
 
 macOS example:
@@ -127,8 +128,9 @@ curl -fSLO "https://github.com/Nam-Cheol/ni/releases/download/v${VERSION}/ni_${V
 curl -fSLO "https://github.com/Nam-Cheol/ni/releases/download/v${VERSION}/ni_${VERSION}_checksums.txt"
 grep " ni_${VERSION}_darwin_arm64.tar.gz$" "ni_${VERSION}_checksums.txt" | shasum -a 256 -c -
 tar -xzf "ni_${VERSION}_darwin_arm64.tar.gz"
-./ni --help
-./ni version
+install -m 0755 ni "$HOME/.local/bin/ni"
+PATH="$HOME/.local/bin:$PATH" ni --help
+PATH="$HOME/.local/bin:$PATH" ni version
 ```
 
 Windows PowerShell:
@@ -148,7 +150,8 @@ Compare the `Get-FileHash` output with the checksum line printed by
 `Select-String` before trusting the extracted binary. The v0.5.0 Windows asset
 and checksum are verified in
 [`117_V0_5_0_POST_RELEASE_VERIFICATION.md`](117_V0_5_0_POST_RELEASE_VERIFICATION.md),
-but execution on a real Windows host remains manually unverified.
+but execution on a real Windows host remains manually unverified. Use the
+PowerShell installer below for User PATH handling and global command setup.
 
 ## Curl installer
 
@@ -167,15 +170,59 @@ VERSION="0.5.0"
 curl -fsSLO https://raw.githubusercontent.com/Nam-Cheol/ni/main/install.sh
 sed -n '1,320p' install.sh
 sh install.sh --dry-run --version "$VERSION"
-BINDIR="$HOME/.local/bin" sh install.sh --version "$VERSION"
-"$HOME/.local/bin/ni" --help
-"$HOME/.local/bin/ni" version
+BINDIR="$HOME/.local/bin" sh install.sh --update-path --version "$VERSION"
+```
+
+Open a new shell, then verify global command resolution:
+
+```bash
+ni --help
+ni version
 ```
 
 See [Curl Installer](install-curl.md) for `BINDIR`, checksum behavior, and the
 manual verification path. The manual verification path is to download the
 matching archive and `ni_0.5.0_checksums.txt` from the same release, verify the
-archive checksum, extract it, and then run `ni --help` and `ni version`.
+archive checksum, extract it into a directory on `PATH`, and then run
+`ni --help` and `ni version` by command name.
+
+Uninstall the curl-installed binary and any ni-managed PATH block:
+
+```bash
+BINDIR="$HOME/.local/bin" sh install.sh --uninstall
+```
+
+## Windows PowerShell installer
+
+`install.ps1` installs `ni.exe` to `%LOCALAPPDATA%\ni\bin\ni.exe` by default
+and adds that directory to User PATH only. It does not modify Machine PATH by
+default and does not use `setx`.
+
+```powershell
+$Version = "0.5.0"
+Invoke-WebRequest "https://raw.githubusercontent.com/Nam-Cheol/ni/main/install.ps1" -OutFile "install.ps1"
+Get-Content .\install.ps1
+.\install.ps1 -DryRun -Version $Version
+.\install.ps1 -Version $Version
+```
+
+Open a new PowerShell session, then verify global command resolution:
+
+```powershell
+ni --help
+ni version
+```
+
+Uninstall removes `ni.exe`, removes the install directory if empty, and removes
+only the matching `ni` directory from User PATH:
+
+```powershell
+.\install.ps1 -Uninstall
+```
+
+Windows execution has not been verified on this macOS host. Do not claim it
+verified until a real Windows PowerShell install, new-session help/version, and
+uninstall transcript exists.
 
 Package manager status: Planned. Do not use package manager instructions for
 `ni` yet; Homebrew and Scoop packages are not published.
@@ -212,4 +259,5 @@ This install document claims release binary availability only for the verified
 v0.5.0 GitHub Release assets and curl installer availability only for the
 verified v0.5.0 installer path. It does not claim package distribution,
 Homebrew support, Scoop support, no-terminal deterministic validation, runtime
-execution behavior, or global model-pack installation.
+execution behavior, Windows execution verification on macOS, or global
+model-pack installation.
