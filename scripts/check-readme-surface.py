@@ -29,8 +29,7 @@ TOP_SECTIONS = {
         ("slogan", "<h1 align=\"center\">"),
         ("one-line product description", "<p align=\"center\"><strong>"),
         ("why ni", "## Why ni"),
-        ("start in 60 seconds", "## Start in 60 seconds"),
-        ("choose your path", "## Choose your path"),
+        ("install", "## Install"),
     ],
     "README.ko.md": [
         ("hero image", "assets/hero.svg"),
@@ -39,8 +38,7 @@ TOP_SECTIONS = {
         ("slogan", "<h1 align=\"center\">"),
         ("one-line product description", "<p align=\"center\"><strong>"),
         ("why ni", "## 왜 ni인가"),
-        ("start in 60 seconds", "## 60초 시작"),
-        ("choose your path", "## Choose your path"),
+        ("install", "## Install"),
     ],
 }
 
@@ -248,9 +246,9 @@ def section_text(lines: list[str], start_marker: str, end_marker: str | None = N
 def check_product_claim_surface() -> None:
     for path in README_FILES:
         lines = read_lines(path)
-        hero_sales = "\n".join(lines[: find_line(lines, "## Start in 60 seconds") or len(lines)])
+        hero_sales = "\n".join(lines[: find_line(lines, "## Install") or len(lines)])
         if path == "README.ko.md":
-            hero_sales = "\n".join(lines[: find_line(lines, "## 60초 시작") or len(lines)])
+            hero_sales = "\n".join(lines[: find_line(lines, "## Install") or len(lines)])
         for product in SPECIFIC_RUNTIME_PRODUCTS:
             if product in hero_sales:
                 fail(f"{path} mentions {product} in the hero or sales pitch")

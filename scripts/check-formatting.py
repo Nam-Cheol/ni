@@ -13,8 +13,8 @@ from pathlib import Path
 ROOT = Path(os.environ.get("NI_FORMAT_ROOT", Path(__file__).resolve().parents[1]))
 
 MARKDOWN_TABLES = {
-    "README.md": ["## Choose your path", "## Read next"],
-    "README.ko.md": ["## Choose your path", "## 다음에 읽을 것"],
+    "README.md": ["## Read next"],
+    "README.ko.md": ["## 다음에 읽을 것"],
     "packages/codex-skills/README.md": ["## Skills"],
     "packages/codex-skills/README.ko.md": ["## Skills"],
     "packages/claude-skills/README.md": ["## Skills"],

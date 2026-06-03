@@ -39,6 +39,15 @@ ni --help
 ni version
 ```
 
+Global command verification 뒤에는 project directory에서 planning workspace를
+시작한다:
+
+```bash
+mkdir my-project
+cd my-project
+ni init .
+```
+
 Binary와, 추가했다면 ni-managed PATH block을 uninstall한다:
 
 ```bash

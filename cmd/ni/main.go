@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bufio"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -26,6 +27,13 @@ import (
 	"ni/internal/core/target"
 	"ni/internal/version"
 )
+
+var initInput io.Reader = os.Stdin
+
+var initInputIsTerminal = func() bool {
+	info, err := os.Stdin.Stat()
+	return err == nil && info.Mode()&os.ModeCharDevice != 0
+}
 
 func main() {
 	os.Exit(run(os.Args[1:], os.Stdout, os.Stderr))
@@ -830,6 +838,10 @@ func runInit(args []string, stdout io.Writer, stderr io.Writer) int {
 	productType := contract.DefaultProductType
 	var surfaces []string
 	interactionMode := contract.DefaultInteractionMode
+	forceInteractive := false
+	assumeYes := false
+	usedDirFlag := false
+	usedPositionalTarget := false
 	for i := 0; i < len(args); i++ {
 		switch args[i] {
 		case "--dir":
@@ -838,6 +850,7 @@ func runInit(args []string, stdout io.Writer, stderr io.Writer) int {
 				return exitUsageError
 			}
 			dir = args[i+1]
+			usedDirFlag = true
 			i++
 		case "--profile":
 			if i+1 >= len(args) {
@@ -883,10 +896,68 @@ func runInit(args []string, stdout io.Writer, stderr io.Writer) int {
 				return exitUsageError
 			}
 			i++
+		case "--interactive":
+			forceInteractive = true
+		case "--yes":
+			assumeYes = true
 		default:
-			fmt.Fprintf(stderr, "unknown init option: %s\n", args[i])
+			if strings.HasPrefix(args[i], "--") {
+				fmt.Fprintf(stderr, "unknown init option: %s\n", args[i])
+				return exitUsageError
+			}
+			if dir != "." {
+				fmt.Fprintf(stderr, "unexpected init argument: %s\n", args[i])
+				return exitUsageError
+			}
+			dir = args[i]
+			usedPositionalTarget = true
+		}
+	}
+
+	root := filepath.Clean(dir)
+	if lockExists(root) {
+		fmt.Fprintf(stdout, "warning: %s already exists; this project is already locked.\n", filepath.Join(".ni", "plan.lock.json"))
+		fmt.Fprintln(stdout, "Use ni status --proof --next-questions, then the amend/relock flow for locked planning changes.")
+		fmt.Fprintln(stdout, "No files changed by ni init; the lockfile was not modified.")
+		return exitOK
+	}
+
+	requiredExisting := existingInitPaths(root)
+	if len(requiredExisting) > 0 {
+		fmt.Fprintln(stdout, "existing ni planning files found; ni init will not overwrite them.")
+		if forceInteractive && !assumeYes {
+			choice, err := promptExistingInitChoice(initInput, stdout)
+			if err != nil {
+				fmt.Fprintln(stderr, err)
+				return exitUsageError
+			}
+			switch choice {
+			case "keep":
+				fmt.Fprintln(stdout, "kept existing files; no files changed.")
+				return exitOK
+			case "abort":
+				fmt.Fprintln(stdout, "aborted init; no files changed.")
+				return exitOK
+			}
+		} else {
+			fmt.Fprintln(stdout, "adding missing files only.")
+		}
+	}
+
+	intent := docstore.GuidedIntent{}
+	shouldPrompt := (forceInteractive || (usedPositionalTarget && !usedDirFlag && initInputIsTerminal())) && !assumeYes && len(requiredExisting) == 0
+	if shouldPrompt {
+		reader := bufio.NewReader(initInput)
+		answers, err := promptGuidedIntent(reader, stdout, filepath.Base(root))
+		if err != nil {
+			fmt.Fprintln(stderr, err)
 			return exitUsageError
 		}
+		if !confirmGuidedIntent(reader, stdout, answers) {
+			fmt.Fprintln(stdout, "aborted init; no files changed.")
+			return exitOK
+		}
+		intent = answers
 	}
 
 	result, err := docstore.InitWithOptions(dir, docstore.InitOptions{
@@ -894,6 +965,7 @@ func runInit(args []string, stdout io.Writer, stderr io.Writer) int {
 		ProductType:      productType,
 		DeliverySurfaces: surfaces,
 		InteractionMode:  interactionMode,
+		Intent:           intent,
 	})
 	if err != nil {
 		return failCommand(stdout, stderr, "init", err, false)
@@ -913,7 +985,134 @@ func runInit(args []string, stdout io.Writer, stderr io.Writer) int {
 	for _, path := range result.Existing {
 		fmt.Fprintf(stdout, "exists %s\n", path)
 	}
+	if shouldPrompt {
+		fmt.Fprintln(stdout, "guided init wrote initial intent draft; run ni status --proof --next-questions next.")
+	} else {
+		fmt.Fprintln(stdout, "next: use model-user planning conversation, then run ni status --proof --next-questions.")
+	}
 	return 0
+}
+
+func lockExists(root string) bool {
+	_, err := os.Stat(filepath.Join(root, ".ni", "plan.lock.json"))
+	return err == nil
+}
+
+func existingInitPaths(root string) []string {
+	var existing []string
+	for _, path := range docstore.RequiredPaths() {
+		if _, err := os.Stat(filepath.Join(root, path)); err == nil {
+			existing = append(existing, path)
+		}
+	}
+	return existing
+}
+
+func promptExistingInitChoice(input io.Reader, output io.Writer) (string, error) {
+	reader := bufio.NewReader(input)
+	for {
+		fmt.Fprint(output, "Choose: [m] add missing files only, [k] keep existing and exit, [a] abort: ")
+		line, err := reader.ReadString('\n')
+		if err != nil && len(line) == 0 {
+			return "", fmt.Errorf("init prompt canceled before choosing existing-file handling")
+		}
+		switch strings.ToLower(strings.TrimSpace(line)) {
+		case "", "m", "missing":
+			return "missing", nil
+		case "k", "keep":
+			return "keep", nil
+		case "a", "abort":
+			return "abort", nil
+		}
+		fmt.Fprintln(output, "Please enter m, k, or a.")
+	}
+}
+
+func promptGuidedIntent(reader *bufio.Reader, output io.Writer, defaultName string) (docstore.GuidedIntent, error) {
+	ask := func(label, fallback string) (string, error) {
+		if fallback != "" {
+			fmt.Fprintf(output, "%s [%s]: ", label, fallback)
+		} else {
+			fmt.Fprintf(output, "%s: ", label)
+		}
+		line, err := reader.ReadString('\n')
+		if err != nil && len(line) == 0 {
+			return "", fmt.Errorf("init prompt canceled at %q", label)
+		}
+		value := strings.TrimSpace(line)
+		if value == "" {
+			return fallback, nil
+		}
+		return value, nil
+	}
+
+	fmt.Fprintln(output, "Guided ni init: capture just enough project intent to start planning.")
+	fmt.Fprintln(output, "This does not run agents, execute shell commands, or decide readiness.")
+	projectName, err := ask("Project name", defaultName)
+	if err != nil {
+		return docstore.GuidedIntent{}, err
+	}
+	projectGoal, err := ask("One-sentence project goal", "")
+	if err != nil {
+		return docstore.GuidedIntent{}, err
+	}
+	targetUsers, err := ask("Target users / audience", "")
+	if err != nil {
+		return docstore.GuidedIntent{}, err
+	}
+	downstreamTask, err := ask("What downstream agent should eventually do", "")
+	if err != nil {
+		return docstore.GuidedIntent{}, err
+	}
+	constraints, err := ask("Constraints / non-goals", "Do not execute downstream work before the plan is locked.")
+	if err != nil {
+		return docstore.GuidedIntent{}, err
+	}
+	success, err := ask("Success criteria", "")
+	if err != nil {
+		return docstore.GuidedIntent{}, err
+	}
+	blockers, err := ask("Known blockers or open questions", "")
+	if err != nil {
+		return docstore.GuidedIntent{}, err
+	}
+	deferrals, err := ask("Deferrals, if any", "None recorded yet.")
+	if err != nil {
+		return docstore.GuidedIntent{}, err
+	}
+	return docstore.GuidedIntent{
+		ProjectName:         projectName,
+		ProjectGoal:         projectGoal,
+		TargetUsers:         targetUsers,
+		DownstreamAgentTask: downstreamTask,
+		ConstraintsNonGoals: constraints,
+		SuccessCriteria:     success,
+		KnownBlockers:       blockers,
+		Deferrals:           deferrals,
+	}, nil
+}
+
+func confirmGuidedIntent(reader *bufio.Reader, output io.Writer, intent docstore.GuidedIntent) bool {
+	fmt.Fprintln(output, "\nInit summary:")
+	fmt.Fprintf(output, "- project: %s\n", intent.ProjectName)
+	fmt.Fprintf(output, "- goal: %s\n", intent.ProjectGoal)
+	fmt.Fprintf(output, "- audience: %s\n", intent.TargetUsers)
+	fmt.Fprintf(output, "- downstream task: %s\n", intent.DownstreamAgentTask)
+	fmt.Fprintf(output, "- success criteria: %s\n", intent.SuccessCriteria)
+	for {
+		fmt.Fprint(output, "Write initial intent artifacts? [y/N]: ")
+		line, err := reader.ReadString('\n')
+		if err != nil && len(line) == 0 {
+			return false
+		}
+		switch strings.ToLower(strings.TrimSpace(line)) {
+		case "y", "yes":
+			return true
+		case "", "n", "no":
+			return false
+		}
+		fmt.Fprintln(output, "Please enter y or n.")
+	}
 }
 
 func runEnd(args []string, stdout io.Writer, stderr io.Writer) int {
@@ -1481,7 +1680,7 @@ Usage:
   ni harness validate <candidate-id> --evidence <path> [--dir <path>]
   ni harness accept <candidate-id> [--dir <path>]
   ni harness retire <candidate-id> [--dir <path>]
-  ni init --dir <path> [--profile concept|prototype|mvp|beta|production] [--product-type <type>] [--surface <surface>] [--interaction-mode <mode>]
+  ni init [.] [--dir <path>] [--interactive] [--yes] [--profile concept|prototype|mvp|beta|production] [--product-type <type>] [--surface <surface>] [--interaction-mode <mode>]
   ni pressure status [--dir <path>] [--json]
   ni pressure promote <id> [--dir <path>]
   ni pressure retire <id> [--dir <path>]

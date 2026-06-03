@@ -65,112 +65,16 @@ Planning conversation becomes explicit docs and a contract draft.
 `ni run` compiles a bounded prompt or seed from a valid locked plan. It does not
 execute shell commands, queues, agents, or downstream work.
 
-## Start in 60 seconds
+## Install
 
-Start from source when you are evaluating or developing from this checkout:
+README shows two primary first-success paths. Source, local build, Linux,
+release-archive, and advanced uninstall details live in
+[Install ni](docs/22_INSTALL.md).
 
-```bash
-go run ./cmd/ni --help
-go run ./cmd/ni init --dir ./my-plan --profile prototype
-go run ./cmd/ni status --dir ./my-plan
-```
+### macOS
 
-Use conversation to fill `./my-plan/docs/plan/**` and
-`./my-plan/.ni/contract.json`, then let the CLI make the authoritative call:
-
-```bash
-go run ./cmd/ni status --dir ./my-plan --next-questions
-go run ./cmd/ni end --dir ./my-plan
-go run ./cmd/ni run --dir ./my-plan --target generic --max-chars 4000
-```
-
-## First project in 5 minutes
-
-Use this flow to try `ni` safely without asking it to implement anything:
-
-1. Create a planning workspace.
-
-```bash
-go run ./cmd/ni init --dir ./my-plan --profile prototype
-```
-
-2. Have the model-user planning conversation before execution. The planning
-   workflow records purpose, actors, requirements, risks, evaluations,
-   non-goals, decisions, artifacts, and open questions in `docs/plan/**`,
-   `.ni/contract.json`, and `.ni/session.json`.
-
-3. Ask the CLI for the authoritative readiness proof.
-
-```bash
-go run ./cmd/ni status --dir ./my-plan --proof --next-questions
-```
-
-4. Resolve any `BLOCKED` questions or gaps in the planning conversation. A
-   model can draft updates, but `ni status` decides readiness.
-
-5. Lock only after the CLI reports the plan is ready.
-
-```bash
-go run ./cmd/ni end --dir ./my-plan
-```
-
-6. Compile a bounded downstream handoff prompt.
-
-```bash
-go run ./cmd/ni run --dir ./my-plan --target generic --max-chars 4000
-```
-
-`ni run` compiles the prompt from `.ni/plan.lock.json`; it does not execute the
-prompt, run agents, run shell commands, or prove product readiness.
-
-## Choose your path
-
-| Path | Status | Start with | Use it when |
-| --- | --- | --- | --- |
-| Source | Available | `go run ./cmd/ni --help` | You have Go and want the clearest development or evaluation path. |
-| Local binary | Available | `make build && ./bin/ni --help` | You want `./bin/ni` or a local install from this checkout. |
-| Release binary | Available | [v0.5.0 release](https://github.com/Nam-Cheol/ni/releases/tag/v0.5.0) | You want `ni` without Go and prefer manual checksum verification. |
-| Curl installer | Available | `sh install.sh --dry-run --version 0.5.0` | You want a small shell installer after inspecting the script. |
-| Model workspaces | Experimental | [Model Workspace Status](docs/99_MODEL_WORKSPACE_STATUS.md) | Use `ni-start`, `ni-grill`, `ni-end`, and `ni-run` guidance inside supported model workspaces. Skills are UX; the CLI is authority. Host-level/global install remains unverified unless documented. |
-| No-terminal method | Experimental | [No-Terminal Planning](docs/no-terminal.md) | You want assisted docs and contract drafting before a trusted runner produces CLI proof; model judgment is not a lock. |
-| Homebrew | Planned | [Homebrew Decision](docs/80_HOMEBREW_DECISION.md) | You prefer a package manager; implementation is deferred to v0.5 and no tap or formula is published or tested. |
-
-### Which path should I choose?
-
-Use Source if you have Go. Use Local binary if you want a repeatable binary
-from this checkout. Use Release binary if you want no-Go installation with
-manual checksum verification. Use Curl installer if you are comfortable
-inspecting a shell script first. Use Model workspaces for model-assisted
-planning, and No-terminal method only for assisted drafting until CLI proof
-exists. Wait for Homebrew if you require package-manager installation.
-
-Minimal curl installer check:
-
-```bash
-VERSION="0.5.0"
-curl -fsSLO https://raw.githubusercontent.com/Nam-Cheol/ni/main/install.sh
-sed -n '1,320p' install.sh
-sh install.sh --dry-run --version "$VERSION"
-```
-
-For complete source, local binary, release binary, and curl installer steps,
-see [Install ni](docs/22_INSTALL.md). For the manual release path, download
-the matching archive and `ni_0.5.0_checksums.txt` from the same v0.5.0 release,
-verify the archive checksum, extract it, and then run `ni --help` and
-`ni version` from a shell whose `PATH` includes the install directory.
-
-Release status: v0.5.0 release binaries are available after asset and checksum
-verification. The curl installer is available after verification against the
-real v0.5.0 release assets. Package-manager distribution, including Homebrew,
-is not available yet.
-
-## macOS install / uninstall
-
-Recommended verified path: use the v0.5.0 curl installer after inspecting it.
-By default, `install.sh` installs only the `ni` binary to
-`$HOME/.local/bin/ni`; set `BINDIR` to choose a different directory. If the
-install directory is not on `PATH`, rerun with `--update-path` to add a
-reversible zsh/bash profile block, or update your shell profile manually.
+Install the verified v0.5.0 release binary with the curl installer after
+inspecting it:
 
 ```bash
 VERSION="0.5.0"
@@ -180,11 +84,14 @@ sh install.sh --dry-run --version "$VERSION"
 BINDIR="$HOME/.local/bin" sh install.sh --update-path --version "$VERSION"
 ```
 
-Open a new terminal, then verify by command name:
+Open a new shell, then verify the global command and start a project:
 
 ```bash
 ni --help
 ni version
+mkdir my-project
+cd my-project
+ni init .
 ```
 
 Uninstall the installer-installed binary and the ni-managed PATH block, if one
@@ -194,17 +101,12 @@ was added:
 BINDIR="$HOME/.local/bin" sh install.sh --uninstall
 ```
 
-If you installed to another `BINDIR`, pass the same `BINDIR` during uninstall.
-If you manually added a `PATH` line, remove only the line you added for `ni`.
-Homebrew remains Planned / v0.5 candidate; do not use `brew install` for `ni`
-yet.
+Homebrew: Planned / v0.5 candidate. See docs for planned package-manager work.
 
-## Windows install / uninstall
+### Windows
 
-The Windows PowerShell installer installs `ni.exe` to
-`%LOCALAPPDATA%\ni\bin` by default and updates User PATH only. It does not
-modify System PATH, require admin by default, install model skills, or run
-downstream work. No MSI, winget, Chocolatey, Scoop, or Homebrew path is claimed.
+Install with the PowerShell installer, which installs to
+`%LOCALAPPDATA%\ni\bin` by default and updates User PATH only:
 
 ```powershell
 $Version = "0.5.0"
@@ -214,17 +116,16 @@ Get-Content .\install.ps1
 .\install.ps1 -Version $Version
 ```
 
-Open a new PowerShell session, then verify by command name:
+Open a new PowerShell session, then verify the global command and start a
+project:
 
 ```powershell
 ni --help
 ni version
+mkdir my-project
+cd my-project
+ni init .
 ```
-
-The release asset and checksum are verified in
-[v0.5.0 Post-Release Verification](docs/117_V0_5_0_POST_RELEASE_VERIFICATION.md),
-but execution on a real Windows host remains a manual verification boundary
-until a Windows install transcript exists.
 
 Uninstall the installer-installed binary and the User PATH entry added by `ni`:
 
@@ -232,16 +133,45 @@ Uninstall the installer-installed binary and the User PATH entry added by `ni`:
 .\install.ps1 -Uninstall
 ```
 
-The uninstall path removes only `%LOCALAPPDATA%\ni\bin\ni.exe`, removes the
-directory if empty, and removes only the matching `ni` User PATH entry.
+Windows installer code and static safety checks are present. Real-host Windows
+execution remains deferred on this macOS-only development host until a Windows
+install transcript exists.
 
-License: `ni` is licensed under the [MIT License](LICENSE).
+## First project in 5 minutes
+
+Use this flow to try `ni` safely without asking it to implement anything:
+
+```bash
+mkdir my-project
+cd my-project
+ni init .
+ni status --proof --next-questions
+ni end
+ni run --max-chars 4000
+```
+
+`ni init .` starts a guided project intent setup in the current directory. It
+initializes `.ni/contract.json`, `.ni/session.json`, and `docs/plan/**` without
+running agents or downstream work.
+
+`ni status --proof --next-questions` is the authoritative readiness check.
+Resolve any `BLOCKED` questions or gaps in the planning conversation. A model
+can draft updates, but `ni status` decides readiness.
+
+`ni end` locks the accepted plan only after the CLI reports it is ready and
+writes `.ni/plan.lock.json`.
+
+`ni run --max-chars 4000` compiles a bounded downstream handoff prompt from the
+fresh lock. It does not execute the prompt, run agents, run shell commands, or
+prove product readiness.
 
 See [Install ni](docs/22_INSTALL.md), [No-Terminal Planning](docs/no-terminal.md),
 [Model Workspace Status](docs/99_MODEL_WORKSPACE_STATUS.md),
 [Model Workspace Packs](docs/55_MODEL_WORKSPACE_PACKS.md), and
 [Model Pack Install Verification](docs/75_MODEL_PACK_INSTALL_VERIFICATION.md)
 for details.
+
+Model workspace packs: Experimental. Host-level/global install remains unverified unless documented. No-terminal method: Experimental / assisted. Skills are UX; CLI is authority.
 
 ## Demo
 
@@ -264,6 +194,8 @@ That result is the point. A vague request should stop before handoff. See the
 shell adapter, PR automation system, release automation system, or runtime for
 downstream work. The kernel owns planning contracts, readiness, lockfiles, hash
 checks, and prompt compilation.
+
+License: `ni` is licensed under the [MIT License](LICENSE).
 
 ## Read next
 

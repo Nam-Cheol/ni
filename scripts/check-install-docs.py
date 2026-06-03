@@ -33,18 +33,23 @@ INSTALL_EXPECTED = README_EXPECTED
 
 REQUIRED_MARKERS = {
     "README.md": [
-        "v0.5.0 release binaries are available",
-        "The curl installer is available after verification against the",
-        "including Homebrew, is not available yet",
-        "Host-level/global install remains unverified unless documented",
+        "README shows two primary first-success paths.",
+        "### macOS",
+        "### Windows",
+        "ni init .",
+        "Homebrew: Planned / v0.5 candidate",
+        "Real-host Windows execution remains deferred",
     ],
     "README.ko.md": [
-        "v0.5.0 release binaries는 asset과 checksum 검증 후 Available입니다",
-        "Curl installer는 실제 v0.5.0 release assets에 대해 검증된 뒤 Available입니다",
-        "Homebrew를 포함한 package-manager distribution은 아직 Available이 아닙니다",
-        "Host-level/global install은 documented되기 전까지 unverified",
+        "README는 첫 성공을 위한 두 가지 primary path만 보여줍니다.",
+        "### macOS",
+        "### Windows",
+        "ni init .",
+        "Homebrew: Planned / v0.5 candidate",
+        "실제 Windows host execution은",
     ],
     "docs/22_INSTALL.md": [
+        "README intentionally shows only two primary first-success paths:",
         "Every public install path has exactly one status:",
         "Release binary status: Available.",
         "Curl installer status: Available for verified v0.5.0 release assets.",
@@ -285,8 +290,6 @@ def check_forbidden_claims() -> None:
 
 
 def main() -> None:
-    for path in ["README.md", "README.ko.md"]:
-        check_expected_rows(path, README_EXPECTED)
     check_expected_rows("docs/22_INSTALL.md", INSTALL_EXPECTED)
     for path in ["docs/53_DISTRIBUTION_STRATEGY.md", "docs/53_DISTRIBUTION_STRATEGY.ko.md"]:
         check_expected_rows(path, DISTRIBUTION_EXPECTED)

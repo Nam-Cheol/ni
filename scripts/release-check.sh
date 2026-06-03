@@ -480,14 +480,14 @@ else:
 
 release_claim_markers = {
     "README.md": [
-        "v0.5.0 release binaries are available",
-        "The curl installer is available after verification against the",
-        "Package-manager distribution, including Homebrew,",
+        "README shows two primary first-success paths.",
+        "Homebrew: Planned / v0.5 candidate.",
+        "Windows installer code and static safety checks are present.",
     ],
     "README.ko.md": [
-        "v0.5.0 release binaries는 asset과 checksum 검증 후 Available입니다",
-        "Curl installer는 실제 v0.5.0 release assets에 대해 검증된 뒤 Available입니다",
-        "Homebrew를 포함한 package-manager distribution은 아직 Available이 아닙니다",
+        "README는 첫 성공을 위한 두 가지 primary path만 보여줍니다.",
+        "Homebrew: Planned / v0.5 candidate.",
+        "Windows installer code와 static safety checks는 있습니다.",
     ],
 }
 for label, text in {"README.md": readme, "README.ko.md": readme_ko}.items():

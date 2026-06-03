@@ -1,6 +1,7 @@
 package docstore
 
 import (
+	"encoding/json"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -27,6 +28,18 @@ type InitOptions struct {
 	ProductType      string
 	DeliverySurfaces []string
 	InteractionMode  string
+	Intent           GuidedIntent
+}
+
+type GuidedIntent struct {
+	ProjectName         string
+	ProjectGoal         string
+	TargetUsers         string
+	DownstreamAgentTask string
+	ConstraintsNonGoals string
+	SuccessCriteria     string
+	KnownBlockers       string
+	Deferrals           string
 }
 
 func Init(dir string) (Result, error) {
@@ -103,6 +116,22 @@ func RequiredPaths() []string {
 }
 
 func templateFiles(opts InitOptions) []templateFile {
+	guided := hasGuidedIntent(opts.Intent)
+	intent := withIntentDefaults(opts.Intent)
+	surfaces := opts.DeliverySurfaces
+	if len(surfaces) == 0 {
+		surfaces = contract.DefaultDeliverySurfaces(opts.ProductType)
+	}
+	surfaceText := markdownList(surfaces)
+	blockerTitle := intent.KnownBlockers
+	if blockerTitle == "TODO" {
+		blockerTitle = "TODO"
+	}
+	deferrals := intent.Deferrals
+	if deferrals == "TODO" {
+		deferrals = "None recorded yet."
+	}
+
 	planDocs := []templateFile{
 		{"docs/plan/00_project_brief.md", "# Project brief\n\n## Product type\n\nTODO\n\n## Delivery surfaces\n\n- TODO\n\n## Purpose\n\nTODO\n\n## Problem\n\nTODO\n\n## Success definition\n\nTODO\n"},
 		{"docs/plan/01_actors_outcomes.md", "# Actors and outcomes\n\n## Actors\n\n- User: TODO\n- Planning model: TODO\n- CLI: validates readiness and lock state.\n\n## Outcomes\n\n- TODO\n"},
@@ -117,6 +146,22 @@ func templateFiles(opts InitOptions) []templateFile {
 		{"docs/plan/10_open_questions.md", "# Open questions\n\n## OQ-001: TODO\n\nBlocker: true\n\nInitial assumption: TODO\n"},
 		{"docs/plan/11_decision_log.md", "# Decision log\n\n## DEC-001: TODO\n\nStatus: accepted\n\nRationale: TODO\n"},
 	}
+	if guided {
+		planDocs = []templateFile{
+			{"docs/plan/00_project_brief.md", fmt.Sprintf("# Project brief\n\n## Product type\n\n%s\n\n## Delivery surfaces\n\n%s\n\n## Purpose\n\n%s\n\n## Problem\n\nInitial guided init note: downstream work should wait until intent is explicit, checked, locked, and compiled into a bounded handoff prompt.\n\n## Success definition\n\n%s\n", opts.ProductType, surfaceText, intent.ProjectGoal, intent.SuccessCriteria)},
+			{"docs/plan/01_actors_outcomes.md", fmt.Sprintf("# Actors and outcomes\n\n## Actors\n\n- Target users / audience: %s\n- Planning model: drafts planning docs and contract updates from conversation.\n- CLI: validates readiness and lock state.\n\n## Outcomes\n\n- %s\n", intent.TargetUsers, intent.SuccessCriteria)},
+			{"docs/plan/02_capabilities.md", fmt.Sprintf("# Capabilities\n\n## CAP-001: %s\n\nThe downstream agent should eventually do this only after `ni status`, `ni end`, and `ni run` produce an authoritative bounded handoff.\n", intent.DownstreamAgentTask)},
+			{"docs/plan/03_interaction_contract.md", fmt.Sprintf("# Interaction contract\n\n## Interaction mode\n\n%s\n\n## Product interaction\n\nGuided init captured the first intent draft. Continued authoring happens through model-user planning conversation plus docs/plan/** and .ni/contract.json updates.\n\n## User control\n\nThe user decides whether ambiguous statements become accepted decisions. The CLI remains the authority for readiness, lock creation, and prompt compilation.\n", opts.InteractionMode)},
+			{"docs/plan/04_domain_state.md", "# Domain and state model\n\n## Core entities\n\n```text\nproject\ncontract\ncapability\nrequirement\ndecision\nrisk\nevaluation\nartifact\nopen question\nlockfile\nprompt\n```\n"},
+			{"docs/plan/05_constraints.md", fmt.Sprintf("# Constraints\n\n## Hard constraints\n\n- Readiness must be rule-based, not model-feeling-based.\n- Prompt output from `ni run` must be 4000 characters or less.\n- ni must not execute downstream work.\n\n## Constraints / non-goals from guided init\n\n%s\n", intent.ConstraintsNonGoals)},
+			{"docs/plan/06_risks_security.md", fmt.Sprintf("# Risks and security\n\n## RISK-001: %s\n\nSeverity: high\n\nMitigation: Keep the blocker visible in docs/plan/** and .ni/contract.json until the user resolves it in planning conversation.\n", blockerTitle)},
+			{"docs/plan/07_evaluation_contract.md", fmt.Sprintf("# Evaluation contract\n\n## EVAL-001: %s\n\nMethod: Review the locked plan against this success criterion before downstream handoff.\n", intent.SuccessCriteria)},
+			{"docs/plan/08_delivery_operation.md", fmt.Sprintf("# Delivery and operation\n\n## Delivery surfaces\n\n%s\n\n## Initial delivery\n\n%s\n\n## Operating model\n\n- Planning docs are committed to git.\n- Contract JSON is committed to git.\n- `ni run` compiles a bounded handoff prompt only; it does not execute downstream work.\n", surfaceText, intent.DownstreamAgentTask)},
+			{"docs/plan/09_execution_strategy.md", "# Execution strategy\n\n## v0 execution strategy\n\nDo not execute implementation automatically. Use `ni run` to compile a short prompt after the plan is locked.\n"},
+			{"docs/plan/10_open_questions.md", fmt.Sprintf("# Open questions\n\n## OQ-001: %s\n\nBlocker: true\n\nInitial assumption: %s\n\n## Deferrals\n\n%s\n", blockerTitle, blockerTitle, deferrals)},
+			{"docs/plan/11_decision_log.md", "# Decision log\n\n## DEC-001: Compile intent before downstream handoff\n\nStatus: accepted\n\nRationale: ni is a pre-runtime Project Intent Compiler. Planning must pass `ni status`, `ni end`, and `ni run` before downstream actors receive a handoff prompt.\n"},
+		}
+	}
 
 	files := make([]templateFile, 0, len(planDocs)+6)
 	files = append(files, planDocs...)
@@ -130,6 +175,45 @@ func templateFiles(opts InitOptions) []templateFile {
 		templateFile{".ni/readiness.profiles.json", readinessProfilesJSON},
 	)
 	return files
+}
+
+func withIntentDefaults(intent GuidedIntent) GuidedIntent {
+	intent.ProjectName = todoIfBlank(intent.ProjectName)
+	intent.ProjectGoal = todoIfBlank(intent.ProjectGoal)
+	intent.TargetUsers = todoIfBlank(intent.TargetUsers)
+	intent.DownstreamAgentTask = todoIfBlank(intent.DownstreamAgentTask)
+	intent.ConstraintsNonGoals = todoIfBlank(intent.ConstraintsNonGoals)
+	intent.SuccessCriteria = todoIfBlank(intent.SuccessCriteria)
+	intent.KnownBlockers = todoIfBlank(intent.KnownBlockers)
+	intent.Deferrals = todoIfBlank(intent.Deferrals)
+	return intent
+}
+
+func hasGuidedIntent(intent GuidedIntent) bool {
+	return strings.TrimSpace(intent.ProjectName) != "" ||
+		strings.TrimSpace(intent.ProjectGoal) != "" ||
+		strings.TrimSpace(intent.TargetUsers) != "" ||
+		strings.TrimSpace(intent.DownstreamAgentTask) != "" ||
+		strings.TrimSpace(intent.ConstraintsNonGoals) != "" ||
+		strings.TrimSpace(intent.SuccessCriteria) != "" ||
+		strings.TrimSpace(intent.KnownBlockers) != "" ||
+		strings.TrimSpace(intent.Deferrals) != ""
+}
+
+func todoIfBlank(value string) string {
+	value = strings.TrimSpace(value)
+	if value == "" {
+		return "TODO"
+	}
+	return value
+}
+
+func markdownList(values []string) string {
+	var b strings.Builder
+	for _, value := range values {
+		fmt.Fprintf(&b, "- %s\n", value)
+	}
+	return strings.TrimRight(b.String(), "\n")
 }
 
 const projectJSON = `{
@@ -187,23 +271,160 @@ const sessionJSON = `{
 `
 
 func contractJSON(opts InitOptions) string {
-	return fmt.Sprintf(contractJSONTemplate, opts.ReadinessProfile, opts.ProductType, quoteStrings(opts.DeliverySurfaces), opts.InteractionMode)
+	if !hasGuidedIntent(opts.Intent) {
+		return fmt.Sprintf(defaultContractJSONTemplate, jsonString(opts.ReadinessProfile), jsonString(opts.ProductType), quoteStrings(opts.DeliverySurfaces), jsonString(opts.InteractionMode))
+	}
+	intent := withIntentDefaults(opts.Intent)
+	return fmt.Sprintf(
+		contractJSONTemplate,
+		jsonString(opts.ReadinessProfile),
+		jsonString(opts.ProductType),
+		quoteStrings(opts.DeliverySurfaces),
+		jsonString(opts.InteractionMode),
+		jsonString(slugID(intent.ProjectName)),
+		jsonString(intent.ProjectName),
+		jsonString(intent.ProjectGoal),
+		jsonString(intent.ConstraintsNonGoals),
+		jsonString(intent.DownstreamAgentTask),
+		jsonString(intent.SuccessCriteria),
+		jsonString(intent.KnownBlockers),
+		jsonString(intent.SuccessCriteria),
+		jsonString(intent.KnownBlockers),
+	)
 }
 
 func quoteStrings(values []string) string {
 	quoted := make([]string, 0, len(values))
 	for _, value := range values {
-		quoted = append(quoted, fmt.Sprintf("%q", value))
+		quoted = append(quoted, jsonString(value))
 	}
 	return strings.Join(quoted, ", ")
 }
 
+func jsonString(value string) string {
+	data, err := json.Marshal(value)
+	if err != nil {
+		return "\"TODO\""
+	}
+	return string(data)
+}
+
+func slugID(value string) string {
+	value = strings.ToLower(strings.TrimSpace(value))
+	if value == "" || value == "todo" {
+		return "todo"
+	}
+	var b strings.Builder
+	lastDash := false
+	for _, r := range value {
+		if (r >= 'a' && r <= 'z') || (r >= '0' && r <= '9') {
+			b.WriteRune(r)
+			lastDash = false
+			continue
+		}
+		if !lastDash {
+			b.WriteByte('-')
+			lastDash = true
+		}
+	}
+	slug := strings.Trim(b.String(), "-")
+	if slug == "" {
+		return "todo"
+	}
+	return slug
+}
+
 const contractJSONTemplate = `{
   "schema": "ni.contract.v0",
-  "readiness_profile": %q,
-  "product_type": %q,
+  "readiness_profile": %s,
+  "product_type": %s,
   "delivery_surfaces": [%s],
-  "interaction_mode": %q,
+  "interaction_mode": %s,
+  "project": {
+    "id": %s,
+    "name": %s,
+    "purpose": %s,
+    "status": "draft"
+  },
+  "non_goals": [
+    {
+      "id": "NG-001",
+      "title": %s
+    }
+  ],
+  "capabilities": [
+    {
+      "id": "CAP-001",
+      "title": %s,
+      "status": "accepted",
+      "requirements": [
+        "REQ-001"
+      ],
+      "evaluations": [
+        "EVAL-001"
+      ],
+      "risks": [
+        "RISK-001"
+      ],
+      "artifacts": [
+        "ART-001"
+      ]
+    }
+  ],
+  "requirements": [
+    {
+      "id": "REQ-001",
+      "title": %s,
+      "status": "accepted"
+    }
+  ],
+  "decisions": [
+    {
+      "id": "DEC-001",
+      "title": "Compile intent before downstream handoff",
+      "status": "accepted"
+    }
+  ],
+  "risks": [
+    {
+      "id": "RISK-001",
+      "title": %s,
+      "severity": "high",
+      "status": "accepted",
+      "mitigation": "Keep the blocker visible in docs/plan/** and .ni/contract.json until the user resolves it in planning conversation."
+    }
+  ],
+  "evaluations": [
+    {
+      "id": "EVAL-001",
+      "title": %s,
+      "method": "Review the locked plan against this success criterion before downstream handoff."
+    }
+  ],
+  "artifacts": [
+    {
+      "id": "ART-001",
+      "path": "docs/plan/",
+      "kind": "planning_docs"
+    }
+  ],
+  "open_questions": [
+    {
+      "id": "OQ-001",
+      "title": %s,
+      "blocker": true,
+      "status": "open"
+    }
+  ]
+}
+`
+
+const defaultContractJSONTemplate = `{
+  "schema": "ni.contract.v0",
+  "readiness_profile": %s,
+  "product_type": %s,
+  "delivery_surfaces": [%s],
+  "interaction_mode": %s,
   "project": {
     "id": "todo",
     "name": "TODO",

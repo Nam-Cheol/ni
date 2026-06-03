@@ -65,112 +65,16 @@ Planning conversation은 explicit docs와 contract draft가 됩니다.
 `ni run`은 valid locked plan에서 bounded prompt 또는 seed를 compile합니다.
 Shell commands, queues, agents, downstream work는 실행하지 않습니다.
 
-## 60초 시작
+## Install
 
-이 checkout에서 평가하거나 개발할 때는 source로 시작하세요:
+README는 첫 성공을 위한 두 가지 primary path만 보여줍니다. Source, local build,
+Linux, release archive, advanced uninstall details는
+[Install ni](docs/22_INSTALL.md)에 있습니다.
 
-```bash
-go run ./cmd/ni --help
-go run ./cmd/ni init --dir ./my-plan --profile prototype
-go run ./cmd/ni status --dir ./my-plan
-```
+### macOS
 
-conversation으로 `./my-plan/docs/plan/**`과 `./my-plan/.ni/contract.json`을
-채운 뒤, authoritative call은 CLI에 맡깁니다:
-
-```bash
-go run ./cmd/ni status --dir ./my-plan --next-questions
-go run ./cmd/ni end --dir ./my-plan
-go run ./cmd/ni run --dir ./my-plan --target generic --max-chars 4000
-```
-
-## 5분 첫 project
-
-`ni`가 무엇을 구현하게 하지 않고 안전하게 시험하려면 이 flow를 사용하세요:
-
-1. Planning workspace를 만듭니다.
-
-```bash
-go run ./cmd/ni init --dir ./my-plan --profile prototype
-```
-
-2. 실행 전에 model-user planning conversation을 진행합니다. Planning workflow는
-   purpose, actors, requirements, risks, evaluations, non-goals, decisions,
-   artifacts, open questions를 `docs/plan/**`, `.ni/contract.json`,
-   `.ni/session.json`에 기록하거나 업데이트합니다.
-
-3. CLI에 authoritative readiness proof를 요청합니다.
-
-```bash
-go run ./cmd/ni status --dir ./my-plan --proof --next-questions
-```
-
-4. `BLOCKED` questions나 gaps가 있으면 planning conversation에서 해결합니다.
-   Model은 update를 draft할 수 있지만 readiness는 `ni status`가 결정합니다.
-
-5. CLI가 plan ready를 보고한 뒤에만 lock합니다.
-
-```bash
-go run ./cmd/ni end --dir ./my-plan
-```
-
-6. Bounded downstream handoff prompt를 compile합니다.
-
-```bash
-go run ./cmd/ni run --dir ./my-plan --target generic --max-chars 4000
-```
-
-`ni run`은 `.ni/plan.lock.json`에서 prompt를 compile합니다. Prompt를 실행하거나,
-agents, shell commands, downstream work를 실행하지 않으며 product readiness를
-증명하지 않습니다.
-
-## Choose your path
-
-| Path | Status | Start with | Use it when |
-| --- | --- | --- | --- |
-| Source | Available | `go run ./cmd/ni --help` | Go가 있고 development 또는 evaluation을 가장 투명하게 시작하고 싶을 때. |
-| Local binary | Available | `make build && ./bin/ni --help` | 이 checkout에서 `./bin/ni` 또는 local install을 원할 때. |
-| Release binary | Available | [v0.5.0 release](https://github.com/Nam-Cheol/ni/releases/tag/v0.5.0) | Go 없이 설치하고 checksum을 직접 검증하고 싶을 때. |
-| Curl installer | Available | `sh install.sh --dry-run --version 0.5.0` | Script를 먼저 inspect한 뒤 작은 shell installer를 쓰고 싶을 때. |
-| Model workspaces | Experimental | [Model Workspace Status](docs/99_MODEL_WORKSPACE_STATUS.ko.md) | Supported model workspace 안에서 `ni-start`, `ni-grill`, `ni-end`, `ni-run` guidance를 사용한다. Skills are UX; the CLI is authority. Host-level/global install은 documented되기 전까지 unverified이다. |
-| No-terminal method | Experimental | [터미널 없이 계획하기](docs/no-terminal.ko.md) | Trusted runner가 CLI proof를 만들기 전 docs와 contract assisted drafting을 하고 싶을 때; model judgment는 lock이 아닙니다. |
-| Homebrew | Planned | [Homebrew Decision](docs/80_HOMEBREW_DECISION.ko.md) | Package manager를 선호할 때; implementation은 v0.5로 defer되었고 published 또는 tested tap/formula는 없습니다. |
-
-### Which path should I choose?
-
-Go가 있으면 Source를 고르세요. 이 checkout에서 반복 가능한 binary를 원하면
-Local binary가 맞습니다. Go 없이 직접 checksum을 검증하고 싶으면 Release
-binary를, shell script를 먼저 inspect할 수 있으면 Curl installer를 고르세요.
-Model-assisted planning에는 Model workspaces를 사용하고, No-terminal method는
-CLI proof가 생기기 전 assisted drafting 용도로만 사용하세요. Package-manager
-install이 필수라면 Homebrew를 기다려야 합니다.
-
-Minimal curl installer check:
-
-```bash
-VERSION="0.5.0"
-curl -fsSLO https://raw.githubusercontent.com/Nam-Cheol/ni/main/install.sh
-sed -n '1,320p' install.sh
-sh install.sh --dry-run --version "$VERSION"
-```
-
-Source, local binary, release binary, curl installer의 전체 절차는
-[Install ni](docs/22_INSTALL.md)를 참고하세요. Manual release path는 같은
-v0.5.0 release에서 matching archive와 `ni_0.5.0_checksums.txt`를 download하고,
-archive checksum을 verify하고, 압축을 해제한 뒤 `ni --help`와 `ni version`을
-install directory가 `PATH`에 포함된 shell에서 실행하는 것이다.
-
-Release status: v0.5.0 release binaries는 asset과 checksum 검증 후 Available입니다.
-Curl installer는 실제 v0.5.0 release assets에 대해 검증된 뒤 Available입니다.
-Homebrew를 포함한 package-manager distribution은 아직 Available이 아닙니다.
-
-## macOS install / uninstall
-
-권장 verified path는 v0.5.0 curl installer를 inspect한 뒤 사용하는 것입니다.
-`install.sh`는 기본적으로 `ni` binary만 `$HOME/.local/bin/ni`에 설치합니다.
-다른 directory를 쓰려면 `BINDIR`를 지정합니다. Install directory가 `PATH`에
-없으면 `--update-path`로 reversible zsh/bash profile block을 추가하거나 shell
-profile을 직접 업데이트합니다.
+Verified v0.5.0 release binary를 curl installer로 설치합니다. 설치 전 script를
+먼저 inspect합니다:
 
 ```bash
 VERSION="0.5.0"
@@ -180,29 +84,29 @@ sh install.sh --dry-run --version "$VERSION"
 BINDIR="$HOME/.local/bin" sh install.sh --update-path --version "$VERSION"
 ```
 
-새 terminal을 연 뒤 command name으로 verify합니다:
+새 shell을 연 뒤 global command를 verify하고 project를 시작합니다:
 
 ```bash
 ni --help
 ni version
+mkdir my-project
+cd my-project
+ni init .
 ```
 
-Installer로 설치된 binary와, 추가했다면 ni-managed PATH block을 uninstall합니다:
+Installer로 설치한 binary와, 추가했다면 ni-managed PATH block을 uninstall합니다:
 
 ```bash
 BINDIR="$HOME/.local/bin" sh install.sh --uninstall
 ```
 
-다른 `BINDIR`에 설치했다면 uninstall 때도 같은 `BINDIR`를 전달하세요. 직접
-`PATH` line을 추가했다면 `ni`를 위해 추가한 line만 제거하세요. Homebrew:
-Planned / v0.5 candidate 상태이므로 아직 `brew install`을 사용하지 않습니다.
+Homebrew: Planned / v0.5 candidate. Planned package-manager work는 docs를
+참고하세요.
 
-## Windows install / uninstall
+### Windows
 
-Windows PowerShell installer는 기본적으로 `%LOCALAPPDATA%\ni\bin`에 `ni.exe`를
-설치하고 User PATH만 업데이트합니다. System PATH를 수정하지 않고, default로 admin을
-요구하지 않으며, model skills를 install하거나 downstream work를 실행하지 않습니다.
-MSI, winget, Chocolatey, Scoop, Homebrew path는 claim하지 않습니다.
+PowerShell installer는 기본적으로 `%LOCALAPPDATA%\ni\bin`에 설치하고 User PATH만
+업데이트합니다:
 
 ```powershell
 $Version = "0.5.0"
@@ -212,29 +116,53 @@ Get-Content .\install.ps1
 .\install.ps1 -Version $Version
 ```
 
-새 PowerShell session을 연 뒤 command name으로 verify합니다:
+새 PowerShell session을 연 뒤 global command를 verify하고 project를 시작합니다:
 
 ```powershell
 ni --help
 ni version
+mkdir my-project
+cd my-project
+ni init .
 ```
 
-Release asset과 checksum은
-[v0.5.0 Post-Release Verification](docs/117_V0_5_0_POST_RELEASE_VERIFICATION.ko.md)에서
-검증되었지만, 실제 Windows host execution은 manual verification boundary로
-남아 있습니다. Windows install transcript가 생기기 전까지 Windows execution
-verified라고 claim하지 않습니다.
-
-Installer로 설치된 binary와 `ni`가 추가한 User PATH entry를 uninstall합니다:
+Installer로 설치한 binary와 `ni`가 추가한 User PATH entry를 uninstall합니다:
 
 ```powershell
 .\install.ps1 -Uninstall
 ```
 
-Uninstall path는 `%LOCALAPPDATA%\ni\bin\ni.exe`만 제거하고, directory가 비어 있으면
-그 directory를 제거하며, matching `ni` User PATH entry만 제거합니다.
+Windows installer code와 static safety checks는 있습니다. 실제 Windows host
+execution은 macOS-only development host에서는 deferred 상태이며 Windows install
+transcript가 생기기 전까지 verified라고 claim하지 않습니다.
 
-License: `ni`는 [MIT License](LICENSE)로 배포됩니다.
+## 5분 첫 project
+
+`ni`가 무엇을 구현하게 하지 않고 안전하게 시험하려면 이 flow를 사용하세요:
+
+```bash
+mkdir my-project
+cd my-project
+ni init .
+ni status --proof --next-questions
+ni end
+ni run --max-chars 4000
+```
+
+`ni init .`은 current directory에서 guided project intent setup을 시작합니다.
+Agents나 downstream work를 실행하지 않고 `.ni/contract.json`, `.ni/session.json`,
+`docs/plan/**`을 초기화합니다.
+
+`ni status --proof --next-questions`는 authoritative readiness check입니다.
+`BLOCKED` questions나 gaps가 있으면 planning conversation에서 해결합니다. Model은
+update를 draft할 수 있지만 readiness는 `ni status`가 결정합니다.
+
+`ni end`는 CLI가 ready를 보고한 뒤 accepted plan을 lock하고
+`.ni/plan.lock.json`을 씁니다.
+
+`ni run --max-chars 4000`은 fresh lock에서 bounded downstream handoff prompt를
+compile합니다. Prompt, agents, shell commands, downstream work를 실행하지 않고
+product readiness를 증명하지 않습니다.
 
 자세한 내용은 [Install ni](docs/22_INSTALL.md),
 [터미널 없이 계획하기](docs/no-terminal.ko.md),
@@ -242,6 +170,8 @@ License: `ni`는 [MIT License](LICENSE)로 배포됩니다.
 [Model Workspace Packs](docs/55_MODEL_WORKSPACE_PACKS.md),
 [Model Pack Install Verification](docs/75_MODEL_PACK_INSTALL_VERIFICATION.ko.md)를
 참고하세요.
+
+Model workspace packs: Experimental. Host-level/global install은 documented되기 전까지 unverified입니다. No-terminal method: Experimental / assisted. Skills are UX; CLI is authority.
 
 ## Demo
 
@@ -265,6 +195,8 @@ BLOCKED
 adapter, PR automation system, release automation system, downstream work
 runtime이 아닙니다. kernel은 planning contracts, readiness, lockfiles, hash
 checks, prompt compilation을 소유합니다.
+
+License: `ni`는 [MIT License](LICENSE)로 배포됩니다.
 
 ## 다음에 읽을 것
 

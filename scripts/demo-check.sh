@@ -4,6 +4,8 @@ set -euo pipefail
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 DEMO_TMP="$(mktemp -d "${TMPDIR:-/tmp}/ni-demo-check.XXXXXX")"
 
+export GOCACHE="${GOCACHE:-$DEMO_TMP/go-cache}"
+
 trap 'rm -rf "$DEMO_TMP"' EXIT
 
 cd "$ROOT"

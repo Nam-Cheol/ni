@@ -12,6 +12,18 @@ Source and local build paths require:
 - Go 1.22 or newer.
 - Git, if you want builds to include a git-derived version string.
 
+## Primary README Paths
+
+README intentionally shows only two primary first-success paths:
+
+| Platform | Primary path | Verify | First project | Uninstall |
+| --- | --- | --- | --- | --- |
+| macOS | Inspect `install.sh`, dry-run it, then install v0.5.0 with `BINDIR="$HOME/.local/bin" sh install.sh --update-path --version "$VERSION"`. | Open a new shell and run `ni --help` and `ni version`. | `mkdir my-project`, `cd my-project`, `ni init .` | `BINDIR="$HOME/.local/bin" sh install.sh --uninstall` |
+| Windows | Inspect `install.ps1`, dry-run it, then run `.\install.ps1 -Version $Version`. | Open a new PowerShell session and run `ni --help` and `ni version`. | `mkdir my-project`, `cd my-project`, `ni init .` | `.\install.ps1 -Uninstall` |
+
+These paths prove global command-name resolution first. They do not run agents,
+execute generated prompts, or prove downstream implementation readiness.
+
 ## Install Path Status
 
 Every public install path has exactly one status:
@@ -25,6 +37,9 @@ Every public install path has exactly one status:
 | Homebrew | Planned | No tap or formula is published or tested. |
 | Model workspaces | Experimental | Repo-local model assistance can draft docs; the CLI remains authority. |
 | No-terminal method | Experimental | Assisted planning only; deterministic validation still requires CLI proof. |
+
+Homebrew: Planned / v0.5 candidate. Package-manager work is documented as a
+planned path only; do not present Homebrew as an available README install path.
 
 ## Run from source
 

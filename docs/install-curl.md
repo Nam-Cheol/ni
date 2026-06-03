@@ -41,6 +41,15 @@ ni --help
 ni version
 ```
 
+After global command verification, start a planning workspace from the project
+directory:
+
+```bash
+mkdir my-project
+cd my-project
+ni init .
+```
+
 Uninstall the binary and the ni-managed PATH block, if one was added:
 
 ```bash

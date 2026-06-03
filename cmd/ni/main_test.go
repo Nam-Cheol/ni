@@ -67,6 +67,163 @@ func TestInit(t *testing.T) {
 	}
 }
 
+func TestInitCurrentDirectoryTarget(t *testing.T) {
+	dir := t.TempDir()
+	t.Chdir(dir)
+	var stdout bytes.Buffer
+
+	code := run([]string{"init", ".", "--yes"}, &stdout, &bytes.Buffer{})
+	if code != 0 {
+		t.Fatalf("expected exit code 0, got %d", code)
+	}
+	if _, err := os.Stat(filepath.Join(dir, ".ni", "contract.json")); err != nil {
+		t.Fatalf("expected current directory contract: %v", err)
+	}
+	if !strings.Contains(stdout.String(), "initialized ni planning workspace at .") {
+		t.Fatalf("expected current directory init summary, got %q", stdout.String())
+	}
+}
+
+func TestInitNonInteractiveBehaviorIsStable(t *testing.T) {
+	dir := t.TempDir()
+	var stdout bytes.Buffer
+	oldTerminal := initInputIsTerminal
+	initInputIsTerminal = func() bool { return false }
+	t.Cleanup(func() { initInputIsTerminal = oldTerminal })
+
+	code := run([]string{"init", "--dir", dir}, &stdout, &bytes.Buffer{})
+	if code != 0 {
+		t.Fatalf("expected exit code 0, got %d", code)
+	}
+	if strings.Contains(stdout.String(), "Guided ni init") {
+		t.Fatalf("non-interactive init should not prompt, got %q", stdout.String())
+	}
+	if !strings.Contains(stdout.String(), "next: use model-user planning conversation") {
+		t.Fatalf("expected non-interactive next step, got %q", stdout.String())
+	}
+}
+
+func TestInitInteractiveFlowFromStdin(t *testing.T) {
+	dir := t.TempDir()
+	var stdout bytes.Buffer
+	oldInput := initInput
+	oldTerminal := initInputIsTerminal
+	initInput = strings.NewReader(strings.Join([]string{
+		"Inventory Planner",
+		"Plan a small inventory workflow before implementation.",
+		"Store operators",
+		"Generate an implementation handoff prompt.",
+		"Do not connect to production systems.",
+		"Operators can review a locked plan.",
+		"Confirm sample data ownership.",
+		"Windows host verification deferred.",
+		"y",
+	}, "\n") + "\n")
+	initInputIsTerminal = func() bool { return false }
+	t.Cleanup(func() {
+		initInput = oldInput
+		initInputIsTerminal = oldTerminal
+	})
+
+	code := run([]string{"init", "--dir", dir, "--interactive"}, &stdout, &bytes.Buffer{})
+	if code != 0 {
+		t.Fatalf("expected exit code 0, got %d\n%s", code, stdout.String())
+	}
+	data, err := os.ReadFile(filepath.Join(dir, ".ni", "contract.json"))
+	if err != nil {
+		t.Fatalf("reading contract: %v", err)
+	}
+	if !strings.Contains(string(data), `"name": "Inventory Planner"`) {
+		t.Fatalf("expected guided project name in contract, got %q", string(data))
+	}
+	if !strings.Contains(string(data), `"title": "Generate an implementation handoff prompt."`) {
+		t.Fatalf("expected guided capability in contract, got %q", string(data))
+	}
+	brief, err := os.ReadFile(filepath.Join(dir, "docs", "plan", "00_project_brief.md"))
+	if err != nil {
+		t.Fatalf("reading project brief: %v", err)
+	}
+	if !strings.Contains(string(brief), "Plan a small inventory workflow before implementation.") {
+		t.Fatalf("expected guided purpose in brief, got %q", string(brief))
+	}
+	if !strings.Contains(stdout.String(), "guided init wrote initial intent draft") {
+		t.Fatalf("expected guided init summary, got %q", stdout.String())
+	}
+}
+
+func TestInitDoesNotSilentlyOverwriteExistingFiles(t *testing.T) {
+	dir := t.TempDir()
+	existingPath := filepath.Join(dir, ".ni", "contract.json")
+	if err := os.MkdirAll(filepath.Dir(existingPath), 0o755); err != nil {
+		t.Fatalf("creating contract dir: %v", err)
+	}
+	if err := os.WriteFile(existingPath, []byte("existing contract\n"), 0o644); err != nil {
+		t.Fatalf("writing existing contract: %v", err)
+	}
+	var stdout bytes.Buffer
+
+	code := run([]string{"init", "--dir", dir}, &stdout, &bytes.Buffer{})
+	if code != 0 {
+		t.Fatalf("expected exit code 0, got %d", code)
+	}
+	data, err := os.ReadFile(existingPath)
+	if err != nil {
+		t.Fatalf("reading existing contract: %v", err)
+	}
+	if string(data) != "existing contract\n" {
+		t.Fatalf("existing contract was overwritten: %q", string(data))
+	}
+	if !strings.Contains(stdout.String(), "existing ni planning files found") {
+		t.Fatalf("expected existing-file warning, got %q", stdout.String())
+	}
+	if !strings.Contains(stdout.String(), "adding missing files only") {
+		t.Fatalf("expected missing-only message, got %q", stdout.String())
+	}
+}
+
+func TestInitDoesNotModifyExistingLockfile(t *testing.T) {
+	dir := t.TempDir()
+	lockPath := filepath.Join(dir, ".ni", "plan.lock.json")
+	if err := os.MkdirAll(filepath.Dir(lockPath), 0o755); err != nil {
+		t.Fatalf("creating lock dir: %v", err)
+	}
+	original := []byte(`{"locked":true}` + "\n")
+	if err := os.WriteFile(lockPath, original, 0o644); err != nil {
+		t.Fatalf("writing lockfile: %v", err)
+	}
+	var stdout bytes.Buffer
+
+	code := run([]string{"init", "--dir", dir}, &stdout, &bytes.Buffer{})
+	if code != 0 {
+		t.Fatalf("expected exit code 0, got %d", code)
+	}
+	data, err := os.ReadFile(lockPath)
+	if err != nil {
+		t.Fatalf("reading lockfile: %v", err)
+	}
+	if !bytes.Equal(data, original) {
+		t.Fatalf("lockfile changed: %q", string(data))
+	}
+	if _, err := os.Stat(filepath.Join(dir, ".ni", "contract.json")); !os.IsNotExist(err) {
+		t.Fatalf("init should not create contract in locked project, stat err=%v", err)
+	}
+	if !strings.Contains(stdout.String(), "already exists; this project is already locked") {
+		t.Fatalf("expected lock warning, got %q", stdout.String())
+	}
+}
+
+func TestInitDoesNotCreateDownstreamExecutionArtifacts(t *testing.T) {
+	dir := t.TempDir()
+	if code := run([]string{"init", "--dir", dir}, &bytes.Buffer{}, &bytes.Buffer{}); code != 0 {
+		t.Fatalf("expected exit code 0, got %d", code)
+	}
+	for _, path := range []string{".ni/plan.lock.json", ".ni/generated", ".ni/run.log"} {
+		if _, err := os.Stat(filepath.Join(dir, path)); !os.IsNotExist(err) {
+			t.Fatalf("init should not create downstream or lock artifact %s, stat err=%v", path, err)
+		}
+	}
+}
+
 func TestInitWithProfile(t *testing.T) {
 	dir := t.TempDir()
 	var stdout bytes.Buffer
