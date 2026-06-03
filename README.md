@@ -129,8 +129,8 @@ prompt, run agents, run shell commands, or prove product readiness.
 | --- | --- | --- | --- |
 | Source | Available | `go run ./cmd/ni --help` | You have Go and want the clearest development or evaluation path. |
 | Local binary | Available | `make build && ./bin/ni --help` | You want `./bin/ni` or a local install from this checkout. |
-| Release binary | Available | [v0.4.0 release](https://github.com/Nam-Cheol/ni/releases/tag/v0.4.0) | You want `ni` without Go and prefer manual checksum verification. |
-| Curl installer | Available | `sh install.sh --dry-run --version 0.4.0` | You want a small shell installer after inspecting the script. |
+| Release binary | Available | [v0.5.0 release](https://github.com/Nam-Cheol/ni/releases/tag/v0.5.0) | You want `ni` without Go and prefer manual checksum verification. |
+| Curl installer | Available | `sh install.sh --dry-run --version 0.5.0` | You want a small shell installer after inspecting the script. |
 | Model workspaces | Experimental | [Model Workspace Status](docs/99_MODEL_WORKSPACE_STATUS.md) | Use `ni-start`, `ni-grill`, `ni-end`, and `ni-run` guidance inside supported model workspaces. Skills are UX; the CLI is authority. Host-level/global install remains unverified unless documented. |
 | No-terminal method | Experimental | [No-Terminal Planning](docs/no-terminal.md) | You want assisted docs and contract drafting before a trusted runner produces CLI proof; model judgment is not a lock. |
 | Homebrew | Planned | [Homebrew Decision](docs/80_HOMEBREW_DECISION.md) | You prefer a package manager; implementation is deferred to v0.5 and no tap or formula is published or tested. |
@@ -147,7 +147,7 @@ exists. Wait for Homebrew if you require package-manager installation.
 Minimal curl installer check:
 
 ```bash
-VERSION="0.4.0"
+VERSION="0.5.0"
 curl -fsSLO https://raw.githubusercontent.com/Nam-Cheol/ni/main/install.sh
 sed -n '1,320p' install.sh
 sh install.sh --dry-run --version "$VERSION"
@@ -155,23 +155,23 @@ sh install.sh --dry-run --version "$VERSION"
 
 For complete source, local binary, release binary, and curl installer steps,
 see [Install ni](docs/22_INSTALL.md). For the manual release path, download
-the matching archive and `ni_0.4.0_checksums.txt` from the same v0.4.0 release,
+the matching archive and `ni_0.5.0_checksums.txt` from the same v0.5.0 release,
 verify the archive checksum, extract it, and then run `ni --help` and
 `ni version`.
 
-Release status: v0.4.0 release binaries are available after asset and checksum
+Release status: v0.5.0 release binaries are available after asset and checksum
 verification. The curl installer is available after verification against the
-real v0.4.0 release assets. Package-manager distribution, including Homebrew,
+real v0.5.0 release assets. Package-manager distribution, including Homebrew,
 is not available yet.
 
 ## macOS install / uninstall
 
-Recommended verified path: use the v0.4.0 curl installer after inspecting it.
+Recommended verified path: use the v0.5.0 curl installer after inspecting it.
 By default, `install.sh` installs only the `ni` binary to
 `$HOME/.local/bin/ni`; set `BINDIR` to choose a different directory.
 
 ```bash
-VERSION="0.4.0"
+VERSION="0.5.0"
 curl -fsSLO https://raw.githubusercontent.com/Nam-Cheol/ni/main/install.sh
 sed -n '1,320p' install.sh
 sh install.sh --dry-run --version "$VERSION"
@@ -196,11 +196,11 @@ for `ni` yet.
 ## Windows install / uninstall
 
 Verified public Windows package-manager installers are not documented yet. The
-currently documented Windows path is the v0.4.0 release binary archive for
+currently documented Windows path is the v0.5.0 release binary archive for
 `windows/amd64`; no MSI, winget, Chocolatey, Scoop, or Homebrew path is claimed.
 
 ```powershell
-$Version = "0.4.0"
+$Version = "0.5.0"
 Invoke-WebRequest "https://github.com/Nam-Cheol/ni/releases/download/v$Version/ni_$($Version)_windows_amd64.zip" -OutFile "ni_$($Version)_windows_amd64.zip"
 Invoke-WebRequest "https://github.com/Nam-Cheol/ni/releases/download/v$Version/ni_$($Version)_checksums.txt" -OutFile "ni_$($Version)_checksums.txt"
 Get-FileHash "ni_$($Version)_windows_amd64.zip" -Algorithm SHA256
@@ -211,8 +211,11 @@ Expand-Archive "ni_$($Version)_windows_amd64.zip" -DestinationPath "ni_$($Versio
 ```
 
 Compare the hash output with the checksum line before trusting the extracted
-binary. To install for repeated use, place `ni.exe` in a directory you control
-and add that directory to your user `PATH`.
+binary. The release asset and checksum are verified in
+[v0.5.0 Post-Release Verification](docs/117_V0_5_0_POST_RELEASE_VERIFICATION.md),
+but execution on a real Windows host remains a manual verification boundary.
+To install for repeated use, place `ni.exe` in a directory you control and add
+that directory to your user `PATH`.
 
 Uninstall by removing the copied executable from that directory:
 

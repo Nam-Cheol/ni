@@ -1,7 +1,7 @@
 # Post-Release Roadmap
 
-This roadmap defines the next phases after the v0.4.0 release, release-asset
-verification, and curl-installer verification work. It preserves
+This roadmap defines the next phases after the verified v0.5.0 release,
+release-asset verification, and curl-installer verification work. It preserves
 `ni` as `ni-kernel`: a Project Intent Compiler for AI Agents and a
 deterministic pre-runtime control layer for accepted project intent.
 
@@ -176,6 +176,13 @@ For the README onboarding repair and visual prompt pack, use
 to preserve the DO_NOT_APPROVE_FIX_FIRST fix-first context, bounded macOS and
 Windows install/uninstall wording, README image prompt reproducibility, and
 non-execution claim boundaries before publication approval is revisited.
+
+For the v0.5.0 post-release verification, use
+[`117_V0_5_0_POST_RELEASE_VERIFICATION.md`](117_V0_5_0_POST_RELEASE_VERIFICATION.md)
+to preserve actual release evidence, asset and checksum verification,
+current-platform binary output, curl installer proof, README/install sync, and
+remaining deferrals without upgrading Homebrew, model workspace, no-terminal,
+or benchmark claims.
 
 This phase may improve target seed quality and conformance as supporting work.
 It must not make targets into executable adapters inside `ni-kernel`.

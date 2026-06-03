@@ -1,7 +1,7 @@
 # Post-Release Roadmap
 
-이 roadmap은 v0.4.0 release, release-asset verification, curl-installer
-verification work 이후의 다음 단계들을 정의한다. `ni`는 계속 `ni-kernel`이어야 한다. 즉 AI Agents를 위한 Project
+이 roadmap은 verified v0.5.0 release, release-asset verification,
+curl-installer verification work 이후의 다음 단계들을 정의한다. `ni`는 계속 `ni-kernel`이어야 한다. 즉 AI Agents를 위한 Project
 Intent Compiler이며, accepted project intent를 위한 deterministic pre-runtime
 control layer다.
 
@@ -173,6 +173,13 @@ README onboarding repair and visual prompt pack에는
 사용해 DO_NOT_APPROVE_FIX_FIRST fix-first context, bounded macOS and Windows
 install/uninstall wording, README image prompt reproducibility,
 non-execution claim boundaries를 publication approval 재검토 전에 보존한다.
+
+v0.5.0 post-release verification에는
+[`117_V0_5_0_POST_RELEASE_VERIFICATION.ko.md`](117_V0_5_0_POST_RELEASE_VERIFICATION.ko.md)를
+사용해 actual release evidence, asset and checksum verification,
+current-platform binary output, curl installer proof, README/install sync,
+remaining deferrals를 보존한다. Homebrew, model workspace, no-terminal,
+benchmark claims는 이 문서만으로 upgrade하지 않는다.
 
 이 phase는 supporting work로 target seed quality와 conformance를 개선할 수 있다.
 하지만 targets를 `ni-kernel` 내부의 executable adapters로 만들면 안 된다.

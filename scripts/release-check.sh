@@ -3,8 +3,8 @@ set -euo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 QUICKSTART_TMP="$(mktemp -d "${TMPDIR:-/tmp}/ni-release-check.XXXXXX")"
-CURRENT_RELEASE_VERSION="v0.4.0"
-PLANNED_RELEASE_VERSION="v0.5.0"
+CURRENT_RELEASE_VERSION="v0.5.0"
+PLANNED_RELEASE_VERSION="post-release follow-up"
 
 trap 'rm -rf "$QUICKSTART_TMP"' EXIT
 
@@ -261,6 +261,8 @@ required_paths = [
     Path("docs/114_V0_5_RELEASE_PUBLICATION_CHECKLIST.ko.md"),
     Path("docs/115_V0_5_PUBLICATION_HUMAN_APPROVAL_PACKET.md"),
     Path("docs/115_V0_5_PUBLICATION_HUMAN_APPROVAL_PACKET.ko.md"),
+    Path("docs/117_V0_5_0_POST_RELEASE_VERIFICATION.md"),
+    Path("docs/117_V0_5_0_POST_RELEASE_VERIFICATION.ko.md"),
 ]
 
 for path in required_paths:
@@ -345,6 +347,26 @@ required_markers = {
         "Decision: APPROVE_PUBLICATION_PREP_ONLY.",
         "Previous decision: DO_NOT_APPROVE_FIX_FIRST.",
         "Release tag target: v0.5.0.",
+    ],
+    Path("docs/117_V0_5_0_POST_RELEASE_VERIFICATION.md"): [
+        "Decision: V0_5_0_POST_RELEASE_VERIFIED_WITH_NOTES.",
+        "v0.5.0 publication: performed and verified in this document",
+        "Release binary: verified in this document",
+        "Curl installer: verified in this document",
+        "Homebrew: Planned / v0.5 candidate",
+        "Model workspace packs: Experimental",
+        "No-terminal method: Experimental / assisted",
+        "Windows execution was not run on a Windows host",
+    ],
+    Path("docs/117_V0_5_0_POST_RELEASE_VERIFICATION.ko.md"): [
+        "Decision: V0_5_0_POST_RELEASE_VERIFIED_WITH_NOTES.",
+        "v0.5.0 publication: 이 문서에서 performed and verified",
+        "Release binary: 이 문서에서 verify",
+        "Curl installer: 이 문서에서 verify",
+        "Homebrew: Planned / v0.5 candidate",
+        "Model workspace packs: Experimental",
+        "No-terminal method: Experimental / assisted",
+        "Real Windows execution은 local에서 run하지 않음.",
     ],
 }
 
@@ -458,13 +480,13 @@ else:
 
 release_claim_markers = {
     "README.md": [
-        "v0.4.0 release binaries are available",
+        "v0.5.0 release binaries are available",
         "The curl installer is available after verification against the",
         "Package-manager distribution, including Homebrew,",
     ],
     "README.ko.md": [
-        "v0.4.0 release binaries는 asset과 checksum 검증 후 Available입니다",
-        "Curl installer는 실제 v0.4.0 release assets에 대해 검증된 뒤 Available입니다",
+        "v0.5.0 release binaries는 asset과 checksum 검증 후 Available입니다",
+        "Curl installer는 실제 v0.5.0 release assets에 대해 검증된 뒤 Available입니다",
         "Homebrew를 포함한 package-manager distribution은 아직 Available이 아닙니다",
     ],
 }

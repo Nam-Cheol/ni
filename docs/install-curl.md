@@ -5,8 +5,8 @@ binary without requiring Go. It downloads an archive, verifies the checksum when
 the release provides one, copies `ni` into a local bin directory, and prints next
 steps. It does not install model skills or run downstream work.
 
-Status: Available for the verified v0.4.0 GitHub Release assets. `install.sh`
-downloads the selected archive and `ni_0.4.0_checksums.txt`, verifies the
+Status: Available for the verified v0.5.0 GitHub Release assets. `install.sh`
+downloads the selected archive and `ni_0.5.0_checksums.txt`, verifies the
 archive when a local sha256 tool is available, installs only the `ni` binary,
 and does not run downstream work.
 
@@ -15,7 +15,7 @@ and does not run downstream work.
 Download and inspect the installer before any local install:
 
 ```bash
-VERSION="0.4.0"
+VERSION="0.5.0"
 curl -fsSLO https://raw.githubusercontent.com/Nam-Cheol/ni/main/install.sh
 sed -n '1,320p' install.sh
 sh install.sh --dry-run --version "$VERSION"
@@ -32,8 +32,8 @@ BINDIR="$HOME/bin" sh install.sh --dry-run --version "$VERSION"
 ```
 
 If you omit `--version`, the installer asks GitHub for the latest release tag.
-Pin `VERSION="0.4.0"` when you want the verified release covered by
-[v0.4.0 Curl Installer Verification](87_CURL_INSTALLER_VERIFICATION_v0.4.0.md).
+Pin `VERSION="0.5.0"` when you want the verified release covered by
+[v0.5.0 Post-Release Verification](117_V0_5_0_POST_RELEASE_VERIFICATION.md).
 The installed CLI should only be checked with help or version commands:
 
 ```bash
@@ -116,12 +116,12 @@ For future releases, repeat the real release verification before changing
 public availability language:
 
 ```bash
-VERSION="0.4.0"
+VERSION="0.5.0"
 sh install.sh --dry-run --version "$VERSION"
 BINDIR="$(mktemp -d)" sh install.sh --version "$VERSION"
 ```
 
-The v0.4.0 verification passed on 2026-05-29. The installer printed
-`Verified checksum for ni_0.4.0_darwin_arm64.tar.gz`, installed the binary into
-a temporary `BINDIR`, and the installed binary returned `0.4.0` for
+The v0.5.0 verification passed on 2026-06-02. The installer printed
+`Verified checksum for ni_0.5.0_darwin_arm64.tar.gz`, installed the binary into
+a temporary `BINDIR`, and the installed binary returned `0.5.0` for
 `ni version`.

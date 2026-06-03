@@ -33,31 +33,31 @@ INSTALL_EXPECTED = README_EXPECTED
 
 REQUIRED_MARKERS = {
     "README.md": [
-        "v0.4.0 release binaries are available",
+        "v0.5.0 release binaries are available",
         "The curl installer is available after verification against the",
         "including Homebrew, is not available yet",
         "Host-level/global install remains unverified unless documented",
     ],
     "README.ko.md": [
-        "v0.4.0 release binaries는 asset과 checksum 검증 후 Available입니다",
-        "Curl installer는 실제 v0.4.0 release assets에 대해 검증된 뒤 Available입니다",
+        "v0.5.0 release binaries는 asset과 checksum 검증 후 Available입니다",
+        "Curl installer는 실제 v0.5.0 release assets에 대해 검증된 뒤 Available입니다",
         "Homebrew를 포함한 package-manager distribution은 아직 Available이 아닙니다",
         "Host-level/global install은 documented되기 전까지 unverified",
     ],
     "docs/22_INSTALL.md": [
         "Every public install path has exactly one status:",
         "Release binary status: Available.",
-        "Curl installer status: Available for verified v0.4.0 release assets.",
+        "Curl installer status: Available for verified v0.5.0 release assets.",
         "Package manager status: Planned.",
-        "curl installer availability only for the verified v0.4.0 installer path",
+        "curl installer availability only for the verified v0.5.0 installer path",
     ],
     "docs/install-curl.md": [
-        "Status: Available for the verified v0.4.0 GitHub Release assets.",
-        "The v0.4.0 verification passed on 2026-05-29.",
+        "Status: Available for the verified v0.5.0 GitHub Release assets.",
+        "The v0.5.0 verification passed on 2026-06-02.",
     ],
     "docs/install-curl.ko.md": [
-        "Status: verified v0.4.0 GitHub Release assets에 대해 Available이다.",
-        "v0.4.0 verification은 2026-05-29에 통과했다.",
+        "Status: verified v0.5.0 GitHub Release assets에 대해 Available이다.",
+        "v0.5.0 verification은 2026-06-02에 통과했다.",
     ],
     "docs/54_HOMEBREW_DISTRIBUTION.md": [
         "Current status: Planned.",
@@ -122,12 +122,12 @@ REQUIRED_MARKERS = {
         "verified된 curl installer path만 claim",
     ],
     "docs/51_POST_RELEASE_ROADMAP.md": [
-        "after the v0.4.0 release, release-asset",
-        "distribution docs accurate for the verified v0.4.0 state",
+        "after the verified v0.5.0 release",
+        "117_V0_5_0_POST_RELEASE_VERIFICATION.md",
     ],
     "docs/51_POST_RELEASE_ROADMAP.ko.md": [
-        "v0.4.0 release, release-asset verification",
-        "verified v0.4.0 state에 맞게 release",
+        "verified v0.5.0 release",
+        "117_V0_5_0_POST_RELEASE_VERIFICATION.ko.md",
     ],
     "docs/53_DISTRIBUTION_STRATEGY.md": [
         "Model workspace packs | Experimental",
