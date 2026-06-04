@@ -202,6 +202,12 @@ to preserve the path-audit and path-install blocker, pre-existing environment
 checks, cleanup proof, Homebrew core name-collision warning, and the continued
 Planned / v0.5 candidate boundary before any tap-based validation.
 
+For the v0.5.1 release-candidate validation, use
+[`128_V0_5_1_RELEASE_CANDIDATE_VALIDATION.md`](128_V0_5_1_RELEASE_CANDIDATE_VALIDATION.md)
+to preserve the `V0_5_1_RC_VALIDATION_PASS_WITH_NOTES` decision, current-tree
+first-user evidence, release-version gates, known deferrals, and the rule that
+no v0.5.1 release action has been performed.
+
 This phase may improve target seed quality and conformance as supporting work.
 It must not make targets into executable adapters inside `ni-kernel`.
 

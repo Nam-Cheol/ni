@@ -101,6 +101,12 @@ transcript가 생기기 전까지 verified라고 claim하지 않습니다.
 
 ## 5분 첫 project
 
+Public v0.5.0 install parity note: 아래 첫 project flow는 current-tree
+`ni init .` onboarding을 사용합니다. Published v0.5.0 binary는 `ni --help`와
+`ni version`을 verify하지만 positional `ni init .` form은 지원하지 않습니다.
+자세한 증거는 [docs/126](docs/126_PUBLIC_INSTALL_PARITY_AND_PATCH_READINESS.ko.md)에
+있습니다.
+
 ```bash
 mkdir my-project
 cd my-project

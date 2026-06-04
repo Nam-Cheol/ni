@@ -199,6 +199,12 @@ Local Homebrew formula verification에는
 cleanup proof, Homebrew core name-collision warning, continued Planned / v0.5
 candidate boundary를 tap-based validation 전에 보존한다.
 
+v0.5.1 release-candidate validation에는
+[`128_V0_5_1_RELEASE_CANDIDATE_VALIDATION.ko.md`](128_V0_5_1_RELEASE_CANDIDATE_VALIDATION.ko.md)를
+사용해 `V0_5_1_RC_VALIDATION_PASS_WITH_NOTES` decision, current-tree first-user
+evidence, release-version gates, known deferrals, 아직 v0.5.1 release action이
+수행되지 않았다는 boundary를 보존한다.
+
 이 phase는 supporting work로 target seed quality와 conformance를 개선할 수 있다.
 하지만 targets를 `ni-kernel` 내부의 executable adapters로 만들면 안 된다.
 
