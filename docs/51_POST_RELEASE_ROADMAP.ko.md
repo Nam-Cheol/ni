@@ -205,6 +205,20 @@ v0.5.1 release-candidate validation에는
 evidence, release-version gates, known deferrals, 아직 v0.5.1 release action이
 수행되지 않았다는 boundary를 보존한다.
 
+v0.5.1 artifact dry-run에는
+[`129_V0_5_1_ARTIFACT_DRY_RUN.ko.md`](129_V0_5_1_ARTIFACT_DRY_RUN.ko.md)를
+사용해 `V0_5_1_ARTIFACT_DRY_RUN_PASS_WITH_NOTES` decision, local
+current-platform version/checksum/init evidence, GoReleaser matrix deferral,
+hosted v0.5.1 assets와 public installer retrieval이 publication 전에는
+claim되지 않는다는 boundary를 보존한다.
+
+v0.5.1 release notes finalization에는
+[`130_V0_5_1_RELEASE_NOTES_FINALIZATION.ko.md`](130_V0_5_1_RELEASE_NOTES_FINALIZATION.ko.md)를
+사용해 `V0_5_1_RELEASE_NOTES_READY_WITH_NOTES` decision, complete release notes
+draft, known deferrals, claim-boundary audit, publication, tag, GitHub Release,
+asset upload, Homebrew Available claim, downstream execution claim이 없다는
+boundary를 보존한다.
+
 이 phase는 supporting work로 target seed quality와 conformance를 개선할 수 있다.
 하지만 targets를 `ni-kernel` 내부의 executable adapters로 만들면 안 된다.
 

@@ -208,6 +208,20 @@ to preserve the `V0_5_1_RC_VALIDATION_PASS_WITH_NOTES` decision, current-tree
 first-user evidence, release-version gates, known deferrals, and the rule that
 no v0.5.1 release action has been performed.
 
+For the v0.5.1 artifact dry-run, use
+[`129_V0_5_1_ARTIFACT_DRY_RUN.md`](129_V0_5_1_ARTIFACT_DRY_RUN.md)
+to preserve the `V0_5_1_ARTIFACT_DRY_RUN_PASS_WITH_NOTES` decision, local
+current-platform version/checksum/init evidence, GoReleaser matrix deferral,
+and the rule that hosted v0.5.1 assets and public installer retrieval are not
+claimed before publication.
+
+For the v0.5.1 release notes finalization, use
+[`130_V0_5_1_RELEASE_NOTES_FINALIZATION.md`](130_V0_5_1_RELEASE_NOTES_FINALIZATION.md)
+to preserve the `V0_5_1_RELEASE_NOTES_READY_WITH_NOTES` decision, the complete
+release notes draft, known deferrals, claim-boundary audit, and the rule that
+no publication, tag, GitHub Release, asset upload, Homebrew Available claim, or
+downstream execution claim has been made.
+
 This phase may improve target seed quality and conformance as supporting work.
 It must not make targets into executable adapters inside `ni-kernel`.
 
