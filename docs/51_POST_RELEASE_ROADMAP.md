@@ -222,6 +222,12 @@ release notes draft, known deferrals, claim-boundary audit, and the rule that
 no publication, tag, GitHub Release, asset upload, Homebrew Available claim, or
 downstream execution claim has been made.
 
+For the v0.5.1 publication checklist, use
+[`131_V0_5_1_PUBLICATION_CHECKLIST.md`](131_V0_5_1_PUBLICATION_CHECKLIST.md)
+to preserve the `V0_5_1_PUBLICATION_CHECKLIST_READY_WITH_NOTES` decision,
+human approval options, release gates, abort criteria, known deferrals, and the
+rule that v0.5.1 release execution still requires explicit human approval.
+
 This phase may improve target seed quality and conformance as supporting work.
 It must not make targets into executable adapters inside `ni-kernel`.
 

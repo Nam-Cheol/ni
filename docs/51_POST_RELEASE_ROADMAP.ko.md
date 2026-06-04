@@ -219,6 +219,12 @@ draft, known deferrals, claim-boundary audit, publication, tag, GitHub Release,
 asset upload, Homebrew Available claim, downstream execution claim이 없다는
 boundary를 보존한다.
 
+v0.5.1 publication checklist에는
+[`131_V0_5_1_PUBLICATION_CHECKLIST.ko.md`](131_V0_5_1_PUBLICATION_CHECKLIST.ko.md)를
+사용해 `V0_5_1_PUBLICATION_CHECKLIST_READY_WITH_NOTES` decision, human approval
+options, release gates, abort criteria, known deferrals, v0.5.1 release
+execution은 여전히 explicit human approval이 필요하다는 boundary를 보존한다.
+
 이 phase는 supporting work로 target seed quality와 conformance를 개선할 수 있다.
 하지만 targets를 `ni-kernel` 내부의 executable adapters로 만들면 안 된다.
 
