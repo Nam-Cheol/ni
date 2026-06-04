@@ -25,6 +25,7 @@ import (
 	"ni/internal/core/prompt"
 	"ni/internal/core/readiness"
 	"ni/internal/core/target"
+	initui "ni/internal/tui/init"
 	"ni/internal/version"
 )
 
@@ -915,6 +916,7 @@ func runInit(args []string, stdout io.Writer, stderr io.Writer) int {
 	}
 
 	root := filepath.Clean(dir)
+	inputIsTerminal := initInputIsTerminal()
 	if lockExists(root) {
 		fmt.Fprintf(stdout, "warning: %s already exists; this project is already locked.\n", filepath.Join(".ni", "plan.lock.json"))
 		fmt.Fprintln(stdout, "Use ni status --proof --next-questions, then the amend/relock flow for locked planning changes.")
@@ -925,7 +927,22 @@ func runInit(args []string, stdout io.Writer, stderr io.Writer) int {
 	requiredExisting := existingInitPaths(root)
 	if len(requiredExisting) > 0 {
 		fmt.Fprintln(stdout, "existing ni planning files found; ni init will not overwrite them.")
-		if forceInteractive && !assumeYes {
+		if inputIsTerminal && !assumeYes && (forceInteractive || (usedPositionalTarget && !usedDirFlag)) {
+			choice, err := runExistingInitTUI(root, requiredExisting, stdout)
+			if err != nil {
+				return failCommand(stdout, stderr, "init", err, false)
+			}
+			switch choice {
+			case initui.ExistingChoiceKeep:
+				fmt.Fprintln(stdout, "kept existing files; no files changed.")
+				return exitOK
+			case initui.ExistingChoiceAbort:
+				fmt.Fprintln(stdout, "aborted init; no files changed.")
+				return exitOK
+			default:
+				fmt.Fprintln(stdout, "adding missing files only.")
+			}
+		} else if forceInteractive && !assumeYes {
 			choice, err := promptExistingInitChoice(initInput, stdout)
 			if err != nil {
 				fmt.Fprintln(stderr, err)
@@ -945,8 +962,22 @@ func runInit(args []string, stdout io.Writer, stderr io.Writer) int {
 	}
 
 	intent := docstore.GuidedIntent{}
-	shouldPrompt := (forceInteractive || (usedPositionalTarget && !usedDirFlag && initInputIsTerminal())) && !assumeYes && len(requiredExisting) == 0
-	if shouldPrompt {
+	guided := false
+	shouldTUI := (forceInteractive || (usedPositionalTarget && !usedDirFlag)) && !assumeYes && len(requiredExisting) == 0 && inputIsTerminal
+	shouldPrompt := forceInteractive && !assumeYes && len(requiredExisting) == 0 && !shouldTUI
+	if shouldTUI {
+		result, err := runGuidedInitTUI(root, stdout)
+		if err != nil {
+			return failCommand(stdout, stderr, "init", err, false)
+		}
+		if result.Canceled || !result.Confirmed {
+			fmt.Fprintln(stdout, "canceled init; no files written.")
+			printInitNextCommands(stdout)
+			return exitOK
+		}
+		intent = result.Intent
+		guided = true
+	} else if shouldPrompt {
 		reader := bufio.NewReader(initInput)
 		answers, err := promptGuidedIntent(reader, stdout, filepath.Base(root))
 		if err != nil {
@@ -958,6 +989,7 @@ func runInit(args []string, stdout io.Writer, stderr io.Writer) int {
 			return exitOK
 		}
 		intent = answers
+		guided = true
 	}
 
 	result, err := docstore.InitWithOptions(dir, docstore.InitOptions{
@@ -970,11 +1002,52 @@ func runInit(args []string, stdout io.Writer, stderr io.Writer) int {
 	if err != nil {
 		return failCommand(stdout, stderr, "init", err, false)
 	}
+	if result.Locked {
+		fmt.Fprintf(stdout, "warning: %s already exists; this project is already locked.\n", filepath.Join(".ni", "plan.lock.json"))
+		fmt.Fprintln(stdout, "Use ni status --proof --next-questions, then the amend/relock flow for locked planning changes.")
+		fmt.Fprintln(stdout, "No files changed by ni init; the lockfile was not modified.")
+		return exitOK
+	}
 
 	if len(surfaces) == 0 {
 		surfaces = contract.DefaultDeliverySurfaces(productType)
 	}
+	printInitSummary(stdout, result, readinessProfile, productType, surfaces, interactionMode)
+	if guided {
+		fmt.Fprintln(stdout, "guided init wrote initial intent draft; run ni status --proof --next-questions next.")
+	} else {
+		fmt.Fprintln(stdout, "next: use model-user planning conversation, then run ni status --proof --next-questions.")
+	}
+	printInitNextCommands(stdout)
+	return 0
+}
+
+func runGuidedInitTUI(root string, stdout io.Writer) (initui.Result, error) {
+	return initui.Run(initui.Config{
+		Dir:         root,
+		DefaultName: filepath.Base(root),
+		Input:       initInput,
+		Output:      stdout,
+	})
+}
+
+func runExistingInitTUI(root string, existing []string, stdout io.Writer) (initui.ExistingChoice, error) {
+	result, err := initui.Run(initui.Config{
+		Dir:           root,
+		DefaultName:   filepath.Base(root),
+		ExistingFiles: existing,
+		Input:         initInput,
+		Output:        stdout,
+	})
+	if err != nil {
+		return "", err
+	}
+	return result.Choice, nil
+}
+
+func printInitSummary(stdout io.Writer, result docstore.Result, readinessProfile string, productType string, surfaces []string, interactionMode string) {
 	fmt.Fprintf(stdout, "initialized ni planning workspace at %s\n", result.Root)
+	fmt.Fprintf(stdout, "target directory: %s\n", result.Root)
 	fmt.Fprintf(stdout, "readiness profile: %s\n", readinessProfile)
 	fmt.Fprintf(stdout, "product type: %s\n", productType)
 	fmt.Fprintf(stdout, "delivery surfaces: %s\n", strings.Join(surfaces, ", "))
@@ -984,13 +1057,22 @@ func runInit(args []string, stdout io.Writer, stderr io.Writer) int {
 	}
 	for _, path := range result.Existing {
 		fmt.Fprintf(stdout, "exists %s\n", path)
+		fmt.Fprintf(stdout, "unchanged %s\n", path)
 	}
-	if shouldPrompt {
-		fmt.Fprintln(stdout, "guided init wrote initial intent draft; run ni status --proof --next-questions next.")
-	} else {
-		fmt.Fprintln(stdout, "next: use model-user planning conversation, then run ni status --proof --next-questions.")
+	if len(result.Created) == 0 {
+		fmt.Fprintln(stdout, "created files: none")
 	}
-	return 0
+	if len(result.Existing) == 0 {
+		fmt.Fprintln(stdout, "skipped files: none")
+		fmt.Fprintln(stdout, "unchanged files: none")
+	}
+}
+
+func printInitNextCommands(stdout io.Writer) {
+	fmt.Fprintln(stdout, "next suggested commands:")
+	fmt.Fprintln(stdout, "- ni status --proof --next-questions")
+	fmt.Fprintln(stdout, "- ni end")
+	fmt.Fprintln(stdout, "- ni run --max-chars 4000")
 }
 
 func lockExists(root string) bool {

@@ -16,6 +16,7 @@ type Result struct {
 	Root     string
 	Created  []string
 	Existing []string
+	Locked   bool
 }
 
 type templateFile struct {
@@ -42,6 +43,24 @@ type GuidedIntent struct {
 	Deferrals           string
 }
 
+type FileAction string
+
+const (
+	FileActionCreate       FileAction = "create"
+	FileActionSkipExisting FileAction = "skip_existing"
+)
+
+type PlannedFile struct {
+	Path   string
+	Action FileAction
+}
+
+type FilePlan struct {
+	Root   string
+	Files  []PlannedFile
+	Locked bool
+}
+
 func Init(dir string) (Result, error) {
 	return InitWithProfile(dir, profile.Default)
 }
@@ -51,30 +70,29 @@ func InitWithProfile(dir string, readinessProfile string) (Result, error) {
 }
 
 func InitWithOptions(dir string, opts InitOptions) (Result, error) {
-	opts = withDefaults(opts)
-	if err := profile.Validate(opts.ReadinessProfile); err != nil {
+	plan, err := BuildFilePlan(dir, opts)
+	if err != nil {
 		return Result{}, err
 	}
-	if err := contract.ValidateProductType(opts.ProductType); err != nil {
-		return Result{}, err
+	if plan.Locked {
+		return Result{Root: plan.Root, Locked: true}, nil
 	}
-	if err := contract.ValidateDeliverySurfaces(opts.DeliverySurfaces); err != nil {
-		return Result{}, err
-	}
-	if err := contract.ValidateInteractionMode(opts.InteractionMode); err != nil {
-		return Result{}, err
-	}
-	root := filepath.Clean(dir)
-	files := templateFiles(opts)
-	result := Result{Root: root}
 
+	opts = withDefaults(opts)
+	root := plan.Root
+	result := Result{Root: root}
+	files := templateFiles(opts)
+	byPath := make(map[string]templateFile, len(files))
 	for _, file := range files {
+		byPath[file.path] = file
+	}
+
+	for _, planned := range plan.Files {
+		file := byPath[planned.Path]
 		target := filepath.Join(root, file.path)
-		if _, err := os.Stat(target); err == nil {
+		if planned.Action == FileActionSkipExisting {
 			result.Existing = append(result.Existing, file.path)
 			continue
-		} else if !os.IsNotExist(err) {
-			return result, err
 		}
 
 		if err := os.MkdirAll(filepath.Dir(target), 0o755); err != nil {
@@ -87,6 +105,41 @@ func InitWithOptions(dir string, opts InitOptions) (Result, error) {
 	}
 
 	return result, nil
+}
+
+func BuildFilePlan(dir string, opts InitOptions) (FilePlan, error) {
+	opts = withDefaults(opts)
+	if err := profile.Validate(opts.ReadinessProfile); err != nil {
+		return FilePlan{}, err
+	}
+	if err := contract.ValidateProductType(opts.ProductType); err != nil {
+		return FilePlan{}, err
+	}
+	if err := contract.ValidateDeliverySurfaces(opts.DeliverySurfaces); err != nil {
+		return FilePlan{}, err
+	}
+	if err := contract.ValidateInteractionMode(opts.InteractionMode); err != nil {
+		return FilePlan{}, err
+	}
+	root := filepath.Clean(dir)
+	plan := FilePlan{Root: root}
+	if _, err := os.Stat(filepath.Join(root, ".ni", "plan.lock.json")); err == nil {
+		plan.Locked = true
+		return plan, nil
+	} else if !os.IsNotExist(err) {
+		return plan, err
+	}
+
+	for _, file := range templateFiles(opts) {
+		action := FileActionCreate
+		if _, err := os.Stat(filepath.Join(root, file.path)); err == nil {
+			action = FileActionSkipExisting
+		} else if !os.IsNotExist(err) {
+			return plan, err
+		}
+		plan.Files = append(plan.Files, PlannedFile{Path: file.path, Action: action})
+	}
+	return plan, nil
 }
 
 func withDefaults(opts InitOptions) InitOptions {

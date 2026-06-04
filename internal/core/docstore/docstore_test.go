@@ -165,3 +165,64 @@ func TestInitPreservesExistingFiles(t *testing.T) {
 		t.Fatalf("expected existing file to be reported, got %#v", result.Existing)
 	}
 }
+
+func TestBuildFilePlanClassifiesCreateAndExisting(t *testing.T) {
+	dir := t.TempDir()
+	existingPath := filepath.Join(dir, ".ni", "contract.json")
+	if err := os.MkdirAll(filepath.Dir(existingPath), 0o755); err != nil {
+		t.Fatalf("creating existing file dir: %v", err)
+	}
+	if err := os.WriteFile(existingPath, []byte("existing\n"), 0o644); err != nil {
+		t.Fatalf("writing existing file: %v", err)
+	}
+
+	plan, err := BuildFilePlan(dir, InitOptions{})
+	if err != nil {
+		t.Fatalf("BuildFilePlan returned error: %v", err)
+	}
+	if plan.Locked {
+		t.Fatalf("did not expect locked plan")
+	}
+	var sawCreate, sawExisting bool
+	for _, file := range plan.Files {
+		if file.Path == ".ni/contract.json" && file.Action == FileActionSkipExisting {
+			sawExisting = true
+		}
+		if file.Path == "docs/plan/00_project_brief.md" && file.Action == FileActionCreate {
+			sawCreate = true
+		}
+	}
+	if !sawCreate || !sawExisting {
+		t.Fatalf("expected create and existing classifications, got %#v", plan.Files)
+	}
+}
+
+func TestInitWithOptionsProtectsLockfile(t *testing.T) {
+	dir := t.TempDir()
+	lockPath := filepath.Join(dir, ".ni", "plan.lock.json")
+	if err := os.MkdirAll(filepath.Dir(lockPath), 0o755); err != nil {
+		t.Fatalf("creating lock dir: %v", err)
+	}
+	original := []byte(`{"locked":true}` + "\n")
+	if err := os.WriteFile(lockPath, original, 0o644); err != nil {
+		t.Fatalf("writing lockfile: %v", err)
+	}
+
+	result, err := InitWithOptions(dir, InitOptions{})
+	if err != nil {
+		t.Fatalf("InitWithOptions returned error: %v", err)
+	}
+	if !result.Locked {
+		t.Fatalf("expected locked result, got %#v", result)
+	}
+	data, err := os.ReadFile(lockPath)
+	if err != nil {
+		t.Fatalf("reading lockfile: %v", err)
+	}
+	if string(data) != string(original) {
+		t.Fatalf("lockfile changed: %q", string(data))
+	}
+	if _, err := os.Stat(filepath.Join(dir, ".ni", "contract.json")); !os.IsNotExist(err) {
+		t.Fatalf("locked init should not create contract, stat err=%v", err)
+	}
+}
