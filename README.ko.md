@@ -22,6 +22,10 @@
 plan readiness를 검사하고, accepted contract를 lock한 뒤 bounded handoff prompt
 또는 derived seed material을 compile합니다.
 
+<p align="center">
+  <img src="assets/intent-lock-flow.svg" alt="Intent Lock Protocol flow: conversation, project contract, readiness gate, lock hash, bounded handoff." width="100%">
+</p>
+
 ## 왜 ni인가
 
 <p align="center">

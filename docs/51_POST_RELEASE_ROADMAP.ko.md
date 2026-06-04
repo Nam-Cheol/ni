@@ -174,6 +174,12 @@ README onboarding repair and visual prompt pack에는
 install/uninstall wording, README image prompt reproducibility,
 non-execution claim boundaries를 publication approval 재검토 전에 보존한다.
 
+README visual asset pass에는
+[`122_README_VISUAL_ASSET_PASS.ko.md`](122_README_VISUAL_ASSET_PASS.ko.md)를 사용해
+local asset inventory, deterministic placeholder decision, README image path
+verification, no-overclaim audit을 generated raster images로 conceptual SVG를
+교체하기 전에 보존한다.
+
 v0.5.0 post-release verification에는
 [`117_V0_5_0_POST_RELEASE_VERIFICATION.ko.md`](117_V0_5_0_POST_RELEASE_VERIFICATION.ko.md)를
 사용해 actual release evidence, asset and checksum verification,

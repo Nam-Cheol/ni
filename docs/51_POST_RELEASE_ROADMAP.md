@@ -177,6 +177,12 @@ to preserve the DO_NOT_APPROVE_FIX_FIRST fix-first context, bounded macOS and
 Windows install/uninstall wording, README image prompt reproducibility, and
 non-execution claim boundaries before publication approval is revisited.
 
+For the README visual asset pass, use
+[`122_README_VISUAL_ASSET_PASS.md`](122_README_VISUAL_ASSET_PASS.md) to preserve
+the local asset inventory, deterministic placeholder decision, README image
+path verification, and no-overclaim audit before replacing conceptual SVGs with
+generated raster images.
+
 For the v0.5.0 post-release verification, use
 [`117_V0_5_0_POST_RELEASE_VERIFICATION.md`](117_V0_5_0_POST_RELEASE_VERIFICATION.md)
 to preserve actual release evidence, asset and checksum verification,

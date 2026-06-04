@@ -1,0 +1,67 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1120" height="260" viewBox="0 0 1120 260" role="img" aria-labelledby="title desc">
+  <title id="title">Intent Lock Protocol flow</title>
+  <desc id="desc">Conversation becomes a project contract, passes a readiness gate, locks by hash, and compiles into a bounded handoff prompt.</desc>
+  <defs>
+    <linearGradient id="flow-bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#F8FAFC"/>
+      <stop offset="0.55" stop-color="#EEF4FF"/>
+      <stop offset="1" stop-color="#ECFDF5"/>
+    </linearGradient>
+    <linearGradient id="flow-line" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#5B8DEF"/>
+      <stop offset="0.55" stop-color="#8B7CF6"/>
+      <stop offset="1" stop-color="#4FBF9F"/>
+    </linearGradient>
+    <filter id="soft-shadow" x="-10%" y="-30%" width="120%" height="160%">
+      <feDropShadow dx="0" dy="8" stdDeviation="10" flood-color="#25334A" flood-opacity="0.12"/>
+    </filter>
+  </defs>
+  <rect width="1120" height="260" rx="26" fill="url(#flow-bg)"/>
+  <g fill="none" stroke="#D8E1EE" stroke-width="1" opacity="0.55">
+    <path d="M64 52 H1056"/>
+    <path d="M64 130 H1056"/>
+    <path d="M64 208 H1056"/>
+    <path d="M170 32 V228"/>
+    <path d="M390 32 V228"/>
+    <path d="M610 32 V228"/>
+    <path d="M830 32 V228"/>
+    <path d="M1050 32 V228"/>
+  </g>
+  <path d="M184 132 H936" stroke="url(#flow-line)" stroke-width="7" stroke-linecap="round"/>
+  <path d="M936 132 L914 119 M936 132 L914 145" stroke="#4FBF9F" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
+  <g font-family="-apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Helvetica, Arial, sans-serif" filter="url(#soft-shadow)">
+    <g transform="translate(68 62)">
+      <rect width="170" height="140" rx="18" fill="#FFFFFF" stroke="#D8E1EE"/>
+      <circle cx="44" cy="46" r="18" fill="#DCEBFF"/>
+      <circle cx="84" cy="46" r="18" fill="#EDE9FE"/>
+      <path d="M38 82 H132 M38 108 H110" stroke="#94A3B8" stroke-width="8" stroke-linecap="round"/>
+      <text x="34" y="132" fill="#25334A" font-size="17" font-weight="800">conversation</text>
+    </g>
+    <g transform="translate(288 62)">
+      <rect width="170" height="140" rx="18" fill="#FFFFFF" stroke="#D8E1EE"/>
+      <rect x="42" y="28" width="86" height="74" rx="10" fill="#F8FAFC" stroke="#94A3B8"/>
+      <path d="M58 50 H112 M58 70 H100 M58 90 H108" stroke="#5B8DEF" stroke-width="5" stroke-linecap="round"/>
+      <text x="47" y="132" fill="#25334A" font-size="17" font-weight="800">contract</text>
+    </g>
+    <g transform="translate(508 62)">
+      <rect width="170" height="140" rx="18" fill="#FFFFFF" stroke="#D8E1EE"/>
+      <path d="M42 92 L82 38 L122 92 Z" fill="#ECFDF5" stroke="#4FBF9F" stroke-width="5" stroke-linejoin="round"/>
+      <path d="M69 78 H96" stroke="#25334A" stroke-width="7" stroke-linecap="round"/>
+      <text x="58" y="132" fill="#25334A" font-size="17" font-weight="800">gate</text>
+    </g>
+    <g transform="translate(728 62)">
+      <rect width="170" height="140" rx="18" fill="#FFFFFF" stroke="#D8E1EE"/>
+      <rect x="58" y="64" width="54" height="46" rx="10" fill="#EDE9FE" stroke="#8B7CF6" stroke-width="5"/>
+      <path d="M70 64 V48 C70 34 78 26 85 26 C92 26 100 34 100 48 V64" fill="none" stroke="#25334A" stroke-width="7" stroke-linecap="round"/>
+      <path d="M40 116 H130" stroke="#94A3B8" stroke-width="5" stroke-linecap="round" stroke-dasharray="6 10"/>
+      <text x="68" y="132" fill="#25334A" font-size="17" font-weight="800">lock</text>
+    </g>
+    <g transform="translate(948 62)">
+      <rect width="170" height="140" rx="18" fill="#FFFFFF" stroke="#D8E1EE"/>
+      <path d="M42 46 H96 L128 76 L96 106 H42 Z" fill="#F8FAFC" stroke="#5B8DEF" stroke-width="5" stroke-linejoin="round"/>
+      <path d="M60 68 H96 M60 86 H84" stroke="#4FBF9F" stroke-width="5" stroke-linecap="round"/>
+      <text x="46" y="132" fill="#25334A" font-size="17" font-weight="800">handoff</text>
+    </g>
+  </g>
+  <rect x="1" y="1" width="1118" height="258" rx="26" fill="none" stroke="#D8E1EE"/>
+</svg>

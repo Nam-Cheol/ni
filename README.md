@@ -22,6 +22,10 @@
 checks whether the plan is ready, locks the accepted contract, and compiles a
 bounded handoff prompt or derived seed material.
 
+<p align="center">
+  <img src="assets/intent-lock-flow.svg" alt="Intent Lock Protocol flow: conversation, project contract, readiness gate, lock hash, and bounded handoff." width="100%">
+</p>
+
 ## Why ni
 
 <p align="center">
