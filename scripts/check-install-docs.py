@@ -38,6 +38,7 @@ INSTALL_EXPECTED = {
 REQUIRED_MARKERS = {
     "README.md": [
         "README shows two primary first-success paths for the current tree.",
+        "v0.6.0 is the current published Namba Intent release.",
         "### macOS",
         "### Windows",
         "curl -fsSL https://raw.githubusercontent.com/Nam-Cheol/ni/main/install.sh | sh -s -- --update-path --version 0.6.0",
@@ -53,6 +54,7 @@ REQUIRED_MARKERS = {
     ],
     "README.ko.md": [
         "README는 current tree의 첫 성공을 위한 두 가지 primary path만 보여줍니다.",
+        "v0.6.0은 current published Namba Intent release입니다.",
         "### macOS",
         "### Windows",
         "curl -fsSL https://raw.githubusercontent.com/Nam-Cheol/ni/main/install.sh | sh -s -- --update-path --version 0.6.0",
@@ -73,6 +75,7 @@ REQUIRED_MARKERS = {
         "Curl installer status: Available for verified v0.6.0 macOS `namba-intent`\nretrieval.",
         "curl -fsSL https://raw.githubusercontent.com/Nam-Cheol/ni/main/install.sh | sh -s -- --update-path --version 0.6.0",
         "The public v0.6.0 macOS curl installer path is verified",
+        "For reproducible v0.6.0 checks",
         "BINDIR=\"$HOME/.local/bin\" sh install.sh --update-path --version \"$VERSION\"",
         '$Installer = Join-Path $env:TEMP "namba-intent-install.ps1"',
         "powershell -NoProfile -ExecutionPolicy Bypass -File $Installer -Uninstall",

@@ -201,8 +201,8 @@ If you omit `--version`, the installer asks GitHub for the latest release tag
 during actual install. Use `--version 0.6.0` when you want to reproduce the
 verified Namba Intent release path.
 
-For reproducible future v0.6.0 checks, download and inspect the script, then
-pin the intended release version after it exists:
+For reproducible v0.6.0 checks, download and inspect the script, then pin the
+verified release version:
 
 ```bash
 VERSION="0.6.0"

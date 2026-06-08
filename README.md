@@ -22,8 +22,8 @@ Namba Intent turns a planning conversation into a docs contract, checks
 readiness, locks the accepted plan, and compiles a bounded downstream handoff
 prompt.
 
-Current main documents the published v0.6.0 Namba Intent release. The primary
-command is `namba-intent`; the legacy `ni` command is a deprecated shim only.
+v0.6.0 is the current published Namba Intent release. The primary command is
+`namba-intent`; the legacy `ni` command is a deprecated shim only.
 
 <p align="center">
   <img src="assets/intent-lock-flow.svg" alt="Intent Lock Protocol flow: conversation, project contract, readiness gate, lock hash, bounded handoff." width="100%">
