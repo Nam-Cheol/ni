@@ -231,6 +231,14 @@ v0.5.1 post-release verification에는
 darwin/arm64 artifact proof, isolated `install.sh --version 0.5.1` verification,
 public install parity closure, remaining deferrals를 보존한다.
 
+v0.6.0 Namba Intent release notes draft에는
+[`139_V0_6_0_RELEASE_NOTES_DRAFT.ko.md`](139_V0_6_0_RELEASE_NOTES_DRAFT.ko.md)를
+사용해 `V0_6_0_RELEASE_NOTES_READY_WITH_NOTES` decision, complete rename
+release notes draft, migration notes, NambaAI distinction, claim-boundary
+audit, known deferrals, v0.6.0 publication, tag, GitHub Release, asset upload,
+Homebrew Available claim, downstream execution claim이 없다는 boundary를
+보존한다.
+
 v0.5.1 external user validation plan에는
 [`133_EXTERNAL_USER_VALIDATION_PLAN.ko.md`](133_EXTERNAL_USER_VALIDATION_PLAN.ko.md)를
 사용해 tester transcript template, macOS and Windows command sheets, evidence
