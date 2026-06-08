@@ -43,11 +43,11 @@ Linux, release archive, advanced uninstall details는
 
 ### macOS
 
-Verified v0.5.0 release binary를 curl installer로 설치합니다. 설치 전 script를
+Verified v0.5.1 release binary를 curl installer로 설치합니다. 설치 전 script를
 먼저 inspect합니다:
 
 ```bash
-VERSION="0.5.0"
+VERSION="0.5.1"
 curl -fsSLO https://raw.githubusercontent.com/Nam-Cheol/ni/main/install.sh
 sed -n '1,320p' install.sh
 sh install.sh --dry-run --version "$VERSION"
@@ -75,7 +75,7 @@ PowerShell installer는 기본적으로 `%LOCALAPPDATA%\ni\bin`에 설치하고 
 업데이트합니다:
 
 ```powershell
-$Version = "0.5.0"
+$Version = "0.5.1"
 Invoke-WebRequest "https://raw.githubusercontent.com/Nam-Cheol/ni/main/install.ps1" -OutFile "install.ps1"
 Get-Content .\install.ps1
 .\install.ps1 -DryRun -Version $Version
@@ -101,11 +101,11 @@ transcript가 생기기 전까지 verified라고 claim하지 않습니다.
 
 ## 5분 첫 project
 
-Public v0.5.0 install parity note: 아래 첫 project flow는 current-tree
-`ni init .` onboarding을 사용합니다. Published v0.5.0 binary는 `ni --help`와
-`ni version`을 verify하지만 positional `ni init .` form은 지원하지 않습니다.
-자세한 증거는 [docs/126](docs/126_PUBLIC_INSTALL_PARITY_AND_PATCH_READINESS.ko.md)에
-있습니다.
+Public install parity note: published v0.5.1 binary는 tested macOS arm64
+path에서 `ni --help`, `ni version`, `ni init .`,
+`ni status --proof --next-questions`를 verify합니다. 이전 v0.5.0 `ni init .`
+mismatch는 해당 path에서 닫혔습니다. 자세한 증거는
+[docs/132](docs/132_V0_5_1_POST_RELEASE_VERIFICATION.ko.md)에 있습니다.
 
 ```bash
 mkdir my-project
@@ -146,7 +146,7 @@ runtime이 아닙니다.
 
 ## Status
 
-- v0.5.0 publication: verified.
+- v0.5.1 publication: verified.
 - Release binary: Available.
 - Curl installer: Available.
 - Homebrew: Planned / v0.5 candidate.

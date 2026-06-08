@@ -3,7 +3,7 @@ set -euo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 QUICKSTART_TMP="$(mktemp -d "${TMPDIR:-/tmp}/ni-release-check.XXXXXX")"
-CURRENT_RELEASE_VERSION="v0.5.0"
+CURRENT_RELEASE_VERSION="v0.5.1"
 PLANNED_RELEASE_VERSION="post-release follow-up"
 
 trap 'rm -rf "$QUICKSTART_TMP"' EXIT
@@ -404,6 +404,86 @@ for path in required_paths:
         ]
         if claim in text and not any(marker in context for marker in allowed_negations):
             raise SystemExit(f"{path} appears to make a forbidden v0.5.0 claim: {claim}")
+PY
+
+run_step "v0.5.1 post-release docs are factual" python3 - <<'PY'
+from pathlib import Path
+
+required_paths = [
+    Path("docs/126_PUBLIC_INSTALL_PARITY_AND_PATCH_READINESS.md"),
+    Path("docs/126_PUBLIC_INSTALL_PARITY_AND_PATCH_READINESS.ko.md"),
+    Path("docs/130_V0_5_1_RELEASE_NOTES_FINALIZATION.md"),
+    Path("docs/130_V0_5_1_RELEASE_NOTES_FINALIZATION.ko.md"),
+    Path("docs/131_V0_5_1_PUBLICATION_CHECKLIST.md"),
+    Path("docs/131_V0_5_1_PUBLICATION_CHECKLIST.ko.md"),
+    Path("docs/132_V0_5_1_POST_RELEASE_VERIFICATION.md"),
+    Path("docs/132_V0_5_1_POST_RELEASE_VERIFICATION.ko.md"),
+]
+
+for path in required_paths:
+    if not path.exists():
+        raise SystemExit(f"{path} is missing")
+
+required_markers = {
+    Path("docs/132_V0_5_1_POST_RELEASE_VERIFICATION.md"): [
+        "V0_5_1_RELEASE_EXECUTED_WITH_NOTES",
+        "v0.5.1 release: published and verified in this document.",
+        "Public install parity mismatch: addressed by v0.5.1 for the tested macOS arm64 path.",
+        "Homebrew: Planned / v0.5 candidate.",
+        "Windows real-host execution: deferred on macOS-only development host.",
+        "Model workspace packs: Experimental.",
+        "No-terminal method: Experimental / assisted.",
+        "Skills are UX; CLI is authority.",
+        "Hosted checksums verify.",
+        "`install.sh` retrieves and installs v0.5.1 in an isolated temp path.",
+        "Homebrew is Available.",
+        "Windows real-host execution works.",
+    ],
+    Path("docs/132_V0_5_1_POST_RELEASE_VERIFICATION.ko.md"): [
+        "V0_5_1_RELEASE_EXECUTED_WITH_NOTES",
+        "v0.5.1 release: 이 문서에서 published and verified.",
+        "Public install parity mismatch: tested macOS arm64 path에서는 v0.5.1로 addressed.",
+        "Homebrew: Planned / v0.5 candidate.",
+        "Windows real-host execution: macOS-only development host에서는 deferred.",
+        "Model workspace packs: Experimental.",
+        "No-terminal method: Experimental / assisted.",
+        "Skills are UX; CLI is authority.",
+        "Hosted checksums verify.",
+        "`install.sh` retrieves and installs v0.5.1 in an isolated temp path.",
+        "Homebrew is Available.",
+        "Windows real-host execution works.",
+    ],
+}
+
+for path, markers in required_markers.items():
+    text = path.read_text(encoding="utf-8")
+    missing = [marker for marker in markers if marker not in text]
+    if missing:
+        raise SystemExit(f"{path} is missing v0.5.1 post-release markers: {missing}")
+
+for path in required_paths:
+    text = path.read_text(encoding="utf-8")
+    forbidden_claims = [
+        "Homebrew: Available",
+        "Model workspace packs: Available",
+        "No-terminal method: Available",
+        "no-terminal deterministic validation passed",
+        "ni run executes downstream work",
+    ]
+    for claim in forbidden_claims:
+        context = text[max(0, text.find(claim) - 500): text.find(claim) + len(claim) + 180]
+        allowed_negations = [
+            "Do not",
+            "does not",
+            "not claim",
+            "What this verification does not prove",
+            "claim 없음",
+            "claim하지",
+            "금지",
+            "없음",
+        ]
+        if claim in text and not any(marker in context for marker in allowed_negations):
+            raise SystemExit(f"{path} appears to make a forbidden v0.5.1 claim: {claim}")
 PY
 
 run_step "release facts match repository resources" python3 - <<'PY'

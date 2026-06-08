@@ -1,6 +1,6 @@
 # Post-Release Roadmap
 
-이 roadmap은 verified v0.5.0 release, release-asset verification,
+이 roadmap은 verified v0.5.1 release, release-asset verification,
 curl-installer verification work 이후의 다음 단계들을 정의한다. `ni`는 계속 `ni-kernel`이어야 한다. 즉 AI Agents를 위한 Project
 Intent Compiler이며, accepted project intent를 위한 deterministic pre-runtime
 control layer다.
@@ -224,6 +224,12 @@ v0.5.1 publication checklist에는
 사용해 `V0_5_1_PUBLICATION_CHECKLIST_READY_WITH_NOTES` decision, human approval
 options, release gates, abort criteria, known deferrals, v0.5.1 release
 execution은 여전히 explicit human approval이 필요하다는 boundary를 보존한다.
+
+v0.5.1 post-release verification에는
+[`132_V0_5_1_POST_RELEASE_VERIFICATION.ko.md`](132_V0_5_1_POST_RELEASE_VERIFICATION.ko.md)를
+사용해 actual release URL, hosted asset inventory, checksum proof, hosted
+darwin/arm64 artifact proof, isolated `install.sh --version 0.5.1` verification,
+public install parity closure, remaining deferrals를 보존한다.
 
 이 phase는 supporting work로 target seed quality와 conformance를 개선할 수 있다.
 하지만 targets를 `ni-kernel` 내부의 executable adapters로 만들면 안 된다.

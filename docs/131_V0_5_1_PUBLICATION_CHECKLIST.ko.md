@@ -4,6 +4,7 @@
 
 State:
 - v0.5.0 publication: verified
+- v0.5.1 post-release verification: docs/132 참조
 - Public install parity decision: PUBLIC_INSTALL_PARITY_MISMATCH_V0_5_1_PATCH_NEEDED
 - v0.5.1 patch plan decision: V0_5_1_PATCH_PLAN_READY_WITH_NOTES
 - v0.5.1 RC validation decision: V0_5_1_RC_VALIDATION_PASS_WITH_NOTES
@@ -31,6 +32,10 @@ claim을 수행하지 않는다.
 ## Decision
 
 V0_5_1_PUBLICATION_CHECKLIST_READY_WITH_NOTES
+
+Post-release note: v0.5.1 release execution은 이후 approve, publish되었고
+[`132_V0_5_1_POST_RELEASE_VERIFICATION.ko.md`](132_V0_5_1_POST_RELEASE_VERIFICATION.ko.md)에서
+verify되었다.
 
 Justification: publication checklist는 complete이고 future release actions가
 check-only validation과 분리되어 있다. Notes는 v0.5.1이 아직 explicit human

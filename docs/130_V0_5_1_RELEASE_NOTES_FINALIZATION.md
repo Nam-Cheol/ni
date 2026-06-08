@@ -4,6 +4,7 @@
 
 State:
 - v0.5.0 publication: verified.
+- v0.5.1 post-release verification: see docs/132.
 - Public install parity decision: PUBLIC_INSTALL_PARITY_MISMATCH_V0_5_1_PATCH_NEEDED.
 - v0.5.1 patch plan decision: V0_5_1_PATCH_PLAN_READY_WITH_NOTES.
 - v0.5.1 RC validation decision: V0_5_1_RC_VALIDATION_PASS_WITH_NOTES.
@@ -29,6 +30,10 @@ runtime execution behavior.
 ## Decision
 
 V0_5_1_RELEASE_NOTES_READY_WITH_NOTES
+
+Post-release note: v0.5.1 was later published and verified in
+[`132_V0_5_1_POST_RELEASE_VERIFICATION.md`](132_V0_5_1_POST_RELEASE_VERIFICATION.md).
+The GitHub Release body was updated to a concise version of this notes draft.
 
 Justification: the release notes are ready to describe the patch accurately and
 conservatively. Notes remain because v0.5.1 is not published, hosted v0.5.1

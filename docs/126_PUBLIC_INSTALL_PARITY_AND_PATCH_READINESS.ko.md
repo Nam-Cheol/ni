@@ -4,6 +4,7 @@
 
 State:
 - v0.5.0 publication: verified
+- v0.5.1 post-release verification: tested macOS arm64 path에서 docs/132가 이 mismatch를 addressed
 - current-tree README two-path onboarding: implemented
 - current-tree ni init . Bubble Tea TUI: implemented
 - current-tree first-user smoke after TUI: FIRST_USER_ONBOARDING_SMOKE_PASS_WITH_NOTES
@@ -35,6 +36,11 @@ Lane은 분리한다. Current-tree behavior는 published v0.5.0 behavior의 proo
 ## Decision
 
 PUBLIC_INSTALL_PARITY_MISMATCH_V0_5_1_PATCH_NEEDED
+
+Post-release note: 이것은 v0.5.0 evidence 기준으로 맞는 pre-release decision이었다.
+이후 v0.5.1 release가 publish되고
+[`132_V0_5_1_POST_RELEASE_VERIFICATION.ko.md`](132_V0_5_1_POST_RELEASE_VERIFICATION.ko.md)에서
+verify되어 tested macOS arm64 public install parity mismatch를 닫았다.
 
 Justification: curl installer로 설치한 published v0.5.0 binary는 `0.5.0`을
 report하고 command-name `ni --help` / `ni version`은 pass한다. 하지만 current

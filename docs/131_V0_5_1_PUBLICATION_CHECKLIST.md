@@ -4,6 +4,7 @@
 
 State:
 - v0.5.0 publication: verified
+- v0.5.1 post-release verification: see docs/132
 - Public install parity decision: PUBLIC_INSTALL_PARITY_MISMATCH_V0_5_1_PATCH_NEEDED
 - v0.5.1 patch plan decision: V0_5_1_PATCH_PLAN_READY_WITH_NOTES
 - v0.5.1 RC validation decision: V0_5_1_RC_VALIDATION_PASS_WITH_NOTES
@@ -31,6 +32,10 @@ Every release action below is marked `Run in this task? No`.
 ## Decision
 
 V0_5_1_PUBLICATION_CHECKLIST_READY_WITH_NOTES
+
+Post-release note: v0.5.1 release execution was later approved, published, and
+verified in
+[`132_V0_5_1_POST_RELEASE_VERIFICATION.md`](132_V0_5_1_POST_RELEASE_VERIFICATION.md).
 
 Justification: the publication checklist is complete and future release actions
 are separated from check-only validation. Notes remain because v0.5.1 still

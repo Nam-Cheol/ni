@@ -4,6 +4,7 @@
 
 State:
 - v0.5.0 publication: verified
+- v0.5.1 post-release verification: addressed this mismatch for tested macOS arm64 path in docs/132
 - current-tree README two-path onboarding: implemented
 - current-tree ni init . Bubble Tea TUI: implemented
 - current-tree first-user smoke after TUI: FIRST_USER_ONBOARDING_SMOKE_PASS_WITH_NOTES
@@ -35,6 +36,11 @@ v0.5.0 behavior.
 ## Decision
 
 PUBLIC_INSTALL_PARITY_MISMATCH_V0_5_1_PATCH_NEEDED
+
+Post-release note: this was the correct pre-release decision for v0.5.0
+evidence. The v0.5.1 release was later published and verified in
+[`132_V0_5_1_POST_RELEASE_VERIFICATION.md`](132_V0_5_1_POST_RELEASE_VERIFICATION.md),
+closing the tested macOS arm64 public install parity mismatch.
 
 Justification: the published v0.5.0 binary installed through the curl installer
 reports `0.5.0` and passes command-name `ni --help` / `ni version`, but the

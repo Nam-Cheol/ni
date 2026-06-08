@@ -43,11 +43,11 @@ release-archive, and advanced uninstall details live in
 
 ### macOS
 
-Install the verified v0.5.0 release binary with the curl installer after
+Install the verified v0.5.1 release binary with the curl installer after
 inspecting it:
 
 ```bash
-VERSION="0.5.0"
+VERSION="0.5.1"
 curl -fsSLO https://raw.githubusercontent.com/Nam-Cheol/ni/main/install.sh
 sed -n '1,320p' install.sh
 sh install.sh --dry-run --version "$VERSION"
@@ -76,7 +76,7 @@ Install with the PowerShell installer, which installs to
 `%LOCALAPPDATA%\ni\bin` by default and updates User PATH only:
 
 ```powershell
-$Version = "0.5.0"
+$Version = "0.5.1"
 Invoke-WebRequest "https://raw.githubusercontent.com/Nam-Cheol/ni/main/install.ps1" -OutFile "install.ps1"
 Get-Content .\install.ps1
 .\install.ps1 -DryRun -Version $Version
@@ -102,10 +102,10 @@ install transcript exists.
 
 ## First project in 5 minutes
 
-Public v0.5.0 install parity note: the current first-project flow below uses
-the current-tree `ni init .` onboarding. The published v0.5.0 binary verifies
-`ni --help` and `ni version`, but does not support the positional `ni init .`
-form; see [docs/126](docs/126_PUBLIC_INSTALL_PARITY_AND_PATCH_READINESS.md).
+Public install parity note: the published v0.5.1 binary verifies `ni --help`,
+`ni version`, `ni init .`, and `ni status --proof --next-questions` on the
+tested macOS arm64 path. The earlier v0.5.0 `ni init .` mismatch is closed for
+that path; see [docs/132](docs/132_V0_5_1_POST_RELEASE_VERIFICATION.md).
 
 ```bash
 mkdir my-project
@@ -146,7 +146,7 @@ execution runtime.
 
 ## Status
 
-- v0.5.0 publication: verified.
+- v0.5.1 publication: verified.
 - Release binary: Available.
 - Curl installer: Available.
 - Homebrew: Planned / v0.5 candidate.

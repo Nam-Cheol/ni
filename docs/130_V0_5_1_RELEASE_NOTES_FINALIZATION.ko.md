@@ -4,6 +4,7 @@
 
 State:
 - v0.5.0 publication: verified.
+- v0.5.1 post-release verification: docs/132 참조.
 - Public install parity decision: PUBLIC_INSTALL_PARITY_MISMATCH_V0_5_1_PATCH_NEEDED.
 - v0.5.1 patch plan decision: V0_5_1_PATCH_PLAN_READY_WITH_NOTES.
 - v0.5.1 RC validation decision: V0_5_1_RC_VALIDATION_PASS_WITH_NOTES.
@@ -30,6 +31,11 @@ execution behavior를 add하지 않는다.
 ## Decision
 
 V0_5_1_RELEASE_NOTES_READY_WITH_NOTES
+
+Post-release note: v0.5.1은 이후 publish되고
+[`132_V0_5_1_POST_RELEASE_VERIFICATION.ko.md`](132_V0_5_1_POST_RELEASE_VERIFICATION.ko.md)에서
+verify되었다. GitHub Release body는 이 notes draft의 concise version으로
+업데이트되었다.
 
 Justification: release notes는 patch를 정확하고 보수적으로 설명할 준비가
 되었다. Notes는 남아 있다. v0.5.1은 published되지 않았고, hosted v0.5.1
