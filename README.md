@@ -72,8 +72,9 @@ Install the latest release with the PowerShell installer, which installs to
 `%LOCALAPPDATA%\ni\bin` by default and updates User PATH only:
 
 ```powershell
-irm https://raw.githubusercontent.com/Nam-Cheol/ni/main/install.ps1 -OutFile install.ps1
-.\install.ps1
+$Installer = Join-Path $env:TEMP "ni-install.ps1"
+irm https://raw.githubusercontent.com/Nam-Cheol/ni/main/install.ps1 -OutFile $Installer
+powershell -NoProfile -ExecutionPolicy Bypass -File $Installer
 ```
 
 Open a new PowerShell session, then verify the global command:
@@ -86,7 +87,9 @@ ni version
 Uninstall the installer-installed binary and the User PATH entry added by `ni`:
 
 ```powershell
-.\install.ps1 -Uninstall
+$Installer = Join-Path $env:TEMP "ni-install.ps1"
+irm https://raw.githubusercontent.com/Nam-Cheol/ni/main/install.ps1 -OutFile $Installer
+powershell -NoProfile -ExecutionPolicy Bypass -File $Installer -Uninstall
 ```
 
 Windows installer code and static safety checks are present. Real-host Windows

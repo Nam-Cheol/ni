@@ -31,6 +31,8 @@ def main() -> None:
         "Open a new PowerShell session",
         "ni --help",
         "ni version",
+        '$Installer = Join-Path $env:TEMP "ni-install.ps1"',
+        "powershell -NoProfile -ExecutionPolicy Bypass -File `$Installer -Uninstall",
         "does not install model skills or run downstream work",
     ]
     missing = [marker for marker in required if marker not in text]

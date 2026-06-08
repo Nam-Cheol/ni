@@ -177,7 +177,9 @@ try {
     Write-Step "  ni version"
     Write-Step ""
     Write-Step "Uninstall:"
-    Write-Step "  .\install.ps1 -Uninstall"
+    Write-Step '  $Installer = Join-Path $env:TEMP "ni-install.ps1"'
+    Write-Step '  irm https://raw.githubusercontent.com/Nam-Cheol/ni/main/install.ps1 -OutFile $Installer'
+    Write-Step "  powershell -NoProfile -ExecutionPolicy Bypass -File `$Installer -Uninstall"
     Write-Step ""
     Write-Step "The installer does not install model skills or run downstream work."
 }

@@ -19,7 +19,7 @@ README intentionally shows only two primary first-success paths:
 | Platform | Primary path | Verify | First project | Uninstall |
 | --- | --- | --- | --- | --- |
 | macOS | Install the latest release with `curl -fsSL https://raw.githubusercontent.com/Nam-Cheol/ni/main/install.sh \| sh -s -- --update-path`. | Open a new shell and run `ni --help` and `ni version`. | `mkdir my-project`, `cd my-project`, `ni init .` | `curl -fsSL https://raw.githubusercontent.com/Nam-Cheol/ni/main/install.sh \| sh -s -- --uninstall` |
-| Windows | Download `install.ps1` with `irm https://raw.githubusercontent.com/Nam-Cheol/ni/main/install.ps1 -OutFile install.ps1`, then run `.\install.ps1`. | Open a new PowerShell session and run `ni --help` and `ni version`. | `mkdir my-project`, `cd my-project`, `ni init .` | `.\install.ps1 -Uninstall` |
+| Windows | Download to a temp path with `$Installer = Join-Path $env:TEMP "ni-install.ps1"`, `irm https://raw.githubusercontent.com/Nam-Cheol/ni/main/install.ps1 -OutFile $Installer`, then run `powershell -NoProfile -ExecutionPolicy Bypass -File $Installer`. | Open a new PowerShell session and run `ni --help` and `ni version`. | `mkdir my-project`, `cd my-project`, `ni init .` | `$Installer = Join-Path $env:TEMP "ni-install.ps1"`, `irm https://raw.githubusercontent.com/Nam-Cheol/ni/main/install.ps1 -OutFile $Installer`, `powershell -NoProfile -ExecutionPolicy Bypass -File $Installer -Uninstall` |
 
 These paths prove global command-name resolution first. They do not run agents,
 execute generated prompts, or prove downstream implementation readiness.
@@ -233,16 +233,19 @@ and adds that directory to User PATH only. It does not modify Machine PATH by
 default and does not use `setx`.
 
 ```powershell
-irm https://raw.githubusercontent.com/Nam-Cheol/ni/main/install.ps1 -OutFile install.ps1
-.\install.ps1
+$Installer = Join-Path $env:TEMP "ni-install.ps1"
+irm https://raw.githubusercontent.com/Nam-Cheol/ni/main/install.ps1 -OutFile $Installer
+powershell -NoProfile -ExecutionPolicy Bypass -File $Installer
 ```
 
 If you omit `-Version`, the installer asks GitHub for the latest release tag
 during actual install. For reproducible installs, inspect and dry-run the
-script, then pin the release:
+script from the directory where you downloaded `install.ps1`, then pin the
+release:
 
 ```powershell
 $Version = "0.5.1"
+irm https://raw.githubusercontent.com/Nam-Cheol/ni/main/install.ps1 -OutFile install.ps1
 Get-Content .\install.ps1
 .\install.ps1 -DryRun -Version $Version
 .\install.ps1 -Version $Version
@@ -259,7 +262,9 @@ Uninstall removes `ni.exe`, removes the install directory if empty, and removes
 only the matching `ni` directory from User PATH:
 
 ```powershell
-.\install.ps1 -Uninstall
+$Installer = Join-Path $env:TEMP "ni-install.ps1"
+irm https://raw.githubusercontent.com/Nam-Cheol/ni/main/install.ps1 -OutFile $Installer
+powershell -NoProfile -ExecutionPolicy Bypass -File $Installer -Uninstall
 ```
 
 Windows execution has not been verified on this macOS host. Do not claim it

@@ -71,8 +71,9 @@ PowerShell installer로 latest release를 설치합니다. 기본적으로
 `%LOCALAPPDATA%\ni\bin`에 설치하고 User PATH만 업데이트합니다:
 
 ```powershell
-irm https://raw.githubusercontent.com/Nam-Cheol/ni/main/install.ps1 -OutFile install.ps1
-.\install.ps1
+$Installer = Join-Path $env:TEMP "ni-install.ps1"
+irm https://raw.githubusercontent.com/Nam-Cheol/ni/main/install.ps1 -OutFile $Installer
+powershell -NoProfile -ExecutionPolicy Bypass -File $Installer
 ```
 
 새 PowerShell session을 연 뒤 global command를 verify합니다:
@@ -85,7 +86,9 @@ ni version
 Installer로 설치한 binary와 `ni`가 추가한 User PATH entry를 uninstall합니다:
 
 ```powershell
-.\install.ps1 -Uninstall
+$Installer = Join-Path $env:TEMP "ni-install.ps1"
+irm https://raw.githubusercontent.com/Nam-Cheol/ni/main/install.ps1 -OutFile $Installer
+powershell -NoProfile -ExecutionPolicy Bypass -File $Installer -Uninstall
 ```
 
 Windows installer code와 static safety checks는 있습니다. 실제 Windows host
