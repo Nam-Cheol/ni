@@ -2,14 +2,14 @@
 
 ## Current status
 
-State:
+State at readiness-audit time:
 - v0.5.1 release: published and verified
-- v0.6.0 release: not published
+- v0.6.0 release: pre-publication; superseded by docs/140 post-release verification
 - Namba Intent rename: implemented in current tree
 - primary command: namba-intent
 - deprecated ni shim: transition-only
 - .ni/ compatibility: preserved
-- public install retrieval of namba-intent: not verified until v0.6.0 release
+- public install retrieval of namba-intent: release-gated at audit time; verified later in docs/140
 - Homebrew: Planned / v0.5 candidate
 - Windows real-host verification: pending
 - Model workspace packs: Experimental
@@ -19,7 +19,7 @@ State:
 
 ## Audit goal
 
-This audit checks whether the current-tree rename is ready for v0.6.0 release
+This audit checks whether the pre-release current-tree rename is ready for v0.6.0 release
 preparation and whether public install docs are safely bounded. It does not
 publish, tag, upload assets, run release workflows, run GoReleaser publish, run
 `namba-intent end` on the project root, relock the project root, execute
@@ -32,15 +32,17 @@ V0_6_0_RELEASE_READINESS_READY_WITH_NOTES
 
 Rationale: current-tree command rename, installer configuration, release asset
 naming, `.ni/` compatibility, deprecated `ni` shim behavior, and non-execution
-boundaries are ready for v0.6.0 release preparation. Public v0.6.0 install
-retrieval, hosted artifacts, Windows real-host execution, Homebrew availability,
-and external user validation remain explicit future evidence gates.
+boundaries are ready for v0.6.0 release preparation. At audit time, public
+v0.6.0 install retrieval and hosted artifacts remained release-time evidence
+gates; they are superseded by docs/140 after publication. Windows real-host
+execution, Homebrew availability, and external user validation remain explicit
+future evidence gates.
 
 ## Current-tree rename readiness
 
 | Surface | Expected | Observed | Pass? | Notes |
 | --- | --- | --- | --- | --- |
-| product name | Namba Intent | README, CLI help, and docs use Namba Intent for current-tree surfaces. | Yes | v0.6.0 is not published. |
+| product name | Namba Intent | README, CLI help, and docs use Namba Intent for current-tree surfaces. | Yes | Publication proof is recorded later in docs/140. |
 | primary command | `namba-intent` | `cmd/namba-intent` exists and delegates to shared CLI logic. | Yes | `go run ./cmd/namba-intent --help` passed. |
 | cmd/namba-intent | primary entrypoint | `cmd/namba-intent/main.go` calls `internal/cli.Run`. | Yes | No duplicated command logic. |
 | deprecated ni shim | warn and delegate | `cmd/ni/main.go` prints `ni is deprecated; use namba-intent.` and delegates. | Yes | Transition-only. |
@@ -53,14 +55,14 @@ and external user validation remain explicit future evidence gates.
 
 | Surface | Expected boundary | Observed state | Pass? | Required action |
 | --- | --- | --- | --- | --- |
-| README.md | Separate current main from latest public v0.5.1. | States v0.6.0 is upcoming and v0.5.1 may still use `ni`. | Yes | Keep note until v0.6.0 is verified. |
+| README.md | Separate current main from latest public v0.5.1 at audit time. | At audit time, stated v0.6.0 was upcoming and v0.5.1 may still use `ni`. | Yes | Superseded after v0.6.0 verification. |
 | README.ko.md | Korean companion must not widen claims. | Matches README boundary. | Yes | Keep in sync. |
 | install.sh | Future primary binary is `namba-intent`. | Selects `namba-intent_<version>` assets and installs `namba-intent`. | Yes | Do not claim public retrieval before v0.6.0. |
 | install.ps1 | Future primary binary is `namba-intent.exe`. | Selects `namba-intent_<version>_windows_amd64.zip` and installs under `%LOCALAPPDATA%\namba-intent\bin`. | Yes | Real Windows transcript still pending. |
-| docs/22_INSTALL.md | Public v0.5.1 and current-main v0.6.0 paths must be separated. | Updated to mark public `namba-intent` installer retrieval as Release-gated. | Yes | Reverify after v0.6.0 publication. |
+| docs/22_INSTALL.md | Public v0.5.1 and current-main v0.6.0 paths must be separated. | Updated to mark public `namba-intent` installer retrieval as Release-gated. | Yes | Reverified after publication in docs/140. |
 | docs/install-curl.md | Curl docs must not claim public `namba-intent` retrieval. | Updated to separate historical v0.5.1 `ni` evidence from future `namba-intent` assets. | Yes | Reverify after hosted assets exist. |
-| public latest release | Latest public release may still be v0.5.1. | `git tag --list v0.5.1` returned `v0.5.1`; `v0.6.0` tag absent. | Yes | Do not treat current tree as published release. |
-| v0.6.0 release status | Not published. | No local `v0.6.0` tag found. | Yes | Publication is a future human-approved task. |
+| public latest release | Latest public release may still be v0.5.1 at audit time. | `git tag --list v0.5.1` returned `v0.5.1`; `v0.6.0` tag absent. | Yes | Superseded by docs/140 after publication. |
+| v0.6.0 release status | Pre-publication at audit time. | No local `v0.6.0` tag found during this audit. | Yes | Publication happened later with human approval and is verified in docs/140. |
 
 ## Installer readiness
 
@@ -79,7 +81,7 @@ and external user validation remain explicit future evidence gates.
 | --- | --- | --- | --- | --- |
 | version injection | Inject `ni/internal/version.Version`. | `.goreleaser.yaml` uses `-X ni/internal/version.Version={{ .Version }}`. | Yes | Source `go run` still reports `0.0.0-dev`. |
 | asset names | Future artifacts use `namba-intent_...`. | `.goreleaser.yaml`, install scripts, and release pipeline docs use `namba-intent_<version>...`. | Yes | Hosted assets do not exist yet. |
-| checksum names | Future checksum file is `namba-intent_<version>_checksums.txt`. | Config and installers match. | Yes | Public v0.6.0 checksum not published. |
+| checksum names | Future checksum file is `namba-intent_<version>_checksums.txt`. | Config and installers match. | Yes | Published v0.6.0 checksum proof is recorded in docs/140. |
 | release-check | Check-only release gate. | `scripts/release-check.sh` checks tests, quality, smoke, install, docs, and release boundaries. | Yes | Does not publish. |
 | install-check | Source/build/temp install gate. | `scripts/install-check.sh` verifies `namba-intent` command-name path and installer tests. | Yes | Uses temp paths. |
 | GoReleaser config | Primary command plus shim. | `.goreleaser.yaml` builds `namba-intent` and `ni` shim in one archive. | Yes | GoReleaser publish not run. |
@@ -114,9 +116,9 @@ and external user validation remain explicit future evidence gates.
 
 | Deferral | Reason | Required future evidence | Blocks v0.6.0 readiness? |
 | --- | --- | --- | --- |
-| v0.6.0 publication | This task is non-publishing. | Human-approved tag, release workflow, release metadata. | No, blocks publication claim only. |
-| public install retrieval of namba-intent | Hosted v0.6.0 assets do not exist yet. | Isolated install from published v0.6.0 assets plus help/version proof. | No, blocks public install claim only. |
-| hosted artifacts | No release action performed. | Asset inventory and checksum verification. | No, blocks hosted artifact claim only. |
+| v0.6.0 publication | This audit was non-publishing. | Human-approved tag, release workflow, release metadata. | Superseded | Verified later in docs/140. |
+| public install retrieval of namba-intent | Hosted v0.6.0 assets did not exist at audit time. | Isolated install from published v0.6.0 assets plus help/version proof. | Superseded | Verified later in docs/140. |
+| hosted artifacts | No release action performed in this audit. | Asset inventory and checksum verification. | Superseded | Verified later in docs/140. |
 | Windows real-host execution | macOS host cannot prove it. | Windows PowerShell install, new-session help/version, uninstall transcript. | No, unless Windows verified claim is required. |
 | Homebrew Available | No tap/formula/install proof. | Tap/formula, checksums, audit, install, `namba-intent --help`, `namba-intent version`. | No, because Homebrew remains Planned. |
 | external user validation | No external tester transcript. | Tester transcript and comprehension review. | No, known note. |
@@ -126,8 +128,8 @@ and external user validation remain explicit future evidence gates.
 
 | Claim area | Expected boundary | Observed state | Pass? | Notes |
 | --- | --- | --- | --- | --- |
-| v0.6.0 publication status | Must say not published. | Preserved. | Yes | No tag or release action. |
-| public install | Must not claim public `namba-intent` retrieval. | docs/22 and curl docs mark it Release-gated. | Yes | v0.5.1 evidence remains `ni`. |
+| v0.6.0 publication status | Must stay release-gated until publication proof exists. | Preserved at audit time. | Yes | Superseded by docs/140 after tag and release action. |
+| public install | Must not claim public `namba-intent` retrieval before proof exists. | docs/22 and curl docs mark it Release-gated. | Yes | v0.6.0 proof is now recorded in docs/140. |
 | Namba Intent identity | Current tree may use it. | Used in README/help/docs. | Yes | Release claim remains future-gated. |
 | namba-intent command | Primary current-tree command. | Implemented and validated. | Yes | Public install still not verified. |
 | deprecated ni shim | Transition-only. | Warns and delegates. | Yes | Not primary path. |
@@ -253,10 +255,8 @@ Required boundaries:
   namba-intent end on the project root, relock the project root, edit
   .ni/plan.lock.json, execute generated prompts, or add downstream execution
   behavior.
-- State that v0.6.0 is not published unless this task explicitly verifies a
-  new tag/release created outside the task.
-- State that public install retrieval of `namba-intent` is not verified until
-  v0.6.0 artifacts are published and checked.
+- For post-release work, use docs/140 as the publication and public install
+  verification record.
 - Preserve Homebrew: Planned / v0.5 candidate, Model workspace packs:
   Experimental, No-terminal method: Experimental / assisted, and Skills are
   UX; CLI is authority.

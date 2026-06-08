@@ -2,9 +2,9 @@
 
 ## Current status
 
-State:
+State at smoke time:
 - v0.5.1 release: published and verified
-- v0.6.0 release: not published
+- v0.6.0 release: pre-release; docs/140 post-release verification이 supersede
 - Namba Intent rename: implemented in current tree
 - primary command: namba-intent
 - deprecated ni shim: transition-only
@@ -18,9 +18,11 @@ State:
 
 ## Smoke goal
 
-이 smoke는 temporary PATH에서 resolve되는 current-tree `namba-intent` binary로
-Namba Intent onboarding을 검증합니다. Public v0.6.0 install 또는 hosted release
-artifact 검증이 아닙니다.
+이 smoke는 temporary PATH에서 resolve되는 pre-release current-tree
+`namba-intent` binary로 Namba Intent onboarding을 검증합니다. Public v0.6.0
+install 또는 hosted release artifact 검증은 이후
+[docs/140 post-release verification](140_V0_6_0_POST_RELEASE_VERIFICATION.ko.md)에
+기록했습니다.
 
 ## Decision
 
@@ -31,7 +33,7 @@ Notes:
   repeated init, lockfile safety, deprecated `ni` shim checks가 통과했습니다.
 - Blank first-user project는 purpose, actors/outcomes, delivery surface, first
   open blocker question이 unresolved라서 예상대로 `BLOCKED`를 보고했습니다.
-- Public v0.6.0 install, Windows real-host execution, Homebrew availability,
+- Smoke 시점에는 public v0.6.0 install, Windows real-host execution, Homebrew availability,
   external user success, downstream execution은 증명하지 않았습니다.
 
 ## Command-name smoke
@@ -127,8 +129,8 @@ Project root에서 `namba-intent end`를 실행하지 않았고 root relock도 �
 
 | Surface | Expected boundary | Observed state | Pass? | Notes |
 | --- | --- | --- | --- | --- |
-| `README.md` | Namba Intent, `namba-intent` primary, v0.6.0 publication overclaim 없음. | Namba Intent와 `namba-intent`를 사용하고, v0.6.0 publish 전 latest published v0.5.1은 여전히 `ni`일 수 있다고 말한다. | Yes | Homebrew는 Planned / v0.5 candidate. |
-| `README.ko.md` | Korean companion이 claim을 넓히지 않는다. | README와 aligned; v0.6.0 not-published, Windows/Homebrew boundaries 유지. | Yes | `Skills are UX; CLI is authority.` 유지. |
+| `README.md` | Namba Intent, `namba-intent` primary, v0.6.0 publication overclaim 없음. | Smoke 시점에는 Namba Intent와 `namba-intent`를 사용하면서 publication claim을 release-gated로 유지했다. | Yes | Homebrew는 Planned / v0.5 candidate. |
+| `README.ko.md` | Korean companion이 claim을 넓히지 않는다. | Smoke 시점에는 README와 aligned하며 Windows/Homebrew boundaries를 유지했다. | Yes | `Skills are UX; CLI is authority.` 유지. |
 | install docs | Current-tree installer behavior와 v0.5.1 public-release evidence를 분리한다. | `docs/22_INSTALL.md`와 curl install docs는 verified v0.5.1 `ni` release evidence를 보존하고, README와 실제 installers는 upcoming/current-tree `namba-intent`를 문서화한다. | Yes with notes | Public v0.5.1 proof가 아직 `namba-intent`가 아니라 `ni`인 점은 의도된 boundary. |
 | `docs/135` | Rename plan이 product/execution boundaries를 보존한다. | Tracked docs/135 pair가 있고 `namba-intent`, `.ni/`, future v0.6.0 release, non-execution boundaries를 유지한다. | Yes | Root relock 없음. |
 | `docs/136` | Implementation record가 rename/claim boundaries를 보존한다. | Tracked docs/136 pair가 current-tree rename, transition-only `ni`, no public v0.6.0 proof를 기록한다. | Yes | 이 smoke는 다음 record로 docs/137을 추가한다. |
@@ -142,7 +144,7 @@ Project root에서 `namba-intent end`를 실행하지 않았고 root relock도 �
 | `install.ps1` | `namba-intent.exe`를 primary로 install한다. | `%LOCALAPPDATA%\namba-intent\bin` 기본, target은 `namba-intent.exe`, verification steps도 `namba-intent`. | Yes | Static/current-tree audit only. |
 | uninstall | Primary install을 제거한다. | Unix uninstall은 installed `namba-intent` binary와 managed PATH block을 제거; PowerShell uninstall은 `namba-intent.exe`와 User PATH entry를 제거. | Yes | Public uninstall은 실행하지 않았다. |
 | Windows alias handling | Windows primary path는 `ni` alias cleanup에 의존하지 않는다. | PowerShell installer는 `PowerShell ni alias cleanup is not required for namba-intent.exe.`라고 말한다. | Yes | Windows real-host transcript 없음. |
-| public release boundary | Public v0.6.0 install works를 claim하지 않는다. | README/docs는 v0.6.0 not published와 v0.5.1 public proof가 historical `ni`임을 말한다. | Yes | Release, tag, asset upload, GoReleaser publish 없음. |
+| public release boundary | Release evidence 전 public v0.6.0 install works를 claim하지 않는다. | Smoke 시점 README/docs는 public install proof를 release-gated로 두고 v0.5.1 public proof를 historical `ni`로 유지했다. | Yes | 이 smoke에서는 release, tag, asset upload, GoReleaser publish 없음. |
 
 ## Claim-boundary audit
 
@@ -152,7 +154,7 @@ Project root에서 `namba-intent end`를 실행하지 않았고 root relock도 �
 | namba-intent command | Primary current-tree command. | PATH-resolved temp binary smoke 통과. | Yes | Current-tree only. |
 | ni shim | Deprecated transition path only. | Stderr warning과 delegation 확인. | Yes | Primary 아님. |
 | .ni compatibility | `.ni/` unchanged. | Init은 `.ni/*`를 만들고 root protected `.ni` diff는 edit 전 empty였다. | Yes | `.ni` rename 없음. |
-| v0.6.0 publication status | Not published. | `git tag --list v0.6.0`는 empty. | Yes | Release action 없음. |
+| v0.6.0 publication status | 이 smoke 시점에는 pre-release. | `git tag --list v0.6.0`는 smoke 시점 empty. | Yes | Release action 이후 docs/140이 supersede. |
 | public install | Public install이 `namba-intent`를 가져온다고 claim하지 않는다. | Claim 없음. | Yes | Public v0.5.1 proof는 `ni`. |
 | Homebrew | Planned / v0.5 candidate. | Available claim 관찰/추가 없음. | Yes | Homebrew formula work 없음. |
 | Windows real-host verification | Transcript 전까지 pending. | Pending; installer surface만 audit. | Yes | Windows host 사용 안 함. |

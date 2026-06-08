@@ -2,14 +2,14 @@
 
 ## Current status
 
-State:
+State after publication:
 - v0.5.1 release: published and verified
-- v0.6.0 release: not published
-- Namba Intent rename: implemented in current tree
+- v0.6.0 release: published and verified on macOS darwin/arm64
+- Namba Intent rename: released
 - primary command: namba-intent
 - deprecated ni shim: transition-only
 - .ni/ compatibility: preserved
-- public install retrieval of namba-intent: not verified until v0.6.0 release
+- public install retrieval of namba-intent: verified for `install.sh --version 0.6.0` on darwin/arm64
 - Homebrew: Planned / v0.5 candidate
 - Windows real-host verification: pending
 - Model workspace packs: Experimental
@@ -17,23 +17,26 @@ State:
 - Skills are UX; CLI is authority.
 - Namba Intent is a pre-runtime Project Intent Compiler for AI Agents.
 
-## Draft goal
+Post-release evidence is recorded in
+[docs/140 post-release verification](140_V0_6_0_POST_RELEASE_VERIFICATION.md).
 
-This document drafts conservative v0.6.0 release notes for the Namba Intent
-rename without publishing v0.6.0, creating a tag, uploading assets, running a
-release workflow, running GoReleaser publish, creating Homebrew material,
-running `namba-intent end` on the project root, relocking the project root,
-executing generated prompts, or adding downstream execution behavior.
+## Historical draft goal
+
+This document originally drafted conservative v0.6.0 release notes for the
+Namba Intent rename before publication. It did not itself create a tag, upload
+assets, create Homebrew material, run `namba-intent end` on the project root,
+relock the project root, execute generated prompts, or add downstream
+execution behavior.
 
 ## Decision
 
-V0_6_0_RELEASE_NOTES_READY_WITH_NOTES
+V0_6_0_RELEASE_NOTES_SUPERSEDED_BY_POST_RELEASE_VERIFICATION
 
-Justification: the release notes are ready to describe the rename accurately
-and conservatively. Notes remain because v0.6.0 is not published, public
-install retrieval of `namba-intent` is not verified, hosted v0.6.0 artifacts do
-not exist, Windows real-host verification is pending, Homebrew remains Planned
-/ v0.5 candidate, repository rename is deferred, model workspace packs remain
+Justification: the draft accurately described the rename before publication.
+It is now superseded by docs/140 for release metadata, hosted artifacts,
+checksums, public install retrieval, and current-platform artifact proof.
+Windows real-host verification is still pending, Homebrew remains Planned /
+v0.5 candidate, repository rename is deferred, model workspace packs remain
 Experimental, the no-terminal method remains Experimental / assisted, and
 external user validation has not been performed.
 
@@ -133,11 +136,9 @@ PowerShell evidence.
 
 ### Install notes
 
-v0.6.0 is not published in this task. Public install retrieval of
-`namba-intent` must not be claimed until v0.6.0 release assets are published
-and verified.
-
-After publication, a maintainer should verify:
+v0.6.0 assets are published and public install retrieval for
+`namba-intent` is verified on darwin/arm64 in docs/140. The verified commands
+were:
 
 ```bash
 namba-intent --help
@@ -145,14 +146,11 @@ namba-intent version
 namba-intent init .
 ```
 
-Until then, the latest published v0.5.1 release remains verified for the
-historical `ni` command. Homebrew remains Planned / v0.5 candidate.
+Historical v0.5.1 evidence remains tied to the older `ni` command. Homebrew
+remains Planned / v0.5 candidate.
 
 ### Known deferrals
 
-- v0.6.0 publication.
-- Hosted v0.6.0 artifacts and checksums.
-- Public install retrieval of `namba-intent`.
 - Windows real-host execution transcript.
 - Homebrew Available proof.
 - External user validation.
@@ -170,8 +168,7 @@ historical `ni` command. Homebrew remains Planned / v0.5 candidate.
 - It does not rename the repository.
 - It does not make Homebrew Available.
 - It does not verify Windows real-host execution without a transcript.
-- It does not claim public install retrieves `namba-intent` before v0.6.0
-  publication and verification.
+- It does not claim Windows real-host execution without a transcript.
 
 ### Validation evidence
 
@@ -233,9 +230,9 @@ This draft also records current validation commands below.
 
 | Claim area | Expected boundary | Observed wording | Pass? | Notes |
 | --- | --- | --- | --- | --- |
-| v0.6.0 publication status | Must say not published. | Draft says v0.6.0 is not published in this task. | Yes | No tag or release action. |
-| public install retrieval | Must not claim public `namba-intent` retrieval. | Draft says retrieval is not verified until v0.6.0 publication and verification. | Yes | Current-main install scripts are not hosted proof. |
-| namba-intent command | May describe current-tree primary command. | Draft says primary command becomes `namba-intent`. | Yes | Public install remains release-gated. |
+| v0.6.0 publication status | Must have post-release proof after publication. | Superseded by docs/140. | Yes | Tag, workflow, release, assets, and checksums verified. |
+| public install retrieval | Must be verified before claiming public `namba-intent` retrieval. | Superseded by docs/140. | Yes | `install.sh --version 0.6.0` verified on darwin/arm64. |
+| namba-intent command | May describe released primary command. | Draft says primary command becomes `namba-intent`. | Yes | Public install proof is in docs/140. |
 | deprecated ni shim | Transition-only. | Draft says `ni` is deprecated and not primary. | Yes | Warning text preserved. |
 | .ni compatibility | Must preserve `.ni/`. | Draft says `.ni/` remains state/config directory. | Yes | No `.ni` rename. |
 | NambaAI distinction | Must not confuse Namba Intent with NambaAI. | Draft includes distinction and reserves `namba` for namba-ai. | Yes | Command namespace clear. |
@@ -250,8 +247,9 @@ This draft also records current validation commands below.
 | --- | --- | --- |
 | docs/135 rename plan | RENAME_TO_NAMBA_INTENT. | Establishes name, command, `.ni/`, repo, and NambaAI boundary. |
 | docs/136 rename implementation | Current-tree rename implemented. | Records primary command, transition shim, installers, and checks. |
-| docs/137 first-user smoke | NAMBA_INTENT_FIRST_USER_SMOKE_PASS_WITH_NOTES. | Current-tree command-name, init/status, repeated init, lockfile safety, and shim checks passed. |
-| docs/138 readiness audit | V0_6_0_RELEASE_READINESS_READY_WITH_NOTES. | Current-tree rename/readiness ready with explicit release-time deferrals. |
+| docs/137 first-user smoke | NAMBA_INTENT_FIRST_USER_SMOKE_PASS_WITH_NOTES. | Pre-release command-name, init/status, repeated init, lockfile safety, and shim checks passed. |
+| docs/138 readiness audit | V0_6_0_RELEASE_READINESS_READY_WITH_NOTES. | Pre-release rename/readiness ready with explicit release-time deferrals. |
+| docs/140 post-release verification | V0_6_0_RELEASE_EXECUTED_AND_VERIFIED. | Release metadata, assets, checksums, darwin/arm64 artifact, and installer path verified. |
 | current validation commands | See Validation results. | Run in this task after docs/139 creation. |
 | protected .ni diff | Empty after validation. | `.ni/contract.json`, `.ni/session.json`, and `.ni/plan.lock.json` unchanged. |
 
@@ -259,9 +257,9 @@ This draft also records current validation commands below.
 
 | Deferral | Reason | Required future evidence | Blocks release notes? |
 | --- | --- | --- | --- |
-| v0.6.0 publication | This task is non-publishing. | Human-approved tag, release workflow, release metadata. | No |
-| public install retrieval of namba-intent | Hosted v0.6.0 assets do not exist yet. | Isolated install from published v0.6.0 assets plus help/version proof. | No |
-| hosted v0.6.0 artifacts | No release action performed. | Asset inventory and checksum verification. | No |
+| v0.6.0 publication | Superseded by docs/140. | Human-approved tag, release workflow, release metadata. | Closed |
+| public install retrieval of namba-intent | Superseded by docs/140. | Isolated install from published v0.6.0 assets plus help/version proof. | Closed |
+| hosted v0.6.0 artifacts | Superseded by docs/140. | Asset inventory and checksum verification. | Closed |
 | Windows real-host verification | macOS/current environment cannot prove it. | Windows PowerShell install, new-session help/version, init, uninstall transcript. | No |
 | Homebrew Available | No tap/formula/install proof. | Tap/formula, checksums, audit, install, `namba-intent --help`, `namba-intent version`. | No |
 | external user validation | No external tester transcript. | Tester transcript and comprehension review. | No |
@@ -317,15 +315,15 @@ This draft also records current validation commands below.
 | docs/51_POST_RELEASE_ROADMAP.md | Added a narrow pointer to the v0.6.0 release notes draft. |
 | docs/51_POST_RELEASE_ROADMAP.ko.md | Added the matching Korean roadmap pointer. |
 
-## What this draft proves
+## What this historical draft proved
 
 State only:
 - v0.6.0 release notes are ready under audited boundaries with known notes.
-- Release notes describe the Namba Intent rename without claiming publication.
+- Release notes described the Namba Intent rename before publication.
 - Known deferrals remain explicit.
-- No release action was performed.
+- Release action evidence is now recorded in docs/140.
 
-## What this draft does not prove
+## What docs/140 now proves
 
 State:
 - v0.6.0 has been published.

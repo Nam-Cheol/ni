@@ -2,9 +2,9 @@
 
 ## Current status
 
-State:
+State at smoke time:
 - v0.5.1 release: published and verified
-- v0.6.0 release: not published
+- v0.6.0 release: pre-release; superseded by docs/140 post-release verification
 - Namba Intent rename: implemented in current tree
 - primary command: namba-intent
 - deprecated ni shim: transition-only
@@ -18,9 +18,10 @@ State:
 
 ## Smoke goal
 
-This smoke verifies current-tree Namba Intent onboarding from a temporary
+This smoke verifies pre-release current-tree Namba Intent onboarding from a temporary
 PATH-resolved `namba-intent` binary. It does not verify public v0.6.0 install
-or any hosted release artifact.
+or any hosted release artifact. Public v0.6.0 install proof is recorded later
+in [docs/140 post-release verification](140_V0_6_0_POST_RELEASE_VERIFICATION.md).
 
 ## Decision
 
@@ -32,7 +33,7 @@ Notes:
 - A blank first-user project reported `BLOCKED`, as expected, because purpose,
   actors/outcomes, delivery surface, and the first open blocker question were
   still unresolved.
-- Public v0.6.0 install, Windows real-host execution, Homebrew availability,
+- At smoke time, public v0.6.0 install, Windows real-host execution, Homebrew availability,
   external user success, and downstream execution were not proven.
 
 ## Command-name smoke
@@ -127,8 +128,8 @@ No `namba-intent end` was run on the project root, and no root relock occurred.
 
 | Surface | Expected boundary | Observed state | Pass? | Notes |
 | --- | --- | --- | --- | --- |
-| `README.md` | Use Namba Intent, `namba-intent` primary, and no v0.6.0 publication overclaim. | Uses Namba Intent and `namba-intent`; says latest published v0.5.1 may still use `ni` until v0.6.0 is published. | Yes | Homebrew remains Planned / v0.5 candidate. |
-| `README.ko.md` | Korean companion must not widen claims. | Aligned with README; preserves v0.6.0 not-published and Windows/Homebrew boundaries. | Yes | Keeps `Skills are UX; CLI is authority.` |
+| `README.md` | Use Namba Intent, `namba-intent` primary, and no v0.6.0 publication overclaim. | At smoke time, README used Namba Intent and `namba-intent` while keeping publication release-gated. | Yes | Homebrew remains Planned / v0.5 candidate. |
+| `README.ko.md` | Korean companion must not widen claims. | At smoke time, aligned with README and preserved Windows/Homebrew boundaries. | Yes | Keeps `Skills are UX; CLI is authority.` |
 | install docs | Current-tree installer behavior and v0.5.1 public-release evidence must stay separated. | `docs/22_INSTALL.md` and curl install docs preserve verified v0.5.1 `ni` release evidence, while README and actual installers document upcoming/current-tree `namba-intent`. | Yes with notes | The note is intentional: public v0.5.1 proof is still `ni`, not `namba-intent`. |
 | `docs/135` | Rename plan should preserve product and execution boundaries. | Tracked docs/135 pair exists and keeps `namba-intent`, `.ni/`, v0.6.0 future-release, and non-execution boundaries. | Yes | No root relock. |
 | `docs/136` | Implementation record should preserve rename and claim boundaries. | Tracked docs/136 pair exists; it records current-tree rename, transition-only `ni`, and no public v0.6.0 proof. | Yes | This smoke adds docs/137 as the next record. |
@@ -142,7 +143,7 @@ No `namba-intent end` was run on the project root, and no root relock occurred.
 | `install.ps1` | Installs `namba-intent.exe` as primary. | Defaults to `%LOCALAPPDATA%\namba-intent\bin`, targets `namba-intent.exe`, and prints `namba-intent` verification steps. | Yes | Static/current-tree audit only. |
 | uninstall | Removes primary install. | Unix uninstall removes the installed `namba-intent` binary and managed PATH block; PowerShell uninstall removes `namba-intent.exe` and User PATH entry. | Yes | No public uninstall was run. |
 | Windows alias handling | Windows primary path should not rely on `ni` alias cleanup. | PowerShell installer states `PowerShell ni alias cleanup is not required for namba-intent.exe.` | Yes | No Windows real-host transcript exists. |
-| public release boundary | Do not claim public v0.6.0 install works. | README/docs state v0.6.0 is not published and v0.5.1 public proof remains historical `ni`. | Yes | No release, tag, asset upload, or GoReleaser publish was run. |
+| public release boundary | Do not claim public v0.6.0 install works before release evidence exists. | At smoke time, README/docs kept public install proof release-gated and v0.5.1 public proof historical to `ni`. | Yes | No release, tag, asset upload, or GoReleaser publish was run in this smoke. |
 
 ## Claim-boundary audit
 
@@ -152,7 +153,7 @@ No `namba-intent end` was run on the project root, and no root relock occurred.
 | namba-intent command | Primary current-tree command. | PATH-resolved temp binary smoke passed. | Yes | Current-tree only. |
 | ni shim | Deprecated transition path only. | Stderr warning and delegation verified. | Yes | Not primary. |
 | .ni compatibility | Keep `.ni/` unchanged. | Init creates `.ni/*`; root protected `.ni` diff stayed empty before edits. | Yes | No `.ni` rename. |
-| v0.6.0 publication status | Not published. | `git tag --list v0.6.0` returned empty. | Yes | No release action. |
+| v0.6.0 publication status | Pre-release during this smoke. | `git tag --list v0.6.0` returned empty at smoke time. | Yes | Superseded by docs/140 after release action. |
 | public install | Do not claim public install retrieves `namba-intent`. | Not claimed. | Yes | Public v0.5.1 proof remains `ni`. |
 | Homebrew | Planned / v0.5 candidate. | No Available claim observed or added. | Yes | No Homebrew formula work. |
 | Windows real-host verification | Pending until transcript exists. | Pending; only installer surface was audited. | Yes | No Windows host used. |

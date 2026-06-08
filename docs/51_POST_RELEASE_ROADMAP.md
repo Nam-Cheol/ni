@@ -236,11 +236,15 @@ verification, public install parity closure, and remaining deferrals.
 
 For the v0.6.0 Namba Intent release notes draft, use
 [`139_V0_6_0_RELEASE_NOTES_DRAFT.md`](139_V0_6_0_RELEASE_NOTES_DRAFT.md)
-to preserve the `V0_6_0_RELEASE_NOTES_READY_WITH_NOTES` decision, the
+to preserve the pre-publication release-note decision, the
 complete rename release notes draft, migration notes, NambaAI distinction,
-claim-boundary audit, known deferrals, and the rule that no v0.6.0
-publication, tag, GitHub Release, asset upload, Homebrew Available claim, or
-downstream execution claim has been made.
+claim-boundary audit, known deferrals, and the pre-release claim boundaries.
+
+For the v0.6.0 post-release verification, use
+[`140_V0_6_0_POST_RELEASE_VERIFICATION.md`](140_V0_6_0_POST_RELEASE_VERIFICATION.md)
+to preserve the release commit, tag, GitHub Release URL, asset inventory,
+checksum proof, darwin/arm64 artifact proof, isolated `install.sh --version
+0.6.0` verification, public install parity closure, and remaining deferrals.
 
 For the v0.5.1 external user validation plan, use
 [`133_EXTERNAL_USER_VALIDATION_PLAN.md`](133_EXTERNAL_USER_VALIDATION_PLAN.md)

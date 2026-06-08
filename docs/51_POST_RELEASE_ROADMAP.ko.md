@@ -233,10 +233,15 @@ public install parity closure, remaining deferrals를 보존한다.
 
 v0.6.0 Namba Intent release notes draft에는
 [`139_V0_6_0_RELEASE_NOTES_DRAFT.ko.md`](139_V0_6_0_RELEASE_NOTES_DRAFT.ko.md)를
-사용해 `V0_6_0_RELEASE_NOTES_READY_WITH_NOTES` decision, complete rename
+사용해 pre-publication release-note decision, complete rename
 release notes draft, migration notes, NambaAI distinction, claim-boundary
-audit, known deferrals, v0.6.0 publication, tag, GitHub Release, asset upload,
-Homebrew Available claim, downstream execution claim이 없다는 boundary를
+audit, known deferrals, pre-release claim boundaries를 보존한다.
+
+v0.6.0 post-release verification은
+[`140_V0_6_0_POST_RELEASE_VERIFICATION.ko.md`](140_V0_6_0_POST_RELEASE_VERIFICATION.ko.md)를
+사용한다. 이 문서는 release commit, tag, GitHub Release URL, asset inventory,
+checksum proof, darwin/arm64 artifact proof, isolated `install.sh --version
+0.6.0` verification, public install parity closure, remaining deferrals를
 보존한다.
 
 v0.5.1 external user validation plan에는

@@ -128,8 +128,8 @@ execution runtime이 아닙니다.
 ## Status
 
 - v0.5.1 publication: historical `ni` command 기준 verified.
-- v0.6.0 rename: current tree에 implemented, published 아님.
-- Current tree primary command: `namba-intent`.
+- v0.6.0 release: macOS darwin/arm64에서 `namba-intent` 기준 published and verified.
+- Primary command: `namba-intent`.
 - Deprecated transition shim: `ni`는 `ni is deprecated; use namba-intent.`를 warning합니다.
 - Repository: `Nam-Cheol/ni` retained.
 - Config directory: `.ni/` retained.

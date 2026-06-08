@@ -128,7 +128,7 @@ downstream execution runtime.
 ## Status
 
 - v0.5.1 publication: verified for the historical `ni` command.
-- v0.6.0 rename: implemented in current tree, not published.
+- v0.6.0 release: published and verified for `namba-intent` on macOS darwin/arm64.
 - Primary command in current tree: `namba-intent`.
 - Deprecated transition shim: `ni` warns `ni is deprecated; use namba-intent.`
 - Repository: `Nam-Cheol/ni` retained.
