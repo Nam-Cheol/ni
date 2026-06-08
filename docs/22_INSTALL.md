@@ -1,13 +1,11 @@
 # Install Namba Intent
 
-Namba Intent is usable from source and from a locally built current-tree binary
-as `namba-intent`. The latest published v0.5.1 GitHub Release remains verified
-for the historical `ni` command.
+Namba Intent is usable from source, from a locally built current-tree binary,
+and from the published v0.6.0 release as `namba-intent`.
 
-Current main has already migrated `install.sh`, `install.ps1`, and GoReleaser
-asset names to `namba-intent` for the upcoming v0.6.0 release. Do not use the
-current-main installer scripts as proof that public install retrieves
-`namba-intent` until v0.6.0 is published and verified.
+The v0.6.0 macOS curl installer path has been published and verified for
+darwin/arm64. Historical v0.5.1 GitHub Release evidence remains tied to the
+older `ni` command.
 
 ## Prerequisites
 
@@ -24,8 +22,8 @@ README intentionally shows only two primary first-success paths:
 
 | Platform | Primary path | Verify | First project | Uninstall |
 | --- | --- | --- | --- | --- |
-| macOS | For upcoming v0.6.0, inspect and use current-main `install.sh` only as a release-gated `namba-intent` path. | After v0.6.0 publication, open a new shell and run `namba-intent --help` and `namba-intent version`. | `mkdir my-project`, `cd my-project`, `namba-intent init .` | `curl -fsSL https://raw.githubusercontent.com/Nam-Cheol/ni/main/install.sh \| sh -s -- --uninstall` |
-| Windows | For upcoming v0.6.0, download current-main `install.ps1` to `$Installer = Join-Path $env:TEMP "namba-intent-install.ps1"` and inspect it before use. | After v0.6.0 publication, open a new PowerShell session and run `namba-intent --help` and `namba-intent version`. | `mkdir my-project`, `cd my-project`, `namba-intent init .` | `$Installer = Join-Path $env:TEMP "namba-intent-install.ps1"`, `irm https://raw.githubusercontent.com/Nam-Cheol/ni/main/install.ps1 -OutFile $Installer`, `powershell -NoProfile -ExecutionPolicy Bypass -File $Installer -Uninstall` |
+| macOS | `curl -fsSL https://raw.githubusercontent.com/Nam-Cheol/ni/main/install.sh \| sh -s -- --update-path --version 0.6.0` | Open a new shell and run `namba-intent --help` and `namba-intent version`. | `mkdir my-project`, `cd my-project`, `namba-intent init .` | `curl -fsSL https://raw.githubusercontent.com/Nam-Cheol/ni/main/install.sh \| sh -s -- --uninstall` |
+| Windows | Download current-main `install.ps1` to `$Installer = Join-Path $env:TEMP "namba-intent-install.ps1"` and inspect it before use. | After install, open a new PowerShell session and run `namba-intent --help` and `namba-intent version`; real-host verification is still pending. | `mkdir my-project`, `cd my-project`, `namba-intent init .` | `$Installer = Join-Path $env:TEMP "namba-intent-install.ps1"`, `irm https://raw.githubusercontent.com/Nam-Cheol/ni/main/install.ps1 -OutFile $Installer`, `powershell -NoProfile -ExecutionPolicy Bypass -File $Installer -Uninstall` |
 
 These paths prove global command-name resolution first. They do not run agents,
 execute generated prompts, or prove downstream implementation readiness.
@@ -38,8 +36,8 @@ Every public install path has exactly one status:
 | --- | --- | --- |
 | Source | Available | Run `go run ./cmd/namba-intent ...` from this checkout. |
 | Local binary | Available | Build or install `namba-intent` locally from this checkout. |
-| Release binary | Available | Use the verified v0.5.1 GitHub Release archives and checksums for historical `ni`; v0.6.0 `namba-intent` release assets are not published. |
-| Curl installer | Release-gated | Current-main `install.sh` selects `namba-intent_<version>...` assets. Public retrieval of `namba-intent` is not verified until v0.6.0 is published. |
+| Release binary | Available | Use the verified v0.6.0 GitHub Release archives and checksums for `namba-intent`. Historical v0.5.1 evidence remains `ni` only. |
+| Curl installer | Available | `install.sh --version 0.6.0` retrieves and verifies published `namba-intent_<version>...` assets on macOS darwin/arm64. |
 | Homebrew | Planned | No tap or formula is published or tested. |
 | Model workspaces | Experimental | Repo-local model assistance can draft docs; the CLI remains authority. |
 | No-terminal method | Experimental | Assisted planning only; deterministic validation still requires CLI proof. |
@@ -178,9 +176,10 @@ PowerShell installer below for User PATH handling and global command setup.
 
 ## Curl installer
 
-Curl installer status: Release-gated for public `namba-intent` retrieval.
+Curl installer status: Available for verified v0.6.0 macOS `namba-intent`
+retrieval.
 
-Current-main `install.sh` can install a future `namba-intent` release archive
+Current-main `install.sh` can install a published `namba-intent` release archive
 without requiring Go. It selects `namba-intent_<version>_<os>_<arch>` archives,
 downloads `namba-intent_<version>_checksums.txt`, verifies the checksum when a
 local sha256 tool is available, installs only the `namba-intent` binary, and
@@ -189,20 +188,18 @@ does not install model skills or run downstream work.
 Historical v0.5.1 curl installer verification remains valid only for the
 previous `ni` public release path recorded in
 [`132_V0_5_1_POST_RELEASE_VERIFICATION.md`](132_V0_5_1_POST_RELEASE_VERIFICATION.md).
-Because current main now points to future `namba-intent` assets, do not claim
-that the public curl installer retrieves `namba-intent` before v0.6.0 release
-publication and verification.
+The public v0.6.0 macOS curl installer path is verified in
+[`140_V0_6_0_POST_RELEASE_VERIFICATION.md`](140_V0_6_0_POST_RELEASE_VERIFICATION.md).
 
-For the upcoming v0.6.0 README latest-by-default path:
+For the verified v0.6.0 README path:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/Nam-Cheol/ni/main/install.sh | sh -s -- --update-path
+curl -fsSL https://raw.githubusercontent.com/Nam-Cheol/ni/main/install.sh | sh -s -- --update-path --version 0.6.0
 ```
 
 If you omit `--version`, the installer asks GitHub for the latest release tag
-during actual install. Before v0.6.0 is published, this path is a release-gated
-future path because the latest published v0.5.1 assets are named `ni_...`, not
-`namba-intent_...`.
+during actual install. Use `--version 0.6.0` when you want to reproduce the
+verified Namba Intent release path.
 
 For reproducible future v0.6.0 checks, download and inspect the script, then
 pin the intended release version after it exists:
@@ -278,13 +275,11 @@ powershell -NoProfile -ExecutionPolicy Bypass -File $Installer
 ```
 
 If you omit `-Version`, the installer asks GitHub for the latest release tag
-during actual install. Before v0.6.0 is published, this is a release-gated
-future path because the latest published v0.5.1 assets are named `ni_...`, not
-`namba-intent_...`.
+during actual install. Windows host execution is still pending until a real
+Windows transcript exists.
 
-For reproducible future v0.6.0 checks, inspect and dry-run the script from the
-directory where you downloaded `install.ps1`, then pin the release after it
-exists:
+For reproducible v0.6.0 checks, inspect and dry-run the script from the
+directory where you downloaded `install.ps1`, then pin the release:
 
 ```powershell
 $Version = "0.6.0"
@@ -369,9 +364,8 @@ bash scripts/release-check.sh
 
 Namba Intent is licensed under the [MIT License](../LICENSE).
 
-This install document claims release binary availability only for the verified
-historical v0.5.1 `ni` GitHub Release assets. Public `namba-intent` installer
-retrieval is release-gated until v0.6.0 is published and verified. It does not
-claim package distribution, Homebrew support, Scoop support, no-terminal
+This install document claims v0.6.0 `namba-intent` release binary and macOS curl
+installer availability only where verified. Historical v0.5.1 evidence remains
+tied to `ni`. It does not claim package distribution, Homebrew support, Scoop support, no-terminal
 deterministic validation, runtime execution behavior, Windows execution
 verification on macOS, or global model-pack installation.

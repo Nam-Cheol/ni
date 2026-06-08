@@ -1,48 +1,45 @@
 # Curl Installer
 
 `install.sh` is release asset infrastructure for installing a released Namba
-Intent binary without requiring Go. Current main selects future
+Intent binary without requiring Go. Current main selects
 `namba-intent_<version>` release assets, copies `namba-intent` into a local bin
 directory, and prints next steps. With explicit opt-in, it can add a reversible
 zsh/bash PATH block. It does not install model skills or run downstream work.
 
-Status: Release-gated for public `namba-intent` retrieval. The verified v0.5.1
-GitHub Release assets use historical `ni_<version>` names and are documented in
-the v0.5.1 post-release verification record. Current-main `install.sh`
-downloads future `namba-intent_<version>_checksums.txt` files and must not be
-claimed as a public `namba-intent` install path until v0.6.0 is published and
-verified.
+Status: Available for the verified v0.6.0 macOS `namba-intent` path. The
+verified v0.5.1 GitHub Release assets use historical `ni_<version>` names and
+remain documented in the v0.5.1 post-release verification record.
 
 ## Safer Script Path
 
-For latest-by-default install, omit `--version` during actual install:
+For the verified v0.6.0 macOS install:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/Nam-Cheol/ni/main/install.sh | sh -s -- --update-path
+curl -fsSL https://raw.githubusercontent.com/Nam-Cheol/ni/main/install.sh | sh -s -- --update-path --version 0.6.0
 ```
 
 When you want an inspect-first or reproducible pinned install, download the
 installer before any local install:
 
 ```bash
-VERSION="0.5.1"
+VERSION="0.6.0"
 curl -fsSLO https://raw.githubusercontent.com/Nam-Cheol/ni/main/install.sh
 sed -n '1,320p' install.sh
 sh install.sh --dry-run --version "$VERSION"
 BINDIR="$HOME/.local/bin" sh install.sh --update-path --version "$VERSION"
 ```
 
-By default, the script installs to `~/.local/bin/ni`. Override the destination
-with `BINDIR`:
+By default, the script installs to `~/.local/bin/namba-intent`. Override the
+destination with `BINDIR`:
 
 ```bash
 BINDIR="$HOME/bin" sh install.sh --dry-run --version "$VERSION"
 ```
 
 If you omit `--version`, the installer asks GitHub for the latest release tag.
-Before v0.6.0 is published, that is a future path because the latest published
-v0.5.1 assets are named `ni_...`, not `namba-intent_...`. Pin
-`VERSION="0.5.1"` only when using historical scripts or evidence covered by
+Use `--version 0.6.0` when you want to reproduce the verified Namba Intent
+release path. Pin `VERSION="0.5.1"` only when using historical scripts or
+evidence covered by
 [v0.5.1 Post-Release Verification](132_V0_5_1_POST_RELEASE_VERIFICATION.md);
 current-main `install.sh --version 0.5.1` selects `namba-intent_0.5.1...`
 assets that were not published.
@@ -160,8 +157,8 @@ tested without network access and without Go:
 bash scripts/test-install-sh.sh
 ```
 
-For future releases, repeat the real release verification before changing
-public availability language:
+The v0.6.0 macOS installer path has real release verification. For later
+releases, repeat that verification before changing public availability language:
 
 ```bash
 VERSION="0.6.0"
@@ -170,7 +167,7 @@ BINDIR="$(mktemp -d)" sh install.sh --version "$VERSION"
 ```
 
 The historical v0.5.1 verification passed on 2026-06-08 for the old `ni`
-release assets. That proof does not prove current-main `install.sh` can retrieve
-`namba-intent` from public release assets before v0.6.0 is published. Current
-tree command-name verification is covered by `bash scripts/install-check.sh`
+release assets. The v0.6.0 macOS verification is recorded in
+[`140_V0_6_0_POST_RELEASE_VERIFICATION.md`](140_V0_6_0_POST_RELEASE_VERIFICATION.md).
+Current tree command-name verification is covered by `bash scripts/install-check.sh`
 with a temporary install directory and fresh shell PATH context.

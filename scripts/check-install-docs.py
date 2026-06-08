@@ -32,7 +32,7 @@ DISTRIBUTION_EXPECTED = {
 INSTALL_EXPECTED = README_EXPECTED
 INSTALL_EXPECTED = {
     **README_EXPECTED,
-    "Curl installer": "Release-gated",
+    "Curl installer": "Available",
 }
 
 REQUIRED_MARKERS = {
@@ -40,7 +40,7 @@ REQUIRED_MARKERS = {
         "README shows two primary first-success paths for the current tree.",
         "### macOS",
         "### Windows",
-        "Latest published v0.5.1 may still use `ni` until v0.6.0 is published.",
+        "curl -fsSL https://raw.githubusercontent.com/Nam-Cheol/ni/main/install.sh | sh -s -- --update-path --version 0.6.0",
         "namba-intent --help",
         "namba-intent version",
         '$Installer = Join-Path $env:TEMP "namba-intent-install.ps1"',
@@ -55,7 +55,7 @@ REQUIRED_MARKERS = {
         "README는 current tree의 첫 성공을 위한 두 가지 primary path만 보여줍니다.",
         "### macOS",
         "### Windows",
-        "Latest published v0.5.1은 v0.6.0 publish 전까지 여전히 `ni`를 사용할 수",
+        "curl -fsSL https://raw.githubusercontent.com/Nam-Cheol/ni/main/install.sh | sh -s -- --update-path --version 0.6.0",
         "namba-intent --help",
         "namba-intent version",
         '$Installer = Join-Path $env:TEMP "namba-intent-install.ps1"',
@@ -70,9 +70,9 @@ REQUIRED_MARKERS = {
         "README intentionally shows only two primary first-success paths:",
         "Every public install path has exactly one status:",
         "Release binary status: Available.",
-        "Curl installer status: Release-gated for public `namba-intent` retrieval.",
-        "current-main installer scripts as proof that public install retrieves\n`namba-intent`",
-        "latest published v0.5.1 assets are named `ni_...`, not\n`namba-intent_...`",
+        "Curl installer status: Available for verified v0.6.0 macOS `namba-intent`\nretrieval.",
+        "curl -fsSL https://raw.githubusercontent.com/Nam-Cheol/ni/main/install.sh | sh -s -- --update-path --version 0.6.0",
+        "The public v0.6.0 macOS curl installer path is verified",
         "BINDIR=\"$HOME/.local/bin\" sh install.sh --update-path --version \"$VERSION\"",
         '$Installer = Join-Path $env:TEMP "namba-intent-install.ps1"',
         "powershell -NoProfile -ExecutionPolicy Bypass -File $Installer -Uninstall",
@@ -81,11 +81,10 @@ REQUIRED_MARKERS = {
         "Get-Command namba-intent -All",
         "removes only the matching `namba-intent` directory from User PATH",
         "Package manager status: Planned.",
-        "Public `namba-intent` installer\nretrieval is release-gated until v0.6.0 is published and verified.",
     ],
     "docs/install-curl.md": [
-        "Status: Release-gated for public `namba-intent` retrieval.",
-        "The historical v0.5.1 verification passed on 2026-06-08",
+        "Status: Available for the verified v0.6.0 macOS `namba-intent` path.",
+        "curl -fsSL https://raw.githubusercontent.com/Nam-Cheol/ni/main/install.sh | sh -s -- --update-path --version 0.6.0",
         "Open a new shell after installation, then check the global command",
         "Current dry-run output does not resolve latest without `--version`",
         "BINDIR=\"$HOME/.local/bin\" sh install.sh --update-path --version \"$VERSION\"",
@@ -94,8 +93,8 @@ REQUIRED_MARKERS = {
         "BINDIR=\"$HOME/.local/bin\" sh install.sh --uninstall",
     ],
     "docs/install-curl.ko.md": [
-        "Status: public `namba-intent` retrieval은 Release-gated이다.",
-        "Historical v0.5.1 verification은 2026-06-08에 old `ni` release assets 기준으로\n통과했다.",
+        "Status: verified v0.6.0 macOS `namba-intent` path는 Available이다.",
+        "curl -fsSL https://raw.githubusercontent.com/Nam-Cheol/ni/main/install.sh | sh -s -- --update-path --version 0.6.0",
         "Current dry-run output은 `--version` 없이 latest를 resolve하지 않으므로",
         "BINDIR=\"$HOME/.local/bin\" sh install.sh --update-path --version \"$VERSION\"",
         "Global command를\nhelp 또는 version command로 확인한다",

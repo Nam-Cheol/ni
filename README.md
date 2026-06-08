@@ -22,8 +22,8 @@ Namba Intent turns a planning conversation into a docs contract, checks
 readiness, locks the accepted plan, and compiles a bounded downstream handoff
 prompt.
 
-Current main branch documents the upcoming Namba Intent command rename for
-v0.6.0. Latest published v0.5.1 may still use `ni` until v0.6.0 is published.
+Current main documents the published v0.6.0 Namba Intent release. The primary
+command is `namba-intent`; the legacy `ni` command is a deprecated shim only.
 
 <p align="center">
   <img src="assets/intent-lock-flow.svg" alt="Intent Lock Protocol flow: conversation, project contract, readiness gate, lock hash, bounded handoff." width="100%">
@@ -48,25 +48,26 @@ local build, release archive, pinned installs, dry-run, inspect-first,
 
 ### macOS
 
-For the upcoming v0.6.0 release, the curl installer installs the primary
-`namba-intent` command and verifies:
+Install the verified v0.6.0 macOS release with the curl installer:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/Nam-Cheol/ni/main/install.sh | sh -s -- --update-path --version 0.6.0
+```
+
+Open a new shell after installation, then verify the command:
 
 ```bash
 namba-intent --help
 namba-intent version
 ```
 
-Do not treat this current-main installer path as proof that the latest
-published v0.5.1 release already provides `namba-intent`. Use the v0.5.1
-release notes for public `ni` install verification until v0.6.0 is published.
-
 Homebrew: Planned / v0.5 candidate.
 
 ### Windows
 
-For the upcoming v0.6.0 release, the PowerShell installer installs
-`namba-intent.exe` to `%LOCALAPPDATA%\namba-intent\bin` by default and updates
-User PATH only.
+The PowerShell installer is configured to install `namba-intent.exe` to
+`%LOCALAPPDATA%\namba-intent\bin` by default and update User PATH only. Windows
+real-host verification remains pending until a Windows transcript exists.
 
 ```powershell
 $Installer = Join-Path $env:TEMP "namba-intent-install.ps1"

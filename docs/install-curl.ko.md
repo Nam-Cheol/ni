@@ -1,45 +1,43 @@
 # Curl Installer
 
 `install.sh`는 Go 없이 released Namba Intent binary를 설치하는 release asset
-infrastructure이다. Current main은 future `namba-intent_<version>` release assets를
+infrastructure이다. Current main은 `namba-intent_<version>` release assets를
 선택하고, `namba-intent`를 local bin directory에 복사하고 next steps를 출력한다.
 Model skills를 install하지 않으며 downstream work를 실행하지 않는다. 명시적으로 opt
 in하면 reversible zsh/bash PATH block을 추가할 수 있다.
 
-Status: public `namba-intent` retrieval은 Release-gated이다. Verified v0.5.1
-GitHub Release assets는 historical `ni_<version>` names를 사용하며 v0.5.1
-post-release verification record에 기록되어 있다. Current-main `install.sh`는 future
-`namba-intent_<version>_checksums.txt`를 download하므로 v0.6.0이 published and
-verified되기 전 public `namba-intent` install path라고 claim하면 안 된다.
+Status: verified v0.6.0 macOS `namba-intent` path는 Available이다. Verified
+v0.5.1 GitHub Release assets는 historical `ni_<version>` names를 사용하며 v0.5.1
+post-release verification record에 계속 기록되어 있다.
 
 ## 더 안전한 Script 경로
 
-Latest-by-default install에서는 actual install 중 `--version`을 생략한다:
+검증된 v0.6.0 macOS install:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/Nam-Cheol/ni/main/install.sh | sh -s -- --update-path
+curl -fsSL https://raw.githubusercontent.com/Nam-Cheol/ni/main/install.sh | sh -s -- --update-path --version 0.6.0
 ```
 
 Inspect-first 또는 reproducible pinned install을 원할 때는 local install 전에
 installer를 먼저 download한다:
 
 ```bash
-VERSION="0.5.1"
+VERSION="0.6.0"
 curl -fsSLO https://raw.githubusercontent.com/Nam-Cheol/ni/main/install.sh
 sed -n '1,320p' install.sh
 sh install.sh --dry-run --version "$VERSION"
 BINDIR="$HOME/.local/bin" sh install.sh --update-path --version "$VERSION"
 ```
 
-기본 install 위치는 `~/.local/bin/ni`다. 다른 위치는 `BINDIR`로 지정한다:
+기본 install 위치는 `~/.local/bin/namba-intent`다. 다른 위치는 `BINDIR`로 지정한다:
 
 ```bash
 BINDIR="$HOME/bin" sh install.sh --dry-run --version "$VERSION"
 ```
 
 `--version`을 생략하면 installer는 GitHub에서 latest release tag를 확인한다.
-v0.6.0이 publish되기 전에는 latest published v0.5.1 assets가 `ni_...`이고
-`namba-intent_...`가 아니므로 이 경로는 future path다. Historical script 또는
+Verified Namba Intent release path를 재현하려면 `--version 0.6.0`을 사용한다.
+Historical script 또는
 [v0.5.1 Post-Release Verification](132_V0_5_1_POST_RELEASE_VERIFICATION.ko.md)이
 cover한 evidence를 사용할 때만 `VERSION="0.5.1"`을 고정한다. Current-main
 `install.sh --version 0.5.1`은 published되지 않은 `namba-intent_0.5.1...` assets를
@@ -153,8 +151,8 @@ local fake release asset을 사용한다:
 bash scripts/test-install-sh.sh
 ```
 
-Future release에서는 public availability wording을 바꾸기 전에 real release
-asset verification을 반복한다:
+v0.6.0 macOS installer path는 real release verification을 거쳤다. 이후 release에서는
+public availability wording을 바꾸기 전에 그 verification을 반복한다:
 
 ```bash
 VERSION="0.6.0"
@@ -163,7 +161,7 @@ BINDIR="$(mktemp -d)" sh install.sh --version "$VERSION"
 ```
 
 Historical v0.5.1 verification은 2026-06-08에 old `ni` release assets 기준으로
-통과했다. 그 proof는 v0.6.0 publish 전 current-main `install.sh`가 public release
-assets에서 `namba-intent`를 retrieve할 수 있음을 증명하지 않는다. Current tree
-command-name verification은 `bash scripts/install-check.sh`가 temporary install
-directory와 fresh shell PATH context로 cover한다.
+통과했다. v0.6.0 macOS verification은
+[`140_V0_6_0_POST_RELEASE_VERIFICATION.ko.md`](140_V0_6_0_POST_RELEASE_VERIFICATION.ko.md)에
+기록되어 있다. Current tree command-name verification은 `bash scripts/install-check.sh`가
+temporary install directory와 fresh shell PATH context로 cover한다.
