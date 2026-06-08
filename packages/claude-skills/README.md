@@ -3,9 +3,9 @@
 This package contains Claude Skill-compatible NI workflow instructions.
 
 The skills help a Claude Code or Claude Skill-compatible workspace author,
-review, lock, and compile NI planning contracts. They are UX only. The `ni`
-CLI remains the authority for readiness, lock creation, lock hash verification,
-and prompt compilation.
+review, lock, and compile NI planning contracts. They are UX only. The
+`namba-intent` CLI remains the authority for readiness, lock creation, lock
+hash verification, and prompt compilation.
 
 ## Status
 

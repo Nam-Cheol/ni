@@ -1,6 +1,6 @@
 # Release Pipeline
 
-이 문서는 `ni`의 publish하지 않는 release validation path를 설명한다. Release
+이 문서는 Namba Intent의 publish하지 않는 release validation path를 설명한다. Release
 pipeline은 repository distribution infrastructure이다. 이는 `ni-kernel`
 <!-- ni-boundary-allow: explicit negative boundary statement. -->
 runtime behavior가 아니며 task runner, SPEC runner, multi-agent execution
@@ -36,7 +36,9 @@ manual dispatch에서 workflow를 실행하지 않는다.
 
 ## GoReleaser Archive Matrix
 
-`.goreleaser.yaml`은 `./cmd/ni`를 `CGO_ENABLED=0`인 `ni` binary로 build한다.
+`.goreleaser.yaml`은 `./cmd/namba-intent`를 primary `namba-intent` binary로,
+`./cmd/ni`를 deprecated transition shim으로 `CGO_ENABLED=0` 상태에서 build한다.
+Archive name은 `namba-intent` project name을 사용한다.
 
 | OS | Arch | Archive |
 | --- | --- | --- |

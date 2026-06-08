@@ -1,15 +1,17 @@
 # Curl Installer
 
-`install.sh` is release asset infrastructure for installing a released `ni`
-binary without requiring Go. It downloads an archive, verifies the checksum when
-the release provides one, copies `ni` into a local bin directory, and prints next
-steps. With explicit opt-in, it can add a reversible zsh/bash PATH block. It
-does not install model skills or run downstream work.
+`install.sh` is release asset infrastructure for installing a released Namba
+Intent binary without requiring Go. Current main selects future
+`namba-intent_<version>` release assets, copies `namba-intent` into a local bin
+directory, and prints next steps. With explicit opt-in, it can add a reversible
+zsh/bash PATH block. It does not install model skills or run downstream work.
 
-Status: Available for the verified v0.5.1 GitHub Release assets. `install.sh`
-downloads the selected archive and matching `ni_<version>_checksums.txt`,
-verifies the archive when a local sha256 tool is available, installs only the
-`ni` binary, and does not run downstream work.
+Status: Release-gated for public `namba-intent` retrieval. The verified v0.5.1
+GitHub Release assets use historical `ni_<version>` names and are documented in
+the v0.5.1 post-release verification record. Current-main `install.sh`
+downloads future `namba-intent_<version>_checksums.txt` files and must not be
+claimed as a public `namba-intent` install path until v0.6.0 is published and
+verified.
 
 ## Safer Script Path
 
@@ -38,16 +40,20 @@ BINDIR="$HOME/bin" sh install.sh --dry-run --version "$VERSION"
 ```
 
 If you omit `--version`, the installer asks GitHub for the latest release tag.
-Pin `VERSION="0.5.1"` when you want the verified release covered by
-[v0.5.1 Post-Release Verification](132_V0_5_1_POST_RELEASE_VERIFICATION.md).
+Before v0.6.0 is published, that is a future path because the latest published
+v0.5.1 assets are named `ni_...`, not `namba-intent_...`. Pin
+`VERSION="0.5.1"` only when using historical scripts or evidence covered by
+[v0.5.1 Post-Release Verification](132_V0_5_1_POST_RELEASE_VERIFICATION.md);
+current-main `install.sh --version 0.5.1` selects `namba-intent_0.5.1...`
+assets that were not published.
 Current dry-run output does not resolve latest without `--version`, so the
 dry-run example stays pinned instead of serving as the README primary path.
 Open a new shell after installation, then check the global command with help or
 version commands:
 
 ```bash
-ni --help
-ni version
+namba-intent --help
+namba-intent version
 ```
 
 After global command verification, start a planning workspace from the project
@@ -56,7 +62,7 @@ directory:
 ```bash
 mkdir my-project
 cd my-project
-ni init .
+namba-intent init .
 ```
 
 Uninstall the binary and the ni-managed PATH block, if one was added:
@@ -78,31 +84,35 @@ Manual install keeps every trust step visible.
 
 1. Open the release page:
    <https://github.com/Nam-Cheol/ni/releases>
-2. Confirm the release has assets, then pick the archive for your platform:
+2. Confirm the release has assets, then pick the archive for your platform.
+   For v0.6.0 and later Namba Intent releases, use `namba-intent_<version>`
+   names. For historical v0.5.1 evidence, use `ni_<version>` names from the
+   v0.5.1 release page.
 
 | Platform | Architecture | Archive |
 | --- | --- | --- |
-| Linux | amd64 | `ni_<version>_linux_amd64.tar.gz` |
-| Linux | arm64 | `ni_<version>_linux_arm64.tar.gz` |
-| macOS | amd64 | `ni_<version>_darwin_amd64.tar.gz` |
-| macOS | arm64 | `ni_<version>_darwin_arm64.tar.gz` |
-| Windows | amd64 | `ni_<version>_windows_amd64.zip` |
+| Linux | amd64 | `namba-intent_<version>_linux_amd64.tar.gz` |
+| Linux | arm64 | `namba-intent_<version>_linux_arm64.tar.gz` |
+| macOS | amd64 | `namba-intent_<version>_darwin_amd64.tar.gz` |
+| macOS | arm64 | `namba-intent_<version>_darwin_arm64.tar.gz` |
+| Windows | amd64 | `namba-intent_<version>_windows_amd64.zip` |
 
-3. Download the archive and `ni_<version>_checksums.txt` from the same release.
+3. Download the archive and `namba-intent_<version>_checksums.txt` from the
+   same release.
 4. Verify the archive checksum.
 
 Linux:
 
 ```bash
 VERSION="<published-version-without-v>"
-grep " ni_${VERSION}_linux_amd64.tar.gz$" "ni_${VERSION}_checksums.txt" | sha256sum -c -
+grep " namba-intent_${VERSION}_linux_amd64.tar.gz$" "namba-intent_${VERSION}_checksums.txt" | sha256sum -c -
 ```
 
 macOS:
 
 ```bash
 VERSION="<published-version-without-v>"
-grep " ni_${VERSION}_darwin_arm64.tar.gz$" "ni_${VERSION}_checksums.txt" | shasum -a 256 -c -
+grep " namba-intent_${VERSION}_darwin_arm64.tar.gz$" "namba-intent_${VERSION}_checksums.txt" | shasum -a 256 -c -
 ```
 
 5. Extract and install:
@@ -110,35 +120,36 @@ grep " ni_${VERSION}_darwin_arm64.tar.gz$" "ni_${VERSION}_checksums.txt" | shasu
 ```bash
 mkdir -p "$HOME/.local/bin"
 VERSION="<published-version-without-v>"
-tar -xzf "ni_${VERSION}_darwin_arm64.tar.gz"
-install -m 0755 ni "$HOME/.local/bin/ni"
-PATH="$HOME/.local/bin:$PATH" ni --help
-PATH="$HOME/.local/bin:$PATH" ni version
+tar -xzf "namba-intent_${VERSION}_darwin_arm64.tar.gz"
+install -m 0755 namba-intent "$HOME/.local/bin/namba-intent"
+PATH="$HOME/.local/bin:$PATH" namba-intent --help
+PATH="$HOME/.local/bin:$PATH" namba-intent version
 ```
 
 Use the matching archive name for your platform. On Windows, expand the `.zip`
-archive with PowerShell or another trusted unzip tool and place `ni.exe` on your
-User PATH, or use `install.ps1` from the repository root. PowerShell has a
-built-in `ni` alias for `New-Item`; the PowerShell installer handles that alias
-with a ni-managed profile block so `ni` can resolve to `ni.exe` in new sessions.
-Use `Get-Command ni -All` if command-name resolution does not look right.
+archive with PowerShell or another trusted unzip tool and place
+`namba-intent.exe` on your User PATH, or use `install.ps1` from the repository
+root. PowerShell alias cleanup for `ni -> New-Item` is legacy v0.5.x guidance
+and is not required for `namba-intent.exe`. Use `Get-Command namba-intent -All`
+if command-name resolution does not look right.
 
 ## What The Script Does
 
 - Detects `linux`, `darwin`, or Windows-compatible shells.
 - Detects `amd64` or `arm64`.
 - Selects the GoReleaser asset named
-  `ni_<version>_<os>_<arch>.tar.gz` or `ni_<version>_windows_amd64.zip`.
+  `namba-intent_<version>_<os>_<arch>.tar.gz` or
+  `namba-intent_<version>_windows_amd64.zip`.
 - Downloads from GitHub Releases by default.
-- Downloads `ni_<version>_checksums.txt` and verifies the archive if possible.
+- Downloads `namba-intent_<version>_checksums.txt` and verifies the archive if possible.
 - Installs to `~/.local/bin`, unless `BINDIR` is set.
 - Optionally adds a marked zsh/bash PATH block when `--update-path` is passed.
 - Removes the installed binary and only the marked PATH block with
   `--uninstall`.
 - Prints command-name help/version commands as next steps.
 
-It does not run `ni init`, `ni status`, `ni end`, `ni run`, shell commands,
-agents, queues, or runtime execution.
+It does not run `namba-intent init`, `namba-intent status`, `namba-intent end`,
+`namba-intent run`, shell commands, agents, queues, or runtime execution.
 
 ## Test Release Validation
 
@@ -153,14 +164,13 @@ For future releases, repeat the real release verification before changing
 public availability language:
 
 ```bash
-VERSION="0.5.1"
+VERSION="0.6.0"
 sh install.sh --dry-run --version "$VERSION"
 BINDIR="$(mktemp -d)" sh install.sh --version "$VERSION"
 ```
 
-The v0.5.1 verification passed on 2026-06-08. The installer printed
-`Verified checksum for ni_0.5.1_darwin_arm64.tar.gz`, installed the binary into
-a temporary `BINDIR`, and the installed binary returned `0.5.1` for
-`ni version`. Global command-name verification is now covered by
-`bash scripts/install-check.sh` with a temporary install directory and fresh
-shell PATH context.
+The historical v0.5.1 verification passed on 2026-06-08 for the old `ni`
+release assets. That proof does not prove current-main `install.sh` can retrieve
+`namba-intent` from public release assets before v0.6.0 is published. Current
+tree command-name verification is covered by `bash scripts/install-check.sh`
+with a temporary install directory and fresh shell PATH context.

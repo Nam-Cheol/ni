@@ -1,6 +1,7 @@
 # Release Pipeline
 
-This document describes the non-publishing release validation path for `ni`.
+This document describes the non-publishing release validation path for Namba
+Intent.
 The release pipeline is repository distribution infrastructure. It is not
 `ni-kernel` runtime behavior and must not become a task runner, SPEC runner,
 multi-agent execution layer, adapter, queue, or project execution harness.
@@ -35,7 +36,9 @@ dispatch before this release path is intentionally expanded.
 
 ## GoReleaser Archive Matrix
 
-`.goreleaser.yaml` builds `./cmd/ni` as the `ni` binary with `CGO_ENABLED=0`.
+`.goreleaser.yaml` builds `./cmd/namba-intent` as the primary
+`namba-intent` binary and `./cmd/ni` as a deprecated transition shim with
+`CGO_ENABLED=0`. The archive name uses the `namba-intent` project name.
 
 | OS | Arch | Archive |
 | --- | --- | --- |
