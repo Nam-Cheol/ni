@@ -36,6 +36,8 @@ REQUIRED_MARKERS = {
         "README shows two primary first-success paths.",
         "### macOS",
         "### Windows",
+        "curl -fsSL https://raw.githubusercontent.com/Nam-Cheol/ni/main/install.sh | sh -s -- --update-path",
+        "irm https://raw.githubusercontent.com/Nam-Cheol/ni/main/install.ps1 -OutFile install.ps1",
         "ni init .",
         "Homebrew: Planned / v0.5 candidate",
         "Real-host Windows execution remains deferred",
@@ -44,6 +46,8 @@ REQUIRED_MARKERS = {
         "README는 첫 성공을 위한 두 가지 primary path만 보여줍니다.",
         "### macOS",
         "### Windows",
+        "curl -fsSL https://raw.githubusercontent.com/Nam-Cheol/ni/main/install.sh | sh -s -- --update-path",
+        "irm https://raw.githubusercontent.com/Nam-Cheol/ni/main/install.ps1 -OutFile install.ps1",
         "ni init .",
         "Homebrew: Planned / v0.5 candidate",
         "실제 Windows host execution은",
@@ -53,6 +57,9 @@ REQUIRED_MARKERS = {
         "Every public install path has exactly one status:",
         "Release binary status: Available.",
         "Curl installer status: Available for verified v0.5.1 release assets.",
+        "current dry-run output",
+        "does not resolve the latest GitHub release tag",
+        "BINDIR=\"$HOME/.local/bin\" sh install.sh --update-path --version \"$VERSION\"",
         "Package manager status: Planned.",
         "curl installer availability only for the verified v0.5.1 installer path",
     ],
@@ -60,12 +67,16 @@ REQUIRED_MARKERS = {
         "Status: Available for the verified v0.5.1 GitHub Release assets.",
         "The v0.5.1 verification passed on 2026-06-08.",
         "Open a new shell after installation, then check the global command",
+        "Current dry-run output does not resolve latest without `--version`",
+        "BINDIR=\"$HOME/.local/bin\" sh install.sh --update-path --version \"$VERSION\"",
         "BINDIR=\"$HOME/.local/bin\" sh install.sh --uninstall",
     ],
     "docs/install-curl.ko.md": [
         "Status: verified v0.5.1 GitHub Release assets에 대해 Available이다.",
         "v0.5.1 verification은 2026-06-08에 통과했다.",
-        "설치 후 새 shell을 열고 global command를 help 또는 version command로 확인한다",
+        "Current dry-run output은 `--version` 없이 latest를 resolve하지 않으므로",
+        "BINDIR=\"$HOME/.local/bin\" sh install.sh --update-path --version \"$VERSION\"",
+        "Global command를 help\n또는 version command로 확인한다",
         "BINDIR=\"$HOME/.local/bin\" sh install.sh --uninstall",
     ],
     "docs/120_GLOBAL_INSTALL_ACCEPTANCE.md": [
@@ -210,6 +221,15 @@ FORBIDDEN_AFFIRMATIVE = [
     "curl 설치 스크립트, Homebrew, Scoop, 패키지 매니저 배포는 별도 검증 전까지\nAvailable 상태가 아니다.",
 ]
 
+README_PRIMARY_FORBIDDEN = [
+    "VERSION=\"0.5.1\"\ncurl -fsSLO https://raw.githubusercontent.com/Nam-Cheol/ni/main/install.sh",
+    "sh install.sh --dry-run --version \"$VERSION\"",
+    "BINDIR=\"$HOME/.local/bin\" sh install.sh --update-path --version \"$VERSION\"",
+    "$Version = \"0.5.1\"\nInvoke-WebRequest \"https://raw.githubusercontent.com/Nam-Cheol/ni/main/install.ps1\"",
+    ".\\install.ps1 -DryRun -Version $Version",
+    ".\\install.ps1 -Version $Version",
+]
+
 
 def fail(message: str) -> None:
     raise SystemExit(message)
@@ -291,12 +311,21 @@ def check_forbidden_claims() -> None:
                 fail(f"{path} contains forbidden affirmative install claim: {phrase}")
 
 
+def check_readme_primary_latest_by_default() -> None:
+    for path in ["README.md", "README.ko.md"]:
+        text = read(path)
+        for phrase in README_PRIMARY_FORBIDDEN:
+            if phrase in text:
+                fail(f"{path} README primary install path is not latest-by-default: {phrase}")
+
+
 def main() -> None:
     check_expected_rows("docs/22_INSTALL.md", INSTALL_EXPECTED)
     for path in ["docs/53_DISTRIBUTION_STRATEGY.md", "docs/53_DISTRIBUTION_STRATEGY.ko.md"]:
         check_expected_rows(path, DISTRIBUTION_EXPECTED)
     check_required_markers()
     check_forbidden_claims()
+    check_readme_primary_latest_by_default()
     print("install docs checks passed")
 
 

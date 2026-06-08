@@ -38,20 +38,16 @@ project intent가 무엇인지 결정하는 부분만 느리게 만듭니다.
 ## Install
 
 README는 첫 성공을 위한 두 가지 primary path만 보여줍니다. Source, local build,
-Linux, release archive, advanced uninstall details는
+Linux, release archive, pinned install, dry-run, inspect-first, `BINDIR`,
+advanced uninstall details는
 [Install ni](docs/22_INSTALL.md)에 있습니다.
 
 ### macOS
 
-Verified v0.5.1 release binary를 curl installer로 설치합니다. 설치 전 script를
-먼저 inspect합니다:
+Curl installer로 latest release binary를 설치합니다:
 
 ```bash
-VERSION="0.5.1"
-curl -fsSLO https://raw.githubusercontent.com/Nam-Cheol/ni/main/install.sh
-sed -n '1,320p' install.sh
-sh install.sh --dry-run --version "$VERSION"
-BINDIR="$HOME/.local/bin" sh install.sh --update-path --version "$VERSION"
+curl -fsSL https://raw.githubusercontent.com/Nam-Cheol/ni/main/install.sh | sh -s -- --update-path
 ```
 
 새 shell을 연 뒤 global command를 verify합니다:
@@ -64,22 +60,19 @@ ni version
 Installer로 설치한 binary와, 추가했다면 ni-managed PATH block을 uninstall합니다:
 
 ```bash
-BINDIR="$HOME/.local/bin" sh install.sh --uninstall
+curl -fsSL https://raw.githubusercontent.com/Nam-Cheol/ni/main/install.sh | sh -s -- --uninstall
 ```
 
 Homebrew: Planned / v0.5 candidate.
 
 ### Windows
 
-PowerShell installer는 기본적으로 `%LOCALAPPDATA%\ni\bin`에 설치하고 User PATH만
-업데이트합니다:
+PowerShell installer로 latest release를 설치합니다. 기본적으로
+`%LOCALAPPDATA%\ni\bin`에 설치하고 User PATH만 업데이트합니다:
 
 ```powershell
-$Version = "0.5.1"
-Invoke-WebRequest "https://raw.githubusercontent.com/Nam-Cheol/ni/main/install.ps1" -OutFile "install.ps1"
-Get-Content .\install.ps1
-.\install.ps1 -DryRun -Version $Version
-.\install.ps1 -Version $Version
+irm https://raw.githubusercontent.com/Nam-Cheol/ni/main/install.ps1 -OutFile install.ps1
+.\install.ps1
 ```
 
 새 PowerShell session을 연 뒤 global command를 verify합니다:

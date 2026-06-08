@@ -7,13 +7,20 @@ skills를 install하지 않으며 downstream work를 실행하지 않는다. 명
 reversible zsh/bash PATH block을 추가할 수 있다.
 
 Status: verified v0.5.1 GitHub Release assets에 대해 Available이다. `install.sh`는
-선택된 archive와 `ni_0.5.1_checksums.txt`를 download하고, local sha256 tool이
-있으면 archive를 verify하고, `ni` binary만 install하며 downstream work를 실행하지
-않는다.
+선택된 archive와 matching `ni_<version>_checksums.txt`를 download하고, local
+sha256 tool이 있으면 archive를 verify하고, `ni` binary만 install하며 downstream
+work를 실행하지 않는다.
 
 ## 더 안전한 Script 경로
 
-Local install 전에 installer를 먼저 download하고 inspect한다:
+Latest-by-default install에서는 actual install 중 `--version`을 생략한다:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/Nam-Cheol/ni/main/install.sh | sh -s -- --update-path
+```
+
+Inspect-first 또는 reproducible pinned install을 원할 때는 local install 전에
+installer를 먼저 download한다:
 
 ```bash
 VERSION="0.5.1"
@@ -32,7 +39,9 @@ BINDIR="$HOME/bin" sh install.sh --dry-run --version "$VERSION"
 `--version`을 생략하면 installer는 GitHub에서 latest release tag를 확인한다.
 [v0.5.1 Post-Release Verification](132_V0_5_1_POST_RELEASE_VERIFICATION.ko.md)이
 검증한 release를 원하면 `VERSION="0.5.1"`으로 고정한다. 설치 후 새 shell을 열고
-global command를 help 또는 version command로 확인한다:
+Current dry-run output은 `--version` 없이 latest를 resolve하지 않으므로 dry-run
+example은 README primary path가 아니라 pinned path에 둔다. Global command를 help
+또는 version command로 확인한다:
 
 ```bash
 ni --help
@@ -49,6 +58,13 @@ ni init .
 ```
 
 Binary와, 추가했다면 ni-managed PATH block을 uninstall한다:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/Nam-Cheol/ni/main/install.sh | sh -s -- --uninstall
+```
+
+Downloaded script에서 설치했거나 custom `BINDIR`를 사용했다면 같은 `BINDIR`를
+전달해 local script에서 uninstall한다:
 
 ```bash
 BINDIR="$HOME/.local/bin" sh install.sh --uninstall

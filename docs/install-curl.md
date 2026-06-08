@@ -7,13 +7,20 @@ steps. With explicit opt-in, it can add a reversible zsh/bash PATH block. It
 does not install model skills or run downstream work.
 
 Status: Available for the verified v0.5.1 GitHub Release assets. `install.sh`
-downloads the selected archive and `ni_0.5.1_checksums.txt`, verifies the
-archive when a local sha256 tool is available, installs only the `ni` binary,
-and does not run downstream work.
+downloads the selected archive and matching `ni_<version>_checksums.txt`,
+verifies the archive when a local sha256 tool is available, installs only the
+`ni` binary, and does not run downstream work.
 
 ## Safer Script Path
 
-Download and inspect the installer before any local install:
+For latest-by-default install, omit `--version` during actual install:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/Nam-Cheol/ni/main/install.sh | sh -s -- --update-path
+```
+
+When you want an inspect-first or reproducible pinned install, download the
+installer before any local install:
 
 ```bash
 VERSION="0.5.1"
@@ -33,6 +40,8 @@ BINDIR="$HOME/bin" sh install.sh --dry-run --version "$VERSION"
 If you omit `--version`, the installer asks GitHub for the latest release tag.
 Pin `VERSION="0.5.1"` when you want the verified release covered by
 [v0.5.1 Post-Release Verification](132_V0_5_1_POST_RELEASE_VERIFICATION.md).
+Current dry-run output does not resolve latest without `--version`, so the
+dry-run example stays pinned instead of serving as the README primary path.
 Open a new shell after installation, then check the global command with help or
 version commands:
 
@@ -51,6 +60,13 @@ ni init .
 ```
 
 Uninstall the binary and the ni-managed PATH block, if one was added:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/Nam-Cheol/ni/main/install.sh | sh -s -- --uninstall
+```
+
+If you installed from a downloaded script or used a custom `BINDIR`, run
+uninstall from that local script and pass the same `BINDIR`:
 
 ```bash
 BINDIR="$HOME/.local/bin" sh install.sh --uninstall

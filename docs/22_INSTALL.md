@@ -18,8 +18,8 @@ README intentionally shows only two primary first-success paths:
 
 | Platform | Primary path | Verify | First project | Uninstall |
 | --- | --- | --- | --- | --- |
-| macOS | Inspect `install.sh`, dry-run it, then install v0.5.1 with `BINDIR="$HOME/.local/bin" sh install.sh --update-path --version "$VERSION"`. | Open a new shell and run `ni --help` and `ni version`. | `mkdir my-project`, `cd my-project`, `ni init .` | `BINDIR="$HOME/.local/bin" sh install.sh --uninstall` |
-| Windows | Inspect `install.ps1`, dry-run it, then run `.\install.ps1 -Version $Version`. | Open a new PowerShell session and run `ni --help` and `ni version`. | `mkdir my-project`, `cd my-project`, `ni init .` | `.\install.ps1 -Uninstall` |
+| macOS | Install the latest release with `curl -fsSL https://raw.githubusercontent.com/Nam-Cheol/ni/main/install.sh \| sh -s -- --update-path`. | Open a new shell and run `ni --help` and `ni version`. | `mkdir my-project`, `cd my-project`, `ni init .` | `curl -fsSL https://raw.githubusercontent.com/Nam-Cheol/ni/main/install.sh \| sh -s -- --uninstall` |
+| Windows | Download `install.ps1` with `irm https://raw.githubusercontent.com/Nam-Cheol/ni/main/install.ps1 -OutFile install.ps1`, then run `.\install.ps1`. | Open a new PowerShell session and run `ni --help` and `ni version`. | `mkdir my-project`, `cd my-project`, `ni init .` | `.\install.ps1 -Uninstall` |
 
 These paths prove global command-name resolution first. They do not run agents,
 execute generated prompts, or prove downstream implementation readiness.
@@ -178,7 +178,15 @@ verified against the real v0.5.1 darwin/arm64 archive and checksum file on
 verifies the checksum when a local sha256 tool is available, installs only the
 `ni` binary, and does not install model skills or run downstream work.
 
-Download and inspect the script before any local install:
+For the README latest-by-default path:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/Nam-Cheol/ni/main/install.sh | sh -s -- --update-path
+```
+
+If you omit `--version`, the installer asks GitHub for the latest release tag
+during actual install. For reproducible installs, download and inspect the
+script, then pin the release:
 
 ```bash
 VERSION="0.5.1"
@@ -187,6 +195,9 @@ sed -n '1,320p' install.sh
 sh install.sh --dry-run --version "$VERSION"
 BINDIR="$HOME/.local/bin" sh install.sh --update-path --version "$VERSION"
 ```
+
+The dry-run path is documented with `--version` because current dry-run output
+does not resolve the latest GitHub release tag when `--version` is omitted.
 
 Open a new shell, then verify global command resolution:
 
@@ -201,7 +212,15 @@ matching archive and `ni_0.5.1_checksums.txt` from the same release, verify the
 archive checksum, extract it into a directory on `PATH`, and then run
 `ni --help` and `ni version` by command name.
 
-Uninstall the curl-installed binary and any ni-managed PATH block:
+Uninstall the curl-installed binary and any ni-managed PATH block with the
+README default path:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/Nam-Cheol/ni/main/install.sh | sh -s -- --uninstall
+```
+
+If you already downloaded the installer or installed into a custom `BINDIR`,
+run uninstall from that local script and pass the same `BINDIR`:
 
 ```bash
 BINDIR="$HOME/.local/bin" sh install.sh --uninstall
@@ -214,8 +233,16 @@ and adds that directory to User PATH only. It does not modify Machine PATH by
 default and does not use `setx`.
 
 ```powershell
+irm https://raw.githubusercontent.com/Nam-Cheol/ni/main/install.ps1 -OutFile install.ps1
+.\install.ps1
+```
+
+If you omit `-Version`, the installer asks GitHub for the latest release tag
+during actual install. For reproducible installs, inspect and dry-run the
+script, then pin the release:
+
+```powershell
 $Version = "0.5.1"
-Invoke-WebRequest "https://raw.githubusercontent.com/Nam-Cheol/ni/main/install.ps1" -OutFile "install.ps1"
 Get-Content .\install.ps1
 .\install.ps1 -DryRun -Version $Version
 .\install.ps1 -Version $Version

@@ -38,20 +38,16 @@ deciding what the project actually means before implementation starts.
 ## Install
 
 README shows two primary first-success paths. Source, local build, Linux,
-release-archive, and advanced uninstall details live in
+release-archive, pinned installs, dry-run, inspect-first, `BINDIR`, and
+advanced uninstall details live in
 [Install ni](docs/22_INSTALL.md).
 
 ### macOS
 
-Install the verified v0.5.1 release binary with the curl installer after
-inspecting it:
+Install the latest release binary with the curl installer:
 
 ```bash
-VERSION="0.5.1"
-curl -fsSLO https://raw.githubusercontent.com/Nam-Cheol/ni/main/install.sh
-sed -n '1,320p' install.sh
-sh install.sh --dry-run --version "$VERSION"
-BINDIR="$HOME/.local/bin" sh install.sh --update-path --version "$VERSION"
+curl -fsSL https://raw.githubusercontent.com/Nam-Cheol/ni/main/install.sh | sh -s -- --update-path
 ```
 
 Open a new shell, then verify the global command:
@@ -65,22 +61,19 @@ Uninstall the installer-installed binary and the ni-managed PATH block, if one
 was added:
 
 ```bash
-BINDIR="$HOME/.local/bin" sh install.sh --uninstall
+curl -fsSL https://raw.githubusercontent.com/Nam-Cheol/ni/main/install.sh | sh -s -- --uninstall
 ```
 
 Homebrew: Planned / v0.5 candidate.
 
 ### Windows
 
-Install with the PowerShell installer, which installs to
+Install the latest release with the PowerShell installer, which installs to
 `%LOCALAPPDATA%\ni\bin` by default and updates User PATH only:
 
 ```powershell
-$Version = "0.5.1"
-Invoke-WebRequest "https://raw.githubusercontent.com/Nam-Cheol/ni/main/install.ps1" -OutFile "install.ps1"
-Get-Content .\install.ps1
-.\install.ps1 -DryRun -Version $Version
-.\install.ps1 -Version $Version
+irm https://raw.githubusercontent.com/Nam-Cheol/ni/main/install.ps1 -OutFile install.ps1
+.\install.ps1
 ```
 
 Open a new PowerShell session, then verify the global command:
