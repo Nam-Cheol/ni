@@ -44,20 +44,29 @@ advanced uninstall details는
 
 ### macOS
 
-Curl installer로 latest release binary를 설치합니다:
+Curl installer로 latest release binary를 설치합니다. 이 명령은 installer
+script를 내려받아 User PATH update 옵션과 함께 실행합니다:
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/Nam-Cheol/ni/main/install.sh | sh -s -- --update-path
 ```
 
-새 shell을 연 뒤 global command를 verify합니다:
+PATH update가 반영되도록 새 shell을 엽니다.
+
+먼저 global command가 잡히는지 확인합니다:
 
 ```bash
 ni --help
+```
+
+그 다음 설치된 version을 확인합니다:
+
+```bash
 ni version
 ```
 
-Installer로 설치한 binary와, 추가했다면 ni-managed PATH block을 uninstall합니다:
+Installer로 설치한 binary와, 추가했다면 ni-managed PATH block을 uninstall합니다.
+같은 installer script를 uninstall mode로 실행합니다:
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/Nam-Cheol/ni/main/install.sh | sh -s -- --uninstall
@@ -68,26 +77,56 @@ Homebrew: Planned / v0.5 candidate.
 ### Windows
 
 PowerShell installer로 latest release를 설치합니다. 기본적으로
-`%LOCALAPPDATA%\ni\bin`에 설치하고 User PATH만 업데이트합니다:
+`%LOCALAPPDATA%\ni\bin`에 설치하고 User PATH만 업데이트합니다.
+
+먼저 temporary installer path를 정합니다:
 
 ```powershell
 $Installer = Join-Path $env:TEMP "ni-install.ps1"
+```
+
+그 path로 installer를 다운로드합니다:
+
+```powershell
 irm https://raw.githubusercontent.com/Nam-Cheol/ni/main/install.ps1 -OutFile $Installer
+```
+
+다운로드한 installer를 실행합니다:
+
+```powershell
 powershell -NoProfile -ExecutionPolicy Bypass -File $Installer
 ```
 
-새 PowerShell session을 연 뒤 global command를 verify합니다:
+User PATH update가 반영되도록 새 PowerShell session을 엽니다.
+
+먼저 global command가 잡히는지 확인합니다:
 
 ```powershell
 ni --help
+```
+
+그 다음 설치된 version을 확인합니다:
+
+```powershell
 ni version
 ```
 
-Installer로 설치한 binary와 `ni`가 추가한 User PATH entry를 uninstall합니다:
+Uninstall할 때도 같은 temporary installer path를 정합니다:
 
 ```powershell
 $Installer = Join-Path $env:TEMP "ni-install.ps1"
+```
+
+Installer를 새로 다운로드합니다:
+
+```powershell
 irm https://raw.githubusercontent.com/Nam-Cheol/ni/main/install.ps1 -OutFile $Installer
+```
+
+Installer를 uninstall mode로 실행합니다. Installer로 설치한 binary와 `ni`가
+추가한 User PATH entry를 제거합니다:
+
+```powershell
 powershell -NoProfile -ExecutionPolicy Bypass -File $Installer -Uninstall
 ```
 

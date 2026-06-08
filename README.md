@@ -44,21 +44,29 @@ advanced uninstall details live in
 
 ### macOS
 
-Install the latest release binary with the curl installer:
+Install the latest release binary with the curl installer. This downloads the
+installer script and runs it with User PATH update enabled:
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/Nam-Cheol/ni/main/install.sh | sh -s -- --update-path
 ```
 
-Open a new shell, then verify the global command:
+Open a new shell so the PATH update is loaded.
+
+First, check that the global command is available:
 
 ```bash
 ni --help
+```
+
+Then check the installed version:
+
+```bash
 ni version
 ```
 
 Uninstall the installer-installed binary and the ni-managed PATH block, if one
-was added:
+was added. This uses the same installer script in uninstall mode:
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/Nam-Cheol/ni/main/install.sh | sh -s -- --uninstall
@@ -69,26 +77,56 @@ Homebrew: Planned / v0.5 candidate.
 ### Windows
 
 Install the latest release with the PowerShell installer, which installs to
-`%LOCALAPPDATA%\ni\bin` by default and updates User PATH only:
+`%LOCALAPPDATA%\ni\bin` by default and updates User PATH only.
+
+First, choose a temporary installer path:
 
 ```powershell
 $Installer = Join-Path $env:TEMP "ni-install.ps1"
+```
+
+Download the installer to that path:
+
+```powershell
 irm https://raw.githubusercontent.com/Nam-Cheol/ni/main/install.ps1 -OutFile $Installer
+```
+
+Run the downloaded installer:
+
+```powershell
 powershell -NoProfile -ExecutionPolicy Bypass -File $Installer
 ```
 
-Open a new PowerShell session, then verify the global command:
+Open a new PowerShell session so the User PATH update is loaded.
+
+First, check that the global command is available:
 
 ```powershell
 ni --help
+```
+
+Then check the installed version:
+
+```powershell
 ni version
 ```
 
-Uninstall the installer-installed binary and the User PATH entry added by `ni`:
+To uninstall, choose the same temporary installer path:
 
 ```powershell
 $Installer = Join-Path $env:TEMP "ni-install.ps1"
+```
+
+Download a fresh copy of the installer:
+
+```powershell
 irm https://raw.githubusercontent.com/Nam-Cheol/ni/main/install.ps1 -OutFile $Installer
+```
+
+Run the installer in uninstall mode. It removes the installer-installed binary
+and the User PATH entry added by `ni`:
+
+```powershell
 powershell -NoProfile -ExecutionPolicy Bypass -File $Installer -Uninstall
 ```
 

@@ -199,10 +199,16 @@ BINDIR="$HOME/.local/bin" sh install.sh --update-path --version "$VERSION"
 The dry-run path is documented with `--version` because current dry-run output
 does not resolve the latest GitHub release tag when `--version` is omitted.
 
-Open a new shell, then verify global command resolution:
+Open a new shell so the PATH update is loaded. First, check that the global
+command is available:
 
 ```bash
 ni --help
+```
+
+Then check the installed version:
+
+```bash
 ni version
 ```
 
@@ -234,7 +240,17 @@ default and does not use `setx`.
 
 ```powershell
 $Installer = Join-Path $env:TEMP "ni-install.ps1"
+```
+
+Download the installer to that path:
+
+```powershell
 irm https://raw.githubusercontent.com/Nam-Cheol/ni/main/install.ps1 -OutFile $Installer
+```
+
+Run the downloaded installer:
+
+```powershell
 powershell -NoProfile -ExecutionPolicy Bypass -File $Installer
 ```
 
@@ -251,10 +267,16 @@ Get-Content .\install.ps1
 .\install.ps1 -Version $Version
 ```
 
-Open a new PowerShell session, then verify global command resolution:
+Open a new PowerShell session so the User PATH update is loaded. First, check
+that the global command is available:
 
 ```powershell
 ni --help
+```
+
+Then check the installed version:
+
+```powershell
 ni version
 ```
 
@@ -263,7 +285,17 @@ only the matching `ni` directory from User PATH:
 
 ```powershell
 $Installer = Join-Path $env:TEMP "ni-install.ps1"
+```
+
+Download a fresh copy of the installer:
+
+```powershell
 irm https://raw.githubusercontent.com/Nam-Cheol/ni/main/install.ps1 -OutFile $Installer
+```
+
+Run the installer in uninstall mode:
+
+```powershell
 powershell -NoProfile -ExecutionPolicy Bypass -File $Installer -Uninstall
 ```
 
