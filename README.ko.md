@@ -48,10 +48,10 @@ Source, local build, release archive, pinned installs, dry-run, inspect-first,
 
 ### macOS
 
-검증된 v0.6.0 macOS release는 curl installer로 설치합니다.
+최신 Namba Intent release는 curl installer로 설치합니다.
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/Nam-Cheol/ni/main/install.sh | sh -s -- --update-path --version 0.6.0
+curl -fsSL https://raw.githubusercontent.com/Nam-Cheol/ni/main/install.sh | sh -s -- --update-path
 ```
 
 설치 후 새 shell을 열고 command를 확인합니다.

@@ -48,10 +48,10 @@ local build, release archive, pinned installs, dry-run, inspect-first,
 
 ### macOS
 
-Install the verified v0.6.0 macOS release with the curl installer:
+Install the latest Namba Intent release with the curl installer:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/Nam-Cheol/ni/main/install.sh | sh -s -- --update-path --version 0.6.0
+curl -fsSL https://raw.githubusercontent.com/Nam-Cheol/ni/main/install.sh | sh -s -- --update-path
 ```
 
 Open a new shell after installation, then verify the command:

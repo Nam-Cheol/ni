@@ -22,7 +22,7 @@ README intentionally shows only two primary first-success paths:
 
 | Platform | Primary path | Verify | First project | Uninstall |
 | --- | --- | --- | --- | --- |
-| macOS | `curl -fsSL https://raw.githubusercontent.com/Nam-Cheol/ni/main/install.sh \| sh -s -- --update-path --version 0.6.0` | Open a new shell and run `namba-intent --help` and `namba-intent version`. | `mkdir my-project`, `cd my-project`, `namba-intent init .` | `curl -fsSL https://raw.githubusercontent.com/Nam-Cheol/ni/main/install.sh \| sh -s -- --uninstall` |
+| macOS | `curl -fsSL https://raw.githubusercontent.com/Nam-Cheol/ni/main/install.sh \| sh -s -- --update-path` | Open a new shell and run `namba-intent --help` and `namba-intent version`. | `mkdir my-project`, `cd my-project`, `namba-intent init .` | `curl -fsSL https://raw.githubusercontent.com/Nam-Cheol/ni/main/install.sh \| sh -s -- --uninstall` |
 | Windows | Download current-main `install.ps1` to `$Installer = Join-Path $env:TEMP "namba-intent-install.ps1"` and inspect it before use. | After install, open a new PowerShell session and run `namba-intent --help` and `namba-intent version`; real-host verification is still pending. | `mkdir my-project`, `cd my-project`, `namba-intent init .` | `$Installer = Join-Path $env:TEMP "namba-intent-install.ps1"`, `irm https://raw.githubusercontent.com/Nam-Cheol/ni/main/install.ps1 -OutFile $Installer`, `powershell -NoProfile -ExecutionPolicy Bypass -File $Installer -Uninstall` |
 
 These paths prove global command-name resolution first. They do not run agents,
@@ -191,10 +191,10 @@ previous `ni` public release path recorded in
 The public v0.6.0 macOS curl installer path is verified in
 [`140_V0_6_0_POST_RELEASE_VERIFICATION.md`](140_V0_6_0_POST_RELEASE_VERIFICATION.md).
 
-For the verified v0.6.0 README path:
+For the latest-by-default README path:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/Nam-Cheol/ni/main/install.sh | sh -s -- --update-path --version 0.6.0
+curl -fsSL https://raw.githubusercontent.com/Nam-Cheol/ni/main/install.sh | sh -s -- --update-path
 ```
 
 If you omit `--version`, the installer asks GitHub for the latest release tag

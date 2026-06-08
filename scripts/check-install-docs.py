@@ -8,6 +8,11 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 ALLOWED_STATUSES = {"Available", "Experimental", "Release-gated", "Planned"}
+LATEST_MAC_INSTALL = (
+    "curl -fsSL https://raw.githubusercontent.com/Nam-Cheol/ni/main/install.sh | "
+    "sh -s -- --update-path"
+)
+PINNED_MAC_INSTALL = f"{LATEST_MAC_INSTALL} --version 0.6.0"
 
 README_EXPECTED = {
     "Source": "Available",
@@ -41,7 +46,7 @@ REQUIRED_MARKERS = {
         "v0.6.0 is the current published Namba Intent release.",
         "### macOS",
         "### Windows",
-        "curl -fsSL https://raw.githubusercontent.com/Nam-Cheol/ni/main/install.sh | sh -s -- --update-path --version 0.6.0",
+        LATEST_MAC_INSTALL,
         "namba-intent --help",
         "namba-intent version",
         '$Installer = Join-Path $env:TEMP "namba-intent-install.ps1"',
@@ -57,7 +62,7 @@ REQUIRED_MARKERS = {
         "v0.6.0은 current published Namba Intent release입니다.",
         "### macOS",
         "### Windows",
-        "curl -fsSL https://raw.githubusercontent.com/Nam-Cheol/ni/main/install.sh | sh -s -- --update-path --version 0.6.0",
+        LATEST_MAC_INSTALL,
         "namba-intent --help",
         "namba-intent version",
         '$Installer = Join-Path $env:TEMP "namba-intent-install.ps1"',
@@ -73,9 +78,10 @@ REQUIRED_MARKERS = {
         "Every public install path has exactly one status:",
         "Release binary status: Available.",
         "Curl installer status: Available for verified v0.6.0 macOS `namba-intent`\nretrieval.",
-        "curl -fsSL https://raw.githubusercontent.com/Nam-Cheol/ni/main/install.sh | sh -s -- --update-path --version 0.6.0",
+        LATEST_MAC_INSTALL,
         "The public v0.6.0 macOS curl installer path is verified",
         "For reproducible v0.6.0 checks",
+        "VERSION=\"0.6.0\"",
         "BINDIR=\"$HOME/.local/bin\" sh install.sh --update-path --version \"$VERSION\"",
         '$Installer = Join-Path $env:TEMP "namba-intent-install.ps1"',
         "powershell -NoProfile -ExecutionPolicy Bypass -File $Installer -Uninstall",
@@ -272,6 +278,7 @@ FORBIDDEN_AFFIRMATIVE = [
 ]
 
 README_PRIMARY_FORBIDDEN = [
+    PINNED_MAC_INSTALL,
     "VERSION=\"0.5.1\"\ncurl -fsSLO https://raw.githubusercontent.com/Nam-Cheol/ni/main/install.sh",
     "sh install.sh --dry-run --version \"$VERSION\"",
     "BINDIR=\"$HOME/.local/bin\" sh install.sh --update-path --version \"$VERSION\"",
