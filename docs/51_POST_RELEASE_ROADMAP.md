@@ -234,6 +234,13 @@ to preserve the actual release URL, hosted asset inventory, checksum proof,
 hosted darwin/arm64 artifact proof, isolated `install.sh --version 0.5.1`
 verification, public install parity closure, and remaining deferrals.
 
+For the v0.5.1 external user validation plan, use
+[`133_EXTERNAL_USER_VALIDATION_PLAN.md`](133_EXTERNAL_USER_VALIDATION_PLAN.md)
+to preserve the tester transcript template, macOS and Windows command sheets,
+evidence grading, claim-boundary audit, and the rule that no external user,
+Windows real-host, or Homebrew availability claim exists without matching
+transcripts or install proof.
+
 This phase may improve target seed quality and conformance as supporting work.
 It must not make targets into executable adapters inside `ni-kernel`.
 

@@ -231,6 +231,13 @@ v0.5.1 post-release verification에는
 darwin/arm64 artifact proof, isolated `install.sh --version 0.5.1` verification,
 public install parity closure, remaining deferrals를 보존한다.
 
+v0.5.1 external user validation plan에는
+[`133_EXTERNAL_USER_VALIDATION_PLAN.ko.md`](133_EXTERNAL_USER_VALIDATION_PLAN.ko.md)를
+사용해 tester transcript template, macOS and Windows command sheets, evidence
+grading, claim-boundary audit, matching transcript 또는 install proof 없이는
+external user, Windows real-host, Homebrew availability claim이 존재하지 않는다는
+규칙을 보존한다.
+
 이 phase는 supporting work로 target seed quality와 conformance를 개선할 수 있다.
 하지만 targets를 `ni-kernel` 내부의 executable adapters로 만들면 안 된다.
 
