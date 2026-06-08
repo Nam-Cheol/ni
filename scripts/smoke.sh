@@ -3,7 +3,7 @@ set -euo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 SMOKE_TMP="$(mktemp -d "${TMPDIR:-/tmp}/ni-smoke.XXXXXX")"
-NI_BIN="$SMOKE_TMP/bin/ni"
+NI_BIN="$SMOKE_TMP/bin/namba-intent"
 LAST_STDOUT="$SMOKE_TMP/stdout.log"
 LAST_STDERR="$SMOKE_TMP/stderr.log"
 
@@ -49,7 +49,7 @@ write_ready_contract() {
   "project": {
     "id": "smoke-fixture",
     "name": "Smoke Fixture",
-    "purpose": "Exercise public ni commands.",
+    "purpose": "Exercise public namba-intent commands.",
     "status": "draft"
   },
   "non_goals": [
@@ -79,7 +79,7 @@ write_ready_contract() {
   "decisions": [
     {
       "id": "DEC-001",
-      "title": "Smoke tests stay inside ni-kernel boundaries.",
+      "title": "Smoke tests stay inside Namba Intent kernel boundaries.",
       "status": "accepted"
     }
   ],
@@ -89,7 +89,7 @@ write_ready_contract() {
       "title": "Smoke fixture risk",
       "severity": "high",
       "status": "accepted",
-      "mitigation": "The fixture stays inside local ni commands."
+      "mitigation": "The fixture stays inside local Namba Intent commands."
     }
   ],
   "evaluations": [
@@ -122,7 +122,7 @@ software
 
 ## Purpose
 
-Exercise public ni commands.
+Exercise public namba-intent commands.
 MD
   cat >"$dir/docs/plan/01_actors_outcomes.md" <<'MD'
 # Actors and outcomes
@@ -205,7 +205,7 @@ JSON
 make_ready_workspace() {
   local name="$1"
   local dir="$SMOKE_TMP/workspaces/$name"
-  run_cmd "ni init ($name)" "$NI_BIN" init --dir "$dir" --profile prototype
+  run_cmd "namba-intent init ($name)" "$NI_BIN" init --dir "$dir" --profile prototype
   write_ready_contract "$dir"
   echo "$dir"
 }
@@ -214,29 +214,29 @@ make_locked_workspace() {
   local name="$1"
   local dir
   dir="$(make_ready_workspace "$name")"
-  run_cmd "ni end ($name)" "$NI_BIN" end --dir "$dir"
+  run_cmd "namba-intent end ($name)" "$NI_BIN" end --dir "$dir"
   echo "$dir"
 }
 
 cd "$ROOT"
 
-echo "smoke: building ni" >&2
-go build -o "$NI_BIN" ./cmd/ni
+echo "smoke: building namba-intent" >&2
+go build -o "$NI_BIN" ./cmd/namba-intent
 
-run_cmd "ni --help" "$NI_BIN" --help
-require_output "ni is a project intent compiler"
+run_cmd "namba-intent --help" "$NI_BIN" --help
+require_output "Namba Intent is a Project Intent Compiler for AI Agents."
 
-run_cmd "ni version" "$NI_BIN" version
+run_cmd "namba-intent version" "$NI_BIN" version
 require_output "0.0.0-dev"
 
 init_ws="$SMOKE_TMP/workspaces/init"
-run_cmd "ni init" "$NI_BIN" init --dir "$init_ws" --profile concept
-require_output "initialized ni planning workspace"
+run_cmd "namba-intent init" "$NI_BIN" init --dir "$init_ws" --profile concept
+require_output "initialized Namba Intent planning workspace"
 
-run_cmd "ni status" "$NI_BIN" status --dir "$init_ws"
+run_cmd "namba-intent status" "$NI_BIN" status --dir "$init_ws"
 require_output "BLOCKED"
 
-run_cmd "ni status proof" "$NI_BIN" status --dir "$init_ws" --proof --next-questions
+run_cmd "namba-intent status proof" "$NI_BIN" status --dir "$init_ws" --proof --next-questions
 require_output "NI Intent Readiness: BLOCKED"
 require_output "Blockers:"
 require_output "Next: answer or defer the blocker question"
@@ -245,16 +245,16 @@ require_output "Execution must not start."
 require_output "Next questions:"
 
 ready_ws="$(make_ready_workspace "ready")"
-run_cmd "ni end on ready fixture" "$NI_BIN" end --dir "$ready_ws"
+run_cmd "namba-intent end on ready fixture" "$NI_BIN" end --dir "$ready_ws"
 require_output "locked plan"
 
 locked_ws="$(make_locked_workspace "locked")"
 for prompt_target in generic codex human-team; do
-  run_cmd "ni run --target $prompt_target" "$NI_BIN" run --dir "$locked_ws" --target "$prompt_target"
+  run_cmd "namba-intent run --target $prompt_target" "$NI_BIN" run --dir "$locked_ws" --target "$prompt_target"
   require_output "Target: $prompt_target"
 done
 
-run_cmd "ni targets" "$NI_BIN" targets
+run_cmd "namba-intent targets" "$NI_BIN" targets
 require_output "generic"
 require_output "spec-kit"
 
@@ -267,68 +267,68 @@ for example_dir in "$ROOT/examples/conversation-product" "$ROOT/examples/researc
 done
 
 for export_target in hyper-run namba-ai ouroboros spec-kit; do
-  run_cmd "ni export --target $export_target" "$NI_BIN" export --dir "$locked_ws" --target "$export_target" --out "$SMOKE_TMP/exports/$export_target"
+  run_cmd "namba-intent export --target $export_target" "$NI_BIN" export --dir "$locked_ws" --target "$export_target" --out "$SMOKE_TMP/exports/$export_target"
   require_output "exported $export_target seed package"
   run_cmd "target conformance ($export_target)" python3 "$ROOT/scripts/check-target-conformance.py" --target "$export_target" --dir "$SMOKE_TMP/exports/$export_target"
   require_output "$export_target export conforms to seed-only boundary"
 done
 
 feedback_ws="$SMOKE_TMP/workspaces/feedback"
-run_cmd "ni init (feedback)" "$NI_BIN" init --dir "$feedback_ws"
-run_cmd "ni feedback add" "$NI_BIN" feedback add --dir "$feedback_ws" --file "$ROOT/testdata/feedback/codex.json"
+run_cmd "namba-intent init (feedback)" "$NI_BIN" init --dir "$feedback_ws"
+run_cmd "namba-intent feedback add" "$NI_BIN" feedback add --dir "$feedback_ws" --file "$ROOT/testdata/feedback/codex.json"
 require_output "recorded feedback from codex"
-run_cmd "ni feedback list" "$NI_BIN" feedback list --dir "$feedback_ws"
+run_cmd "namba-intent feedback list" "$NI_BIN" feedback list --dir "$feedback_ws"
 require_output "codex"
 
 pressure_ws="$SMOKE_TMP/workspaces/pressure"
-run_cmd "ni init (pressure)" "$NI_BIN" init --dir "$pressure_ws"
-run_cmd "ni feedback add (pressure fixture)" "$NI_BIN" feedback add --dir "$pressure_ws" --file "$ROOT/testdata/feedback/codex.json"
-run_cmd "ni pressure status" "$NI_BIN" pressure status --dir "$pressure_ws"
+run_cmd "namba-intent init (pressure)" "$NI_BIN" init --dir "$pressure_ws"
+run_cmd "namba-intent feedback add (pressure fixture)" "$NI_BIN" feedback add --dir "$pressure_ws" --file "$ROOT/testdata/feedback/codex.json"
+run_cmd "namba-intent pressure status" "$NI_BIN" pressure status --dir "$pressure_ws"
 require_output "P-001"
-run_cmd "ni pressure promote" "$NI_BIN" pressure promote P-001 --dir "$pressure_ws"
+run_cmd "namba-intent pressure promote" "$NI_BIN" pressure promote P-001 --dir "$pressure_ws"
 require_output "promoted P-001"
-run_cmd "ni pressure retire" "$NI_BIN" pressure retire P-001 --dir "$pressure_ws"
+run_cmd "namba-intent pressure retire" "$NI_BIN" pressure retire P-001 --dir "$pressure_ws"
 require_output "retired P-001"
 
 amend_ws="$(make_locked_workspace "amend")"
-run_cmd "ni amend create" "$NI_BIN" amend create --dir "$amend_ws" --title "Clarify smoke fixture"
+run_cmd "namba-intent amend create" "$NI_BIN" amend create --dir "$amend_ws" --title "Clarify smoke fixture"
 require_output "created amendment AMEND-001"
 complete_amendment "$amend_ws/.ni/amendments/AMEND-001.json"
-run_cmd "ni amend list" "$NI_BIN" amend list --dir "$amend_ws"
+run_cmd "namba-intent amend list" "$NI_BIN" amend list --dir "$amend_ws"
 require_output "AMEND-001"
-run_cmd "ni amend show" "$NI_BIN" amend show AMEND-001 --dir "$amend_ws"
+run_cmd "namba-intent amend show" "$NI_BIN" amend show AMEND-001 --dir "$amend_ws"
 require_output '"status": "draft"'
-run_cmd "ni amend apply" "$NI_BIN" amend apply AMEND-001 --dir "$amend_ws"
+run_cmd "namba-intent amend apply" "$NI_BIN" amend apply AMEND-001 --dir "$amend_ws"
 require_output "applied amendment AMEND-001"
 
-run_cmd "ni relock" "$NI_BIN" relock --dir "$amend_ws"
+run_cmd "namba-intent relock" "$NI_BIN" relock --dir "$amend_ws"
 require_output "relocked plan"
 
-run_cmd "ni diff" "$NI_BIN" diff --base "$ROOT/internal/core/collab/testdata/base.json" --head "$ROOT/internal/core/collab/testdata/non_conflicting_parallel_head.json"
+run_cmd "namba-intent diff" "$NI_BIN" diff --base "$ROOT/internal/core/collab/testdata/base.json" --head "$ROOT/internal/core/collab/testdata/non_conflicting_parallel_head.json"
 require_output "contract diff"
 
-run_cmd "ni conflicts" "$NI_BIN" conflicts --base "$ROOT/internal/core/collab/testdata/base.json" --head "$ROOT/internal/core/collab/testdata/non_conflicting_parallel_head.json"
+run_cmd "namba-intent conflicts" "$NI_BIN" conflicts --base "$ROOT/internal/core/collab/testdata/base.json" --head "$ROOT/internal/core/collab/testdata/non_conflicting_parallel_head.json"
 require_output "no collaboration conflicts"
 
 graph_ws="$(make_ready_workspace "graph")"
-run_cmd "ni graph" "$NI_BIN" graph --dir "$graph_ws"
+run_cmd "namba-intent graph" "$NI_BIN" graph --dir "$graph_ws"
 require_output "work graph proposal"
 
 harness_ws="$(make_locked_workspace "harness")"
-run_cmd "ni harness plan" "$NI_BIN" harness plan --dir "$harness_ws"
+run_cmd "namba-intent harness plan" "$NI_BIN" harness plan --dir "$harness_ws"
 require_output "generated harness proposal"
-run_cmd "ni harness candidates" "$NI_BIN" harness candidates --dir "$harness_ws"
+run_cmd "namba-intent harness candidates" "$NI_BIN" harness candidates --dir "$harness_ws"
 require_output "no harness candidates"
 
 write_harness_pressure "$harness_ws"
-run_cmd "ni harness propose" "$NI_BIN" harness propose --dir "$harness_ws" --from-pressure P-001
+run_cmd "namba-intent harness propose" "$NI_BIN" harness propose --dir "$harness_ws" --from-pressure P-001
 require_output "proposed harness candidate HC-001"
 printf 'validated by smoke test\n' >"$harness_ws/harness-evidence.txt"
-run_cmd "ni harness validate" "$NI_BIN" harness validate HC-001 --dir "$harness_ws" --evidence harness-evidence.txt
+run_cmd "namba-intent harness validate" "$NI_BIN" harness validate HC-001 --dir "$harness_ws" --evidence harness-evidence.txt
 require_output "validated harness candidate HC-001"
-run_cmd "ni harness accept" "$NI_BIN" harness accept HC-001 --dir "$harness_ws"
+run_cmd "namba-intent harness accept" "$NI_BIN" harness accept HC-001 --dir "$harness_ws"
 require_output "accepted harness candidate HC-001"
-run_cmd "ni harness retire" "$NI_BIN" harness retire HC-001 --dir "$harness_ws"
+run_cmd "namba-intent harness retire" "$NI_BIN" harness retire HC-001 --dir "$harness_ws"
 require_output "retired harness candidate HC-001"
 
 echo "smoke checks passed"

@@ -1,6 +1,6 @@
 ---
 name: ni-grill
-description: Challenge NI planning quality before ni-end by reading docs, contract, and ni status proof without replacing the CLI readiness gate.
+description: Challenge NI planning quality before ni-end by reading docs, contract, and namba-intent status proof without replacing the CLI readiness gate.
 ---
 
 # ni-grill
@@ -16,12 +16,12 @@ implementation tool and not downstream execution.
 
 Skills are UX; CLI is authority.
 
-`ni status` is the authority for `BLOCKED`, `READY_WITH_DEFERRALS`, and
-`READY`. `ni-grill` never approves lock by model judgment. If `ni status` is
+`namba-intent status` is the authority for `BLOCKED`, `READY_WITH_DEFERRALS`, and
+`READY`. `ni-grill` never approves lock by model judgment. If `namba-intent status` is
 `BLOCKED`, `ni-grill` should use deterministic blockers before inventing new
 critique.
 
-If ni status is BLOCKED, ni-grill should use deterministic blockers before
+If namba-intent status is BLOCKED, ni-grill should use deterministic blockers before
 inventing new critique.
 
 If `.ni/plan.lock.json` exists, respect the source-of-truth order and do not
@@ -33,10 +33,10 @@ report `BLOCKED`.
 - Skills may help explain `LOCK-STALE`.
 - Skills do not determine readiness.
 - Skills do not lock or relock.
-- Skills do not replace `ni status`, `ni end`, or `ni run`.
+- Skills do not replace `namba-intent status`, `namba-intent end`, or `namba-intent run`.
 - Skills do not update `.ni/plan.lock.json`.
 
-Recovery order: `review changed intent -> ni status --proof --next-questions -> ni end -> ni run --max-chars 4000`.
+Recovery order: `review changed intent -> namba-intent status --proof --next-questions -> namba-intent end -> namba-intent run --max-chars 4000`.
 
 ## Start Process
 
@@ -45,7 +45,7 @@ Recovery order: `review changed intent -> ni status --proof --next-questions -> 
 2. Run or request:
 
 ```bash
-ni status --dir . --proof --next-questions
+namba-intent status --dir . --proof --next-questions
 ```
 
 3. Preserve grouped next questions first: `First-run card`, `Sync repairs`,
@@ -92,8 +92,8 @@ and `Note` observations. If more findings exist, summarize:
 N additional lower-priority findings were not shown.
 ```
 
-When `ni status` is `BLOCKED`, prioritize deterministic blockers and avoid a
-long secondary critique. When `ni status` is `READY` or
+When `namba-intent status` is `BLOCKED`, prioritize deterministic blockers and avoid a
+long secondary critique. When `namba-intent status` is `READY` or
 `READY_WITH_DEFERRALS`, focus on claim quality, public handoff, risk clarity,
 and overclaim prevention.
 
@@ -118,7 +118,7 @@ findings.
 
 Ask user-facing grill questions in the user's latest substantive language.
 Preserve IDs, commands, paths, status constants, target names, schema keys, and
-severity labels: `R014`, `OQ-001`, `SYNC-014`, `GRILL-001`, `ni status`,
+severity labels: `R014`, `OQ-001`, `SYNC-014`, `GRILL-001`, `namba-intent status`,
 `.ni/contract.json`, `READY`, `READY_WITH_DEFERRALS`, `BLOCKED`, `Critical`,
 `High`, `Medium`, `Low`, and `Note`.
 
@@ -129,7 +129,7 @@ When the user answers grill questions, update `docs/plan/**`,
 decisions from uncertainty; record uncertainty as assumptions or open
 questions.
 
-After updates, run or request `ni status --dir . --proof --next-questions`
+After updates, run or request `namba-intent status --dir . --proof --next-questions`
 again and show planning proof:
 
 - user input captured;
@@ -142,7 +142,7 @@ again and show planning proof:
 - Skills may help draft or explain proof-related planning text.
 - Skills do not determine readiness.
 - Skills do not lock plans.
-- Skills do not replace `ni status`, `ni end`, or `ni run`.
+- Skills do not replace `namba-intent status`, `namba-intent end`, or `namba-intent run`.
 
 ## Do not
 

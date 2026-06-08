@@ -118,7 +118,10 @@ PATH="$HOME/.local/bin:$PATH" ni version
 
 Use the matching archive name for your platform. On Windows, expand the `.zip`
 archive with PowerShell or another trusted unzip tool and place `ni.exe` on your
-User PATH, or use `install.ps1` from the repository root.
+User PATH, or use `install.ps1` from the repository root. PowerShell has a
+built-in `ni` alias for `New-Item`; the PowerShell installer handles that alias
+with a ni-managed profile block so `ni` can resolve to `ni.exe` in new sessions.
+Use `Get-Command ni -All` if command-name resolution does not look right.
 
 ## What The Script Does
 

@@ -2,7 +2,7 @@ Human-team handoff
 
 Goal: Hand this locked NI plan to a PM/dev/design/research team for coordinated implementation planning.
 
-Project: CLI Fixture - Exercise ni end.
+Project: CLI Fixture - Exercise namba-intent end.
 Readiness: READY
 Target: human-team (handoff)
 Locked at: <TIMESTAMP>
@@ -20,8 +20,8 @@ Rules:
 - If there are conflicting requirements, report BLOCKED with conflicting sources or IDs and stop.
 - Do not weaken acceptance criteria, risk mitigations, or blocker handling to proceed.
 - Every work item must trace to CAP/REQ/EVAL/RISK IDs.
-- Keep ni at the pre-runtime boundary; this prompt is seed material, not kernel-owned execution state.
-- Do not make ni run execute shell, Codex, adapters, queues, PR automation, or agent teams.
+- Keep Namba Intent at the pre-runtime boundary; this prompt is seed material, not kernel-owned execution state.
+- Do not make namba-intent run execute shell, Codex, adapters, queues, PR automation, or agent teams.
 
 Target instructions:
 - PM: maintain scope against accepted capabilities, non-goals, and open blocker questions.

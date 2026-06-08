@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="assets/hero.svg" alt="ni hero banner: Project Intent Compiler for AI Agents" width="100%">
+  <img src="assets/hero.svg" alt="Namba Intent hero banner: Project Intent Compiler for AI Agents" width="100%">
 </p>
 
 <p align="center">
@@ -16,18 +16,22 @@
 
 <h1 align="center">Don't run the agent yet. Compile the intent first.</h1>
 
-<p align="center"><strong>ni is a Project Intent Compiler for AI Agents.</strong></p>
+<p align="center"><strong>Namba Intent is a Project Intent Compiler for AI Agents.</strong></p>
 
-`ni` turns a planning conversation into a docs contract, checks readiness,
-locks the accepted plan, and compiles a bounded downstream handoff prompt.
+Namba Intent turns a planning conversation into a docs contract, checks
+readiness, locks the accepted plan, and compiles a bounded downstream handoff
+prompt.
+
+Current main branch documents the upcoming Namba Intent command rename for
+v0.6.0. Latest published v0.5.1 may still use `ni` until v0.6.0 is published.
 
 <p align="center">
   <img src="assets/intent-lock-flow.svg" alt="Intent Lock Protocol flow: conversation, project contract, readiness gate, lock hash, bounded handoff." width="100%">
 </p>
 
-## Why ni
+## Why Namba Intent
 
-AI agents move fast. `ni` slows down only the part that should be slow:
+AI agents move fast. Namba Intent slows down only the part that should be slow:
 deciding what the project actually means before implementation starts.
 
 - Capture missing users, acceptance criteria, risks, non-goals, and blockers.
@@ -37,152 +41,98 @@ deciding what the project actually means before implementation starts.
 
 ## Install
 
-README shows two primary first-success paths. Source, local build, Linux,
-release-archive, pinned installs, dry-run, inspect-first, `BINDIR`, and
-advanced uninstall details live in
-[Install ni](docs/22_INSTALL.md).
+README shows two primary first-success paths for the current tree. Source,
+local build, release archive, pinned installs, dry-run, inspect-first,
+`BINDIR`, uninstall details, and the v0.5.1 public-release distinction live in
+[Install Namba Intent](docs/22_INSTALL.md).
 
 ### macOS
 
-Install the latest release binary with the curl installer. This downloads the
-installer script and runs it with User PATH update enabled:
+For the upcoming v0.6.0 release, the curl installer installs the primary
+`namba-intent` command and verifies:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/Nam-Cheol/ni/main/install.sh | sh -s -- --update-path
+namba-intent --help
+namba-intent version
 ```
 
-Open a new shell so the PATH update is loaded.
-
-First, check that the global command is available:
-
-```bash
-ni --help
-```
-
-Then check the installed version:
-
-```bash
-ni version
-```
-
-Uninstall the installer-installed binary and the ni-managed PATH block, if one
-was added. This uses the same installer script in uninstall mode:
-
-```bash
-curl -fsSL https://raw.githubusercontent.com/Nam-Cheol/ni/main/install.sh | sh -s -- --uninstall
-```
+Do not treat this current-main installer path as proof that the latest
+published v0.5.1 release already provides `namba-intent`. Use the v0.5.1
+release notes for public `ni` install verification until v0.6.0 is published.
 
 Homebrew: Planned / v0.5 candidate.
 
 ### Windows
 
-Install the latest release with the PowerShell installer, which installs to
-`%LOCALAPPDATA%\ni\bin` by default and updates User PATH only.
-
-First, choose a temporary installer path:
-
-```powershell
-$Installer = Join-Path $env:TEMP "ni-install.ps1"
-```
-
-Download the installer to that path:
+For the upcoming v0.6.0 release, the PowerShell installer installs
+`namba-intent.exe` to `%LOCALAPPDATA%\namba-intent\bin` by default and updates
+User PATH only.
 
 ```powershell
+$Installer = Join-Path $env:TEMP "namba-intent-install.ps1"
 irm https://raw.githubusercontent.com/Nam-Cheol/ni/main/install.ps1 -OutFile $Installer
-```
-
-Run the downloaded installer:
-
-```powershell
 powershell -NoProfile -ExecutionPolicy Bypass -File $Installer
 ```
 
-Open a new PowerShell session so the User PATH update is loaded.
-
-First, check that the global command is available:
+Open a new PowerShell session and verify:
 
 ```powershell
-ni --help
+namba-intent --help
+namba-intent version
 ```
 
-Then check the installed version:
-
-```powershell
-ni version
-```
-
-To uninstall, choose the same temporary installer path:
-
-```powershell
-$Installer = Join-Path $env:TEMP "ni-install.ps1"
-```
-
-Download a fresh copy of the installer:
-
-```powershell
-irm https://raw.githubusercontent.com/Nam-Cheol/ni/main/install.ps1 -OutFile $Installer
-```
-
-Run the installer in uninstall mode. It removes the installer-installed binary
-and the User PATH entry added by `ni`:
-
-```powershell
-powershell -NoProfile -ExecutionPolicy Bypass -File $Installer -Uninstall
-```
-
-Windows installer code and static safety checks are present. Real-host Windows
-execution remains deferred on this macOS-only development host until a Windows
-install transcript exists.
+PowerShell alias cleanup for `ni -> New-Item` is legacy v0.5.x guidance and is
+not required for `namba-intent.exe`. Real-host Windows execution remains
+deferred until a Windows transcript exists.
 
 ## First project in 5 minutes
-
-Public install parity note: the published v0.5.1 binary verifies `ni --help`,
-`ni version`, `ni init .`, and `ni status --proof --next-questions` on the
-tested macOS arm64 path. The earlier v0.5.0 `ni init .` mismatch is closed for
-that path; see [docs/132](docs/132_V0_5_1_POST_RELEASE_VERIFICATION.md).
 
 ```bash
 mkdir my-project
 cd my-project
-ni init .
-ni status --proof --next-questions
-ni end
-ni run --max-chars 4000
+namba-intent init .
+namba-intent status --proof --next-questions
+namba-intent end
+namba-intent run --max-chars 4000
 ```
 
-`ni init .` opens a guided project intent wizard and creates
-`.ni/contract.json`, `.ni/session.json`, and `docs/plan/**`.
+`namba-intent init .` opens a guided project intent wizard and creates
+`.ni/contract.json`, `.ni/session.json`, and `docs/plan/**`. Namba Intent keeps
+`.ni/` for compatibility.
 
-`ni status --proof --next-questions` is the CLI-authoritative readiness gate.
-A model can draft updates, but `ni status` decides readiness.
+`namba-intent status --proof --next-questions` is the CLI-authoritative
+readiness gate. A model can draft updates, but the CLI decides readiness.
 
-`ni end` locks the accepted plan and writes `.ni/plan.lock.json` only after the
-CLI gate permits it.
+`namba-intent end` locks the accepted plan and writes `.ni/plan.lock.json` only
+after the CLI gate permits it.
 
-`ni run --max-chars 4000` compiles a bounded downstream handoff prompt. It does
-not execute the prompt, run agents, run shell commands, or prove product
-readiness.
+`namba-intent run --max-chars 4000` compiles a bounded downstream handoff
+prompt. It does not execute the prompt, run agents, run shell commands, or
+prove product readiness.
 
-## What ni does
+## What Namba Intent Does
 
 | Command | Role |
 | --- | --- |
-| `ni init .` | Create a planning workspace and guided intent draft. |
-| `ni status --proof --next-questions` | Check readiness, blockers, and next planning questions. |
-| `ni end` | Lock the accepted plan through the CLI gate. |
-| `ni run --max-chars 4000` | Compile a bounded prompt from a valid lock. |
+| `namba-intent init .` | Create a planning workspace and guided intent draft. |
+| `namba-intent status --proof --next-questions` | Check readiness, blockers, and next planning questions. |
+| `namba-intent end` | Lock the accepted plan through the CLI gate. |
+| `namba-intent run --max-chars 4000` | Compile a bounded prompt from a valid lock. |
 
-## What ni does not do
+## What Namba Intent Does Not Do
 
-`ni` is not a task runner, SPEC runner, multi-agent execution layer, queue,
-shell adapter, PR automation system, release automation system, or downstream
-execution runtime.
+Namba Intent is not a task runner, SPEC runner, multi-agent execution layer,
+queue, shell adapter, PR automation system, release automation system, or
+downstream execution runtime.
 
 ## Status
 
-- v0.5.1 publication: verified.
-- Release binary: Available.
-- Curl installer: Available.
+- v0.5.1 publication: verified for the historical `ni` command.
+- v0.6.0 rename: implemented in current tree, not published.
+- Primary command in current tree: `namba-intent`.
+- Deprecated transition shim: `ni` warns `ni is deprecated; use namba-intent.`
+- Repository: `Nam-Cheol/ni` retained.
+- Config directory: `.ni/` retained.
 - Homebrew: Planned / v0.5 candidate.
 - Windows real-host execution: deferred until a Windows transcript exists.
 - Model workspace packs: Experimental. Host-level/global install remains unverified unless documented.
@@ -193,11 +143,10 @@ execution runtime.
 
 | Read | Why |
 | --- | --- |
-| [Install ni](docs/22_INSTALL.md) | Detailed install, release binary, curl installer, and uninstall paths. |
+| [Install Namba Intent](docs/22_INSTALL.md) | Detailed install, release binary, curl installer, and uninstall paths. |
+| [Rename implementation](docs/136_NAMBA_INTENT_RENAME_IMPLEMENTATION.md) | v0.6.0 command rename surfaces and claim boundaries. |
 | [Intent Lock Protocol](docs/42_INTENT_LOCK_PROTOCOL.md) | Readiness, locking, hash trust, and blocked handoff rules. |
 | [No-Terminal Planning](docs/no-terminal.md) | Assisted workflow boundaries; not deterministic validation. |
 | [Model Workspace Status](docs/99_MODEL_WORKSPACE_STATUS.md) | Experimental model workspace boundaries and verification state. |
-| [Benchmark Claim Boundaries](docs/97_BENCHMARK_CLAIM_BOUNDARIES.md) | What benchmark `READY`, `not_measured`, and prompt evidence do and do not prove. |
-| [Command reference](docs/commands.md) | The implemented CLI surface. |
 
-License: `ni` is licensed under the [MIT License](LICENSE).
+License: Namba Intent is licensed under the [MIT License](LICENSE).

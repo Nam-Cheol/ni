@@ -4,7 +4,7 @@
 있는 NI workflow instruction을 담고 있다.
 
 이 skill들은 authoring, review, lock, prompt compilation UX를 돕는다. Authority는
-계속 `ni` CLI에 있다. Readiness, lock 생성, lock hash verification, prompt
+계속 `namba-intent` CLI에 있다. Readiness, lock 생성, lock hash verification, prompt
 compilation은 CLI result를 기준으로 판단한다.
 
 ## Status
@@ -25,15 +25,15 @@ Boundary: Skills are UX; CLI is authority.
 | --- | --- |
 | `ni-start` | Conversation-driven planning을 계속하고 `docs/plan/**`, `.ni/contract.json`, `.ni/session.json`을 함께 유지한다. |
 | `ni-grill` | Lock 전에 accepted 또는 nearly accepted planning content를 challenge한다; downstream work를 execute하거나 model judgment로 readiness를 approve하지 않는다. |
-| `ni-status-review` | `ni status --proof` output을 설명하고 다음 planning question을 찾되 second readiness engine이 되지 않는다. |
-| `ni-end` | CLI readiness를 review하고 explicit confirmation 뒤에만 `ni end`로 lock한다. |
+| `ni-status-review` | `namba-intent status --proof` output을 설명하고 다음 planning question을 찾되 second readiness engine이 되지 않는다. |
+| `ni-end` | CLI readiness를 review하고 explicit confirmation 뒤에만 `namba-intent end`로 lock한다. |
 | `ni-run` | Valid lock에서 bounded handoff prompt를 compile하고 downstream work는 실행하지 않는다. |
 
 ## Authority Rules
 
 - Skills are UX; CLI is authority.
-- Readiness claim 전에는 `ni status`를 run 또는 request한다.
-- `ni-start`는 grouped `ni status --proof --next-questions` output이 있으면
+- Readiness claim 전에는 `namba-intent status`를 run 또는 request한다.
+- `ni-start`는 grouped `namba-intent status --proof --next-questions` output이 있으면
   primary planning interview로 사용해야 한다.
 - `ni-start`는 의미 있는 authoring update 뒤 changed files, affected IDs,
   before/after CLI status, remaining blockers, next question group을 담은 concise
@@ -44,16 +44,16 @@ Boundary: Skills are UX; CLI is authority.
 - Skills do not determine readiness.
 - Skills do not lock plans.
 - Skills do not lock or relock.
-- Skills do not replace `ni status`, `ni end`, or `ni run`.
+- Skills do not replace `namba-intent status`, `namba-intent end`, or `namba-intent run`.
 - Skills do not update `.ni/plan.lock.json`.
 - `LOCK-STALE` means the existing lock no longer matches current planning
-  inputs; recovery is `review changed intent -> ni status --proof --next-questions -> ni end -> ni run --max-chars 4000`.
+  inputs; recovery is `review changed intent -> namba-intent status --proof --next-questions -> namba-intent end -> namba-intent run --max-chars 4000`.
 - `ni-grill` challenges planning quality before lock. It does not execute work.
-- `ni status`가 `BLOCKED`이면 `ni-grill`은 새로운 critique를 만들기 전에
+- `namba-intent status`가 `BLOCKED`이면 `ni-grill`은 새로운 critique를 만들기 전에
   deterministic blockers를 먼저 사용해야 한다.
 - `ni-grill`은 model judgment로 lock을 approve하지 않는다.
-- Lock claim 전에는 `ni end`를 run 또는 request한다.
-- Handoff prompt claim 전에는 `ni run`을 run 또는 request한다.
+- Lock claim 전에는 `namba-intent end`를 run 또는 request한다.
+- Handoff prompt claim 전에는 `namba-intent run`을 run 또는 request한다.
 - `.ni/plan.lock.json`을 manually edit하지 않는다.
 - Stale lock 또는 hash mismatch가 있으면 stop하고 `BLOCKED`를 report한다.
 - Claude APIs를 call하지 않는다.
@@ -161,5 +161,5 @@ Broad product path의 Experimental status와 not_verified host/provider boundari
 
 - Claude APIs를 run하지 않는다.
 - Implementation 또는 downstream work를 execute하지 않는다.
-- Readiness, locking, hash checks, prompt compilation에 대한 `ni` CLI validation을
+- Readiness, locking, hash checks, prompt compilation에 대한 `namba-intent` CLI validation을
   replace하지 않는다.

@@ -107,7 +107,7 @@ func checkProjectPurpose(root string, c contract.Contract) []Finding {
 			ID:              "SYNC-014",
 			Location:        twoSidedLocation(location(ProjectBriefDoc, line), ".ni/contract.json:project.purpose"),
 			Problem:         "Project purpose is documented but missing from .ni/contract.json.",
-			WhyItMatters:    "ni cannot safely lock a plan when the human-readable purpose and machine-readable contract disagree.",
+			WhyItMatters:    "Namba Intent cannot safely lock a plan when the human-readable purpose and machine-readable contract disagree.",
 			SuggestedRepair: "Record the documented project purpose in .ni/contract.json, or mark the purpose unresolved with an explicit blocker question.",
 			BlocksEnd:       true,
 		})}
@@ -116,7 +116,7 @@ func checkProjectPurpose(root string, c contract.Contract) []Finding {
 			ID:              "SYNC-014",
 			Location:        twoSidedLocation(".ni/contract.json:project.purpose", ProjectBriefDoc),
 			Problem:         "Project purpose is recorded in .ni/contract.json but not explained in docs.",
-			WhyItMatters:    "Reviewers need the same purpose in the human-readable plan before ni can lock it.",
+			WhyItMatters:    "Reviewers need the same purpose in the human-readable plan before Namba Intent can lock it.",
 			SuggestedRepair: "Explain the contract purpose in docs/plan/00_project_brief.md, or revise the contract if the purpose is no longer accepted.",
 			BlocksEnd:       true,
 		})}
@@ -125,7 +125,7 @@ func checkProjectPurpose(root string, c contract.Contract) []Finding {
 			ID:              "SYNC-014",
 			Location:        twoSidedLocation(location(ProjectBriefDoc, line), ".ni/contract.json:project.purpose"),
 			Problem:         "Project purpose differs between docs and contract.",
-			WhyItMatters:    "ni cannot safely lock a plan when the human-readable purpose and machine-readable contract disagree.",
+			WhyItMatters:    "Namba Intent cannot safely lock a plan when the human-readable purpose and machine-readable contract disagree.",
 			SuggestedRepair: "Update the stale side so both describe the same project purpose.",
 			BlocksEnd:       true,
 		})}
@@ -151,7 +151,7 @@ func checkActorsOutcomes(root string, c contract.Contract) []Finding {
 			ID:              "SYNC-015",
 			Location:        twoSidedLocation(location(ActorsDoc, firstPositiveLine(actorsLine, outcomesLine)), ".ni/contract.json"),
 			Problem:         "Actors or outcomes are documented but missing from .ni/contract.json.",
-			WhyItMatters:    "ni cannot judge readiness unless the machine-readable contract reflects who the plan is for and what outcomes they need.",
+			WhyItMatters:    "Namba Intent cannot judge readiness unless the machine-readable contract reflects who the plan is for and what outcomes they need.",
 			SuggestedRepair: "Record the accepted actors and outcomes in contract purpose, capability, requirement, decision, or open-question records.",
 			BlocksEnd:       true,
 		})}
@@ -212,7 +212,7 @@ func checkDeliverySurfaces(root string, c contract.Contract) []Finding {
 			ID:              "SYNC-016",
 			Location:        twoSidedLocation(".ni/contract.json:delivery_surfaces", DeliveryDoc),
 			Problem:         "Delivery surface is recorded in .ni/contract.json but not explained in docs.",
-			WhyItMatters:    "Human reviewers need to see the accepted delivery surface before ni can lock the plan.",
+			WhyItMatters:    "Human reviewers need to see the accepted delivery surface before Namba Intent can lock the plan.",
 			SuggestedRepair: "Explain the selected delivery surface in docs/plan/08_delivery_operation.md and the project brief, or revise the contract if it is not accepted.",
 			BlocksEnd:       true,
 		})}

@@ -2,7 +2,7 @@ Codex target prompt
 
 Goal: Paste this prompt into Codex to make the smallest implementation move allowed by the locked NI plan.
 
-Project: CLI Fixture - Exercise ni end.
+Project: CLI Fixture - Exercise namba-intent end.
 Readiness: READY
 Target: codex (prompt)
 Locked at: <TIMESTAMP>
@@ -20,13 +20,13 @@ Rules:
 - If there are conflicting requirements, report BLOCKED with conflicting sources or IDs and stop.
 - Do not weaken acceptance criteria, risk mitigations, or blocker handling to proceed.
 - Every work item must trace to CAP/REQ/EVAL/RISK IDs.
-- Keep ni at the pre-runtime boundary; this prompt is seed material, not kernel-owned execution state.
-- Do not make ni run execute shell, Codex, adapters, queues, PR automation, or agent teams.
+- Keep Namba Intent at the pre-runtime boundary; this prompt is seed material, not kernel-owned execution state.
+- Do not make namba-intent run execute shell, Codex, adapters, queues, PR automation, or agent teams.
 
 Target instructions:
 - Use the current worktree as evidence; preserve user changes and stay within the locked contract.
 - Define validation before editing, then implement only the selected work packet.
-- Do not ask ni to invoke Codex automatically; ni run only compiled this prompt.
+- Do not ask Namba Intent to invoke Codex automatically; namba-intent run only compiled this prompt.
 
 Process:
 1. Read .ni/plan.lock.json, .ni/contract.json, and relevant docs/plan files.

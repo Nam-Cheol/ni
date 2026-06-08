@@ -20,7 +20,7 @@ must resume from persisted docs, `.ni/contract.json`, and bounded
 
 Skills are UX; CLI is authority.
 
-Skills are UX; the `ni` CLI is authority.
+Skills are UX; the `namba-intent` CLI is authority.
 
 You may draft, review, and update:
 
@@ -35,7 +35,7 @@ You may read supporting project files such as `AGENTS.md`,
 and `.ni/plan.lock.json`.
 
 Do not declare readiness from model judgment. Run or request
-`ni status --dir . --proof --next-questions` before describing the
+`namba-intent status --dir . --proof --next-questions` before describing the
 authoritative readiness state.
 
 Do not create `.ni/plan.lock.json`. Do not edit `.ni/plan.lock.json` manually.
@@ -46,10 +46,10 @@ If a lock hash mismatch exists, stop and report `BLOCKED`.
 - Skills may help explain `LOCK-STALE`.
 - Skills do not determine readiness.
 - Skills do not lock or relock.
-- Skills do not replace `ni status`, `ni end`, or `ni run`.
+- Skills do not replace `namba-intent status`, `namba-intent end`, or `namba-intent run`.
 - Skills do not update `.ni/plan.lock.json`.
 
-Recovery order: `review changed intent -> ni status --proof --next-questions -> ni end -> ni run --max-chars 4000`.
+Recovery order: `review changed intent -> namba-intent status --proof --next-questions -> namba-intent end -> namba-intent run --max-chars 4000`.
 
 ## Language-Adaptive Questions
 
@@ -60,7 +60,7 @@ preference.
 
 Preserve IDs, command names, file paths, schema keys, target names, and status
 constants exactly. Do not translate tokens such as `R014`, `OQ-001`,
-`SYNC-014`, `ni status`, `ni end`, `ni run`, `.ni/contract.json`, `READY`,
+`SYNC-014`, `namba-intent status`, `namba-intent end`, `namba-intent run`, `.ni/contract.json`, `READY`,
 `BLOCKED`, or `READY_WITH_DEFERRALS`.
 
 CLI output may remain English. You may explain or summarize CLI proof and
@@ -82,7 +82,7 @@ localization to weaken readiness gates.
    `.ni/contract.json`, `docs/plan/**`, lock state, and the CLI result when
    available. If session state conflicts with contract records, the contract
    wins. If it conflicts with a valid lock, the lock and locked docs win.
-5. Run or request `ni status --dir . --proof --next-questions` when command
+5. Run or request `namba-intent status --dir . --proof --next-questions` when command
    execution is available. If not, ask the user to run it and paste the exact
    output.
 6. Summarize the current planning state before asking for more input. The start
@@ -105,7 +105,7 @@ localization to weaken readiness gates.
 
 ## Grouped Next-Question Handling
 
-`ni status --dir . --proof --next-questions` is the conversation driver when it
+`namba-intent status --dir . --proof --next-questions` is the conversation driver when it
 returns grouped next questions. Preserve group labels such as:
 
 - `First-run card`
@@ -137,7 +137,7 @@ Use the groups this way:
 
 After the user answers the selected group, update `docs/plan/**`,
 `.ni/contract.json`, and `.ni/session.json`, then run or request
-`ni status --dir . --proof --next-questions` again. Explain that readiness is
+`namba-intent status --dir . --proof --next-questions` again. Explain that readiness is
 blocked or cleared by deterministic CLI gates, not model judgment.
 
 ## Planning Proof Capture
@@ -185,11 +185,11 @@ Rules:
 - Do not invent file changes, contract fields, or IDs.
 - If no files were changed, say no planning artifacts were updated.
 - Do not claim readiness unless CLI status proves it.
-- Do not claim lock unless `ni end` actually created `.ni/plan.lock.json`.
+- Do not claim lock unless `namba-intent end` actually created `.ni/plan.lock.json`.
 - Skills may help draft or explain proof-related planning text.
 - Skills do not determine readiness.
 - Skills do not lock plans.
-- Skills do not replace `ni status`, `ni end`, or `ni run`.
+- Skills do not replace `namba-intent status`, `namba-intent end`, or `namba-intent run`.
 - Keep uncertain user statements as assumptions or open questions.
 - Record clear exclusions as non-goals.
 - If docs and contract disagree, say so and run or request status again.
@@ -233,7 +233,7 @@ surface in `docs/plan/08_delivery_operation.md`, `product_type`, and
 open questions. Record clear exclusions as non-goals. Do not convert vague
 answers into accepted decisions without confirmation.
 
-Run or request `ni status --dir . --proof --next-questions` again after the
+Run or request `namba-intent status --dir . --proof --next-questions` again after the
 update, and use the CLI result as the next authority.
 
 ## Authoring Loop
@@ -256,7 +256,7 @@ When the user provides new intent:
    override the contract, docs, or lock.
 6. Preserve trace links from capabilities to requirements, evaluations, risks,
    and artifacts.
-7. Run or request `ni status --dir . --proof --next-questions` after
+7. Run or request `namba-intent status --dir . --proof --next-questions` after
    meaningful edits.
 8. Report the planning proof block, including changed files, affected IDs,
    readiness blockers, and the next focused planning questions.
@@ -276,14 +276,14 @@ When responding during planning:
 - Ask at most one grouped next-question section per turn, except for the
   compact `First-run card`.
 - Ask at most three primary questions at once.
-- Use deterministic next questions from `ni status --proof --next-questions`
+- Use deterministic next questions from `namba-intent status --proof --next-questions`
   directly.
 - Preserve the CLI group labels, including `First-run card`, `Sync repairs`,
   `Risk decisions`, `Evaluation evidence`, `Scope boundaries`, and
   `Open blockers`.
 - Preserve the CLI answer shapes: evidence, decision, deferral,
   not_applicable, mitigation, or explicit non-goal.
-- If `ni status` reports `BLOCKED`, state the blockers plainly and keep
+- If `namba-intent status` reports `BLOCKED`, state the blockers plainly and keep
   planning open.
 
 ## Boundaries

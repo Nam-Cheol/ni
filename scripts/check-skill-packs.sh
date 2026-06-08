@@ -53,14 +53,14 @@ check_skill() {
   require_text "$file" "Authority"
   require_text "$file" "Skills are UX; CLI is authority."
   if [[ "$skill" == "ni-run" ]]; then
-    require_text "$file" "ni run"
+    require_text "$file" "namba-intent run"
   else
-    require_text "$file" "ni status"
+    require_text "$file" "namba-intent status"
   fi
   if [[ "$skill" == "ni-start" || "$skill" == "ni-grill" || "$skill" == "ni-status-review" ]]; then
     require_text "$file" "Skills may help draft or explain proof-related planning text."
     require_text "$file" "Skills do not determine readiness"
-    require_text "$file" 'do not replace `ni status`,'
+    require_text "$file" 'do not replace `namba-intent status`,'
   fi
   require_text "$file" "BLOCKED"
   require_text "$file" "Do not"
@@ -69,7 +69,7 @@ check_skill() {
   require_text "$file" "Skills may help explain \`LOCK-STALE\`."
   require_text "$file" "Skills do not lock or relock."
   require_text "$file" "Skills do not update \`.ni/plan.lock.json\`."
-  require_text "$file" "review changed intent -> ni status --proof --next-questions -> ni end -> ni run --max-chars 4000"
+  require_text "$file" "review changed intent -> namba-intent status --proof --next-questions -> namba-intent end -> namba-intent run --max-chars 4000"
   require_no_text "$file" "codex exec --"
   require_no_text "$file" "claude "
   require_no_text "$file" "anthropic "
@@ -106,9 +106,9 @@ check_pack() {
   require_text "$pack/README.md" "Skills do not determine readiness."
   require_text "$pack/README.md" "Skills do not lock plans."
   require_text "$pack/README.md" "Skills do not lock or relock."
-  require_text "$pack/README.md" 'Skills do not replace `ni status`, `ni end`, or `ni run`.'
+  require_text "$pack/README.md" 'Skills do not replace `namba-intent status`, `namba-intent end`, or `namba-intent run`.'
   require_text "$pack/README.md" 'Skills do not update `.ni/plan.lock.json`.'
-  require_text "$pack/README.md" "review changed intent -> ni status --proof --next-questions -> ni end -> ni run --max-chars 4000"
+  require_text "$pack/README.md" "review changed intent -> namba-intent status --proof --next-questions -> namba-intent end -> namba-intent run --max-chars 4000"
   require_text "$pack/README.md" "unzip -l dist/"
   require_text "$pack/README.ko.md" "Skills are UX"
   require_text "$pack/README.ko.md" "Status: Experimental."
@@ -125,9 +125,9 @@ check_pack() {
   require_text "$pack/README.ko.md" "Skills do not determine readiness."
   require_text "$pack/README.ko.md" "Skills do not lock plans."
   require_text "$pack/README.ko.md" "Skills do not lock or relock."
-  require_text "$pack/README.ko.md" 'Skills do not replace `ni status`, `ni end`, or `ni run`.'
+  require_text "$pack/README.ko.md" 'Skills do not replace `namba-intent status`, `namba-intent end`, or `namba-intent run`.'
   require_text "$pack/README.ko.md" 'Skills do not update `.ni/plan.lock.json`.'
-  require_text "$pack/README.ko.md" "review changed intent -> ni status --proof --next-questions -> ni end -> ni run --max-chars 4000"
+  require_text "$pack/README.ko.md" "review changed intent -> namba-intent status --proof --next-questions -> namba-intent end -> namba-intent run --max-chars 4000"
   require_text "$pack/README.ko.md" "unzip -l dist/"
   require_text "$package_script" "$pack"
   require_text "$package_script" "README.md"
@@ -155,7 +155,7 @@ require_text "scripts/install-claude-skills.sh" "This script does not assume a g
 require_text "README.md" "Model workspace packs: Experimental."
 require_text "README.md" "Host-level/global install remains unverified unless documented"
 require_text "README.ko.md" "Model workspace packs: Experimental."
-require_text "README.ko.md" "Host-level/global install은 documented되기 전까지 unverified"
+require_text "README.ko.md" "Host-level/global install은 documented 전까지 unverified"
 require_file "docs/99_MODEL_WORKSPACE_STATUS.md"
 require_file "docs/99_MODEL_WORKSPACE_STATUS.ko.md"
 require_file "docs/101_CONVERSATION_PROOF_CAPTURE_RELIABILITY.md"

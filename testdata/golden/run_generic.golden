@@ -2,7 +2,7 @@ Generic target prompt
 
 Goal: Give any downstream actor the smallest safe implementation move from the locked NI plan.
 
-Project: CLI Fixture - Exercise ni end.
+Project: CLI Fixture - Exercise namba-intent end.
 Readiness: READY
 Target: generic (prompt)
 Locked at: <TIMESTAMP>
@@ -20,8 +20,8 @@ Rules:
 - If there are conflicting requirements, report BLOCKED with conflicting sources or IDs and stop.
 - Do not weaken acceptance criteria, risk mitigations, or blocker handling to proceed.
 - Every work item must trace to CAP/REQ/EVAL/RISK IDs.
-- Keep ni at the pre-runtime boundary; this prompt is seed material, not kernel-owned execution state.
-- Do not make ni run execute shell, Codex, adapters, queues, PR automation, or agent teams.
+- Keep Namba Intent at the pre-runtime boundary; this prompt is seed material, not kernel-owned execution state.
+- Do not make namba-intent run execute shell, Codex, adapters, queues, PR automation, or agent teams.
 
 Target instructions:
 - Use this as a generic prompt for a downstream worker, not as automatic execution.

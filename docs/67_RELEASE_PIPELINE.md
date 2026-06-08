@@ -39,14 +39,14 @@ dispatch before this release path is intentionally expanded.
 
 | OS | Arch | Archive |
 | --- | --- | --- |
-| linux | amd64 | `ni_<version>_linux_amd64.tar.gz` |
-| linux | arm64 | `ni_<version>_linux_arm64.tar.gz` |
-| darwin | amd64 | `ni_<version>_darwin_amd64.tar.gz` |
-| darwin | arm64 | `ni_<version>_darwin_arm64.tar.gz` |
-| windows | amd64 | `ni_<version>_windows_amd64.zip` |
+| linux | amd64 | `namba-intent_<version>_linux_amd64.tar.gz` |
+| linux | arm64 | `namba-intent_<version>_linux_arm64.tar.gz` |
+| darwin | amd64 | `namba-intent_<version>_darwin_amd64.tar.gz` |
+| darwin | arm64 | `namba-intent_<version>_darwin_arm64.tar.gz` |
+| windows | amd64 | `namba-intent_<version>_windows_amd64.zip` |
 
 Windows arm64 is intentionally ignored. GoReleaser also writes
-`ni_<version>_checksums.txt`.
+`namba-intent_<version>_checksums.txt`.
 
 ## Local Dry Run
 

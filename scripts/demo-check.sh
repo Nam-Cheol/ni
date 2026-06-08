@@ -220,7 +220,7 @@ run_if_locked() {
     return 0
   fi
 
-  go run ./cmd/ni run --dir "$example_dir" --target "$target" --out "$out_path"
+  go run ./cmd/namba-intent run --dir "$example_dir" --target "$target" --out "$out_path"
   if [[ ! -s "$out_path" ]]; then
     echo "demo-check failed: compiled prompt is missing or empty: $out_path" >&2
     return 1
@@ -237,26 +237,26 @@ export_if_locked() {
     return 0
   fi
 
-  go run ./cmd/ni export --dir "$example_dir" --target "$target" --out "$out_dir"
+  go run ./cmd/namba-intent export --dir "$example_dir" --target "$target" --out "$out_dir"
   python3 scripts/check-target-conformance.py --target "$target" --dir "$out_dir"
 }
 
 run_demo "ambiguous prompt demo remains blocked" bash -c '
-  go run ./cmd/ni status --dir ./examples/ambiguous-prompt-blocked/workspace >"$1/ambiguous-status.out"
+  go run ./cmd/namba-intent status --dir ./examples/ambiguous-prompt-blocked/workspace >"$1/ambiguous-status.out"
 ' bash "$DEMO_TMP"
 require_first_line "BLOCKED" "$DEMO_TMP/ambiguous-status.out"
 require_output "blocker R009" "$DEMO_TMP/ambiguous-status.out"
 
 run_demo "ambiguous prompt next questions render" bash -c '
-  go run ./cmd/ni status --dir ./examples/ambiguous-prompt-blocked/workspace --proof --next-questions >"$1/ambiguous-next-questions.out"
+  go run ./cmd/namba-intent status --dir ./examples/ambiguous-prompt-blocked/workspace --proof --next-questions >"$1/ambiguous-next-questions.out"
 ' bash "$DEMO_TMP"
 require_output "NI Intent Readiness: BLOCKED" "$DEMO_TMP/ambiguous-next-questions.out"
 require_output "Open blockers:" "$DEMO_TMP/ambiguous-next-questions.out"
 require_output "OQ-001: OQ-001 is blocking readiness" "$DEMO_TMP/ambiguous-next-questions.out"
 
 run_demo "research protocol status matches docs" bash -c '
-  go run ./cmd/ni status --dir examples/research-protocol >"$1/research-status.out"
-  go run ./cmd/ni status --dir examples/research-protocol --proof --next-questions >"$1/research-proof.out"
+  go run ./cmd/namba-intent status --dir examples/research-protocol >"$1/research-status.out"
+  go run ./cmd/namba-intent status --dir examples/research-protocol --proof --next-questions >"$1/research-proof.out"
 ' bash "$DEMO_TMP"
 require_doc_status "examples/research-protocol" "READY"
 require_first_line "READY" "$DEMO_TMP/research-status.out"
@@ -266,8 +266,8 @@ run_demo "research protocol human-team prompt compiles if locked" \
   run_if_locked "examples/research-protocol" "human-team" "$DEMO_TMP/ni-research-human-team.prompt.md"
 
 run_demo "conversation product status matches docs" bash -c '
-  go run ./cmd/ni status --dir examples/conversation-product >"$1/conversation-status.out"
-  go run ./cmd/ni status --dir examples/conversation-product --proof --next-questions >"$1/conversation-proof.out"
+  go run ./cmd/namba-intent status --dir examples/conversation-product >"$1/conversation-status.out"
+  go run ./cmd/namba-intent status --dir examples/conversation-product --proof --next-questions >"$1/conversation-proof.out"
 ' bash "$DEMO_TMP"
 require_doc_status "examples/conversation-product" "READY"
 require_first_line "READY" "$DEMO_TMP/conversation-status.out"
@@ -277,8 +277,8 @@ run_demo "conversation product human-team prompt compiles if locked" \
   run_if_locked "examples/conversation-product" "human-team" "$DEMO_TMP/ni-conversation-human-team.prompt.md"
 
 run_demo "ni-start dogfood status matches docs" bash -c '
-  go run ./cmd/ni status --dir examples/ni-start-dogfood/workspace >"$1/ni-start-dogfood-status.out"
-  go run ./cmd/ni status --dir examples/ni-start-dogfood/workspace --proof --next-questions >"$1/ni-start-dogfood-proof.out"
+  go run ./cmd/namba-intent status --dir examples/ni-start-dogfood/workspace >"$1/ni-start-dogfood-status.out"
+  go run ./cmd/namba-intent status --dir examples/ni-start-dogfood/workspace --proof --next-questions >"$1/ni-start-dogfood-proof.out"
 ' bash "$DEMO_TMP"
 require_doc_status "examples/ni-start-dogfood" "READY_WITH_DEFERRALS"
 require_first_line "READY_WITH_DEFERRALS" "$DEMO_TMP/ni-start-dogfood-status.out"
@@ -289,8 +289,8 @@ run_demo "ni-start dogfood human-team prompt compiles if locked" \
   run_if_locked "examples/ni-start-dogfood/workspace" "human-team" "$DEMO_TMP/ni-start-dogfood-human-team.prompt.md"
 
 run_demo "conversation authoring status matches docs" bash -c '
-  go run ./cmd/ni status --dir examples/conversation-authoring >"$1/conversation-authoring-status.out"
-  go run ./cmd/ni status --dir examples/conversation-authoring --proof --next-questions >"$1/conversation-authoring-proof.out"
+  go run ./cmd/namba-intent status --dir examples/conversation-authoring >"$1/conversation-authoring-status.out"
+  go run ./cmd/namba-intent status --dir examples/conversation-authoring --proof --next-questions >"$1/conversation-authoring-proof.out"
 ' bash "$DEMO_TMP"
 require_doc_status "examples/conversation-authoring" "BLOCKED"
 require_first_line "BLOCKED" "$DEMO_TMP/conversation-authoring-status.out"
@@ -302,8 +302,8 @@ run_demo "conversation authoring human-team prompt compiles from existing lock" 
   run_if_locked "examples/conversation-authoring" "human-team" "$DEMO_TMP/conversation-authoring-human-team.prompt.md"
 
 run_demo "namba-ai upgrade status matches docs" bash -c '
-  go run ./cmd/ni status --dir examples/namba-ai-upgrade >"$1/namba-ai-upgrade-status.out"
-  go run ./cmd/ni status --dir examples/namba-ai-upgrade --proof --next-questions >"$1/namba-ai-upgrade-proof.out"
+  go run ./cmd/namba-intent status --dir examples/namba-ai-upgrade >"$1/namba-ai-upgrade-status.out"
+  go run ./cmd/namba-intent status --dir examples/namba-ai-upgrade --proof --next-questions >"$1/namba-ai-upgrade-proof.out"
 ' bash "$DEMO_TMP"
 require_doc_status "examples/namba-ai-upgrade" "BLOCKED"
 require_first_line "BLOCKED" "$DEMO_TMP/namba-ai-upgrade-status.out"
@@ -315,9 +315,9 @@ run_demo "namba-ai upgrade codex prompt compiles from existing lock" \
   run_if_locked "examples/namba-ai-upgrade" "codex" "$DEMO_TMP/namba-ai-upgrade-codex.prompt.md"
 
 run_demo "benchmark report internal dashboard resolved artifact readiness" bash -c '
-  go run ./cmd/ni status --dir examples/benchmark-report/cases/internal-dashboard/workspace >"$1/internal-dashboard-status.out"
-  go run ./cmd/ni status --dir examples/benchmark-report/cases/internal-dashboard/workspace --proof --next-questions >"$1/internal-dashboard-proof.out"
-  go run ./cmd/ni status --dir examples/benchmark-report/cases/research-protocol/workspace --proof --next-questions >"$1/research-protocol-proof.out"
+  go run ./cmd/namba-intent status --dir examples/benchmark-report/cases/internal-dashboard/workspace >"$1/internal-dashboard-status.out"
+  go run ./cmd/namba-intent status --dir examples/benchmark-report/cases/internal-dashboard/workspace --proof --next-questions >"$1/internal-dashboard-proof.out"
+  go run ./cmd/namba-intent status --dir examples/benchmark-report/cases/research-protocol/workspace --proof --next-questions >"$1/research-protocol-proof.out"
 ' bash "$DEMO_TMP"
 check_benchmark_report_docs
 require_first_line "READY" "$DEMO_TMP/internal-dashboard-status.out"

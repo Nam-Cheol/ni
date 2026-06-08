@@ -1,10 +1,10 @@
 <p align="center">
-  <img src="assets/hero.svg" alt="ni hero banner: Project Intent Compiler for AI Agents" width="100%">
+  <img src="assets/hero.svg" alt="Namba Intent hero banner: Project Intent Compiler for AI Agents" width="100%">
 </p>
 
 <p align="center">
   <a href="README.md" aria-label="Read in English"><img alt="English" src="assets/badge-english.svg" width="84" height="28"></a>
-  <a href="README.ko.md" aria-label="한국어로 읽기"><img alt="Korean" src="assets/badge-korean.svg" width="84" height="28"></a>
+  <a href="README.ko.md" aria-label="Read in Korean"><img alt="Korean" src="assets/badge-korean.svg" width="84" height="28"></a>
 </p>
 
 <p align="center">
@@ -14,179 +14,128 @@
   <a href="docs/00_START_HERE.md"><img alt="Docs index exists" src="https://img.shields.io/badge/docs-index%20exists-5b8def"></a>
 </p>
 
-<h1 align="center">agent를 아직 실행하지 마세요. 먼저 의도를 컴파일하세요.</h1>
+<h1 align="center">Don't run the agent yet. Compile the intent first.</h1>
 
-<p align="center"><strong>ni is a Project Intent Compiler for AI Agents.</strong></p>
+<p align="center"><strong>Namba Intent is a Project Intent Compiler for AI Agents.</strong></p>
 
-`ni`는 planning conversation을 docs contract로 바꾸고, readiness를 확인하고,
-accepted plan을 lock한 뒤 bounded downstream handoff prompt를 compile합니다.
+Namba Intent는 planning conversation을 docs contract로 바꾸고, readiness를
+확인하고, accepted plan을 lock하고, bounded downstream handoff prompt를
+compile합니다.
+
+Current main branch는 v0.6.0의 Namba Intent command rename을 문서화합니다.
+Latest published v0.5.1은 v0.6.0 publish 전까지 여전히 `ni`를 사용할 수
+있습니다.
 
 <p align="center">
   <img src="assets/intent-lock-flow.svg" alt="Intent Lock Protocol flow: conversation, project contract, readiness gate, lock hash, bounded handoff." width="100%">
 </p>
 
-## 왜 ni인가
+## Why Namba Intent
 
-AI agents는 빠릅니다. `ni`는 느려야 하는 한 부분, 즉 implementation 전에
-project intent가 무엇인지 결정하는 부분만 느리게 만듭니다.
+AI agents는 빠릅니다. Namba Intent는 implementation 전에 프로젝트 의미를
+결정하는 느려야 하는 부분만 느리게 만듭니다.
 
-- 빠진 users, acceptance criteria, risks, non-goals, blockers를 드러냅니다.
+- 누락된 users, acceptance criteria, risks, non-goals, blockers를 포착합니다.
 - Deterministic CLI rules로 planning readiness를 확인합니다.
 - Accepted plan을 lock하고 trusted planning sources를 hash합니다.
-- Downstream actors를 위한 짧은 prompt를 compile하지만 실행하지 않습니다.
+- Downstream actors를 위한 짧은 prompt를 compile하되 실행하지 않습니다.
 
 ## Install
 
-README는 첫 성공을 위한 두 가지 primary path만 보여줍니다. Source, local build,
-Linux, release archive, pinned install, dry-run, inspect-first, `BINDIR`,
-advanced uninstall details는
-[Install ni](docs/22_INSTALL.md)에 있습니다.
+README는 current tree의 첫 성공을 위한 두 가지 primary path만 보여줍니다.
+Source, local build, release archive, pinned installs, dry-run, inspect-first,
+`BINDIR`, uninstall details, v0.5.1 public-release distinction은
+[Install Namba Intent](docs/22_INSTALL.md)에 있습니다.
 
 ### macOS
 
-Curl installer로 latest release binary를 설치합니다. 이 명령은 installer
-script를 내려받아 User PATH update 옵션과 함께 실행합니다:
+Upcoming v0.6.0 release에서 curl installer는 primary `namba-intent` command를
+설치하고 다음을 verify합니다.
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/Nam-Cheol/ni/main/install.sh | sh -s -- --update-path
+namba-intent --help
+namba-intent version
 ```
 
-PATH update가 반영되도록 새 shell을 엽니다.
-
-먼저 global command가 잡히는지 확인합니다:
-
-```bash
-ni --help
-```
-
-그 다음 설치된 version을 확인합니다:
-
-```bash
-ni version
-```
-
-Installer로 설치한 binary와, 추가했다면 ni-managed PATH block을 uninstall합니다.
-같은 installer script를 uninstall mode로 실행합니다:
-
-```bash
-curl -fsSL https://raw.githubusercontent.com/Nam-Cheol/ni/main/install.sh | sh -s -- --uninstall
-```
+이 current-main installer path를 latest published v0.5.1 release가 이미
+`namba-intent`를 제공한다는 proof로 취급하지 마세요. v0.6.0 publish 전 public
+install verification은 v0.5.1 release notes의 `ni` evidence를 사용합니다.
 
 Homebrew: Planned / v0.5 candidate.
 
 ### Windows
 
-PowerShell installer로 latest release를 설치합니다. 기본적으로
-`%LOCALAPPDATA%\ni\bin`에 설치하고 User PATH만 업데이트합니다.
-
-먼저 temporary installer path를 정합니다:
+Upcoming v0.6.0 release에서 PowerShell installer는 `namba-intent.exe`를 기본
+`%LOCALAPPDATA%\namba-intent\bin`에 설치하고 User PATH만 업데이트합니다.
 
 ```powershell
-$Installer = Join-Path $env:TEMP "ni-install.ps1"
-```
-
-그 path로 installer를 다운로드합니다:
-
-```powershell
+$Installer = Join-Path $env:TEMP "namba-intent-install.ps1"
 irm https://raw.githubusercontent.com/Nam-Cheol/ni/main/install.ps1 -OutFile $Installer
-```
-
-다운로드한 installer를 실행합니다:
-
-```powershell
 powershell -NoProfile -ExecutionPolicy Bypass -File $Installer
 ```
 
-User PATH update가 반영되도록 새 PowerShell session을 엽니다.
-
-먼저 global command가 잡히는지 확인합니다:
+새 PowerShell session을 열고 확인합니다.
 
 ```powershell
-ni --help
+namba-intent --help
+namba-intent version
 ```
 
-그 다음 설치된 version을 확인합니다:
-
-```powershell
-ni version
-```
-
-Uninstall할 때도 같은 temporary installer path를 정합니다:
-
-```powershell
-$Installer = Join-Path $env:TEMP "ni-install.ps1"
-```
-
-Installer를 새로 다운로드합니다:
-
-```powershell
-irm https://raw.githubusercontent.com/Nam-Cheol/ni/main/install.ps1 -OutFile $Installer
-```
-
-Installer를 uninstall mode로 실행합니다. Installer로 설치한 binary와 `ni`가
-추가한 User PATH entry를 제거합니다:
-
-```powershell
-powershell -NoProfile -ExecutionPolicy Bypass -File $Installer -Uninstall
-```
-
-Windows installer code와 static safety checks는 있습니다. 실제 Windows host
-execution은 macOS-only development host에서는 deferred 상태이며 Windows install
-transcript가 생기기 전까지 verified라고 claim하지 않습니다.
+`ni -> New-Item` PowerShell alias cleanup은 legacy v0.5.x guidance이며
+`namba-intent.exe`에는 필요하지 않습니다. 실제 Windows host execution은
+Windows transcript가 생기기 전까지 deferred입니다.
 
 ## 5분 첫 project
-
-Public install parity note: published v0.5.1 binary는 tested macOS arm64
-path에서 `ni --help`, `ni version`, `ni init .`,
-`ni status --proof --next-questions`를 verify합니다. 이전 v0.5.0 `ni init .`
-mismatch는 해당 path에서 닫혔습니다. 자세한 증거는
-[docs/132](docs/132_V0_5_1_POST_RELEASE_VERIFICATION.ko.md)에 있습니다.
 
 ```bash
 mkdir my-project
 cd my-project
-ni init .
-ni status --proof --next-questions
-ni end
-ni run --max-chars 4000
+namba-intent init .
+namba-intent status --proof --next-questions
+namba-intent end
+namba-intent run --max-chars 4000
 ```
 
-`ni init .`은 guided project intent wizard를 열고 `.ni/contract.json`,
-`.ni/session.json`, `docs/plan/**`을 만듭니다.
+`namba-intent init .`은 guided project intent wizard를 열고
+`.ni/contract.json`, `.ni/session.json`, `docs/plan/**`을 만듭니다. Namba
+Intent는 compatibility를 위해 `.ni/`를 유지합니다.
 
-`ni status --proof --next-questions`는 CLI-authoritative readiness gate입니다.
-Model은 update를 draft할 수 있지만 readiness는 `ni status`가 결정합니다.
+`namba-intent status --proof --next-questions`는 CLI-authoritative readiness
+gate입니다. Model은 update를 draft할 수 있지만 readiness는 CLI가 결정합니다.
 
-`ni end`는 CLI gate가 허용한 뒤 accepted plan을 lock하고
+`namba-intent end`는 CLI gate가 허용한 뒤 accepted plan을 lock하고
 `.ni/plan.lock.json`을 씁니다.
 
-`ni run --max-chars 4000`은 bounded downstream handoff prompt를 compile합니다.
-Prompt, agents, shell commands, downstream work를 실행하지 않고 product readiness를
-증명하지 않습니다.
+`namba-intent run --max-chars 4000`은 bounded downstream handoff prompt를
+compile합니다. Prompt, agents, shell commands를 실행하지 않고 product
+readiness를 증명하지 않습니다.
 
-## ni가 하는 일
+## What Namba Intent Does
 
 | Command | Role |
 | --- | --- |
-| `ni init .` | Planning workspace와 guided intent draft를 만듭니다. |
-| `ni status --proof --next-questions` | Readiness, blockers, next planning questions를 확인합니다. |
-| `ni end` | CLI gate를 통해 accepted plan을 lock합니다. |
-| `ni run --max-chars 4000` | Valid lock에서 bounded prompt를 compile합니다. |
+| `namba-intent init .` | Planning workspace와 guided intent draft를 만듭니다. |
+| `namba-intent status --proof --next-questions` | Readiness, blockers, next planning questions를 확인합니다. |
+| `namba-intent end` | CLI gate를 통해 accepted plan을 lock합니다. |
+| `namba-intent run --max-chars 4000` | Valid lock에서 bounded prompt를 compile합니다. |
 
-## ni가 하지 않는 일
+## What Namba Intent Does Not Do
 
-`ni`는 task runner, SPEC runner, multi-agent execution layer, queue, shell
-adapter, PR automation system, release automation system, downstream execution
-runtime이 아닙니다.
+Namba Intent는 task runner, SPEC runner, multi-agent execution layer, queue,
+shell adapter, PR automation system, release automation system, downstream
+execution runtime이 아닙니다.
 
 ## Status
 
-- v0.5.1 publication: verified.
-- Release binary: Available.
-- Curl installer: Available.
+- v0.5.1 publication: historical `ni` command 기준 verified.
+- v0.6.0 rename: current tree에 implemented, published 아님.
+- Current tree primary command: `namba-intent`.
+- Deprecated transition shim: `ni`는 `ni is deprecated; use namba-intent.`를 warning합니다.
+- Repository: `Nam-Cheol/ni` retained.
+- Config directory: `.ni/` retained.
 - Homebrew: Planned / v0.5 candidate.
 - Windows real-host execution: Windows transcript 전까지 deferred.
-- Model workspace packs: Experimental. Host-level/global install은 documented되기 전까지 unverified.
+- Model workspace packs: Experimental. Host-level/global install은 documented 전까지 unverified입니다.
 - No-terminal method: Experimental / assisted.
 - Skills are UX; CLI is authority.
 
@@ -194,11 +143,10 @@ runtime이 아닙니다.
 
 | Read | Why |
 | --- | --- |
-| [Install ni](docs/22_INSTALL.md) | 상세 install, release binary, curl installer, uninstall paths. |
+| [Install Namba Intent](docs/22_INSTALL.md) | 상세 install, release binary, curl installer, uninstall paths. |
+| [Rename implementation](docs/136_NAMBA_INTENT_RENAME_IMPLEMENTATION.md) | v0.6.0 command rename surfaces와 claim boundaries. |
 | [Intent Lock Protocol](docs/42_INTENT_LOCK_PROTOCOL.md) | Readiness, locking, hash trust, blocked handoff rules. |
-| [터미널 없이 계획하기](docs/no-terminal.ko.md) | Assisted workflow boundaries; deterministic validation 아님. |
-| [Model Workspace Status](docs/99_MODEL_WORKSPACE_STATUS.ko.md) | Experimental model workspace boundaries와 verification state. |
-| [Benchmark Claim Boundaries](docs/97_BENCHMARK_CLAIM_BOUNDARIES.ko.md) | Benchmark `READY`, `not_measured`, prompt evidence가 증명하는 것과 아닌 것. |
-| [Command reference](docs/commands.ko.md) | Implemented CLI surface. |
+| [No-Terminal Planning](docs/no-terminal.md) | Assisted workflow boundaries; deterministic validation 아님. |
+| [Model Workspace Status](docs/99_MODEL_WORKSPACE_STATUS.md) | Experimental model workspace boundaries와 verification state. |
 
-License: `ni`는 [MIT License](LICENSE)로 배포됩니다.
+License: Namba Intent는 [MIT License](LICENSE)로 배포됩니다.

@@ -10,11 +10,11 @@ param(
 $ErrorActionPreference = "Stop"
 
 if ([string]::IsNullOrWhiteSpace($InstallDir)) {
-    $InstallDir = Join-Path $env:LOCALAPPDATA "ni\bin"
+    $InstallDir = Join-Path $env:LOCALAPPDATA "namba-intent\bin"
 }
 
 $InstallDir = [System.IO.Path]::GetFullPath($InstallDir)
-$Target = Join-Path $InstallDir "ni.exe"
+$Target = Join-Path $InstallDir "namba-intent.exe"
 
 function Write-Step {
     param([string]$Message)
@@ -78,7 +78,7 @@ function Resolve-LatestTag {
     return $release.tag_name
 }
 
-Write-Step "ni Windows installer"
+Write-Step "Namba Intent Windows installer"
 Write-Step "  repository: $Repo"
 Write-Step "  install to: $Target"
 Write-Step "  PATH scope: User"
@@ -88,7 +88,7 @@ if ($Uninstall) {
         Remove-Item $Target -Force
         Write-Step "Removed $Target"
     } else {
-        Write-Step "No installed ni.exe found at $Target"
+        Write-Step "No installed namba-intent.exe found at $Target"
     }
 
     if ((Test-Path $InstallDir) -and -not (Get-ChildItem $InstallDir -Force)) {
@@ -97,7 +97,7 @@ if ($Uninstall) {
     }
 
     Remove-UserPathEntry -Entry $InstallDir
-    Write-Step "Uninstall complete. Open a new PowerShell session and verify ni is no longer found."
+    Write-Step "Uninstall complete. Open a new PowerShell session and verify namba-intent is no longer found."
     exit 0
 }
 
@@ -117,8 +117,8 @@ if ([string]::IsNullOrWhiteSpace($Version)) {
     $Version = $Version.TrimStart("v")
 }
 
-$Asset = "ni_${Version}_windows_amd64.zip"
-$Checksums = "ni_${Version}_checksums.txt"
+$Asset = "namba-intent_${Version}_windows_amd64.zip"
+$Checksums = "namba-intent_${Version}_checksums.txt"
 if ([string]::IsNullOrWhiteSpace($BaseUrl)) {
     $BaseUrl = "https://github.com/$Repo/releases/download/$Tag"
 }
@@ -134,10 +134,11 @@ if ($DryRun) {
     Write-Step "  $AssetUrl"
     Write-Step "  $ChecksumUrl"
     Write-Step "Would add install directory to User PATH if missing."
+    Write-Step "PowerShell ni alias cleanup is not required for namba-intent.exe."
     exit 0
 }
 
-$TempRoot = Join-Path ([System.IO.Path]::GetTempPath()) ("ni-install-" + [System.Guid]::NewGuid().ToString("N"))
+$TempRoot = Join-Path ([System.IO.Path]::GetTempPath()) ("namba-intent-install-" + [System.Guid]::NewGuid().ToString("N"))
 New-Item -ItemType Directory -Path $TempRoot | Out-Null
 
 try {
@@ -160,28 +161,29 @@ try {
     Write-Step "Verified checksum for $Asset"
 
     Expand-Archive $ArchivePath -DestinationPath $ExtractDir -Force
-    $Found = Get-ChildItem $ExtractDir -Recurse -Filter "ni.exe" | Select-Object -First 1
+    $Found = Get-ChildItem $ExtractDir -Recurse -Filter "namba-intent.exe" | Select-Object -First 1
     if ($null -eq $Found) {
-        throw "archive did not contain ni.exe"
+        throw "archive did not contain namba-intent.exe"
     }
 
     New-Item -ItemType Directory -Path $InstallDir -Force | Out-Null
     Copy-Item $Found.FullName $Target -Force
-    Write-Step "Installed ni.exe to $Target"
+    Write-Step "Installed namba-intent.exe to $Target"
 
     Add-UserPathEntry -Entry $InstallDir
 
     Write-Step ""
-    Write-Step "Open a new PowerShell session and verify the global command:"
-    Write-Step "  ni --help"
-    Write-Step "  ni version"
+    Write-Step "Open a new PowerShell session and run:"
+    Write-Step "  namba-intent --help"
+    Write-Step "  namba-intent version"
     Write-Step ""
     Write-Step "Uninstall:"
-    Write-Step '  $Installer = Join-Path $env:TEMP "ni-install.ps1"'
+    Write-Step '  $Installer = Join-Path $env:TEMP "namba-intent-install.ps1"'
     Write-Step '  irm https://raw.githubusercontent.com/Nam-Cheol/ni/main/install.ps1 -OutFile $Installer'
     Write-Step "  powershell -NoProfile -ExecutionPolicy Bypass -File `$Installer -Uninstall"
     Write-Step ""
     Write-Step "The installer does not install model skills or run downstream work."
+    Write-Step "PowerShell ni alias cleanup remains legacy v0.5.x guidance and is not required for namba-intent.exe."
 }
 finally {
     if (Test-Path $TempRoot) {

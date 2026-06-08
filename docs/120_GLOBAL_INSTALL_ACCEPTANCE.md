@@ -14,7 +14,7 @@ downstream work.
 | --- | --- | --- |
 | macOS/Linux curl installer global PATH handling | Available in installer code | `install.sh` can install to a user-writable directory and optionally add a reversible zsh/bash PATH block. |
 | macOS local global command verification | Verified locally | Repository checks install into a temporary bin directory and verify `ni --help` and `ni version` by command name through a fresh shell process. |
-| Windows PowerShell installer | Available in installer code | `install.ps1` installs to `%LOCALAPPDATA%\ni\bin` by default and updates User PATH only. |
+| Windows PowerShell installer | Available in installer code | `install.ps1` installs to `%LOCALAPPDATA%\ni\bin` by default, updates User PATH only, and adds a ni-managed PowerShell profile block for the built-in `ni` alias. |
 | Windows execution verification | Not verified on this macOS host | Static safety checks exist; real Windows install, new PowerShell, and uninstall verification still require a Windows host transcript. |
 | Homebrew | Planned / v0.5 candidate | No Homebrew Available claim is made by this document. |
 
@@ -51,10 +51,23 @@ A Windows install is successful only when all of these are true:
 - `ni.exe` is installed to a user-writable location, preferably
   `%LOCALAPPDATA%\ni\bin\ni.exe`.
 - The install directory is added to User PATH, not System PATH, by default.
+- The installer handles the PowerShell built-in `ni -> New-Item` alias by
+  adding this ni-managed block to `$PROFILE` only once:
+
+```powershell
+# >>> ni installer >>>
+Remove-Item Alias:ni -Force -ErrorAction SilentlyContinue
+# <<< ni installer <<<
+```
+
+- Existing PowerShell profile content is preserved.
+- `Get-Command ni -All` in a new PowerShell session shows `ni.exe` after the
+  profile block loads.
 - A new PowerShell session can run `ni --help` by command name.
 - A new PowerShell session can run `ni version` by command name.
 - Uninstall removes `ni.exe`.
 - Uninstall removes only the `ni` bin directory entry from User PATH.
+- Uninstall removes only the ni-managed PowerShell profile block.
 - The installer preserves unrelated PATH entries and does not truncate PATH.
 
 The Windows installer must read and write User PATH with:
@@ -78,6 +91,7 @@ Required checks where possible:
 - Confirm the installed binary exists.
 - Confirm PATH is already present, added through a managed block, or explicitly
   documented as a manual follow-up.
+- On Windows, inspect `Get-Command ni -All` in a new PowerShell session.
 - Launch a fresh shell or PowerShell process with the expected PATH context.
 - Run `ni --help` by command name.
 - Run `ni version` by command name.

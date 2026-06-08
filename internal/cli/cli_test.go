@@ -1,4 +1,4 @@
-package main
+package cli
 
 import (
 	"bytes"
@@ -16,11 +16,25 @@ func TestHelp(t *testing.T) {
 	if code != 0 {
 		t.Fatalf("expected exit code 0, got %d", code)
 	}
-	if !strings.Contains(stdout.String(), "ni is a project intent compiler") {
+	if !strings.Contains(stdout.String(), "Namba Intent is a Project Intent Compiler for AI Agents.") {
 		t.Fatalf("help output did not describe ni: %q", stdout.String())
 	}
-	if !strings.Contains(stdout.String(), "ni version") {
+	if !strings.Contains(stdout.String(), "namba-intent version") {
 		t.Fatalf("help output did not mention version command: %q", stdout.String())
+	}
+}
+
+func TestLegacyCommandNameHelp(t *testing.T) {
+	var stdout bytes.Buffer
+	code := RunWithOptions([]string{"--help"}, &stdout, &bytes.Buffer{}, Options{CommandName: "ni"})
+	if code != 0 {
+		t.Fatalf("expected exit code 0, got %d", code)
+	}
+	if !strings.Contains(stdout.String(), "  ni version") {
+		t.Fatalf("legacy help output did not use ni command name: %q", stdout.String())
+	}
+	if strings.Contains(stdout.String(), "  namba-intent version") {
+		t.Fatalf("legacy help output should not mix primary command usage: %q", stdout.String())
 	}
 }
 
@@ -59,7 +73,7 @@ func TestInit(t *testing.T) {
 			t.Fatalf("expected %s to exist: %v", path, err)
 		}
 	}
-	if !strings.Contains(stdout.String(), "initialized ni planning workspace") {
+	if !strings.Contains(stdout.String(), "initialized Namba Intent planning workspace") {
 		t.Fatalf("expected init summary, got %q", stdout.String())
 	}
 	if !strings.Contains(stdout.String(), "readiness profile: prototype") {
@@ -79,7 +93,7 @@ func TestInitCurrentDirectoryTarget(t *testing.T) {
 	if _, err := os.Stat(filepath.Join(dir, ".ni", "contract.json")); err != nil {
 		t.Fatalf("expected current directory contract: %v", err)
 	}
-	if !strings.Contains(stdout.String(), "initialized ni planning workspace at .") {
+	if !strings.Contains(stdout.String(), "initialized Namba Intent planning workspace at .") {
 		t.Fatalf("expected current directory init summary, got %q", stdout.String())
 	}
 }
@@ -95,7 +109,7 @@ func TestInitNonInteractiveBehaviorIsStable(t *testing.T) {
 	if code != 0 {
 		t.Fatalf("expected exit code 0, got %d", code)
 	}
-	if strings.Contains(stdout.String(), "Guided ni init") {
+	if strings.Contains(stdout.String(), "Guided namba-intent init") {
 		t.Fatalf("non-interactive init should not prompt, got %q", stdout.String())
 	}
 	if !strings.Contains(stdout.String(), "next: use model-user planning conversation") {
@@ -173,7 +187,7 @@ func TestInitDoesNotSilentlyOverwriteExistingFiles(t *testing.T) {
 	if string(data) != "existing contract\n" {
 		t.Fatalf("existing contract was overwritten: %q", string(data))
 	}
-	if !strings.Contains(stdout.String(), "existing ni planning files found") {
+	if !strings.Contains(stdout.String(), "existing Namba Intent planning files found") {
 		t.Fatalf("expected existing-file warning, got %q", stdout.String())
 	}
 	if !strings.Contains(stdout.String(), "adding missing files only") {
@@ -420,13 +434,13 @@ func TestStatusProofTextWithNextQuestions(t *testing.T) {
 		"NI Intent Readiness: BLOCKED",
 		"Blockers:",
 		"R014 Project purpose is missing.",
-		"Why it matters: ni cannot lock intent until it knows what reality the project is meant to change.",
+		"Why it matters: Namba Intent cannot lock intent until it knows what reality the project is meant to change.",
 		"Next: describe the project in one or two sentences: what should change, for whom, and why it matters.",
 		"OQ-001 is marked as blocker.",
 		"Why it matters: open blocker questions mean required intent is still unresolved.",
 		"Next: answer or defer the blocker question, or keep it blocking with an explicit reason.",
 		"R015 Actors or outcomes are missing.",
-		"Why it matters: ni cannot judge readiness without knowing who uses or operates the product and what successful use looks like for them.",
+		"Why it matters: Namba Intent cannot judge readiness without knowing who uses or operates the product and what successful use looks like for them.",
 		"Next: list the primary actors and the outcome each one expects.",
 		"R016 Delivery surface is missing.",
 		"Why it matters: downstream handoff depends on knowing whether the product is delivered as a CLI, web app, conversation, document, workflow, research protocol, human service, or another surface.",
@@ -571,7 +585,7 @@ func TestStatusProofTextShowsFirstRunSyncDiagnostic(t *testing.T) {
 		"ID: SYNC-014",
 		"Location: docs/plan/00_project_brief.md",
 		"Problem: Project purpose is documented but missing from .ni/contract.json.",
-		"Why it matters: ni cannot safely lock a plan when the human-readable purpose and machine-readable contract disagree.",
+		"Why it matters: Namba Intent cannot safely lock a plan when the human-readable purpose and machine-readable contract disagree.",
 		"Suggested repair: Record the documented project purpose in .ni/contract.json, or mark the purpose unresolved with an explicit blocker question.",
 		"Blocks ni-end: true",
 	} {
@@ -812,7 +826,7 @@ func TestStatusStaleLockDiagnostics(t *testing.T) {
 		"WARNING: LOCK-STALE existing lock is stale.",
 		"Current planning inputs differ from .ni/plan.lock.json.",
 		"First mismatch: docs/plan/02_capabilities.md.",
-		"Review the changed intent, run ni status --proof --next-questions, then run ni end before generating a new ni run handoff.",
+		"Review the changed intent, run namba-intent status --proof --next-questions, then run namba-intent end before generating a new namba-intent run handoff.",
 		"Why it matters: the current planning contract and the existing locked plan no longer match.",
 	} {
 		if !strings.Contains(out, want) {
@@ -840,9 +854,9 @@ func TestStaleLockRunRefusalAndFixtureRecovery(t *testing.T) {
 	for _, want := range []string{
 		"BLOCKED: lock hash mismatch for docs/plan/02_capabilities.md",
 		"Review the changed planning inputs",
-		"run ni status --proof --next-questions",
-		"run ni end to relock after review",
-		"rerun ni run after the lock is current",
+		"run namba-intent status --proof --next-questions",
+		"run namba-intent end to relock after review",
+		"rerun namba-intent run after the lock is current",
 	} {
 		if !strings.Contains(stderr.String(), want) {
 			t.Fatalf("expected stale run refusal to contain %q, got %q", want, stderr.String())
@@ -852,10 +866,10 @@ func TestStaleLockRunRefusalAndFixtureRecovery(t *testing.T) {
 	var stdout bytes.Buffer
 	code = run([]string{"end", "--dir", dir}, &stdout, &bytes.Buffer{})
 	if code != 0 {
-		t.Fatalf("fixture relock through ni end expected exit code 0, got %d", code)
+		t.Fatalf("fixture relock through namba-intent end expected exit code 0, got %d", code)
 	}
-	if !strings.Contains(stdout.String(), "Existing lock is stale; ni end is the CLI-authoritative relock step after changed intent has been reviewed.") {
-		t.Fatalf("expected stale existing-lock ni end wording, got %q", stdout.String())
+	if !strings.Contains(stdout.String(), "Existing lock is stale; namba-intent end is the CLI-authoritative relock step after changed intent has been reviewed.") {
+		t.Fatalf("expected stale existing-lock namba-intent end wording, got %q", stdout.String())
 	}
 
 	stdout.Reset()
@@ -964,7 +978,7 @@ func TestChangedIntentFixtureStaleLockMatrix(t *testing.T) {
 				for _, want := range []string{
 					"WARNING: LOCK-STALE existing lock is stale.",
 					"First mismatch: " + tc.wantMismatchPath + ".",
-					"Review the changed intent, run ni status --proof --next-questions, then run ni end before generating a new ni run handoff.",
+					"Review the changed intent, run namba-intent status --proof --next-questions, then run namba-intent end before generating a new namba-intent run handoff.",
 				} {
 					if !strings.Contains(out, want) {
 						t.Fatalf("expected stale status output to contain %q, got %q", want, out)
@@ -974,10 +988,10 @@ func TestChangedIntentFixtureStaleLockMatrix(t *testing.T) {
 				var stderr bytes.Buffer
 				code = run([]string{"run", "--dir", dir, "--max-chars", "4000"}, &bytes.Buffer{}, &stderr)
 				if code != exitStaleLock {
-					t.Fatalf("expected stale ni run exit code %d, got %d", exitStaleLock, code)
+					t.Fatalf("expected stale namba-intent run exit code %d, got %d", exitStaleLock, code)
 				}
 				if !strings.Contains(stderr.String(), "BLOCKED: lock hash mismatch for "+tc.wantMismatchPath) {
-					t.Fatalf("expected stale ni run refusal for %s, got %q", tc.wantMismatchPath, stderr.String())
+					t.Fatalf("expected stale namba-intent run refusal for %s, got %q", tc.wantMismatchPath, stderr.String())
 				}
 				return
 			}
@@ -988,7 +1002,7 @@ func TestChangedIntentFixtureStaleLockMatrix(t *testing.T) {
 			stdout.Reset()
 			code = run([]string{"run", "--dir", dir, "--max-chars", "4000"}, &stdout, &bytes.Buffer{})
 			if code != 0 {
-				t.Fatalf("expected ni run after non-lockable change exit code 0, got %d", code)
+				t.Fatalf("expected namba-intent run after non-lockable change exit code 0, got %d", code)
 			}
 			if !strings.Contains(stdout.String(), "Source of truth") {
 				t.Fatalf("expected compiled prompt after non-lockable change, got %q", stdout.String())
@@ -1008,7 +1022,7 @@ func TestFixtureRelockDoesNotModifyProjectRootLock(t *testing.T) {
 	dir := lockedReadyFixtureForCLI(t)
 	staleLockedInputForCLI(t, dir)
 	if code := run([]string{"end", "--dir", dir}, &bytes.Buffer{}, &bytes.Buffer{}); code != 0 {
-		t.Fatalf("fixture relock through ni end expected exit code 0, got %d", code)
+		t.Fatalf("fixture relock through namba-intent end expected exit code 0, got %d", code)
 	}
 
 	after, afterErr := os.ReadFile(rootLock)
@@ -1104,8 +1118,8 @@ func TestRunCodexAndHumanTeamTargetsArePromptArtifactsOnly(t *testing.T) {
 				"Codex target prompt",
 				"Target: codex (prompt)",
 				"Paste this prompt into Codex",
-				"Do not ask ni to invoke Codex automatically",
-				"ni run only compiled this prompt",
+				"Do not ask Namba Intent to invoke Codex automatically",
+				"namba-intent run only compiled this prompt",
 			},
 			forbidden: []string{
 				filepath.Join(".codex", "commands"),
@@ -2474,7 +2488,7 @@ func writeReadyContractForCLI(t *testing.T, dir string) {
 		"project": map[string]any{
 			"id":      "cli-fixture",
 			"name":    "CLI Fixture",
-			"purpose": "Exercise ni end.",
+			"purpose": "Exercise namba-intent end.",
 			"status":  "draft",
 		},
 		"non_goals": []any{
@@ -2505,10 +2519,10 @@ func writeReadyContractForCLI(t *testing.T, dir string) {
 	if err := os.WriteFile(filepath.Join(dir, ".ni", "contract.json"), append(data, '\n'), 0o644); err != nil {
 		t.Fatalf("writing ready contract: %v", err)
 	}
-	if err := os.WriteFile(filepath.Join(dir, "docs", "plan", "00_project_brief.md"), []byte("# Project brief\n\n## Product type\n\nsoftware\n\n## Delivery surfaces\n\n- cli\n\n## Purpose\n\nExercise ni end.\n"), 0o644); err != nil {
+	if err := os.WriteFile(filepath.Join(dir, "docs", "plan", "00_project_brief.md"), []byte("# Project brief\n\n## Product type\n\nsoftware\n\n## Delivery surfaces\n\n- cli\n\n## Purpose\n\nExercise namba-intent end.\n"), 0o644); err != nil {
 		t.Fatalf("writing ready project brief: %v", err)
 	}
-	if err := os.WriteFile(filepath.Join(dir, "docs", "plan", "01_actors_outcomes.md"), []byte("# Actors and outcomes\n\n## Actors\n\n- User: reviews the CLI fixture.\n- CLI: validates readiness.\n\n## Outcomes\n\n- Exercise ni end.\n"), 0o644); err != nil {
+	if err := os.WriteFile(filepath.Join(dir, "docs", "plan", "01_actors_outcomes.md"), []byte("# Actors and outcomes\n\n## Actors\n\n- User: reviews the CLI fixture.\n- CLI: validates readiness.\n\n## Outcomes\n\n- Exercise namba-intent end.\n"), 0o644); err != nil {
 		t.Fatalf("writing ready actors doc: %v", err)
 	}
 	if err := os.WriteFile(filepath.Join(dir, "docs", "plan", "06_risks_security.md"), []byte("# Risks and security\n\nNo accepted risks are listed in this fixture.\n"), 0o644); err != nil {

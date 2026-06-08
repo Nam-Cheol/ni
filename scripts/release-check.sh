@@ -560,14 +560,16 @@ else:
 
 release_claim_markers = {
     "README.md": [
-        "README shows two primary first-success paths.",
+        "README shows two primary first-success paths for the current tree.",
         "Homebrew: Planned / v0.5 candidate.",
-        "Windows installer code and static safety checks are present.",
+        "v0.6.0 rename: implemented in current tree, not published.",
+        "Primary command in current tree: `namba-intent`.",
     ],
     "README.ko.md": [
-        "README는 첫 성공을 위한 두 가지 primary path만 보여줍니다.",
+        "README는 current tree의 첫 성공을 위한 두 가지 primary path만 보여줍니다.",
         "Homebrew: Planned / v0.5 candidate.",
-        "Windows installer code와 static safety checks는 있습니다.",
+        "v0.6.0 rename: current tree에 implemented, published 아님.",
+        "Current tree primary command: `namba-intent`.",
     ],
 }
 for label, text in {"README.md": readme, "README.ko.md": readme_ko}.items():
@@ -594,9 +596,9 @@ workflow = release_workflow.read_text(encoding="utf-8")
 
 required_config = [
     "version: 2",
-    "project_name: ni",
-    "main: ./cmd/ni",
-    "binary: ni",
+    "project_name: namba-intent",
+    "main: ./cmd/namba-intent",
+    "binary: namba-intent",
     "CGO_ENABLED=0",
     "linux",
     "darwin",
@@ -650,12 +652,12 @@ pipeline_required = [
     "goreleaser check",
     "goreleaser release --snapshot --clean",
     "GoReleaser Archive Matrix",
-    "ni_<version>_linux_amd64.tar.gz",
-    "ni_<version>_linux_arm64.tar.gz",
-    "ni_<version>_darwin_amd64.tar.gz",
-    "ni_<version>_darwin_arm64.tar.gz",
-    "ni_<version>_windows_amd64.zip",
-    "ni_<version>_checksums.txt",
+    "namba-intent_<version>_linux_amd64.tar.gz",
+    "namba-intent_<version>_linux_arm64.tar.gz",
+    "namba-intent_<version>_darwin_amd64.tar.gz",
+    "namba-intent_<version>_darwin_arm64.tar.gz",
+    "namba-intent_<version>_windows_amd64.zip",
+    "namba-intent_<version>_checksums.txt",
 ]
 
 availability_guards = [
@@ -711,22 +713,22 @@ PY
 run_step "schemas validate" python3 scripts/check-schema.py
 run_step "core boundary has no violations" python3 scripts/check-core-boundary.py --self-test
 run_step "Go tests pass" go test ./...
-run_step "golden tests pass" go test ./cmd/ni -run Golden -count=1
+run_step "golden tests pass" go test ./internal/cli -run Golden -count=1
 run_step "smoke passes" bash scripts/smoke.sh
 run_step "public demos verify" bash scripts/demo-check.sh
 run_step "install and build paths pass" bash scripts/install-check.sh
 
 run_step "status proof works" bash -c '
-  go run ./cmd/ni status --dir examples/conversation-product --proof >"$1/status-proof.out"
+  go run ./cmd/namba-intent status --dir examples/conversation-product --proof >"$1/status-proof.out"
   require_output "NI Intent Readiness: READY" "$1/status-proof.out"
   require_output "Passed checks:" "$1/status-proof.out"
   require_output "Docs and contract are synchronized." "$1/status-proof.out"
 ' bash "$QUICKSTART_TMP"
 
 run_step "README quickstart works in go run mode" bash -c '
-  go run ./cmd/ni init --dir "$1/plan" --profile prototype >"$1/init.out"
-  require_output "initialized ni planning workspace" "$1/init.out"
-  go run ./cmd/ni status --dir "$1/plan" >"$1/status.out"
+  go run ./cmd/namba-intent init --dir "$1/plan" --profile prototype >"$1/init.out"
+  require_output "initialized Namba Intent planning workspace" "$1/init.out"
+  go run ./cmd/namba-intent status --dir "$1/plan" >"$1/status.out"
   require_output "BLOCKED" "$1/status.out"
 ' bash "$QUICKSTART_TMP"
 
@@ -826,12 +828,12 @@ smoke = Path("scripts/smoke.sh").read_text(encoding="utf-8")
 
 readme_commands = set()
 for match in re.finditer(
-    r"(?:go run \./cmd/ni|(?:\./bin/ni|~/.local/bin/ni)|`ni)\s+([a-z][a-z-]*)",
+    r"(?:go run \./cmd/namba-intent|(?:\./bin/namba-intent|~/.local/bin/namba-intent)|`namba-intent)\s+([a-z][a-z-]*)",
     readme,
 ):
     readme_commands.add(match.group(1))
 
-smoke_commands = set(re.findall(r'run_cmd\s+"ni\s+([a-z][a-z-]*)', smoke))
+smoke_commands = set(re.findall(r'run_cmd\s+"namba-intent\s+([a-z][a-z-]*)', smoke))
 
 missing = sorted(readme_commands - smoke_commands)
 if missing:

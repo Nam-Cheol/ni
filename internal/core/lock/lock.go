@@ -19,9 +19,9 @@ const StaleDiagnosticID = "LOCK-STALE"
 
 const StaleStatusWarning = "WARNING: LOCK-STALE existing lock is stale. Current planning inputs differ from .ni/plan.lock.json."
 
-const StaleStatusRecovery = "Review the changed intent, run ni status --proof --next-questions, then run ni end before generating a new ni run handoff."
+const StaleStatusRecovery = "Review the changed intent, run namba-intent status --proof --next-questions, then run namba-intent end before generating a new namba-intent run handoff."
 
-const StaleRunRecovery = "Review the changed planning inputs, run ni status --proof --next-questions, run ni end to relock after review, then rerun ni run after the lock is current."
+const StaleRunRecovery = "Review the changed planning inputs, run namba-intent status --proof --next-questions, run namba-intent end to relock after review, then rerun namba-intent run after the lock is current."
 
 type Lockfile struct {
 	Schema        string           `json:"schema"`

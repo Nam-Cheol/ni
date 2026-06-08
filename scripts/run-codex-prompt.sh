@@ -17,6 +17,6 @@ fi
 
 PROMPT=".ni/generated/goal.prompt.txt"
 
-go run ./cmd/ni run --dir "$ROOT" --out "$PROMPT"
+go run ./cmd/namba-intent run --dir "$ROOT" --out "$PROMPT"
 
 exec codex exec --sandbox workspace-write --cd "$ROOT" - < "$PROMPT"

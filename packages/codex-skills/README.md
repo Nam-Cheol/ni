@@ -3,7 +3,7 @@
 This package contains Codex-style NI workflow skills for repo-local use.
 
 The skills help a Codex workspace author, review, lock, and compile NI planning
-contracts. They are UX only. The `ni` CLI remains the authority for readiness,
+contracts. They are UX only. The `namba-intent` CLI remains the authority for readiness,
 lock creation, lock hash verification, and prompt compilation.
 
 ## Status
@@ -23,15 +23,15 @@ Boundary: Skills are UX; CLI is authority.
 | --- | --- |
 | `ni-start` | Continue conversation-driven planning and keep `docs/plan/**`, `.ni/contract.json`, and `.ni/session.json` synchronized. |
 | `ni-grill` | Challenge accepted or nearly accepted planning content before lock; it does not execute work or approve readiness by model judgment. |
-| `ni-status-review` | Explain `ni status --proof` output and identify the next planning question without becoming a second readiness engine. |
-| `ni-end` | Review CLI readiness, ask for explicit confirmation, and lock only through `ni end`. |
+| `ni-status-review` | Explain `namba-intent status --proof` output and identify the next planning question without becoming a second readiness engine. |
+| `ni-end` | Review CLI readiness, ask for explicit confirmation, and lock only through `namba-intent end`. |
 | `ni-run` | Compile a bounded handoff prompt from a valid lock without executing downstream work. |
 
 ## Authority Rules
 
 - Skills are UX; the CLI is authority.
-- Run or request `ni status` before any readiness claim.
-- `ni-start` must use grouped `ni status --proof --next-questions` output as
+- Run or request `namba-intent status` before any readiness claim.
+- `ni-start` must use grouped `namba-intent status --proof --next-questions` output as
   its primary planning interview when present.
 - `ni-start` must ask user-facing planning questions in the language of the
   user's latest substantive message while preserving IDs, commands, paths,
@@ -45,12 +45,12 @@ Boundary: Skills are UX; CLI is authority.
 - Skills do not determine readiness.
 - Skills do not lock plans.
 - Skills do not lock or relock.
-- Skills do not replace `ni status`, `ni end`, or `ni run`.
+- Skills do not replace `namba-intent status`, `namba-intent end`, or `namba-intent run`.
 - Skills do not update `.ni/plan.lock.json`.
 - `LOCK-STALE` means the existing lock no longer matches current planning
-  inputs; recovery is `review changed intent -> ni status --proof --next-questions -> ni end -> ni run --max-chars 4000`.
+  inputs; recovery is `review changed intent -> namba-intent status --proof --next-questions -> namba-intent end -> namba-intent run --max-chars 4000`.
 - `ni-grill` challenges planning quality before lock. It does not execute work.
-- If `ni status` is `BLOCKED`, `ni-grill` should use deterministic blockers
+- If `namba-intent status` is `BLOCKED`, `ni-grill` should use deterministic blockers
   before inventing new critique.
 - `ni-grill` must use `Critical`, `High`, `Medium`, `Low`, and `Note`
   severity labels, show at most 5 findings by default, and show at most 3
@@ -59,8 +59,8 @@ Boundary: Skills are UX; CLI is authority.
   language while preserving IDs, commands, paths, status constants, and
   severity labels.
 - `ni-grill` never approves lock by model judgment.
-- Run or request `ni end` before any lock claim.
-- Run or request `ni run` before any compiled handoff prompt claim.
+- Run or request `namba-intent end` before any lock claim.
+- Run or request `namba-intent run` before any compiled handoff prompt claim.
 - Never edit `.ni/plan.lock.json` manually.
 - Stop and report `BLOCKED` on stale locks or hash mismatches.
 - Do not call `codex exec`.
@@ -108,7 +108,7 @@ cp -R /tmp/ni-codex-skills-unpacked/ni-codex-skills/ni-end .agents/skills/
 cp -R /tmp/ni-codex-skills-unpacked/ni-codex-skills/ni-run .agents/skills/
 ```
 
-Then run the relevant `ni` CLI commands from the project workspace when a skill
+Then run the relevant `namba-intent` CLI commands from the project workspace when a skill
 asks for authority.
 
 Global Codex skill installation and discovery paths are not claimed by this
@@ -165,5 +165,5 @@ authoring rule used by `ni-start`.
 
 - Does not run Codex APIs or `codex exec`.
 - Does not execute implementation or downstream work.
-- Does not replace `ni` CLI validation for readiness, locking, hash checks, or
+- Does not replace `namba-intent` CLI validation for readiness, locking, hash checks, or
   prompt compilation.

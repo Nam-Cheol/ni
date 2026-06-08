@@ -128,8 +128,8 @@ func TestCompileCodexTemplateIsPasteReadyWithoutAutoInvocation(t *testing.T) {
 	}
 	assertPromptContains(t, result.Prompt,
 		"Paste this prompt into Codex",
-		"Do not ask ni to invoke Codex automatically",
-		"ni run only compiled this prompt",
+		"Do not ask Namba Intent to invoke Codex automatically",
+		"namba-intent run only compiled this prompt",
 	)
 }
 

@@ -238,6 +238,28 @@ BINDIR="$HOME/.local/bin" sh install.sh --uninstall
 and adds that directory to User PATH only. It does not modify Machine PATH by
 default and does not use `setx`.
 
+PowerShell also has a built-in alias:
+
+```powershell
+ni -> New-Item
+```
+
+Without an alias fix, `ni --help` can invoke `New-Item` and create a file named
+`--help` instead of running `ni.exe`. The installer therefore creates `$PROFILE`
+only if needed, preserves existing profile content, and adds this ni-managed
+block only once:
+
+```powershell
+# >>> ni installer >>>
+Remove-Item Alias:ni -Force -ErrorAction SilentlyContinue
+# <<< ni installer <<<
+```
+
+The block removes the PowerShell alias in new sessions so PATH can resolve
+`ni.exe` when the user types `ni`. If the profile update fails, the installer
+prints the exact block as the manual fix instead of silently claiming command
+resolution is complete.
+
 ```powershell
 $Installer = Join-Path $env:TEMP "ni-install.ps1"
 ```
@@ -267,8 +289,15 @@ Get-Content .\install.ps1
 .\install.ps1 -Version $Version
 ```
 
-Open a new PowerShell session so the User PATH update is loaded. First, check
-that the global command is available:
+Open a new PowerShell session so the User PATH update and profile block are
+loaded. First, check command resolution:
+
+```powershell
+Get-Command ni -All
+```
+
+`Get-Command ni` should resolve to `ni.exe` after the profile block loads. Then
+check that the global command is available:
 
 ```powershell
 ni --help
@@ -280,8 +309,10 @@ Then check the installed version:
 ni version
 ```
 
-Uninstall removes `ni.exe`, removes the install directory if empty, and removes
-only the matching `ni` directory from User PATH:
+Uninstall removes `ni.exe`, removes the install directory if empty, removes
+only the matching `ni` directory from User PATH, and removes only the
+ni-managed PowerShell profile block. It preserves unrelated profile content and
+unrelated PATH entries:
 
 ```powershell
 $Installer = Join-Path $env:TEMP "ni-install.ps1"

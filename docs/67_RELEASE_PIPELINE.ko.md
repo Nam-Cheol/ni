@@ -40,14 +40,14 @@ manual dispatch에서 workflow를 실행하지 않는다.
 
 | OS | Arch | Archive |
 | --- | --- | --- |
-| linux | amd64 | `ni_<version>_linux_amd64.tar.gz` |
-| linux | arm64 | `ni_<version>_linux_arm64.tar.gz` |
-| darwin | amd64 | `ni_<version>_darwin_amd64.tar.gz` |
-| darwin | arm64 | `ni_<version>_darwin_arm64.tar.gz` |
-| windows | amd64 | `ni_<version>_windows_amd64.zip` |
+| linux | amd64 | `namba-intent_<version>_linux_amd64.tar.gz` |
+| linux | arm64 | `namba-intent_<version>_linux_arm64.tar.gz` |
+| darwin | amd64 | `namba-intent_<version>_darwin_amd64.tar.gz` |
+| darwin | arm64 | `namba-intent_<version>_darwin_arm64.tar.gz` |
+| windows | amd64 | `namba-intent_<version>_windows_amd64.zip` |
 
 Windows arm64는 의도적으로 제외한다. GoReleaser는
-`ni_<version>_checksums.txt`도 작성한다.
+`namba-intent_<version>_checksums.txt`도 작성한다.
 
 ## Local Dry Run
 

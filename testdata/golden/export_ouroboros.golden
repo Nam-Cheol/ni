@@ -18,7 +18,7 @@ Boundary rules:
 
 - project_id: cli-fixture
 - project_name: CLI Fixture
-- purpose: Exercise ni end.
+- purpose: Exercise namba-intent end.
 - product_type: software
 - delivery_surfaces: cli
 - interaction_mode: human_to_system

@@ -1,9 +1,26 @@
 version: 2
 
-project_name: ni
+project_name: namba-intent
 
 builds:
-  - id: ni
+  - id: namba-intent
+    main: ./cmd/namba-intent
+    binary: namba-intent
+    env:
+      - CGO_ENABLED=0
+    goos:
+      - linux
+      - darwin
+      - windows
+    goarch:
+      - amd64
+      - arm64
+    ignore:
+      - goos: windows
+        goarch: arm64
+    ldflags:
+      - -s -w -X ni/internal/version.Version={{ .Version }}
+  - id: ni-shim
     main: ./cmd/ni
     binary: ni
     env:
@@ -22,9 +39,10 @@ builds:
       - -s -w -X ni/internal/version.Version={{ .Version }}
 
 archives:
-  - id: ni
+  - id: namba-intent
     ids:
-      - ni
+      - namba-intent
+      - ni-shim
     formats:
       - tar.gz
     format_overrides:

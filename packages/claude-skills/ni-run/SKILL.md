@@ -8,7 +8,7 @@ description: Compile a bounded NI handoff prompt in Claude-compatible workspaces
 Use this skill when the user asks Claude to produce a handoff prompt from a
 locked NI plan.
 
-`ni run` is a prompt compiler in v0. It is not an execution command.
+`namba-intent run` is a prompt compiler in v0. It is not an execution command.
 
 ## Authority Boundary
 
@@ -16,7 +16,7 @@ Skills are UX; CLI is authority.
 
 Do not reimplement prompt compilation in the skill.
 
-The `ni` CLI verifies lock hashes and enforces the prompt budget. If `ni run`
+The `namba-intent` CLI verifies lock hashes and enforces the prompt budget. If `namba-intent run`
 reports a missing lock, stale lock, or hash mismatch, report `BLOCKED` and
 stop.
 
@@ -28,10 +28,10 @@ to make prompt compilation pass.
 - Skills may help explain `LOCK-STALE`.
 - Skills do not determine readiness.
 - Skills do not lock or relock.
-- Skills do not replace `ni status`, `ni end`, or `ni run`.
+- Skills do not replace `namba-intent status`, `namba-intent end`, or `namba-intent run`.
 - Skills do not update `.ni/plan.lock.json`.
 
-Recovery order: `review changed intent -> ni status --proof --next-questions -> ni end -> ni run --max-chars 4000`.
+Recovery order: `review changed intent -> namba-intent status --proof --next-questions -> namba-intent end -> namba-intent run --max-chars 4000`.
 
 ## Process
 
@@ -42,14 +42,14 @@ Recovery order: `review changed intent -> ni status --proof --next-questions -> 
 4. Run or request:
 
 ```bash
-ni run --dir . --target <target> --max-chars 4000
+namba-intent run --dir . --target <target> --max-chars 4000
 ```
 
 5. Use `--out .ni/generated/<target>.prompt.txt` only when the user asks for a
    file or the prompt is too long to show comfortably.
 6. Confirm the compiled prompt is 4000 characters or less.
 7. Show the prompt or output path.
-8. State clearly that `ni` compiled a prompt only and did not execute
+8. State clearly that `namba-intent` compiled a prompt only and did not execute
    implementation.
 
 ## Target Selection
@@ -66,7 +66,7 @@ Claude.
 
 Do not execute implementation.
 
-Do not execute Codex or shell commands as part of v0 `ni run`.
+Do not execute Codex or shell commands as part of v0 `namba-intent run`.
 
 Do not call Claude APIs.
 

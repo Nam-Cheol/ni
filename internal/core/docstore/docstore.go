@@ -191,11 +191,11 @@ func templateFiles(opts InitOptions) []templateFile {
 		{"docs/plan/02_capabilities.md", "# Capabilities\n\n## CAP-001: TODO\n\nDescribe the first accepted capability.\n"},
 		{"docs/plan/03_interaction_contract.md", "# Interaction contract\n\n## Interaction mode\n\nTODO\n\n## Product interaction\n\nTODO\n\n## User control\n\nTODO\n"},
 		{"docs/plan/04_domain_state.md", "# Domain and state model\n\n## Core entities\n\n```text\nproject\ncontract\ncapability\nrequirement\ndecision\nrisk\nevaluation\nartifact\nopen question\nlockfile\nprompt\n```\n"},
-		{"docs/plan/05_constraints.md", "# Constraints\n\n## Hard constraints\n\n- Readiness must be rule-based, not model-feeling-based.\n- Prompt output from `ni run` must be 4000 characters or less.\n"},
+		{"docs/plan/05_constraints.md", "# Constraints\n\n## Hard constraints\n\n- Readiness must be rule-based, not model-feeling-based.\n- Prompt output from `namba-intent run` must be 4000 characters or less.\n"},
 		{"docs/plan/06_risks_security.md", "# Risks and security\n\n## RISK-001: TODO\n\nSeverity: high\n\nMitigation: TODO\n"},
 		{"docs/plan/07_evaluation_contract.md", "# Evaluation contract\n\n## EVAL-001: TODO\n\nMethod: TODO\n"},
 		{"docs/plan/08_delivery_operation.md", "# Delivery and operation\n\n## Delivery surfaces\n\n- TODO\n\n## Initial delivery\n\nTODO\n\n## Operating model\n\n- Planning docs are committed to git.\n- Contract JSON is committed to git.\n"},
-		{"docs/plan/09_execution_strategy.md", "# Execution strategy\n\n## v0 execution strategy\n\nDo not execute implementation automatically. Use `ni run` to compile a short prompt after the plan is locked.\n"},
+		{"docs/plan/09_execution_strategy.md", "# Execution strategy\n\n## v0 execution strategy\n\nDo not execute implementation automatically. Use `namba-intent run` to compile a short prompt after the plan is locked.\n"},
 		{"docs/plan/10_open_questions.md", "# Open questions\n\n## OQ-001: TODO\n\nBlocker: true\n\nInitial assumption: TODO\n"},
 		{"docs/plan/11_decision_log.md", "# Decision log\n\n## DEC-001: TODO\n\nStatus: accepted\n\nRationale: TODO\n"},
 	}
@@ -203,16 +203,16 @@ func templateFiles(opts InitOptions) []templateFile {
 		planDocs = []templateFile{
 			{"docs/plan/00_project_brief.md", fmt.Sprintf("# Project brief\n\n## Product type\n\n%s\n\n## Delivery surfaces\n\n%s\n\n## Purpose\n\n%s\n\n## Problem\n\nInitial guided init note: downstream work should wait until intent is explicit, checked, locked, and compiled into a bounded handoff prompt.\n\n## Success definition\n\n%s\n", opts.ProductType, surfaceText, intent.ProjectGoal, intent.SuccessCriteria)},
 			{"docs/plan/01_actors_outcomes.md", fmt.Sprintf("# Actors and outcomes\n\n## Actors\n\n- Target users / audience: %s\n- Planning model: drafts planning docs and contract updates from conversation.\n- CLI: validates readiness and lock state.\n\n## Outcomes\n\n- %s\n", intent.TargetUsers, intent.SuccessCriteria)},
-			{"docs/plan/02_capabilities.md", fmt.Sprintf("# Capabilities\n\n## CAP-001: %s\n\nThe downstream agent should eventually do this only after `ni status`, `ni end`, and `ni run` produce an authoritative bounded handoff.\n", intent.DownstreamAgentTask)},
+			{"docs/plan/02_capabilities.md", fmt.Sprintf("# Capabilities\n\n## CAP-001: %s\n\nThe downstream agent should eventually do this only after `ni status`, `namba-intent end`, and `namba-intent run` produce an authoritative bounded handoff.\n", intent.DownstreamAgentTask)},
 			{"docs/plan/03_interaction_contract.md", fmt.Sprintf("# Interaction contract\n\n## Interaction mode\n\n%s\n\n## Product interaction\n\nGuided init captured the first intent draft. Continued authoring happens through model-user planning conversation plus docs/plan/** and .ni/contract.json updates.\n\n## User control\n\nThe user decides whether ambiguous statements become accepted decisions. The CLI remains the authority for readiness, lock creation, and prompt compilation.\n", opts.InteractionMode)},
 			{"docs/plan/04_domain_state.md", "# Domain and state model\n\n## Core entities\n\n```text\nproject\ncontract\ncapability\nrequirement\ndecision\nrisk\nevaluation\nartifact\nopen question\nlockfile\nprompt\n```\n"},
-			{"docs/plan/05_constraints.md", fmt.Sprintf("# Constraints\n\n## Hard constraints\n\n- Readiness must be rule-based, not model-feeling-based.\n- Prompt output from `ni run` must be 4000 characters or less.\n- ni must not execute downstream work.\n\n## Constraints / non-goals from guided init\n\n%s\n", intent.ConstraintsNonGoals)},
+			{"docs/plan/05_constraints.md", fmt.Sprintf("# Constraints\n\n## Hard constraints\n\n- Readiness must be rule-based, not model-feeling-based.\n- Prompt output from `namba-intent run` must be 4000 characters or less.\n- Namba Intent must not execute downstream work.\n\n## Constraints / non-goals from guided init\n\n%s\n", intent.ConstraintsNonGoals)},
 			{"docs/plan/06_risks_security.md", fmt.Sprintf("# Risks and security\n\n## RISK-001: %s\n\nSeverity: high\n\nMitigation: Keep the blocker visible in docs/plan/** and .ni/contract.json until the user resolves it in planning conversation.\n", blockerTitle)},
 			{"docs/plan/07_evaluation_contract.md", fmt.Sprintf("# Evaluation contract\n\n## EVAL-001: %s\n\nMethod: Review the locked plan against this success criterion before downstream handoff.\n", intent.SuccessCriteria)},
-			{"docs/plan/08_delivery_operation.md", fmt.Sprintf("# Delivery and operation\n\n## Delivery surfaces\n\n%s\n\n## Initial delivery\n\n%s\n\n## Operating model\n\n- Planning docs are committed to git.\n- Contract JSON is committed to git.\n- `ni run` compiles a bounded handoff prompt only; it does not execute downstream work.\n", surfaceText, intent.DownstreamAgentTask)},
-			{"docs/plan/09_execution_strategy.md", "# Execution strategy\n\n## v0 execution strategy\n\nDo not execute implementation automatically. Use `ni run` to compile a short prompt after the plan is locked.\n"},
+			{"docs/plan/08_delivery_operation.md", fmt.Sprintf("# Delivery and operation\n\n## Delivery surfaces\n\n%s\n\n## Initial delivery\n\n%s\n\n## Operating model\n\n- Planning docs are committed to git.\n- Contract JSON is committed to git.\n- `namba-intent run` compiles a bounded handoff prompt only; it does not execute downstream work.\n", surfaceText, intent.DownstreamAgentTask)},
+			{"docs/plan/09_execution_strategy.md", "# Execution strategy\n\n## v0 execution strategy\n\nDo not execute implementation automatically. Use `namba-intent run` to compile a short prompt after the plan is locked.\n"},
 			{"docs/plan/10_open_questions.md", fmt.Sprintf("# Open questions\n\n## OQ-001: %s\n\nBlocker: true\n\nInitial assumption: %s\n\n## Deferrals\n\n%s\n", blockerTitle, blockerTitle, deferrals)},
-			{"docs/plan/11_decision_log.md", "# Decision log\n\n## DEC-001: Compile intent before downstream handoff\n\nStatus: accepted\n\nRationale: ni is a pre-runtime Project Intent Compiler. Planning must pass `ni status`, `ni end`, and `ni run` before downstream actors receive a handoff prompt.\n"},
+			{"docs/plan/11_decision_log.md", "# Decision log\n\n## DEC-001: Compile intent before downstream handoff\n\nStatus: accepted\n\nRationale: Namba Intent is a pre-runtime Project Intent Compiler. Planning must pass `ni status`, `namba-intent end`, and `namba-intent run` before downstream actors receive a handoff prompt.\n"},
 		}
 	}
 
@@ -273,7 +273,7 @@ const projectJSON = `{
   "schema": "ni.project.v0",
   "id": "todo",
   "name": "TODO",
-  "created_for": "ni planning workspace",
+  "created_for": "Namba Intent planning workspace",
   "kernel_phase": "planning",
   "commands": [
     "init",

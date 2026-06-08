@@ -116,7 +116,10 @@ PATH="$HOME/.local/bin:$PATH" ni version
 
 자신의 platform에 맞는 archive name을 사용한다. Windows에서는 PowerShell 또는
 trusted unzip tool로 `.zip` archive를 풀고 `ni.exe`를 User PATH에 두거나 repository
-root의 `install.ps1`를 사용한다.
+root의 `install.ps1`를 사용한다. PowerShell에는 `New-Item`을 가리키는 built-in
+`ni` alias가 있으므로, PowerShell installer는 ni-managed profile block으로 이
+alias를 처리해서 새 session에서 `ni`가 `ni.exe`로 resolve되게 한다. Command-name
+resolution이 이상하면 `Get-Command ni -All`로 진단한다.
 
 ## Script가 하는 일
 

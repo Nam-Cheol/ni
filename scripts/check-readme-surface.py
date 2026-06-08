@@ -28,7 +28,7 @@ TOP_SECTIONS = {
         ("factual trust badges", "img.shields.io/badge/license-MIT"),
         ("slogan", "<h1 align=\"center\">"),
         ("one-line product description", "<p align=\"center\"><strong>"),
-        ("why ni", "## Why ni"),
+        ("why Namba Intent", "## Why Namba Intent"),
         ("install", "## Install"),
     ],
     "README.ko.md": [
@@ -37,7 +37,7 @@ TOP_SECTIONS = {
         ("factual trust badges", "img.shields.io/badge/license-MIT"),
         ("slogan", "<h1 align=\"center\">"),
         ("one-line product description", "<p align=\"center\"><strong>"),
-        ("why ni", "## 왜 ni인가"),
+        ("why Namba Intent", "## Why Namba Intent"),
         ("install", "## Install"),
     ],
 }

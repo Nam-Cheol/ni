@@ -104,17 +104,17 @@ case "$OS/$ARCH" in
 esac
 
 EXT="tar.gz"
-BIN_NAME="ni"
+BIN_NAME="namba-intent"
 if [[ "$OS" == "windows" ]]; then
   EXT="zip"
-  BIN_NAME="ni.exe"
+  BIN_NAME="namba-intent.exe"
   need unzip
 else
   need tar
 fi
 
-ASSET="ni_${VERSION}_${OS}_${ARCH}.${EXT}"
-CHECKSUMS="ni_${VERSION}_checksums.txt"
+ASSET="namba-intent_${VERSION}_${OS}_${ARCH}.${EXT}"
+CHECKSUMS="namba-intent_${VERSION}_checksums.txt"
 ASSET_URL="${RELEASE_BASE_URL%/}/$ASSET"
 CHECKSUM_URL="${RELEASE_BASE_URL%/}/$CHECKSUMS"
 
@@ -174,16 +174,16 @@ fi
 cp "$FOUND_BIN" "$MANUAL_BIN_DIR/$BIN_NAME"
 chmod 0755 "$MANUAL_BIN_DIR/$BIN_NAME"
 
-run_cmd "manual release binary ni --help" "$MANUAL_BIN_DIR/$BIN_NAME" --help
-require_stdout "ni is a project intent compiler"
+run_cmd "manual release binary namba-intent --help" "$MANUAL_BIN_DIR/$BIN_NAME" --help
+require_stdout "Namba Intent is a Project Intent Compiler for AI Agents."
 
-run_cmd "manual release binary ni version" "$MANUAL_BIN_DIR/$BIN_NAME" version
+run_cmd "manual release binary namba-intent version" "$MANUAL_BIN_DIR/$BIN_NAME" version
 require_stdout "$VERSION"
 
-run_cmd "manual release binary ni init" "$MANUAL_BIN_DIR/$BIN_NAME" init --dir "$MANUAL_PROJECT_DIR" --profile prototype
-require_stdout "initialized ni planning workspace"
+run_cmd "manual release binary namba-intent init" "$MANUAL_BIN_DIR/$BIN_NAME" init --dir "$MANUAL_PROJECT_DIR" --profile prototype
+require_stdout "initialized Namba Intent planning workspace"
 
-run_cmd "manual release binary ni status" "$MANUAL_BIN_DIR/$BIN_NAME" status --dir "$MANUAL_PROJECT_DIR"
+run_cmd "manual release binary namba-intent status" "$MANUAL_BIN_DIR/$BIN_NAME" status --dir "$MANUAL_PROJECT_DIR"
 require_stdout "BLOCKED"
 
 run_cmd "download curl installer" curl -fsSL "$INSTALLER_URL" -o "$INSTALLER_PATH"
@@ -196,18 +196,18 @@ run_cmd "curl installer temporary install" env BINDIR="$CURL_BIN_DIR" sh "$INSTA
 require_stdout "Verified checksum for $ASSET"
 require_stdout "Installed ni to $CURL_BIN_DIR/$BIN_NAME"
 
-run_cmd "curl installed ni --help" "$CURL_BIN_DIR/$BIN_NAME" --help
-require_stdout "ni is a project intent compiler"
+run_cmd "curl installed namba-intent --help" "$CURL_BIN_DIR/$BIN_NAME" --help
+require_stdout "Namba Intent is a Project Intent Compiler for AI Agents."
 
-run_cmd "curl installed ni version" "$CURL_BIN_DIR/$BIN_NAME" version
+run_cmd "curl installed namba-intent version" "$CURL_BIN_DIR/$BIN_NAME" version
 require_stdout "$VERSION"
 
-run_cmd "curl installed ni init" "$CURL_BIN_DIR/$BIN_NAME" init --dir "$CURL_PROJECT_DIR" --profile prototype
-require_stdout "initialized ni planning workspace"
+run_cmd "curl installed namba-intent init" "$CURL_BIN_DIR/$BIN_NAME" init --dir "$CURL_PROJECT_DIR" --profile prototype
+require_stdout "initialized Namba Intent planning workspace"
 
-run_cmd "curl installed ni status" "$CURL_BIN_DIR/$BIN_NAME" status --dir "$CURL_PROJECT_DIR"
+run_cmd "curl installed namba-intent status" "$CURL_BIN_DIR/$BIN_NAME" status --dir "$CURL_PROJECT_DIR"
 require_stdout "BLOCKED"
 
 echo "fresh-install-check: manual release binary path passed"
 echo "fresh-install-check: curl installer path passed"
-echo "fresh-install-check: ni --help, ni version, ni init, and ni status passed without Go"
+echo "fresh-install-check: namba-intent --help, namba-intent version, namba-intent init, and namba-intent status passed without Go"

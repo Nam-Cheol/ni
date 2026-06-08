@@ -13,7 +13,7 @@ directory에서든 install path를 입력하지 않고 `ni --help`와 `ni versio
 | --- | --- | --- |
 | macOS/Linux curl installer global PATH handling | Available in installer code | `install.sh`는 user-writable directory에 설치하고, opt-in으로 reversible zsh/bash PATH block을 추가할 수 있다. |
 | macOS local global command verification | Verified locally | Repository check는 temporary bin directory에 설치한 뒤 fresh shell process에서 command name으로 `ni --help`와 `ni version`을 검증한다. |
-| Windows PowerShell installer | Available in installer code | `install.ps1`는 기본적으로 `%LOCALAPPDATA%\ni\bin`에 설치하고 User PATH만 업데이트한다. |
+| Windows PowerShell installer | Available in installer code | `install.ps1`는 기본적으로 `%LOCALAPPDATA%\ni\bin`에 설치하고 User PATH만 업데이트하며, built-in `ni` alias를 위해 ni-managed PowerShell profile block을 추가한다. |
 | Windows execution verification | Not verified on this macOS host | Static safety check는 있지만 real Windows install, new PowerShell, uninstall verification은 Windows host transcript가 필요하다. |
 | Homebrew | Planned / v0.5 candidate | 이 문서는 Homebrew Available을 claim하지 않는다. |
 
@@ -49,10 +49,23 @@ Windows install은 다음이 모두 true일 때만 성공이다:
 - `ni.exe`가 user-writable location, 되도록
   `%LOCALAPPDATA%\ni\bin\ni.exe`에 설치된다.
 - Install directory가 기본적으로 System PATH가 아니라 User PATH에 추가된다.
+- Installer가 PowerShell built-in `ni -> New-Item` alias를 처리하기 위해
+  `$PROFILE`에 다음 ni-managed block을 한 번만 추가한다:
+
+```powershell
+# >>> ni installer >>>
+Remove-Item Alias:ni -Force -ErrorAction SilentlyContinue
+# <<< ni installer <<<
+```
+
+- Existing PowerShell profile content가 보존된다.
+- 새 PowerShell session의 `Get-Command ni -All`이 profile block load 이후
+  `ni.exe`를 보여준다.
 - 새 PowerShell session에서 command name으로 `ni --help`를 실행할 수 있다.
 - 새 PowerShell session에서 command name으로 `ni version`을 실행할 수 있다.
 - Uninstall이 `ni.exe`를 제거한다.
 - Uninstall이 User PATH에서 `ni` bin directory entry만 제거한다.
+- Uninstall이 ni-managed PowerShell profile block만 제거한다.
 - Installer가 unrelated PATH entries를 보존하고 PATH를 truncate하지 않는다.
 
 Windows installer는 User PATH를 다음 방식으로 읽고 써야 한다:
@@ -76,6 +89,7 @@ Install verification은 absolute path execution만이 아니라 command-name res
 - Installed binary가 존재하는지 확인한다.
 - PATH가 이미 존재하거나 managed block으로 추가되었거나 manual follow-up으로
   명확히 문서화되었는지 확인한다.
+- Windows에서는 새 PowerShell session에서 `Get-Command ni -All`을 확인한다.
 - Expected PATH context를 가진 fresh shell 또는 PowerShell process를 launch한다.
 - Command name으로 `ni --help`를 실행한다.
 - Command name으로 `ni version`을 실행한다.

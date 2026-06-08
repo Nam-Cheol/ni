@@ -15,7 +15,7 @@ write the lockfile by hand.
 
 Skills are UX; CLI is authority.
 
-`ni status` and `ni end` are the authority.
+`namba-intent status` and `namba-intent end` are the authority.
 
 Do not write `.ni/plan.lock.json` manually. Do not repair a stale lock by
 editing JSON. If a lock hash mismatch exists, stop and report `BLOCKED`.
@@ -28,10 +28,10 @@ the exact output. Do not substitute model judgment for CLI output.
 - Skills may help explain `LOCK-STALE`.
 - Skills do not determine readiness.
 - Skills do not lock or relock.
-- Skills do not replace `ni status`, `ni end`, or `ni run`.
+- Skills do not replace `namba-intent status`, `namba-intent end`, or `namba-intent run`.
 - Skills do not update `.ni/plan.lock.json`.
 
-Recovery order: `review changed intent -> ni status --proof --next-questions -> ni end -> ni run --max-chars 4000`.
+Recovery order: `review changed intent -> namba-intent status --proof --next-questions -> namba-intent end -> namba-intent run --max-chars 4000`.
 
 ## Process
 
@@ -41,11 +41,11 @@ Recovery order: `review changed intent -> ni status --proof --next-questions -> 
 3. Run or request:
 
 ```bash
-ni status --dir .
+namba-intent status --dir .
 ```
 
 4. If the CLI reports `BLOCKED`, report `BLOCKED`, list the CLI blockers, and
-   stop. Do not run `ni end`.
+   stop. Do not run `namba-intent end`.
 5. If the CLI reports `READY` or `READY_WITH_DEFERRALS`, summarize the contract
    that will be locked.
 6. Include the readiness status exactly as reported by the CLI, project
@@ -55,13 +55,13 @@ ni status --dir .
 7. Ask for explicit confirmation:
 
 ```text
-Confirm that I should run ni end --dir . and let the CLI write .ni/plan.lock.json?
+Confirm that I should run namba-intent end --dir . and let the CLI write .ni/plan.lock.json?
 ```
 
 8. Only after explicit confirmation, run or request:
 
 ```bash
-ni end --dir .
+namba-intent end --dir .
 ```
 
 9. Confirm that the CLI created `.ni/plan.lock.json` and report the lock path.

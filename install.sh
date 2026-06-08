@@ -8,8 +8,8 @@ BASE_URL="${NI_INSTALL_BASE_URL:-}"
 DRY_RUN=0
 UPDATE_PATH=0
 UNINSTALL=0
-PATH_BLOCK_BEGIN="# >>> ni installer >>>"
-PATH_BLOCK_END="# <<< ni installer <<<"
+PATH_BLOCK_BEGIN="# >>> namba-intent installer >>>"
+PATH_BLOCK_END="# <<< namba-intent installer <<<"
 
 if [ "${HOME:-}" = "" ] && [ "${BINDIR:-}" = "" ]; then
   echo "install.sh: HOME is not set; set BINDIR to choose an install directory" >&2
@@ -20,7 +20,7 @@ BINDIR="${BINDIR:-$HOME/.local/bin}"
 
 usage() {
   cat <<'EOF'
-Install ni from GitHub Releases.
+Install Namba Intent from GitHub Releases.
 
 Usage:
   sh install.sh [--dry-run] [--update-path] [--version VERSION] [--repo OWNER/REPO]
@@ -28,9 +28,9 @@ Usage:
 
 Options:
   --dry-run          Show the selected platform, asset, and install path.
-  --update-path      Add a reversible ni-managed PATH block to zsh or bash
+  --update-path      Add a reversible namba-intent-managed PATH block to zsh or bash
                      shell profile when the install directory is not on PATH.
-  --uninstall        Remove the installed ni binary and the ni-managed PATH
+  --uninstall        Remove the installed namba-intent binary and the namba-intent-managed PATH
                      block, if present.
   --version VERSION  Install a specific release version, such as 0.2.0.
                      Tags are resolved as vVERSION unless VERSION starts with v.
@@ -138,7 +138,7 @@ remove_path_block() {
   status="${status:-0}"
   if [ "$status" -eq 0 ]; then
     mv "$tmp" "$profile"
-    say "Removed ni PATH block from $profile"
+    say "Removed Namba Intent PATH block from $profile"
   else
     rm -f "$tmp"
   fi
@@ -152,7 +152,7 @@ add_path_block() {
   touch "$profile"
 
   if grep -Fq "$PATH_BLOCK_BEGIN" "$profile"; then
-    say "ni PATH block already exists in $profile"
+    say "Namba Intent PATH block already exists in $profile"
     return
   fi
 
@@ -168,7 +168,7 @@ add_path_block() {
     printf 'export PATH="%s:$PATH"\n' "$path_expr"
     printf '%s\n' "$PATH_BLOCK_END"
   } >>"$profile"
-  say "Added ni PATH block to $profile"
+  say "Added Namba Intent PATH block to $profile"
 }
 
 detect_os() {
@@ -234,10 +234,10 @@ case "$OS/$ARCH" in
 esac
 
 EXT="tar.gz"
-BIN_NAME="ni"
+BIN_NAME="namba-intent"
 if [ "$OS" = "windows" ]; then
   EXT="zip"
-  BIN_NAME="ni.exe"
+  BIN_NAME="namba-intent.exe"
 fi
 
 TARGET="$BINDIR/$BIN_NAME"
@@ -248,14 +248,14 @@ if [ "$UNINSTALL" -eq 1 ]; then
     rm -f "$TARGET"
     say "Removed $TARGET"
   else
-    say "No installed ni binary found at $TARGET"
+    say "No installed namba-intent binary found at $TARGET"
   fi
   rmdir "$BINDIR" 2>/dev/null || true
   remove_path_block "$profile"
   say "Uninstall complete."
   say "Open a new shell, then verify:"
-  say "  command -v ni"
-  say "The command should not find the ni install removed by this installer."
+  say "  command -v namba-intent"
+  say "The command should not find the namba-intent install removed by this installer."
   exit 0
 fi
 
@@ -279,8 +279,8 @@ else
   VERSION="${VERSION#v}"
 fi
 
-ASSET="ni_${VERSION}_${OS}_${ARCH}.${EXT}"
-CHECKSUMS="ni_${VERSION}_checksums.txt"
+ASSET="namba-intent_${VERSION}_${OS}_${ARCH}.${EXT}"
+CHECKSUMS="namba-intent_${VERSION}_checksums.txt"
 
 if [ "$BASE_URL" = "" ]; then
   BASE_URL="https://github.com/$REPO/releases/download/$TAG"
@@ -289,7 +289,7 @@ fi
 ASSET_URL="${BASE_URL%/}/$ASSET"
 CHECKSUM_URL="${BASE_URL%/}/$CHECKSUMS"
 
-say "ni installer"
+say "Namba Intent installer"
 say "  repository: $REPO"
 say "  platform:   $OS/$ARCH"
 say "  asset:      $ASSET"
@@ -306,7 +306,7 @@ if [ "$DRY_RUN" -eq 1 ]; then
   if [ "$UPDATE_PATH" -eq 1 ]; then
     profile="$(shell_profile)"
     say "  path file:  ${profile:-<unknown>}"
-    say "  path mode:  would add a ni-managed PATH block if needed"
+    say "  path mode:  would add a namba-intent-managed PATH block if needed"
   fi
   say ""
   say "Would download:"
@@ -316,7 +316,7 @@ if [ "$DRY_RUN" -eq 1 ]; then
 fi
 
 TMPDIR_ROOT="${TMPDIR:-/tmp}"
-WORKDIR="$(mktemp -d "$TMPDIR_ROOT/ni-install.XXXXXX")"
+WORKDIR="$(mktemp -d "$TMPDIR_ROOT/namba-intent-install.XXXXXX")"
 cleanup() {
   rm -rf "$WORKDIR"
 }
@@ -381,7 +381,7 @@ mkdir -p "$BINDIR"
 cp "$FOUND_BIN" "$TARGET"
 chmod 0755 "$TARGET"
 
-say "Installed ni to $TARGET"
+say "Installed namba-intent to $TARGET"
 
 if path_has_bindir; then
   PATH_READY=1
@@ -405,8 +405,8 @@ else
   fi
   say "  2. Check the global command:"
 fi
-say "     ni --help"
-say "     ni version"
+say "     namba-intent --help"
+say "     namba-intent version"
 say ""
 say "Uninstall:"
 say "  sh install.sh --uninstall"

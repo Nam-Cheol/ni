@@ -1,6 +1,6 @@
 ---
 name: ni-end
-description: Confirm NI planning readiness conversationally, then lock the plan only through the ni CLI readiness gate.
+description: Confirm NI planning readiness conversationally, then lock the plan only through the Namba Intent CLI readiness gate.
 ---
 
 # ni-end
@@ -12,7 +12,7 @@ plan, or asks to lock a ready NI plan.
 
 Skills are UX; CLI is authority.
 
-You are not the authority for completion. `ni status` and `ni end` are the authority.
+You are not the authority for completion. `namba-intent status` and `namba-intent end` are the authority.
 
 Do not create, edit, or repair `.ni/plan.lock.json` by hand. The CLI is the only lock writer.
 
@@ -23,24 +23,24 @@ If model judgment and CLI output disagree, the CLI output wins. Report `BLOCKED`
 - Skills may help explain `LOCK-STALE`.
 - Skills do not determine readiness.
 - Skills do not lock or relock.
-- Skills do not replace `ni status`, `ni end`, or `ni run`.
+- Skills do not replace `namba-intent status`, `namba-intent end`, or `namba-intent run`.
 - Skills do not update `.ni/plan.lock.json`.
 
-Recovery order: `review changed intent -> ni status --proof --next-questions -> ni end -> ni run --max-chars 4000`.
+Recovery order: `review changed intent -> namba-intent status --proof --next-questions -> namba-intent end -> namba-intent run --max-chars 4000`.
 
 ## Process
 
 1. Read `AGENTS.md`, `.ni/readiness.rules.json`, `.ni/contract.json`, and the
    relevant `docs/plan/**` files.
-2. Run `ni status --dir .`. If you cannot run commands in the current
-   environment, ask the user to run `ni status --dir .` and paste the result
+2. Run `namba-intent status --dir .`. If you cannot run commands in the current
+   environment, ask the user to run `namba-intent status --dir .` and paste the result
    before proceeding.
-3. If `ni status` returns `BLOCKED`, report `BLOCKED`, list the CLI blockers,
-   and stop. Do not run `ni end`.
-4. If `ni status` returns `READY` or `READY_WITH_DEFERRALS`, summarize what the
-   CLI is about to lock before running `ni end --dir .`.
+3. If `namba-intent status` returns `BLOCKED`, report `BLOCKED`, list the CLI blockers,
+   and stop. Do not run `namba-intent end`.
+4. If `namba-intent status` returns `READY` or `READY_WITH_DEFERRALS`, summarize what the
+   CLI is about to lock before running `namba-intent end --dir .`.
 5. The pre-lock summary must include:
-   - readiness status exactly as reported by `ni status`,
+   - readiness status exactly as reported by `namba-intent status`,
    - project name and purpose,
    - readiness profile, product type, delivery surfaces, and interaction mode
      when present,
@@ -51,11 +51,11 @@ Recovery order: `review changed intent -> ni status --proof --next-questions -> 
    - open non-blocking questions,
    - source files that will be hashed into `.ni/plan.lock.json`.
 6. Ask for explicit user confirmation after the summary. Use a direct question
-   such as: `Confirm that I should run ni end --dir . and let the CLI write
+   such as: `Confirm that I should run namba-intent end --dir . and let the CLI write
    .ni/plan.lock.json?`
-7. Only after the user explicitly confirms, run `ni end --dir .`. If you cannot
+7. Only after the user explicitly confirms, run `namba-intent end --dir .`. If you cannot
    run commands in the current environment, instruct the user to run
-   `ni end --dir .` themselves.
+   `namba-intent end --dir .` themselves.
 8. Confirm that `.ni/plan.lock.json` was created by the CLI.
 9. Report the readiness status and lockfile path.
 
@@ -68,7 +68,7 @@ create the lock.
 
 If the user changes planning intent during confirmation, stop the lock flow and
 return to planning. The changed intent must be captured through the planning
-authoring process and checked again with `ni status --dir .`.
+authoring process and checked again with `namba-intent status --dir .`.
 
 If `READY_WITH_DEFERRALS` is reported, do not hide the deferrals. List each
 deferred decision and each open non-blocking question before asking for
@@ -79,7 +79,7 @@ classified those items as non-blocking.
 
 - Do not write `.ni/plan.lock.json` manually.
 - Do not declare readiness from model judgment alone.
-- Do not bypass `ni status`.
+- Do not bypass `namba-intent status`.
 - Do not modify accepted docs during lock unless the user explicitly resumes planning.
 - Do not auto-lock from chat without the explicit confirmation step.
 - Do not execute implementation or downstream harness work.

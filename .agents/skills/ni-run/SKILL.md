@@ -12,35 +12,35 @@ prompt for a downstream target.
 
 Skills are UX; CLI is authority.
 
-`ni run` is a prompt compiler in v0. It is not an execution command.
+`namba-intent run` is a prompt compiler in v0. It is not an execution command.
 
 Do not reimplement prompt compilation in the skill. The CLI verifies lock hashes and enforces the prompt budget.
 
-If `ni run` reports a missing or stale lock, the skill must not produce a replacement prompt from memory. Report the CLI result as `BLOCKED` and stop.
+If `namba-intent run` reports a missing or stale lock, the skill must not produce a replacement prompt from memory. Report the CLI result as `BLOCKED` and stop.
 
 `LOCK-STALE` means the existing lock no longer matches current planning inputs.
 - Skills may help draft amended planning text.
 - Skills may help explain `LOCK-STALE`.
 - Skills do not determine readiness.
 - Skills do not lock or relock.
-- Skills do not replace `ni status`, `ni end`, or `ni run`.
+- Skills do not replace `namba-intent status`, `namba-intent end`, or `namba-intent run`.
 - Skills do not update `.ni/plan.lock.json`.
 
-Recovery order: `review changed intent -> ni status --proof --next-questions -> ni end -> ni run --max-chars 4000`.
+Recovery order: `review changed intent -> namba-intent status --proof --next-questions -> namba-intent end -> namba-intent run --max-chars 4000`.
 
 ## Process
 
 1. Read `AGENTS.md` and confirm `.ni/plan.lock.json` exists.
 2. Infer the target only from explicit user intent or locked project context.
 3. Ask the user for a target if it is not inferable.
-4. Run or request `ni run --dir . --target <target> --max-chars 4000`.
+4. Run or request `namba-intent run --dir . --target <target> --max-chars 4000`.
 5. Use `--out .ni/generated/<target>.prompt.txt` only when the user asks for a
    file or the prompt is too long to show comfortably.
-6. If `ni run` reports a missing or stale lock, report `BLOCKED` and stop.
+6. If `namba-intent run` reports a missing or stale lock, report `BLOCKED` and stop.
 7. Confirm the prompt is 4000 characters or less.
 8. Confirm the prompt references authoritative files instead of embedding all docs.
 9. Show the generated prompt, or show the output path if `--out` was used.
-10. State clearly that `ni` compiled a prompt only and did not execute
+10. State clearly that `namba-intent` compiled a prompt only and did not execute
     implementation.
 
 ## Target Selection
@@ -58,7 +58,7 @@ experiment or selected downstream target. Do not choose `codex` merely because
 the model is Codex.
 
 If multiple targets are plausible, ask one short question and do not run
-`ni run` until the user chooses.
+`namba-intent run` until the user chooses.
 
 ## Output Shape
 
@@ -67,14 +67,14 @@ prompt. When `--out` is used, include the command and path. In both cases, end
 with a boundary statement like:
 
 ```text
-`ni` compiled this prompt only. It did not execute implementation, Codex, shell
+`namba-intent` compiled this prompt only. It did not execute implementation, Codex, shell
 commands, adapters, queues, PR automation, or downstream runtime work.
 ```
 
 ## Do not
 
 - Do not implement the product directly from this skill.
-- Do not execute Codex or shell commands as part of v0 `ni run`.
+- Do not execute Codex or shell commands as part of v0 `namba-intent run`.
 - Do not ignore a stale lock hash.
 - Do not change locked planning docs.
 - Do not create execution adapters or remote automation.

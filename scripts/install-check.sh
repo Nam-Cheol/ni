@@ -43,32 +43,32 @@ require_nonempty_output() {
   fi
 }
 
-run_cmd "go run ./cmd/ni --help" go run ./cmd/ni --help
-require_output "ni is a project intent compiler"
+run_cmd "go run ./cmd/namba-intent --help" go run ./cmd/namba-intent --help
+require_output "Namba Intent is a Project Intent Compiler for AI Agents."
 
-run_cmd "go run ./cmd/ni version" go run ./cmd/ni version
+run_cmd "go run ./cmd/namba-intent version" go run ./cmd/namba-intent version
 require_output "0.0.0-dev"
 
 run_cmd "make build" make build
 
-run_cmd "./bin/ni --help" ./bin/ni --help
-require_output "ni is a project intent compiler"
+run_cmd "./bin/namba-intent --help" ./bin/namba-intent --help
+require_output "Namba Intent is a Project Intent Compiler for AI Agents."
 
-run_cmd "./bin/ni version" ./bin/ni version
+run_cmd "./bin/namba-intent version" ./bin/namba-intent version
 require_nonempty_output
 
 run_cmd "make install-local with temporary BINDIR" make install-local BINDIR="$INSTALL_TMP/bin"
 
-run_cmd "temporary installed ni --help" "$INSTALL_TMP/bin/ni" --help
-require_output "ni is a project intent compiler"
+run_cmd "temporary installed namba-intent --help" "$INSTALL_TMP/bin/namba-intent" --help
+require_output "Namba Intent is a Project Intent Compiler for AI Agents."
 
-run_cmd "temporary installed ni version" "$INSTALL_TMP/bin/ni" version
+run_cmd "temporary installed namba-intent version" "$INSTALL_TMP/bin/namba-intent" version
 require_nonempty_output
 
-run_cmd "fresh shell resolves temporary ni --help and version" env \
+run_cmd "fresh shell resolves temporary namba-intent --help and version" env \
   PATH="$INSTALL_TMP/bin:$PATH" \
-  sh -c 'command -v ni && ni --help && ni version'
-require_output "ni is a project intent compiler"
+  sh -c 'command -v namba-intent && namba-intent --help && namba-intent version'
+require_output "Namba Intent is a Project Intent Compiler for AI Agents."
 require_nonempty_output
 
 run_cmd "install.sh global install and uninstall behavior" bash scripts/test-install-sh.sh

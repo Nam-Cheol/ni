@@ -91,8 +91,8 @@ func buildPrompt(c contract.Contract, l lock.Lockfile, t target.Target) string {
 	b.WriteString("- If there are conflicting requirements, report BLOCKED with conflicting sources or IDs and stop.\n")
 	b.WriteString("- Do not weaken acceptance criteria, risk mitigations, or blocker handling to proceed.\n")
 	b.WriteString("- Every work item must trace to CAP/REQ/EVAL/RISK IDs.\n")
-	b.WriteString("- Keep ni at the pre-runtime boundary; this prompt is seed material, not kernel-owned execution state.\n")
-	b.WriteString("- Do not make ni run execute shell, Codex, adapters, queues, PR automation, or agent teams.\n\n")
+	b.WriteString("- Keep Namba Intent at the pre-runtime boundary; this prompt is seed material, not kernel-owned execution state.\n")
+	b.WriteString("- Do not make namba-intent run execute shell, Codex, adapters, queues, PR automation, or agent teams.\n\n")
 	writeTemplateSection(&b, tmpl)
 
 	writeCapabilities(&b, c.Capabilities)
@@ -121,7 +121,7 @@ func templateFor(name string) template {
 			Instructions: []string{
 				"Use the current worktree as evidence; preserve user changes and stay within the locked contract.",
 				"Define validation before editing, then implement only the selected work packet.",
-				"Do not ask ni to invoke Codex automatically; ni run only compiled this prompt.",
+				"Do not ask Namba Intent to invoke Codex automatically; namba-intent run only compiled this prompt.",
 			},
 			Process: []string{
 				"Read .ni/plan.lock.json, .ni/contract.json, and relevant docs/plan files.",
@@ -148,7 +148,7 @@ func templateFor(name string) template {
 			ExpectedOutput: "team handoff with owners, next packets, validation evidence, risks, decisions needed, and BLOCKED if the lock or requirements conflict.",
 		}
 	case "hyper-run":
-		return seedTemplate("Hyper Run", "do not call hyper run or generate .hyper/goals runtime packets from ni run")
+		return seedTemplate("Hyper Run", "do not call hyper run or generate .hyper/goals runtime packets from namba-intent run")
 	case "namba-ai":
 		return seedTemplate("Namba AI", "do not call downstream runtimes")
 	case "ouroboros":

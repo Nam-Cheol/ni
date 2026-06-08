@@ -6,7 +6,7 @@ description: Explain NI status proof output in Codex-style workspaces without be
 # ni-status-review
 
 Use this skill when the user asks Codex to review, explain, or act on
-`ni status` output.
+`namba-intent status` output.
 
 `ni-status-review` is a review and planning-navigation skill. It is not a
 readiness gate.
@@ -15,7 +15,7 @@ readiness gate.
 
 Skills are UX; CLI is authority.
 
-`ni status` is the authority for `BLOCKED`, `READY_WITH_DEFERRALS`, and
+`namba-intent status` is the authority for `BLOCKED`, `READY_WITH_DEFERRALS`, and
 `READY`.
 
 - Skills may help draft or explain proof-related planning text.
@@ -24,17 +24,17 @@ Skills are UX; CLI is authority.
 - Skills do not determine readiness.
 - Skills do not lock plans.
 - Skills do not lock or relock.
-- Skills do not replace `ni status`, `ni end`, or `ni run`.
+- Skills do not replace `namba-intent status`, `namba-intent end`, or `namba-intent run`.
 - Skills do not update `.ni/plan.lock.json`.
 
 `LOCK-STALE` means the existing lock no longer matches current planning inputs.
-Recovery order: `review changed intent -> ni status --proof --next-questions -> ni end -> ni run --max-chars 4000`.
+Recovery order: `review changed intent -> namba-intent status --proof --next-questions -> namba-intent end -> namba-intent run --max-chars 4000`.
 
 Run or request one of these commands:
 
 ```bash
-ni status --dir . --proof --next-questions
-ni status --dir . --proof --json --next-questions
+namba-intent status --dir . --proof --next-questions
+namba-intent status --dir . --proof --json --next-questions
 ```
 
 If command execution is unavailable, ask the user to paste the exact CLI
@@ -65,7 +65,7 @@ Report:
   `.ni/contract.json`.
 
 If the status is `READY` or `READY_WITH_DEFERRALS`, say that the next step is
-`ni-end` confirmation. Do not claim the plan is locked until `ni end` succeeds.
+`ni-end` confirmation. Do not claim the plan is locked until `namba-intent end` succeeds.
 
 ## Boundaries
 
