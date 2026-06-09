@@ -1049,6 +1049,7 @@ func runInit(args []string, stdout io.Writer, stderr io.Writer) int {
 func runGuidedInitTUI(root string, stdout io.Writer) (initui.Result, error) {
 	return initui.Run(initui.Config{
 		Dir:         root,
+		CommandName: commandName(),
 		DefaultName: filepath.Base(root),
 		Input:       initInput,
 		Output:      stdout,
@@ -1058,6 +1059,7 @@ func runGuidedInitTUI(root string, stdout io.Writer) (initui.Result, error) {
 func runExistingInitTUI(root string, existing []string, stdout io.Writer) (initui.ExistingChoice, error) {
 	result, err := initui.Run(initui.Config{
 		Dir:           root,
+		CommandName:   commandName(),
 		DefaultName:   filepath.Base(root),
 		ExistingFiles: existing,
 		Input:         initInput,
