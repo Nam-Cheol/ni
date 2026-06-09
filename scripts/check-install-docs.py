@@ -12,7 +12,7 @@ LATEST_MAC_INSTALL = (
     "curl -fsSL https://raw.githubusercontent.com/Nam-Cheol/ni/main/install.sh | "
     "sh -s -- --update-path"
 )
-PINNED_MAC_INSTALL = f"{LATEST_MAC_INSTALL} --version 0.6.0"
+PINNED_MAC_INSTALL = f"{LATEST_MAC_INSTALL} --version 0.6.2"
 
 README_EXPECTED = {
     "Source": "Available",
@@ -43,7 +43,7 @@ INSTALL_EXPECTED = {
 REQUIRED_MARKERS = {
     "README.md": [
         "README shows two primary first-success paths for the current tree.",
-        "v0.6.0 is the current published Namba Intent release.",
+        "v0.6.2 is the current published Namba Intent release.",
         "### macOS",
         "### Windows",
         LATEST_MAC_INSTALL,
@@ -59,7 +59,7 @@ REQUIRED_MARKERS = {
     ],
     "README.ko.md": [
         "README는 current tree의 첫 성공을 위한 두 가지 primary path만 보여줍니다.",
-        "v0.6.0은 current published Namba Intent release입니다.",
+        "v0.6.2는 current published Namba Intent release입니다.",
         "### macOS",
         "### Windows",
         LATEST_MAC_INSTALL,
@@ -77,11 +77,11 @@ REQUIRED_MARKERS = {
         "README intentionally shows only two primary first-success paths:",
         "Every public install path has exactly one status:",
         "Release binary status: Available.",
-        "Curl installer status: Available for verified v0.6.0 macOS `namba-intent`\nretrieval.",
+        "Curl installer status: Available for verified v0.6.2 macOS `namba-intent`\nretrieval.",
         LATEST_MAC_INSTALL,
-        "The public v0.6.0 macOS curl installer path is verified",
-        "For reproducible v0.6.0 checks",
-        "VERSION=\"0.6.0\"",
+        "The public v0.6.2 macOS curl installer path is verified",
+        "For reproducible v0.6.2 checks",
+        "VERSION=\"0.6.2\"",
         "BINDIR=\"$HOME/.local/bin\" sh install.sh --update-path --version \"$VERSION\"",
         '$Installer = Join-Path $env:TEMP "namba-intent-install.ps1"',
         "powershell -NoProfile -ExecutionPolicy Bypass -File $Installer -Uninstall",
@@ -92,8 +92,8 @@ REQUIRED_MARKERS = {
         "Package manager status: Planned.",
     ],
     "docs/install-curl.md": [
-        "Status: Available for the verified v0.6.0 macOS `namba-intent` path.",
-        "curl -fsSL https://raw.githubusercontent.com/Nam-Cheol/ni/main/install.sh | sh -s -- --update-path --version 0.6.0",
+        "Status: Available for the verified v0.6.2 macOS `namba-intent` path.",
+        "curl -fsSL https://raw.githubusercontent.com/Nam-Cheol/ni/main/install.sh | sh -s -- --update-path --version 0.6.2",
         "Open a new shell after installation, then check the global command",
         "Current dry-run output does not resolve latest without `--version`",
         "BINDIR=\"$HOME/.local/bin\" sh install.sh --update-path --version \"$VERSION\"",
@@ -102,8 +102,8 @@ REQUIRED_MARKERS = {
         "BINDIR=\"$HOME/.local/bin\" sh install.sh --uninstall",
     ],
     "docs/install-curl.ko.md": [
-        "Status: verified v0.6.0 macOS `namba-intent` path는 Available이다.",
-        "curl -fsSL https://raw.githubusercontent.com/Nam-Cheol/ni/main/install.sh | sh -s -- --update-path --version 0.6.0",
+        "Status: verified v0.6.2 macOS `namba-intent` path는 Available이다.",
+        "curl -fsSL https://raw.githubusercontent.com/Nam-Cheol/ni/main/install.sh | sh -s -- --update-path --version 0.6.2",
         "Current dry-run output은 `--version` 없이 latest를 resolve하지 않으므로",
         "BINDIR=\"$HOME/.local/bin\" sh install.sh --update-path --version \"$VERSION\"",
         "Global command를\nhelp 또는 version command로 확인한다",

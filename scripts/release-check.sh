@@ -562,13 +562,13 @@ release_claim_markers = {
     "README.md": [
         "README shows two primary first-success paths for the current tree.",
         "Homebrew: Planned / v0.5 candidate.",
-        "v0.6.0 release: published and verified for `namba-intent` on macOS darwin/arm64.",
+        "v0.6.2 release: published and verified for `namba-intent` on macOS darwin/arm64.",
         "Primary command in current tree: `namba-intent`.",
     ],
     "README.ko.md": [
         "README는 current tree의 첫 성공을 위한 두 가지 primary path만 보여줍니다.",
         "Homebrew: Planned / v0.5 candidate.",
-        "v0.6.0 release: macOS darwin/arm64에서 `namba-intent` 기준 published and verified.",
+        "v0.6.2 release: macOS darwin/arm64에서 `namba-intent` 기준 published and verified.",
         "Primary command: `namba-intent`.",
     ],
 }
