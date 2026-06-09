@@ -194,7 +194,7 @@ require_stdout "$CURL_BIN_DIR/$BIN_NAME"
 
 run_cmd "curl installer temporary install" env BINDIR="$CURL_BIN_DIR" sh "$INSTALLER_PATH" --version "$VERSION"
 require_stdout "Verified checksum for $ASSET"
-require_stdout "Installed ni to $CURL_BIN_DIR/$BIN_NAME"
+require_stdout "Installed namba-intent to $CURL_BIN_DIR/$BIN_NAME"
 
 run_cmd "curl installed namba-intent --help" "$CURL_BIN_DIR/$BIN_NAME" --help
 require_stdout "Namba Intent is a Project Intent Compiler for AI Agents."
