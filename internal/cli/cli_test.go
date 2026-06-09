@@ -49,6 +49,24 @@ func TestVersion(t *testing.T) {
 	}
 }
 
+func TestInitHelp(t *testing.T) {
+	var stdout bytes.Buffer
+	code := run([]string{"init", "--help"}, &stdout, &bytes.Buffer{})
+	if code != 0 {
+		t.Fatalf("expected exit code 0, got %d", code)
+	}
+	for _, want := range []string{
+		"usage: namba-intent init",
+		"guided terminal TUI",
+		"init drafts planning state only",
+		"namba-intent status --proof --next-questions",
+	} {
+		if !strings.Contains(stdout.String(), want) {
+			t.Fatalf("init help output did not contain %q: %q", want, stdout.String())
+		}
+	}
+}
+
 func TestInit(t *testing.T) {
 	dir := t.TempDir()
 	var stdout bytes.Buffer

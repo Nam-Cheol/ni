@@ -1,10 +1,12 @@
 package initui
 
 import (
+	"fmt"
 	"strings"
 	"testing"
 
 	tea "charm.land/bubbletea/v2"
+	"charm.land/lipgloss/v2"
 )
 
 func TestModelInitialStateUsesAltScreen(t *testing.T) {
@@ -33,7 +35,7 @@ func TestLanguageSelectionLocalizesDefaults(t *testing.T) {
 	if got := m.fields[4].Value; got != "Plan이 locked 되기 전에는 downstream work를 실행하지 않는다." {
 		t.Fatalf("expected Korean safety default, got %q", got)
 	}
-	if !strings.Contains(m.renderFields(), "프로젝트 이름") {
+	if !strings.Contains(m.renderShell(), "프로젝트 이름") {
 		t.Fatalf("expected Korean labels in render")
 	}
 }
@@ -144,12 +146,111 @@ func TestReviewShowsWritePlanNextCommandsAndUpdateGuidance(t *testing.T) {
 		}
 	}
 
-	view := m.renderConfirm()
-	for _, want := range []string{
-		"Readiness and locking are not decided by this screen",
-	} {
+	view := m.renderShell()
+	for _, want := range []string{"Main Panel", "Status Panel", "Files Panel", "scroll:"} {
 		if !strings.Contains(view, want) {
 			t.Fatalf("expected review view to contain %q\n%s", want, view)
+		}
+	}
+}
+
+func TestWindowSizeConstrainsRenderedHeight(t *testing.T) {
+	m := NewModel(Config{Dir: ".", DefaultName: "demo"})
+	m = selectEnglishForTest(t, m)
+	m.width = 40
+	m.height = 12
+	m.stage = stageConfirm
+
+	view := m.renderShell()
+	if got := len(splitLines(view)); got > 12 {
+		t.Fatalf("expected render to fit height, got %d lines\n%s", got, view)
+	}
+	if !strings.Contains(view, "scroll:") {
+		t.Fatalf("expected compact view to expose scroll state\n%s", view)
+	}
+	if !strings.Contains(view, "No downstream work runs") {
+		t.Fatalf("expected footer to remain visible\n%s", view)
+	}
+}
+
+func TestViewportScrollsWithPageKeys(t *testing.T) {
+	m := NewModel(Config{Dir: ".", DefaultName: "demo"})
+	m = selectEnglishForTest(t, m)
+	m.stage = stageConfirm
+	m = updateForTest(t, m, tea.WindowSizeMsg{Width: 40, Height: 12})
+
+	before := m.bodyViewport.YOffset()
+	m = updateForTest(t, m, key(tea.KeyPgDown))
+	if after := m.bodyViewport.YOffset(); after <= before {
+		t.Fatalf("expected PgDown to advance viewport offset, before=%d after=%d", before, after)
+	}
+	view := m.renderShell()
+	if got := len(splitLines(view)); got > 12 {
+		t.Fatalf("expected scrolled render to fit height, got %d lines\n%s", got, view)
+	}
+}
+
+func TestViewportScrollReachesLowerPanelsInCompactMode(t *testing.T) {
+	m := NewModel(Config{Dir: ".", DefaultName: "demo"})
+	m = selectEnglishForTest(t, m)
+	m.stage = stageConfirm
+	m = updateForTest(t, m, tea.WindowSizeMsg{Width: 40, Height: 12})
+
+	top := m.renderShell()
+	if strings.Contains(top, "Next Action Panel") {
+		t.Fatalf("expected compact top viewport to hide lower panels before scrolling\n%s", top)
+	}
+
+	m = updateForTest(t, m, key(tea.KeyEnd))
+	bottom := m.renderShell()
+	if !strings.Contains(bottom, "namba-intent version") {
+		t.Fatalf("expected End to reveal lower next-action content in compact viewport\n%s", bottom)
+	}
+	if !strings.Contains(bottom, "scroll:") || !strings.Contains(bottom, "No downstream work runs") {
+		t.Fatalf("expected help/footer to remain visible after scrolling\n%s", bottom)
+	}
+}
+
+func TestResponsiveSizesKeepViewportAndBars(t *testing.T) {
+	for _, size := range []tea.WindowSizeMsg{
+		{Width: 120, Height: 40},
+		{Width: 80, Height: 24},
+		{Width: 60, Height: 18},
+		{Width: 40, Height: 12},
+	} {
+		t.Run(fmt.Sprintf("%dx%d", size.Width, size.Height), func(t *testing.T) {
+			m := NewModel(Config{Dir: ".", DefaultName: "demo"})
+			m = selectEnglishForTest(t, m)
+			m.stage = stageConfirm
+			m = updateForTest(t, m, size)
+
+			view := m.renderShell()
+			if got := len(splitLines(view)); got > size.Height {
+				t.Fatalf("expected render to fit %d rows, got %d\n%s", size.Height, got, view)
+			}
+			for i, line := range splitLines(view) {
+				if got := lipgloss.Width(line); got > size.Width {
+					t.Fatalf("line %d exceeds width %d with %d cells\n%s", i+1, size.Width, got, view)
+				}
+			}
+			for _, want := range []string{"Main Panel", "scroll:", "No downstream work runs"} {
+				if !strings.Contains(view, want) {
+					t.Fatalf("expected %dx%d view to contain %q\n%s", size.Width, size.Height, want, view)
+				}
+			}
+		})
+	}
+}
+
+func TestWideLayoutShowsSidePanels(t *testing.T) {
+	m := NewModel(Config{Dir: ".", DefaultName: "demo"})
+	m = selectEnglishForTest(t, m)
+	m = updateForTest(t, m, tea.WindowSizeMsg{Width: 120, Height: 40})
+
+	view := m.renderShell()
+	for _, want := range []string{"Main Panel", "Status Panel", "Files Panel", "Next Action Panel"} {
+		if !strings.Contains(view, want) {
+			t.Fatalf("expected wide view to contain %q\n%s", want, view)
 		}
 	}
 }

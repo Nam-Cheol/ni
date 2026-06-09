@@ -858,6 +858,10 @@ func printHarnessUsage(w io.Writer) {
 }
 
 func runInit(args []string, stdout io.Writer, stderr io.Writer) int {
+	if len(args) == 1 && (args[0] == "--help" || args[0] == "-h") {
+		printInitUsage(stdout)
+		return exitOK
+	}
 	dir := "."
 	readinessProfile := profile.Default
 	productType := contract.DefaultProductType
@@ -1044,6 +1048,29 @@ func runInit(args []string, stdout io.Writer, stderr io.Writer) int {
 	}
 	printInitNextCommands(stdout)
 	return 0
+}
+
+func printInitUsage(w io.Writer) {
+	fmt.Fprintf(w, `usage: %[1]s init [.] [--dir <path>] [--interactive] [--yes] [--profile concept|prototype|mvp|beta|production] [--product-type <type>] [--surface <surface>] [--interaction-mode <mode>]
+
+Create the initial planning docs and .ni skeleton for a Namba Intent workspace.
+
+Options:
+  --dir <path>                 Target workspace directory.
+  --interactive                Prefer the guided terminal TUI when stdin is a terminal.
+  --yes                        Use non-interactive defaults and write without prompting.
+  --profile <name>             Readiness profile: concept, prototype, mvp, beta, or production.
+  --product-type <type>        Product type recorded in the intent contract.
+  --surface <surface>          Delivery surface; repeatable.
+  --interaction-mode <mode>    Interaction mode recorded in the intent contract.
+
+Boundary:
+  init drafts planning state only. It does not lock the plan, execute agents,
+  run shell commands, create queues, automate PRs, or release downstream work.
+
+Next:
+  %[1]s status --proof --next-questions
+`, commandName())
 }
 
 func runGuidedInitTUI(root string, stdout io.Writer) (initui.Result, error) {
