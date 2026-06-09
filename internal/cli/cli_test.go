@@ -67,6 +67,62 @@ func TestInitHelp(t *testing.T) {
 	}
 }
 
+func TestUpdateGuidanceDefault(t *testing.T) {
+	var stdout bytes.Buffer
+	code := run([]string{"update", "--os", "macos"}, &stdout, &bytes.Buffer{})
+	if code != 0 {
+		t.Fatalf("expected exit code 0, got %d", code)
+	}
+	for _, want := range []string{
+		"Namba Intent update guidance",
+		"current binary version: 0.0.0-dev",
+		"target: macos / latest published release",
+		"does not download, install, or execute anything",
+		"curl -fsSL https://raw.githubusercontent.com/Nam-Cheol/ni/main/install.sh | sh -s -- --update-path",
+		"namba-intent version",
+	} {
+		if !strings.Contains(stdout.String(), want) {
+			t.Fatalf("update output did not contain %q: %q", want, stdout.String())
+		}
+	}
+}
+
+func TestUpdateGuidanceWindowsPinned(t *testing.T) {
+	var stdout bytes.Buffer
+	code := run([]string{"update", "--os", "windows", "--version", "v0.6.2"}, &stdout, &bytes.Buffer{})
+	if code != 0 {
+		t.Fatalf("expected exit code 0, got %d", code)
+	}
+	for _, want := range []string{
+		"target: windows / v0.6.2",
+		"$Installer = Join-Path $env:TEMP \"namba-intent-install.ps1\"",
+		"irm https://raw.githubusercontent.com/Nam-Cheol/ni/main/install.ps1 -OutFile $Installer",
+		"powershell -NoProfile -ExecutionPolicy Bypass -File $Installer -Version 0.6.2",
+	} {
+		if !strings.Contains(stdout.String(), want) {
+			t.Fatalf("windows update output did not contain %q: %q", want, stdout.String())
+		}
+	}
+}
+
+func TestUpdateHelpAndInvalidOS(t *testing.T) {
+	var stdout bytes.Buffer
+	if code := run([]string{"update", "--help"}, &stdout, &bytes.Buffer{}); code != 0 {
+		t.Fatalf("expected help exit code 0, got %d", code)
+	}
+	if !strings.Contains(stdout.String(), "usage: namba-intent update") {
+		t.Fatalf("expected update usage, got %q", stdout.String())
+	}
+
+	var stderr bytes.Buffer
+	if code := run([]string{"update", "--os", "solaris"}, &bytes.Buffer{}, &stderr); code == 0 {
+		t.Fatalf("expected invalid os to fail")
+	}
+	if !strings.Contains(stderr.String(), "invalid --os value") {
+		t.Fatalf("expected invalid os error, got %q", stderr.String())
+	}
+}
+
 func TestInit(t *testing.T) {
 	dir := t.TempDir()
 	var stdout bytes.Buffer

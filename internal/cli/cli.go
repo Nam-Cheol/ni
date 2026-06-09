@@ -7,6 +7,7 @@ import (
 	"io"
 	"os"
 	"path/filepath"
+	"runtime"
 	"strconv"
 	"strings"
 	"time"
@@ -99,6 +100,8 @@ func run(args []string, stdout io.Writer, stderr io.Writer) int {
 		return runStatus(args[1:], stdout, stderr)
 	case "targets":
 		return runTargets(args[1:], stdout, stderr)
+	case "update":
+		return runUpdate(args[1:], stdout, stderr)
 	case "version":
 		fmt.Fprintln(stdout, version.Version)
 		return 0
@@ -1073,6 +1076,127 @@ Next:
 `, commandName())
 }
 
+func runUpdate(args []string, stdout io.Writer, stderr io.Writer) int {
+	targetOS := updateTargetOS(runtime.GOOS)
+	pinnedVersion := ""
+	for i := 0; i < len(args); i++ {
+		switch args[i] {
+		case "-h", "--help":
+			printUpdateUsage(stdout)
+			return exitOK
+		case "--os":
+			if i+1 >= len(args) {
+				fmt.Fprintln(stderr, "missing value for --os")
+				return exitUsageError
+			}
+			normalized, ok := normalizeUpdateOS(args[i+1])
+			if !ok {
+				fmt.Fprintf(stderr, "invalid --os value: %s (valid: macos, linux, windows)\n", args[i+1])
+				return exitUsageError
+			}
+			targetOS = normalized
+			i++
+		case "--version":
+			if i+1 >= len(args) {
+				fmt.Fprintln(stderr, "missing value for --version")
+				return exitUsageError
+			}
+			pinnedVersion = strings.TrimPrefix(strings.TrimSpace(args[i+1]), "v")
+			if pinnedVersion == "" {
+				fmt.Fprintln(stderr, "missing value for --version")
+				return exitUsageError
+			}
+			i++
+		default:
+			fmt.Fprintf(stderr, "unknown update option: %s\n", args[i])
+			return exitUsageError
+		}
+	}
+	printUpdatePlan(stdout, targetOS, pinnedVersion)
+	return exitOK
+}
+
+func printUpdateUsage(w io.Writer) {
+	fmt.Fprintf(w, `usage: %[1]s update [--os macos|linux|windows] [--version VERSION]
+
+Print safe installer commands for updating Namba Intent.
+
+This command does not download files, run installers, change PATH, or modify a
+planning workspace. It only prints the explicit command to run next.
+`, commandName())
+}
+
+func updateTargetOS(goos string) string {
+	switch goos {
+	case "darwin":
+		return "macos"
+	case "windows":
+		return "windows"
+	default:
+		return "linux"
+	}
+}
+
+func normalizeUpdateOS(value string) (string, bool) {
+	switch strings.ToLower(strings.TrimSpace(value)) {
+	case "macos", "darwin", "mac":
+		return "macos", true
+	case "linux":
+		return "linux", true
+	case "windows", "win":
+		return "windows", true
+	default:
+		return "", false
+	}
+}
+
+func printUpdatePlan(w io.Writer, targetOS string, pinnedVersion string) {
+	name := commandName()
+	versionFlag := ""
+	versionLabel := "latest published release"
+	if pinnedVersion != "" {
+		versionFlag = " --version " + pinnedVersion
+		versionLabel = "v" + pinnedVersion
+	}
+
+	fmt.Fprintf(w, "Namba Intent update guidance\n")
+	fmt.Fprintf(w, "current binary version: %s\n", version.Version)
+	fmt.Fprintf(w, "target: %s / %s\n", targetOS, versionLabel)
+	fmt.Fprintf(w, "\n")
+	fmt.Fprintf(w, "Boundary: %s update prints commands only; it does not download, install, or execute anything.\n", name)
+	fmt.Fprintf(w, "\n")
+
+	switch targetOS {
+	case "windows":
+		fmt.Fprintf(w, "PowerShell update:\n")
+		fmt.Fprintf(w, "  $Installer = Join-Path $env:TEMP \"namba-intent-install.ps1\"\n")
+		fmt.Fprintf(w, "  irm https://raw.githubusercontent.com/Nam-Cheol/ni/main/install.ps1 -OutFile $Installer\n")
+		fmt.Fprintf(w, "  powershell -NoProfile -ExecutionPolicy Bypass -File $Installer%s\n", windowsVersionFlag(pinnedVersion))
+		fmt.Fprintf(w, "\n")
+		fmt.Fprintf(w, "Uninstall, if needed:\n")
+		fmt.Fprintf(w, "  powershell -NoProfile -ExecutionPolicy Bypass -File $Installer -Uninstall\n")
+	default:
+		fmt.Fprintf(w, "macOS/Linux update:\n")
+		fmt.Fprintf(w, "  curl -fsSL https://raw.githubusercontent.com/Nam-Cheol/ni/main/install.sh | sh -s -- --update-path%s\n", versionFlag)
+		fmt.Fprintf(w, "\n")
+		fmt.Fprintf(w, "Uninstall, if needed:\n")
+		fmt.Fprintf(w, "  curl -fsSLO https://raw.githubusercontent.com/Nam-Cheol/ni/main/install.sh\n")
+		fmt.Fprintf(w, "  BINDIR=\"$HOME/.local/bin\" sh install.sh --uninstall\n")
+	}
+
+	fmt.Fprintf(w, "\n")
+	fmt.Fprintf(w, "Verify after opening a fresh terminal:\n")
+	fmt.Fprintf(w, "  %s version\n", name)
+	fmt.Fprintf(w, "  %s --help\n", name)
+}
+
+func windowsVersionFlag(version string) string {
+	if version == "" {
+		return ""
+	}
+	return " -Version " + version
+}
+
 func runGuidedInitTUI(root string, stdout io.Writer) (initui.Result, error) {
 	return initui.Run(initui.Config{
 		Dir:         root,
@@ -1826,6 +1950,7 @@ Usage:
   %[1]s run --dir <path> [--target <target>] [--out <path>] [--max-chars N]
   %[1]s status --dir <path> [--json] [--proof] [--next-questions]
   %[1]s targets [--json]
+  %[1]s update [--os macos|linux|windows] [--version VERSION]
   %[1]s version
 
 Commands:
@@ -1843,6 +1968,7 @@ Commands:
   run      Compile a goal prompt from the locked plan.
   status   Validate planning readiness.
   targets  List downstream prompt/export targets.
+  update   Print safe installer commands for updating Namba Intent.
   version  Print the Namba Intent version.
 
 Namba Intent keeps .ni/ for compatibility. run compiles a bounded handoff
