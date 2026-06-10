@@ -80,7 +80,7 @@ const (
 
 type initTickMsg time.Time
 
-const initTickInterval = 360 * time.Millisecond
+const initTickInterval = 1500 * time.Millisecond
 
 type Model struct {
 	commandName    string
@@ -161,7 +161,7 @@ func (m Model) Init() tea.Cmd {
 	if !m.animationOn {
 		return requestWindowSizeCmd()
 	}
-	return tea.Batch(requestWindowSizeCmd(), m.animationTick())
+	return tea.Sequence(clearScreenCmd(), requestWindowSizeCmd(), m.animationTick())
 }
 
 func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
@@ -169,7 +169,7 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		m.width = size.Width
 		m.height = size.Height
 		m.constrainScroll()
-		return m, nil
+		return m, clearScreenCmd()
 	}
 	if _, ok := msg.(initTickMsg); ok {
 		if !m.animationOn || m.stage == stageDone || m.canceled {
@@ -177,57 +177,82 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		}
 		m.frame = (m.frame + 1) % 120
 		m.constrainScroll()
-		return m, m.animationTick()
+		return m, tea.Sequence(clearScreenCmd(), m.animationTick())
+	}
+	if paste, ok := msg.(tea.PasteMsg); ok {
+		if m.stage == stageFields {
+			m.appendFieldText(normalizePasteText(paste.Content))
+			m.resetViewport()
+			return m, clearScreenCmd()
+		}
+		return m, nil
 	}
 
 	key, ok := msg.(tea.KeyPressMsg)
 	if !ok {
 		return m, nil
 	}
+	if m.animationOn && m.stage != stageDone && !m.canceled {
+		m.frame = (m.frame + 1) % 120
+	}
 	switch key.String() {
 	case "ctrl+c":
 		m.canceled = true
 		m.stage = stageDone
-		return m, tea.Quit
+		return m, tea.Sequence(clearScreenCmd(), tea.Quit)
+	case "ctrl+q":
+		if m.stage != stageDone {
+			m.canceled = true
+			m.stage = stageDone
+		}
+		return m, tea.Sequence(clearScreenCmd(), tea.Quit)
 	case "ctrl+u":
 		if m.stage == stageFields {
 			m.fields[m.cursor].Value = ""
-			return m, nil
+			m.resetViewport()
+			return m, clearScreenCmd()
 		}
-	case "tab":
+	case "tab", "ctrl+i":
 		if m.layout().mode != layoutTiny {
 			m.detailsOpen = !m.detailsOpen
 			m.resetViewport()
 		}
-		return m, nil
-	case "d":
-		if m.stage != stageFields && m.layout().mode != layoutTiny {
+		return m, clearScreenCmd()
+	case "ctrl+d":
+		if m.layout().mode != layoutTiny {
 			m.detailsOpen = !m.detailsOpen
 			m.resetViewport()
-			return m, nil
+			return m, clearScreenCmd()
 		}
 	}
 
 	if next, handled := m.updateViewport(key); handled {
-		return next, nil
+		return next, clearScreenCmd()
 	}
 
+	var next tea.Model
+	var cmd tea.Cmd
 	switch m.stage {
 	case stageLanguage:
-		return m.updateLanguage(key)
+		next, cmd = m.updateLanguage(key)
 	case stageExisting:
-		return m.updateExisting(key)
+		next, cmd = m.updateExisting(key)
 	case stageFields:
-		return m.updateFields(key)
+		next, cmd = m.updateFields(key)
 	case stageConfirm:
-		return m.updateConfirm(key)
+		next, cmd = m.updateConfirm(key)
 	default:
 		return m, nil
 	}
+	return next, tea.Sequence(clearScreenCmd(), cmd)
 }
 
 func requestWindowSizeCmd() tea.Cmd {
 	return func() tea.Msg { return tea.RequestWindowSize() }
+}
+
+func clearScreenCmd() tea.Cmd {
+	return func() tea.Msg { return tea.ClearScreen() }
 }
 
 func (m Model) animationTick() tea.Cmd {
@@ -238,7 +263,7 @@ func (m Model) animationTick() tea.Cmd {
 
 func (m Model) updateViewport(key tea.KeyPressMsg) (tea.Model, bool) {
 	switch key.String() {
-	case "pgdown", "pgup", "ctrl+d", "ctrl+u":
+	case "pgdown", "pgup", "ctrl+u":
 		m.refreshViewport()
 		next, _ := m.bodyViewport.Update(key)
 		m.bodyViewport = next
@@ -273,7 +298,7 @@ func (m Model) updateLanguage(key tea.KeyPressMsg) (tea.Model, tea.Cmd) {
 		return m.chooseLanguage()
 	case "enter":
 		return m.chooseLanguage()
-	case "esc", "q":
+	case "esc":
 		m.canceled = true
 		m.stage = stageDone
 		return m, tea.Quit
@@ -371,10 +396,23 @@ func (m Model) updateFields(key tea.KeyPressMsg) (tea.Model, tea.Cmd) {
 			text = key.String()
 		}
 		if text != "" {
-			m.fields[m.cursor].Value += text
+			m.appendFieldText(text)
 		}
 	}
+	m.resetViewport()
 	return m, nil
+}
+
+func (m *Model) appendFieldText(text string) {
+	if text == "" || m.stage != stageFields {
+		return
+	}
+	m.fields[m.cursor].Value += text
+}
+
+func normalizePasteText(text string) string {
+	text = strings.ReplaceAll(text, "\r\n", "\n")
+	return strings.ReplaceAll(text, "\r", "\n")
 }
 
 func (m Model) updateConfirm(key tea.KeyPressMsg) (tea.Model, tea.Cmd) {
@@ -385,10 +423,6 @@ func (m Model) updateConfirm(key tea.KeyPressMsg) (tea.Model, tea.Cmd) {
 		} else {
 			m.confirmCursor = 0
 		}
-	case "q":
-		m.canceled = true
-		m.stage = stageDone
-		return m, tea.Quit
 	case "esc":
 		m.stage = stageFields
 		m.resetViewport()
@@ -428,22 +462,25 @@ func (m Model) Result() Result {
 }
 
 type layoutSpec struct {
-	width       int
-	height      int
-	bodyHeight  int
-	panelWidth  int
-	shellLeft   int
-	shellWidth  int
-	chatWidth   int
-	drawerWidth int
-	mode        layoutMode
+	width        int
+	height       int
+	bodyHeight   int
+	panelWidth   int
+	shellLeft    int
+	shellWidth   int
+	chatInset    int
+	habitatWidth int
+	habitatGap   int
+	chatWidth    int
+	drawerWidth  int
+	mode         layoutMode
 }
 
 func newBodyViewport(width int, height int) viewport.Model {
 	v := viewport.New(viewport.WithWidth(width), viewport.WithHeight(height))
-	v.SoftWrap = true
+	v.SoftWrap = false
 	v.FillHeight = true
-	v.MouseWheelEnabled = true
+	v.MouseWheelEnabled = false
 	return v
 }
 
@@ -454,8 +491,9 @@ func (m *Model) refreshViewport() {
 	}
 	m.bodyViewport.SetWidth(layout.width)
 	m.bodyViewport.SetHeight(layout.bodyHeight)
-	m.bodyViewport.SoftWrap = true
+	m.bodyViewport.SoftWrap = false
 	m.bodyViewport.FillHeight = true
+	m.bodyViewport.MouseWheelEnabled = false
 	m.bodyViewport.SetContent(m.renderBody(layout))
 }
 
@@ -471,7 +509,7 @@ func (m Model) renderShell() string {
 	help := m.renderBottomHelp(layout)
 	body := m.bodyViewport.View()
 	screen := lipgloss.JoinVertical(lipgloss.Left, header, body, help)
-	return fitToHeight(screen, layout.height)
+	return fitToHeight(screen, layout.height, layout.width)
 }
 
 func (m Model) layout() layoutSpec {
@@ -500,8 +538,8 @@ func (m Model) layout() layoutSpec {
 	if bodyHeight < 1 {
 		bodyHeight = 1
 	}
-	horizontalMargin := 2
-	maxShellWidth := 104
+	horizontalMargin := 1
+	maxShellWidth := max(24, width-2)
 	switch mode {
 	case layoutMedium:
 		horizontalMargin = 2
@@ -517,29 +555,51 @@ func (m Model) layout() layoutSpec {
 	shellWidth := min(availableWidth, maxShellWidth)
 	shellLeft := max(0, (width-shellWidth)/2)
 	chatWidth := shellWidth
+	habitatWidth := 0
+	habitatGap := 0
+	if mode == layoutWide {
+		habitatWidth = min(42, max(38, shellWidth*34/100))
+		habitatGap = 2
+		chatWidth = max(58, shellWidth-habitatWidth-habitatGap-2)
+	} else if mode == layoutMedium {
+		habitatWidth = min(34, max(32, shellWidth*40/100))
+		habitatGap = 2
+		chatWidth = max(38, shellWidth-habitatWidth-habitatGap-2)
+	}
+	chatInset := max(0, (shellWidth-chatWidth)/2)
+	if habitatWidth > 0 {
+		chatInset = 0
+	}
 	drawerWidth := 0
 	if mode == layoutWide && m.detailsOpen {
 		drawerWidth = min(36, max(28, shellWidth/3))
-		chatWidth = max(48, shellWidth-drawerWidth-2)
+		habitatWidth = min(habitatWidth, max(32, shellWidth-habitatGap-2-drawerWidth-44))
+		chatWidth = max(44, shellWidth-habitatWidth-habitatGap-2-drawerWidth)
+		chatInset = 0
 	} else if m.detailsOpen && mode != layoutTiny {
 		drawerWidth = shellWidth
+		chatInset = 0
 	}
 	return layoutSpec{
-		width:       width,
-		height:      height,
-		bodyHeight:  bodyHeight,
-		panelWidth:  chatWidth,
-		shellLeft:   shellLeft,
-		shellWidth:  shellWidth,
-		chatWidth:   chatWidth,
-		drawerWidth: drawerWidth,
-		mode:        mode,
+		width:        width,
+		height:       height,
+		bodyHeight:   bodyHeight,
+		panelWidth:   chatWidth,
+		shellLeft:    shellLeft,
+		shellWidth:   shellWidth,
+		chatInset:    chatInset,
+		habitatWidth: habitatWidth,
+		habitatGap:   habitatGap,
+		chatWidth:    chatWidth,
+		drawerWidth:  drawerWidth,
+		mode:         mode,
 	}
 }
 
 func (m Model) renderHeader(layout layoutSpec) string {
 	left := headerTitleStyle.Render("Namba Intent")
-	progress := fmt.Sprintf("init · %d/%d · %s · d details", m.currentStep(), m.totalSteps(), renderProgress(m.currentStep(), m.totalSteps(), m.frame, layout))
+	rail := progressStyle.Render(renderProgress(m.currentStep(), m.totalSteps(), m.frame, layout))
+	progress := fmt.Sprintf("init · %d/%d · %s · Tab details", m.currentStep(), m.totalSteps(), rail)
 	if m.stage == stageDone {
 		progress = m.t("init · closed", "init · 종료")
 	}
@@ -558,19 +618,21 @@ func (m Model) renderBody(layout layoutSpec) string {
 	if layout.mode == layoutTiny {
 		return m.renderTinyChat(layout)
 	}
-	chat := m.renderChatShell(layout.withWidth(layout.chatWidth))
+	chat := m.renderChatColumn(layout.withWidth(layout.chatWidth))
 	if !m.detailsOpen {
-		return renderShellContent(layout, chat)
+		return renderShellContent(layout, m.renderHabitatShell(layout, chat))
 	}
 	if layout.mode == layoutWide {
 		body := lipgloss.JoinHorizontal(lipgloss.Top,
+			m.renderCreatureDiorama(layout.withWidth(layout.habitatWidth)),
+			strings.Repeat(" ", layout.habitatGap),
 			chat,
 			"  ",
 			m.renderDetailsDrawer(layout.withWidth(layout.drawerWidth)),
 		)
 		return renderShellContent(layout, body)
 	}
-	return renderShellContent(layout, lipgloss.JoinVertical(lipgloss.Left, chat, m.renderDetailsDrawer(layout.withWidth(layout.drawerWidth))))
+	return renderShellContent(layout, lipgloss.JoinVertical(lipgloss.Left, m.renderHabitatShell(layout, chat), m.renderDetailsDrawer(layout.withWidth(layout.drawerWidth))))
 }
 
 func (l layoutSpec) withWidth(width int) layoutSpec {
@@ -578,12 +640,26 @@ func (l layoutSpec) withWidth(width int) layoutSpec {
 	l.width = width
 	l.shellLeft = 0
 	l.shellWidth = width
+	l.chatInset = 0
+	l.habitatWidth = 0
+	l.habitatGap = 0
 	l.chatWidth = width
 	l.drawerWidth = 0
 	return l
 }
 
-func (m Model) renderChatShell(layout layoutSpec) string {
+func (m Model) renderHabitatShell(layout layoutSpec, chat string) string {
+	if layout.habitatWidth <= 0 {
+		return chat
+	}
+	return lipgloss.JoinHorizontal(lipgloss.Top,
+		m.renderCreatureDiorama(layout.withWidth(layout.habitatWidth)),
+		strings.Repeat(" ", layout.habitatGap),
+		chat,
+	)
+}
+
+func (m Model) renderChatColumn(layout layoutSpec) string {
 	inner := layout.withWidth(layout.chatWidth)
 	parts := []string{}
 	transcript := m.renderChatTranscript(inner)
@@ -591,29 +667,31 @@ func (m Model) renderChatShell(layout layoutSpec) string {
 	if chips := m.renderDoneCommandChips(inner); chips != "" {
 		parts = append(parts, chips)
 	}
-	composerParts := []string{}
+	gapLines := 1
+	statusHeight := 1
+	usedHeight := renderLineCount(parts) + gapLines + statusHeight
+	composerHeight := m.composerHeight(layout, layout.bodyHeight-usedHeight)
+	composer := ""
 	switch m.stage {
 	case stageLanguage, stageExisting, stageConfirm:
-		composerParts = append(composerParts, m.renderChoiceComposer(inner))
+		composer = m.renderChoiceComposer(inner, composerHeight)
 	case stageFields:
-		composerParts = append(composerParts, m.renderTextComposer(inner))
+		composer = m.renderTextComposer(inner, composerHeight)
 	}
-	composerParts = append(composerParts, m.renderQuietSummary(inner))
-	spacerHeight := max(1, layout.bodyHeight-renderLineCount(parts)-renderLineCount(composerParts)-1)
-	if layout.mode == layoutNarrow {
-		spacerHeight = max(1, min(spacerHeight, 3))
+	parts = append(parts, "")
+	if composer != "" {
+		parts = append(parts, composer)
 	}
-	parts = append(parts, strings.Repeat("\n", spacerHeight))
-	parts = append(parts, composerParts...)
+	parts = append(parts, m.renderQuietSummary(inner))
 	return strings.Join(parts, "\n")
 }
 
 func (m Model) renderChatTranscript(layout layoutSpec) string {
 	rows := []string{}
 	for _, summary := range m.recentUserSummaries(layout) {
-		rows = append(rows, m.renderUserSummaryBubble(summary, layout))
+		rows = append(rows, strings.TrimRight(m.renderUserSummaryBubble(summary, layout), "\n"))
 	}
-	rows = append(rows, m.renderAssistantRow(layout))
+	rows = append(rows, strings.TrimRight(m.renderAssistantRow(layout), "\n"))
 	return strings.Join(rows, "\n")
 }
 
@@ -621,22 +699,31 @@ func (m Model) renderAssistantRow(layout layoutSpec) string {
 	if layout.mode == layoutNarrow {
 		avatar := asciiStyle.Render(m.stageAsset(layout).Compact)
 		message := "assistant: " + stripNewlines(m.assistantMessage(layout))
-		return avatar + " " + secondaryStyle.Render(truncatePlain(message, max(12, layout.panelWidth-lipgloss.Width(m.stageAsset(layout).Compact)-1))) + "\n"
+		return avatar + " " + secondaryStyle.Render(truncatePlain(message, max(12, layout.chatWidth-lipgloss.Width(m.stageAsset(layout).Compact)-1)))
 	}
-	title := asciiStyle.Render(m.stageAsset(layout).Compact) + " " + sectionStyle.Render("assistant")
-	return m.renderChatBox(title, m.assistantMessage(layout), layout.chatWidth, assistantBubbleStyle) + "\n"
+	avatarWidth, gap, bubbleWidth := m.assistantGeometry(layout)
+	if avatarWidth == 0 {
+		return m.renderChatBox(sectionStyle.Render("assistant"), m.assistantMessage(layout.withWidth(bubbleWidth)), bubbleWidth, assistantBubbleStyle)
+	}
+	avatar := m.renderAssistantAvatar(layout, avatarWidth)
+	bubble := m.renderChatBox(sectionStyle.Render("assistant"), m.assistantMessage(layout.withWidth(bubbleWidth)), bubbleWidth, assistantBubbleStyle)
+	return lipgloss.JoinHorizontal(lipgloss.Top, avatar, strings.Repeat(" ", gap), bubble)
 }
 
 func (m Model) renderUserSummaryBubble(summary string, layout layoutSpec) string {
-	chip := userChipStyle.Render(truncatePlain("you · "+summary, max(12, layout.panelWidth-4)))
-	pad := 0
+	width := layout.panelWidth
 	if layout.mode != layoutNarrow {
-		pad = max(0, layout.panelWidth-lipgloss.Width(chip)-2)
+		width = m.composerWidth(layout)
 	}
-	return lipgloss.NewStyle().MarginLeft(pad).Render(chip) + "\n"
+	chip := userChipStyle.Render(truncatePlain("you · "+summary, max(12, width-4)))
+	if layout.mode == layoutNarrow {
+		return chip
+	}
+	return m.indentToAssistantBubble(layout, chip)
 }
 
-func (m Model) renderChoiceComposer(layout layoutSpec) string {
+func (m Model) renderChoiceComposer(layout layoutSpec, height int) string {
+	composerWidth := m.composerWidth(layout)
 	switch m.stage {
 	case stageLanguage:
 		options := []struct {
@@ -649,12 +736,19 @@ func (m Model) renderChoiceComposer(layout layoutSpec) string {
 		lines := make([]string, 0, len(options))
 		for i, option := range options {
 			help := option.help
-			if layout.mode == layoutNarrow || layout.mode == layoutMedium {
+			if layout.mode != layoutWide {
 				help = ""
 			}
-			lines = append(lines, strings.TrimRight(m.renderChoiceLine(i == m.languageCursor, option.label, help, layout), "\n"))
+			lines = append(lines, m.renderChoiceCard(i == m.languageCursor, option.label, help, layout))
 		}
-		return m.renderComposerBox("choose one", strings.Join(lines, "\n"), layout)
+		body := strings.Join(lines, "\n")
+		body += "\n" + mutedStyle.Render(truncatePlain(m.t("Enter selects · 1/2 jumps", "Enter 선택 · 1/2 빠른 선택"), max(8, composerWidth-8)))
+		if layout.mode == layoutWide {
+			selectedLabel := options[min(m.languageCursor, len(options)-1)].label
+			body += "\n" + secondaryStyle.Render(truncatePlain(m.t("selected: "+selectedLabel, "선택됨: "+selectedLabel), max(8, composerWidth-8)))
+			body += "\n" + mutedStyle.Render(truncatePlain(m.t("No files are written until you confirm.", "확인하기 전에는 아무 파일도 쓰지 않습니다."), max(8, composerWidth-8)))
+		}
+		return m.renderComposerBox("choose one", body, layout, height)
 	case stageExisting:
 		options := []string{
 			m.t("Add missing files only", "누락된 파일만 추가"),
@@ -663,9 +757,9 @@ func (m Model) renderChoiceComposer(layout layoutSpec) string {
 		}
 		lines := make([]string, 0, len(options))
 		for i, option := range options {
-			lines = append(lines, strings.TrimRight(m.renderOption(i == m.existingCursor, option, layout.panelWidth-8), "\n"))
+			lines = append(lines, strings.TrimRight(m.renderOption(i == m.existingCursor, option, composerWidth-8), "\n"))
 		}
-		return m.renderComposerBox("choose one", strings.Join(lines, "\n"), layout)
+		return m.renderComposerBox("choose one", strings.Join(lines, "\n"), layout, height)
 	case stageConfirm:
 		options := []string{
 			m.t("Write initial intent artifacts", "초기 intent 파일 저장"),
@@ -673,15 +767,15 @@ func (m Model) renderChoiceComposer(layout layoutSpec) string {
 		}
 		lines := make([]string, 0, len(options))
 		for i, option := range options {
-			lines = append(lines, strings.TrimRight(m.renderOption(i == m.confirmCursor, option, layout.panelWidth-8), "\n"))
+			lines = append(lines, strings.TrimRight(m.renderOption(i == m.confirmCursor, option, composerWidth-8), "\n"))
 		}
-		return m.renderComposerBox("choose one", strings.Join(lines, "\n"), layout)
+		return m.renderComposerBox("choose one", strings.Join(lines, "\n"), layout, height)
 	default:
 		return ""
 	}
 }
 
-func (m Model) renderTextComposer(layout layoutSpec) string {
+func (m Model) renderTextComposer(layout layoutSpec, height int) string {
 	guide := m.fieldGuide(m.fields[m.cursor].Key)
 	value := strings.TrimSpace(m.fields[m.cursor].Value)
 	if value == "" {
@@ -691,7 +785,10 @@ func (m Model) renderTextComposer(layout layoutSpec) string {
 	}
 	width := m.composerWidth(layout)
 	body := answerStyle.Render(m.wrapComposerText(value, width-8))
-	return m.renderComposerBox(m.t("your answer", "your answer"), body, layout)
+	if strings.TrimSpace(m.fields[m.cursor].Value) == "" {
+		body += "\n" + mutedStyle.Render(truncatePlain(m.t("Type here. Enter sends this answer.", "여기에 입력하세요. Enter로 답변을 보냅니다."), max(8, width-8)))
+	}
+	return m.renderComposerBox(m.t("your answer", "your answer"), body, layout, height)
 }
 
 func (m Model) renderDoneCommandChips(layout layoutSpec) string {
@@ -735,7 +832,7 @@ func (m Model) renderDetailsDrawer(layout layoutSpec) string {
 	if hidden := len(required) - len(items); hidden > 0 && len(m.existingFiles) == 0 {
 		lines = append(lines, fmt.Sprintf("  +%d more in docs/plan and .ni", hidden))
 	}
-	lines = append(lines, "", "Tab or d closes details")
+	lines = append(lines, "", "Tab closes details")
 	return m.renderChatBox(sectionStyle.Render("details"), strings.Join(lines, "\n"), width, detailsDrawerStyle)
 }
 
@@ -743,18 +840,18 @@ func (m Model) renderBottomHelp(layout layoutSpec) string {
 	var text string
 	switch m.stage {
 	case stageLanguage:
-		text = "↑↓ choose · Enter select · 1/2 quick select · q quit · d details"
+		text = "↑↓ choose · Enter select · 1/2 quick select · ^Q quit · Tab details"
 	case stageFields:
-		text = "type answer · Enter send · Esc back · Ctrl+U clear · q quit · d details"
+		text = "type answer · Enter send · Esc back · Ctrl+U clear · ^Q quit · Tab details"
 	case stageConfirm:
-		text = "↑↓ choose · Enter confirm · Esc back · q quit · d details"
+		text = "↑↓ choose · Enter confirm · Esc back · ^Q quit · Tab details"
 	case stageDone:
-		text = "q quit"
+		text = "^Q quit"
 	default:
-		text = "↑↓ choose · Enter send · Esc back · q quit · d details"
+		text = "↑↓ choose · Enter send · Esc back · ^Q quit · Tab details"
 	}
 	if layout.mode == layoutTiny {
-		text = "↑↓ · Enter · Esc · q"
+		text = "↑↓ · Enter · Esc · ^Q"
 	}
 	content := truncatePlain(text, layout.shellWidth)
 	return helpBarStyle.Width(layout.width).Render(strings.Repeat(" ", layout.shellLeft) + content)
@@ -818,7 +915,8 @@ func (m Model) renderQuietSummary(layout layoutSpec) string {
 	if layout.mode == layoutTiny {
 		return mutedStyle.Render(truncatePlain(m.compactDraftSummary(), layout.width))
 	}
-	return mutedStyle.Render(truncatePlain(m.compactDraftSummary()+" · d details", layout.panelWidth))
+	_, _, bubbleWidth := m.assistantGeometry(layout)
+	return m.indentToAssistantBubble(layout, mutedStyle.Render(truncatePlain(m.compactDraftSummary()+" · Tab details", bubbleWidth)))
 }
 
 func (m Model) renderChatBox(title string, body string, width int, style lipgloss.Style) string {
@@ -826,13 +924,205 @@ func (m Model) renderChatBox(title string, body string, width int, style lipglos
 	return style.Width(width).Render(title + "\n" + body)
 }
 
-func (m Model) renderComposerBox(title string, body string, layout layoutSpec) string {
+func (m Model) renderComposerBox(title string, body string, layout layoutSpec, height int) string {
 	width := m.composerWidth(layout)
-	return composerStyle.Width(width).Render(sectionStyle.Render(title) + "\n" + body)
+	content := sectionStyle.Render(title) + "\n" + body
+	content = padTextHeight(content, max(1, height-2))
+	return m.indentToAssistantBubble(layout, composerStyle.Width(width).Render(content))
 }
 
 func (m Model) composerWidth(layout layoutSpec) int {
-	return max(28, layout.chatWidth)
+	_, _, bubbleWidth := m.assistantGeometry(layout)
+	return max(28, bubbleWidth)
+}
+
+func (m Model) composerHeight(layout layoutSpec, available int) int {
+	available = max(1, available)
+	target := 8
+	switch m.stage {
+	case stageLanguage:
+		return max(6, available-2)
+	case stageFields:
+		target = 6
+		if layout.mode == layoutMedium {
+			target = 5
+		}
+		if layout.mode == layoutNarrow {
+			target = 4
+		}
+	case stageExisting, stageConfirm:
+		target = 6
+		if layout.mode == layoutNarrow {
+			target = 5
+		}
+	}
+	return min(available, target)
+}
+
+func (m Model) renderChoiceCard(selected bool, label string, help string, layout layoutSpec) string {
+	width := max(18, m.composerWidth(layout)-8)
+	prefix := "◇ "
+	style := optionCardStyle
+	if selected {
+		prefix = m.selectionPulse() + " ◆ "
+		style = optionCardSelectedStyle
+	}
+	lines := []string{
+		focusedStyle.Render(truncatePlain(prefix+label, max(8, width-4))),
+	}
+	if strings.TrimSpace(help) != "" {
+		lines = append(lines, secondaryStyle.Render(truncatePlain(help, max(8, width-4))))
+	}
+	return style.Width(width).Render(strings.Join(lines, "\n"))
+}
+
+func (m Model) renderAssistantAvatar(layout layoutSpec, width int) string {
+	lines := append([]string{}, m.stageAsset(layout).Lines...)
+	for i, line := range lines {
+		lines[i] = asciiStyle.Render(centerPlain(line, width))
+	}
+	return strings.Join(lines, "\n")
+}
+
+func (m Model) renderCreatureDiorama(layout layoutSpec) string {
+	width := max(12, layout.width)
+	height := max(1, layout.bodyHeight)
+	lines := make([]string, height)
+	size := m.creatureAssetSize(layout)
+	creature := splitLines(m.renderCreature(layout))
+	if size == assetTiny || len(creature) == 0 {
+		return strings.Join(lines, "\n")
+	}
+
+	start := max(1, height/4)
+	if size == assetFull {
+		start = max(2, min(height/3-1, height-len(creature)-5))
+	} else {
+		start = max(1, min(height/5, height-len(creature)-3))
+	}
+	if start < 0 {
+		start = 0
+	}
+
+	for _, accent := range creatureDioramaAsset(size) {
+		y := start + accent.Offset
+		if y < 0 || y >= len(lines) {
+			continue
+		}
+		lines[y] = m.renderCreatureAccent(accent.Text, width)
+	}
+	for i, line := range creature {
+		y := start + i
+		if y < 0 || y >= len(lines) {
+			continue
+		}
+		lines[y] = padLineToWidth(centerStyledLine(line, width), width)
+	}
+	return strings.Join(lines, "\n")
+}
+
+func (m Model) renderCreature(layout layoutSpec) string {
+	asset := m.stageAsset(layout)
+	size := m.creatureAssetSize(layout)
+	lines := append([]string{}, asset.Lines...)
+	lines = m.animateCreatureLines(lines, m.creatureState(), size)
+	for i, line := range lines {
+		lines[i] = m.renderCreatureLine(centerPlain(line, creatureWidth), i, size)
+	}
+	return strings.Join(lines, "\n")
+}
+
+func (m Model) renderCreatureLine(line string, index int, size assetSize) string {
+	if m.creatureState() == creatureCancelled {
+		return creatureDimStyle.Render(line)
+	}
+	if index < creatureLeafRows(size) {
+		return creatureLeafStyle.Render(line)
+	}
+	var b strings.Builder
+	for _, r := range line {
+		switch r {
+		case '▓':
+			b.WriteString(creatureEyeStyle.Render(string(r)))
+		case '■':
+			b.WriteString(creatureReflectionStyle.Render(string(r)))
+		case '▒':
+			b.WriteString(creatureMouthStyle.Render(string(r)))
+		case '▪':
+			b.WriteString(creatureSeedStyle.Render(string(r)))
+		case ' ':
+			b.WriteRune(r)
+		default:
+			b.WriteString(asciiStyle.Render(string(r)))
+		}
+	}
+	return b.String()
+}
+
+func creatureLeafRows(size assetSize) int {
+	if size == assetFull {
+		return 4
+	}
+	if size == assetCompact {
+		return 2
+	}
+	return 0
+}
+
+func (m Model) renderCreatureAccent(text string, width int) string {
+	if m.animationOn && m.frame%6 >= 3 {
+		text = strings.Replace(text, "·", "▪", 1)
+	}
+	return forestStyle.Render(centerPlain(text, width))
+}
+
+func (m Model) animateCreatureLines(lines []string, state creatureState, size assetSize) []string {
+	if !m.animationOn || state == creatureCancelled || len(lines) == 0 {
+		return lines
+	}
+	animated := append([]string{}, lines...)
+	if m.creatureBlinking() {
+		switch size {
+		case assetFull:
+			if len(animated) > creatureLeafRows(size)+4 {
+				animated[creatureLeafRows(size)+4] = orangeBodyRow(30, "▓▓▓■▓  ▓▓▓■▓")
+			}
+		case assetCompact:
+			if len(animated) > creatureLeafRows(size)+3 {
+				animated[creatureLeafRows(size)+3] = orangeBodyRow(26, "▓▓■▓  ▓▓■▓")
+			}
+		}
+	}
+	if m.seedPulsing() {
+		switch size {
+		case assetFull:
+			if len(animated) > creatureLeafRows(size)+8 {
+				animated[creatureLeafRows(size)+8] = strings.Replace(animated[creatureLeafRows(size)+8], "■■■■■■■■", "■■■■▪■■■", 1)
+			}
+		case assetCompact:
+			if len(animated) > creatureLeafRows(size)+5 {
+				animated[creatureLeafRows(size)+5] = strings.Replace(animated[creatureLeafRows(size)+5], "■■■■", "■■▪■", 1)
+			}
+		}
+	}
+	return animated
+}
+
+func (m Model) creatureBlinking() bool {
+	return m.frame%10 == 7
+}
+
+func (m Model) seedPulsing() bool {
+	return m.frame%6 >= 3
+}
+
+type dioramaAccent struct {
+	Offset int
+	Text   string
+}
+
+func creatureDioramaAsset(size assetSize) []dioramaAccent {
+	return nil
 }
 
 func (m Model) avatarWidth(layout layoutSpec) int {
@@ -844,6 +1134,43 @@ func (m Model) avatarWidth(layout layoutSpec) int {
 		width = max(width, lipgloss.Width(line))
 	}
 	return width
+}
+
+func (m Model) assistantGeometry(layout layoutSpec) (int, int, int) {
+	if layout.mode == layoutTiny {
+		return 0, 0, layout.chatWidth
+	}
+	if layout.mode == layoutNarrow {
+		return 0, 0, layout.chatWidth
+	}
+	if layout.mode == layoutWide || layout.mode == layoutMedium {
+		return 0, 0, layout.chatWidth
+	}
+	gap := 2
+	minAvatarWidth := max(14, m.avatarWidth(layout)+4)
+	maxAvatarWidth := 28
+	if layout.mode == layoutMedium {
+		maxAvatarWidth = 22
+	}
+	avatarWidth := min(maxAvatarWidth, max(minAvatarWidth, layout.chatWidth*22/100))
+	bubbleWidth := max(36, layout.chatWidth-avatarWidth-gap)
+	if avatarWidth+gap+bubbleWidth > layout.chatWidth {
+		bubbleWidth = max(28, layout.chatWidth-avatarWidth-gap)
+	}
+	return avatarWidth, gap, bubbleWidth
+}
+
+func (m Model) indentToAssistantBubble(layout layoutSpec, content string) string {
+	avatarWidth, gap, _ := m.assistantGeometry(layout)
+	if avatarWidth == 0 {
+		return content
+	}
+	prefix := strings.Repeat(" ", avatarWidth+gap)
+	lines := splitLines(content)
+	for i, line := range lines {
+		lines[i] = prefix + line
+	}
+	return strings.Join(lines, "\n")
 }
 
 func (m Model) recentUserSummaries(layout layoutSpec) []string {
@@ -908,8 +1235,8 @@ func (m Model) textPlaceholder(guide fieldGuide) string {
 
 func (m Model) wrapComposerText(text string, width int) string {
 	lines := splitLines(m.wrapText(text, max(8, width)))
-	if len(lines) > 3 {
-		lines = lines[len(lines)-3:]
+	if len(lines) > 7 {
+		lines = lines[len(lines)-7:]
 	}
 	return strings.Join(lines, "\n")
 }
@@ -956,7 +1283,13 @@ func (m Model) assistantMessage(layout layoutSpec) string {
 		), max(8, layout.panelWidth-8))
 	default:
 		guide := m.fieldGuide(m.fields[m.cursor].Key)
-		return m.wrapText(guide.Hint+"\n"+guide.Why+"\n"+m.t("Answer in one compact sentence if you can. ", "가능하면 한 문장으로 답하세요. ")+typing, max(8, layout.panelWidth-8))
+		lines := []string{
+			guide.Hint,
+			guide.Why,
+			m.t("Good answer shape: ", "좋은 답변 형태: ") + guide.Good,
+			m.t("If unsure, leave TODO in the answer. ", "모르면 답변 안에 TODO로 남겨도 됩니다. ") + typing,
+		}
+		return m.wrapText(strings.Join(lines, "\n"), max(8, layout.panelWidth-8))
 	}
 }
 
@@ -977,15 +1310,16 @@ func (m Model) renderChoiceLine(selected bool, label string, help string, layout
 		prefix = m.selectionPulse() + " ◆ "
 		style = selectedStyle
 	}
+	width := m.composerWidth(layout)
 	line := prefix + label
 	if layout.mode == layoutTiny || layout.mode == layoutNarrow {
-		return style.Render(truncatePlain(line, layout.panelWidth-8)) + "\n"
+		return style.Render(truncatePlain(line, width-8)) + "\n"
 	}
 	if strings.TrimSpace(help) == "" {
-		return style.Render(truncatePlain(line, layout.panelWidth-8)) + "\n"
+		return style.Render(truncatePlain(line, width-8)) + "\n"
 	}
-	return style.Render(truncatePlain(line, layout.panelWidth-8)) + "\n" +
-		"    " + secondaryStyle.Render(m.wrapText(help, max(8, layout.panelWidth-12))) + "\n"
+	return style.Render(truncatePlain(line, width-8)) + "\n" +
+		"    " + secondaryStyle.Render(m.wrapText(help, max(8, width-12))) + "\n"
 }
 
 func (m Model) renderOption(selected bool, option string, width int) string {
@@ -1025,67 +1359,198 @@ type stageAsset struct {
 	Lines   []string
 }
 
+type creatureState string
+
+const (
+	creatureAsking    creatureState = "asking"
+	creatureThinking  creatureState = "thinking"
+	creatureDrafting  creatureState = "drafting"
+	creatureReviewing creatureState = "reviewing"
+	creatureDone      creatureState = "done"
+	creatureCancelled creatureState = "cancelled"
+)
+
+type assetSize string
+
+const (
+	assetFull    assetSize = "full"
+	assetCompact assetSize = "compact"
+	assetTiny    assetSize = "tiny"
+)
+
 func (m Model) stageAsset(layout layoutSpec) stageAsset {
-	eye := []string{"o", "o", "-", "o"}[(m.frame/6)%4]
-	spark := []string{"*", "+", "*", "."}[(m.frame/3)%4]
-	stamp := []string{"[ ]", "[=]", "[#]", "[=]"}[(m.frame/4)%4]
+	return creatureAsset(m.creatureState(), m.creatureAssetSize(layout))
+}
+
+func (m Model) creatureState() creatureState {
 	switch m.stage {
 	case stageLanguage:
-		return stageAsset{
-			Compact: "ni>",
-			Lines: []string{
-				"      (\\_/)",
-				"  ni  (" + eye + "_" + eye + ") " + spark,
-				"      / >▣",
-			},
-		}
+		return creatureAsking
 	case stageExisting:
-		return stageAsset{
-			Compact: "ni!",
-			Lines: []string{
-				"      (\\_/)",
-				"  ni  (o_o)",
-				"      / >□",
-			},
-		}
+		return creatureThinking
 	case stageConfirm:
-		return stageAsset{
-			Compact: "ni#",
-			Lines: []string{
-				"      (\\_/)",
-				"  ni  (" + eye + "_" + eye + ")",
-				"      / >" + stamp,
-			},
-		}
+		return creatureReviewing
 	case stageDone:
 		if m.canceled {
-			return stageAsset{
-				Compact: "nix",
-				Lines: []string{
-					"      (\\_/)",
-					"  ni  (._.)",
-					"      / >□",
-				},
+			return creatureCancelled
+		}
+		return creatureDone
+	default:
+		return creatureDrafting
+	}
+}
+
+func (m Model) creatureAssetSize(layout layoutSpec) assetSize {
+	switch layout.mode {
+	case layoutWide:
+		return assetFull
+	case layoutMedium:
+		return assetCompact
+	case layoutTiny:
+		return assetTiny
+	default:
+		return assetCompact
+	}
+}
+
+func creatureAsset(state creatureState, size assetSize) stageAsset {
+	if size == assetTiny {
+		return stageAsset{Compact: "ni▣", Lines: []string{"ni▣"}}
+	}
+	compact := "ni··"
+	switch state {
+	case creatureThinking:
+		compact = "ni▒▒"
+	case creatureDrafting:
+		compact = "ni▪▪"
+	case creatureReviewing:
+		compact = "ni■■"
+	case creatureDone:
+		compact = "ni██"
+	case creatureCancelled:
+		compact = "ni░░"
+	}
+	if size == assetCompact {
+		return stageAsset{Compact: compact, Lines: compactCreatureLines(state)}
+	}
+	return stageAsset{Compact: compact, Lines: fullCreatureLines(state)}
+}
+
+const creatureWidth = 32
+
+func compactCreatureLines(state creatureState) []string {
+	overlays := map[int]string{
+		3: "▓■▓  ▓■▓",
+		4: "▓▓▓  ▓▓▓",
+		5: "■■■■",
+		6: "▒▒▒▒▒▒",
+	}
+	switch state {
+	case creatureThinking:
+		overlays[3] = "▓▓■  ▓▓■"
+	case creatureDrafting:
+		overlays[5] = "■■▪■"
+	case creatureReviewing:
+		overlays[3] = "▓▓■  ▓▓■"
+	case creatureDone:
+		overlays[6] = "▒▒▒▒▒▒▒"
+	case creatureCancelled:
+		return creatureLinesWithBody(
+			"░▒░ ▐▒▌ ░▒░",
+			"▀▒▒▄▒▄▒▒▀",
+			"▄▒▒▒▒▒▒▒▒▄",
+			"▒▒▓▓▓▒▒▓▓▓▒▒",
+			"▒▒▓▓▓▒▒▓▓▓▒▒",
+			"▒▒■■■■▒▒",
+			"▒▒▒▒▒▒▒▒",
+			"▀▒▒▒▒▒▒▀",
+		)
+	}
+	lines := creatureLinesWithBody(
+		"▄██▄ ▐█▌ ▄██▄",
+		"▀███▄██▄███▀",
+	)
+	return append(lines, creatureBodyLines([]int{10, 16, 22, 26, 26, 22, 18, 12}, overlays)...)
+}
+
+func fullCreatureLines(state creatureState) []string {
+	overlays := map[int]string{
+		4: "▓▓■▓▓  ▓▓■▓▓",
+		5: "▓▓▓▓▓  ▓▓▓▓▓",
+		8: "■■■■■■■■",
+		9: "▒▒▒▒▒▒▒▒▒▒",
+	}
+	switch state {
+	case creatureThinking:
+		overlays[4] = "▓▓▓■▓  ▓▓▓■▓"
+	case creatureDrafting:
+		overlays[8] = "■■■■▪■■■"
+	case creatureReviewing:
+		overlays[4] = "▓▓▓■▓  ▓▓▓■▓"
+	case creatureDone:
+		overlays[9] = "▒▒▒▒▒▒▒▒▒▒▒"
+	case creatureCancelled:
+		return creatureLinesWithBody(
+			"░▒░ ▐▒▌ ░▒░",
+			"░▒▒▒░ ▐▒▌ ░▒▒▒░",
+			"▒▒▒▒▒▄ ▐▒▌ ▄▒▒▒▒▒",
+			"▀▒▒▒▒▒▄▒▄▒▒▒▒▒▀",
+			"▄▒▒▒▒▒▒▒▒▒▒▒▒▒▒▄",
+			"▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒",
+			"▒▒▓▓▓▓▓▒▒▓▓▓▓▓▒▒",
+			"▒▒▓▓▓▓▓▒▒▓▓▓▓▓▒▒",
+			"▒▒▒■■■■■■▒▒▒",
+			"▒▒▒▒▒▒▒▒▒▒",
+			"▀▒▒▒▒▒▒▒▒▀",
+		)
+	}
+	lines := creatureLinesWithBody(
+		"▄██▄",
+		"▄████▄  ▐██▌  ▄████▄",
+		"██████▄ ▐██▌ ▄██████",
+		"▀██████▄██▄██████▀",
+	)
+	return append(lines, creatureBodyLines([]int{14, 20, 24, 28, 30, 32, 32, 30, 28, 24, 20, 14}, overlays)...)
+}
+
+func creatureBodyLines(widths []int, overlays map[int]string) []string {
+	lines := make([]string, 0, len(widths))
+	for i, width := range widths {
+		lines = append(lines, orangeBodyRow(width, overlays[i]))
+	}
+	return lines
+}
+
+func orangeBodyRow(width int, overlay string) string {
+	if width <= 0 {
+		return creatureLine("")
+	}
+	row := []rune(strings.Repeat("█", width))
+	if overlay != "" {
+		overlayRunes := []rune(overlay)
+		start := max(0, (width-lipgloss.Width(overlay))/2)
+		for i, r := range overlayRunes {
+			if start+i >= len(row) {
+				break
+			}
+			if r != ' ' {
+				row[start+i] = r
 			}
 		}
-		return stageAsset{
-			Compact: "ni✓",
-			Lines: []string{
-				"      (\\_/)",
-				"  ni  (^_^)",
-				"      / >▣",
-			},
-		}
-	default:
-		return stageAsset{
-			Compact: "ni>",
-			Lines: []string{
-				"      (\\_/)",
-				"  ni  (" + eye + "_" + eye + ")",
-				"      / >" + spark,
-			},
-		}
 	}
+	return creatureLine(string(row))
+}
+
+func creatureLinesWithBody(lines ...string) []string {
+	normalized := make([]string, 0, len(lines))
+	for _, line := range lines {
+		normalized = append(normalized, creatureLine(line))
+	}
+	return normalized
+}
+
+func creatureLine(line string) string {
+	return centerPlain(truncatePlain(strings.TrimSpace(line), creatureWidth), creatureWidth)
 }
 
 type filePanelItem struct {
@@ -1141,10 +1606,11 @@ func stripNewlines(text string) string {
 }
 
 func renderShellContent(layout layoutSpec, content string) string {
-	if layout.shellLeft <= 0 {
+	left := layout.shellLeft + layout.chatInset
+	if left <= 0 {
 		return content
 	}
-	pad := strings.Repeat(" ", layout.shellLeft)
+	pad := strings.Repeat(" ", left)
 	lines := splitLines(content)
 	for i, line := range lines {
 		lines[i] = truncatePlain(pad+line, layout.width)
@@ -1163,12 +1629,65 @@ func renderLineCount(parts []string) int {
 	return total
 }
 
-func fitToHeight(text string, height int) string {
+func trimTrailingBlankLines(text string) string {
 	lines := splitLines(text)
-	if len(lines) <= height {
+	for len(lines) > 0 && strings.TrimSpace(lines[len(lines)-1]) == "" {
+		lines = lines[:len(lines)-1]
+	}
+	return strings.Join(lines, "\n")
+}
+
+func padTextHeight(text string, height int) string {
+	lines := splitLines(text)
+	for len(lines) < height {
+		lines = append(lines, "")
+	}
+	return strings.Join(lines, "\n")
+}
+
+func fitToHeight(text string, height int, width int) string {
+	lines := splitLines(text)
+	for len(lines) < height {
+		lines = append(lines, "")
+	}
+	if len(lines) > height {
+		lines = lines[:height]
+	}
+	for i, line := range lines {
+		lines[i] = padLineToWidth(truncatePlain(line, width), width)
+	}
+	return strings.Join(lines, "\n")
+}
+
+func padLineToWidth(line string, width int) string {
+	if width <= 0 {
+		return line
+	}
+	cellWidth := lipgloss.Width(line)
+	if cellWidth >= width {
+		return line
+	}
+	return line + strings.Repeat(" ", width-cellWidth)
+}
+
+func centerPlain(text string, width int) string {
+	cellWidth := lipgloss.Width(text)
+	if cellWidth >= width {
+		return truncatePlain(text, width)
+	}
+	left := (width - cellWidth) / 2
+	right := width - cellWidth - left
+	return strings.Repeat(" ", left) + text + strings.Repeat(" ", right)
+}
+
+func centerStyledLine(text string, width int) string {
+	cellWidth := lipgloss.Width(text)
+	if cellWidth >= width {
 		return text
 	}
-	return strings.Join(lines[:height], "\n")
+	left := (width - cellWidth) / 2
+	right := width - cellWidth - left
+	return strings.Repeat(" ", left) + text + strings.Repeat(" ", right)
 }
 
 func truncatePlain(text string, width int) string {
@@ -1242,21 +1761,25 @@ func renderProgress(current int, total int, frame int, layout layoutSpec) string
 	if current > total {
 		current = total
 	}
+	if total < 1 {
+		total = 1
+	}
+	segments := 10
+	if layout.mode == layoutTiny {
+		segments = 5
+	}
+	filled := (current*segments + total - 1) / total
+	filled = min(segments, max(1, filled))
 	var b strings.Builder
-	for i := 1; i <= total; i++ {
-		switch {
-		case i < current:
-			b.WriteString("▰")
-		case i == current:
-			if frame%2 == 0 {
-				b.WriteString("▓")
-			} else {
-				b.WriteString("█")
-			}
-		default:
-			b.WriteString("▱")
+	b.WriteString("[")
+	for i := 0; i < segments; i++ {
+		if i < filled {
+			b.WriteString("#")
+		} else {
+			b.WriteString("-")
 		}
 	}
+	b.WriteString("]")
 	label := b.String()
 	return truncatePlain(label, max(8, layout.panelWidth-8))
 }
@@ -1437,6 +1960,10 @@ var (
 	brandPrimary       = lipgloss.Color("#ff7e13")
 	brandPrimaryDim    = lipgloss.Color("#9a4d16")
 	brandPrimaryStrong = lipgloss.Color("#ffb15e")
+	creatureLeaf       = lipgloss.Color("#67d58a")
+	creatureEye        = lipgloss.Color("#050505")
+	creatureReflection = lipgloss.Color("#f8fafc")
+	creatureMouth      = lipgloss.Color("#b91c1c")
 	textPrimary        = lipgloss.Color("#f8fafc")
 	textSecondary      = lipgloss.Color("#cbd5e1")
 	textMuted          = lipgloss.Color("#94a3b8")
@@ -1451,23 +1978,31 @@ var (
 	help               = lipgloss.Color("#e2e8f0")
 
 	baseStyle        = lipgloss.NewStyle().Foreground(textPrimary).Background(surface)
-	headerBarStyle   = lipgloss.NewStyle().Foreground(lipgloss.Color("#160b02")).Background(brandPrimary)
+	headerBarStyle   = lipgloss.NewStyle().Foreground(textSecondary).Background(surface)
 	helpBarStyle     = lipgloss.NewStyle().Foreground(help).Background(lipgloss.Color("#20202a"))
 	compactModeStyle = lipgloss.NewStyle().Bold(true)
 
-	headerTitleStyle     = lipgloss.NewStyle().Bold(true).Foreground(lipgloss.Color("#160b02"))
-	headerMetaStyle      = lipgloss.NewStyle().Foreground(lipgloss.Color("#261204"))
-	questionStyle        = lipgloss.NewStyle().Bold(true).Foreground(textPrimary)
-	answerStyle          = lipgloss.NewStyle().Bold(true).Foreground(textPrimary)
-	secondaryStyle       = lipgloss.NewStyle().Foreground(textSecondary)
-	sectionStyle         = lipgloss.NewStyle().Bold(true).Foreground(textMuted)
-	selectedStyle        = lipgloss.NewStyle().Bold(true).Foreground(textPrimary).Background(selected)
-	labelStyle           = lipgloss.NewStyle().Bold(true).Foreground(textPrimary)
-	normalStyle          = baseStyle.Foreground(textSecondary)
-	mutedStyle           = lipgloss.NewStyle().Foreground(textMuted).Background(surface)
-	progressStyle        = lipgloss.NewStyle().Foreground(brandPrimaryStrong)
-	asciiStyle           = lipgloss.NewStyle().Foreground(brandPrimary)
-	assistantBubbleStyle = baseStyle.Padding(1, 2).
+	headerTitleStyle        = lipgloss.NewStyle().Bold(true).Foreground(brandPrimaryStrong)
+	headerMetaStyle         = lipgloss.NewStyle().Foreground(textSecondary)
+	questionStyle           = lipgloss.NewStyle().Bold(true).Foreground(textPrimary)
+	answerStyle             = lipgloss.NewStyle().Bold(true).Foreground(textPrimary)
+	secondaryStyle          = lipgloss.NewStyle().Foreground(textSecondary)
+	sectionStyle            = lipgloss.NewStyle().Bold(true).Foreground(textMuted)
+	focusedStyle            = lipgloss.NewStyle().Bold(true).Foreground(brandPrimaryStrong)
+	selectedStyle           = lipgloss.NewStyle().Bold(true).Foreground(textPrimary).Background(selected)
+	labelStyle              = lipgloss.NewStyle().Bold(true).Foreground(textPrimary)
+	normalStyle             = baseStyle.Foreground(textSecondary)
+	mutedStyle              = lipgloss.NewStyle().Foreground(textMuted).Background(surface)
+	progressStyle           = lipgloss.NewStyle().Bold(true).Foreground(brandPrimaryStrong)
+	asciiStyle              = lipgloss.NewStyle().Foreground(brandPrimary)
+	creatureLeafStyle       = lipgloss.NewStyle().Foreground(creatureLeaf)
+	creatureEyeStyle        = lipgloss.NewStyle().Foreground(creatureEye)
+	creatureReflectionStyle = lipgloss.NewStyle().Bold(true).Foreground(creatureReflection)
+	creatureMouthStyle      = lipgloss.NewStyle().Foreground(creatureMouth)
+	creatureSeedStyle       = lipgloss.NewStyle().Foreground(brandPrimaryStrong)
+	creatureDimStyle        = lipgloss.NewStyle().Foreground(brandPrimaryDim)
+	forestStyle             = lipgloss.NewStyle().Foreground(lipgloss.Color("#5f432d"))
+	assistantBubbleStyle    = baseStyle.Padding(1, 2).
 				Border(lipgloss.RoundedBorder(), true).
 				BorderForeground(borderSubtle)
 	userBubbleStyle = baseStyle.Padding(1, 2).
@@ -1487,6 +2022,14 @@ var (
 	composerStyle = baseStyle.Padding(0, 1).
 			Border(lipgloss.RoundedBorder(), true).
 			BorderForeground(borderActive)
+	optionCardStyle = baseStyle.Padding(0, 1).
+			Border(lipgloss.RoundedBorder(), true).
+			BorderForeground(borderSubtle).
+			Background(surface)
+	optionCardSelectedStyle = baseStyle.Padding(0, 1).
+				Border(lipgloss.RoundedBorder(), true).
+				BorderForeground(brandPrimary).
+				Background(surfaceRaised)
 	detailsDrawerStyle = baseStyle.Padding(1, 2).
 				Border(lipgloss.NormalBorder(), true).
 				BorderForeground(borderSubtle).
