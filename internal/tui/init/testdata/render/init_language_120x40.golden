@@ -1,0 +1,40 @@
+Namba Intent                                                                             namba-intent init / 언어 선택
+╭─────────────────────────────────────────────────╮┌──────────────────────┐┌─────────────────────────┐
+│                                                 ││                      ││                         │
+│  Main Panel                                     ││  Status Panel        ││  Files Panel            │
+│  ╭─ Namba Intent ─╮                             ││  초안 준비           ││  blueprint: docs/plan   │
+│  │ language gate  │  ◇ ko  ◆ en                 ││  Project             ││  + .ni contract         │
+│  ╰─ draft path ┄──╯                             ││  directory를         ││  planned                │
+│  Project Intent 초기화                          ││  감지했습니다.       ││  .ni/contract.j…        │
+│                                                 ││  guided              ││  planned                │
+│  Step 1/10  ▓▱▱▱▱▱▱▱▱▱                          ││  intent capture      ││  .ni/harness.ca…        │
+│                                                 ││  전에                ││  planned                │
+│  Intent 수집 gate에 사용할 언어를 선택하세요.   ││  언어를 선택합니다.  ││  .ni/pressure.j…        │
+│  이 화면은 intent 초안만 만듭니다.              ││                      ││  planned                │
+│  status/lock/handoff 권한은 CLI에 남습니다.     ││  Current: Korean     ││  .ni/project.js…        │
+│                                                 ││  State: 초안 작성    ││  planned                │
+│  ▸ ◆ Korean                                     ││  Authority: CLI      ││  .ni/readiness.…        │
+│      한국어 사용자에게 자연스러운 planning      ││  status/end/run      ││  +14 more planned       │
+│  안내를                                         ││  Detected:           ││                         │
+│  보여줍니다.                                    ││  /tmp/demo           │└─────────────────────────┘
+│    ◇ English                                    ││                      │
+│      Use English labels, examples, and review   │└──────────────────────┘
+│  guidance.                                      │┌──────────────────────┐
+│                                                 ││                      │
+│                                                 ││  Next Action Panel   │
+╰─────────────────────────────────────────────────╯│  언어를 선택한 뒤    │
+                                                   │  첫 project intent   │
+                                                   │  초안을 작성하세요.  │
+                                                   │                      │
+                                                   └──────────────────────┘
+
+
+
+
+
+
+
+
+
+↑↓ Enter 1/2 q  |  scroll: all visible
+downstream 작업은 실행하지 않습니다. init은 docs와 contract 초안만 만듭니다.

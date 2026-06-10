@@ -492,7 +492,7 @@ func (m Model) layout() layoutSpec {
 }
 
 func (m Model) renderHeader(layout layoutSpec) string {
-	mode := m.modeLabel() + " / " + string(layout.mode)
+	mode := m.modeLabel()
 	left := headerTitleStyle.Render("Namba Intent")
 	right := headerMetaStyle.Render(fmt.Sprintf("%s init / %s", m.commandName, mode))
 	if layout.mode == layoutTiny {
@@ -509,6 +509,19 @@ func (m Model) renderBody(layout layoutSpec) string {
 	}
 	main := m.renderMainPanel(layout)
 	status := m.renderStatusPanel(layout)
+	if m.stage == stageDone && m.canceled {
+		switch layout.mode {
+		case layoutWide, layoutMedium:
+			leftWidth := max(44, layout.width*62/100)
+			rightWidth := max(28, layout.width-leftWidth)
+			return lipgloss.JoinHorizontal(lipgloss.Top,
+				m.renderMainPanel(layout.withWidth(leftWidth)),
+				m.renderStatusPanel(layout.withWidth(rightWidth)),
+			)
+		default:
+			return lipgloss.JoinVertical(lipgloss.Left, main, status)
+		}
+	}
 	next := m.renderNextActionPanel(layout)
 	files := m.renderFilesPanel(layout)
 	switch layout.mode {
@@ -602,6 +615,7 @@ func (m Model) renderTinyBody(layout layoutSpec) string {
 				asciiStyle.Render(m.stageAsset(layout).Compact),
 				panelHeadingStyle.Render(m.t("Canceled", "취소됨")),
 				secondaryStyle.Render(truncatePlain(m.statusDetail(), layout.width)),
+				secondaryStyle.Render(truncatePlain(m.t("Run namba-intent init again.", "namba-intent init을 다시 실행할 수 있습니다."), layout.width)),
 			)
 			break
 		}
@@ -638,8 +652,13 @@ func (m Model) renderLanguagePanel(layout layoutSpec) string {
 	b.WriteString("\n\n")
 	b.WriteString(questionStyle.Render(m.wrapText(m.t("Choose the language for the intent capture gate.", "Intent 수집 gate에 사용할 언어를 선택하세요."), layout.panelWidth-8)))
 	b.WriteString("\n")
-	b.WriteString(secondaryStyle.Render(m.wrapText(m.t("This screen drafts intent only; status, lock, and handoff remain CLI-authoritative.", "이 화면은 intent 초안만 만듭니다. status/lock/handoff 권한은 CLI에 남습니다."), layout.panelWidth-8)))
-	b.WriteString("\n\n")
+	if layout.mode == layoutNarrow {
+		b.WriteString(mutedStyle.Render(truncatePlain("Status: "+m.statusSummary(), max(8, layout.panelWidth-8))))
+		b.WriteString("\n\n")
+	} else {
+		b.WriteString(secondaryStyle.Render(m.wrapText(m.t("This screen drafts intent only; status, lock, and handoff remain CLI-authoritative.", "이 화면은 intent 초안만 만듭니다. status/lock/handoff 권한은 CLI에 남습니다."), layout.panelWidth-8)))
+		b.WriteString("\n\n")
+	}
 	options := []struct {
 		label string
 		help  string
@@ -664,7 +683,11 @@ func (m Model) renderFieldsPanel(layout layoutSpec) string {
 	b.WriteString("\n\n")
 	b.WriteString(questionStyle.Render(m.wrapText(guide.Hint, layout.panelWidth-8)))
 	b.WriteString("\n")
-	b.WriteString(secondaryStyle.Render(m.wrapText(guide.Why, layout.panelWidth-8)))
+	if layout.mode == layoutNarrow {
+		b.WriteString(mutedStyle.Render(truncatePlain("Status: "+m.statusSummary(), max(8, layout.panelWidth-8))))
+	} else {
+		b.WriteString(secondaryStyle.Render(m.wrapText(guide.Why, layout.panelWidth-8)))
+	}
 	b.WriteString("\n\n")
 	value := strings.TrimSpace(m.fields[m.cursor].Value)
 	if value == "" {
@@ -711,6 +734,10 @@ func (m Model) renderConfirmPanel(layout layoutSpec) string {
 	b.WriteString("\n")
 	b.WriteString(progressStyle.Render(renderProgress(m.currentStep(), m.totalSteps(), m.frame, layout)))
 	b.WriteString("\n\n")
+	if layout.mode == layoutNarrow {
+		b.WriteString(mutedStyle.Render(truncatePlain("Status: "+m.statusSummary(), max(8, layout.panelWidth-8))))
+		b.WriteString("\n\n")
+	}
 	indices := []int{0, 1, 2, 3, 5, 6, 7}
 	if layout.mode == layoutTiny {
 		indices = []int{0, 1, 5}
@@ -762,23 +789,13 @@ func (m Model) renderDonePanel(layout layoutSpec) string {
 
 func (m Model) renderStatusPanel(layout layoutSpec) string {
 	status, detail := m.statusLine()
-	style := statusStyle
-	if strings.Contains(status, "blocked") {
-		style = blockedStyle
-	}
-	if strings.Contains(status, "warning") {
-		style = warningStyle
-	}
-	if strings.Contains(status, "ready") || strings.Contains(status, "done") {
-		style = successStyle
-	}
+	style := m.statusStyle()
 	lines := []string{
 		style.Render(status),
 		secondaryStyle.Render(m.wrapText(detail, layout.panelWidth-8)),
 		"",
 		labelStyle.Render("Current:") + " " + truncatePlain(m.currentSelection(), max(8, layout.panelWidth-18)),
-		labelStyle.Render("Layout:") + " " + string(layout.mode),
-		labelStyle.Render("State:") + " " + m.t("draft only", "초안만 작성"),
+		labelStyle.Render("State:") + " " + m.stateLabel(),
 		labelStyle.Render("Authority:") + " " + "CLI status/end/run",
 		labelStyle.Render("Detected:") + " " + truncatePlain(m.dir, max(8, layout.panelWidth-18)),
 	}
@@ -910,7 +927,7 @@ func (m Model) renderChoiceLine(selected bool, label string, help string, layout
 		style = selectedStyle
 	}
 	line := prefix + label
-	if layout.mode == layoutTiny {
+	if layout.mode == layoutTiny || layout.mode == layoutNarrow {
 		return style.Render(truncatePlain(line, layout.panelWidth-8)) + "\n"
 	}
 	return style.Render(truncatePlain(line, layout.panelWidth-8)) + "\n" +
@@ -947,21 +964,21 @@ func (m Model) wrapText(text string, width int) string {
 func (m Model) statusLine() (string, string) {
 	switch m.stage {
 	case stageLanguage:
-		return "detected / language", m.t("Project directory detected. Language is needed before guided intent capture.", "Project directory를 감지했습니다. guided intent capture 전에 언어를 선택합니다.")
+		return m.t("Drafting", "초안 준비"), m.t("Project directory detected. Language is needed before guided intent capture.", "Project directory를 감지했습니다. guided intent capture 전에 언어를 선택합니다.")
 	case stageExisting:
-		return "warning / existing files", m.t("Planning files already exist. Init will not overwrite them.", "Planning 파일이 이미 있습니다. init은 덮어쓰지 않습니다.")
+		return m.t("Existing files", "기존 파일 보호"), m.t("Planning files already exist. Init will not overwrite them.", "Planning 파일이 이미 있습니다. init은 덮어쓰지 않습니다.")
 	case stageConfirm:
-		return "ready / review", m.t("Ready to write initial intent artifacts if you confirm.", "확인하면 초기 intent artifact를 쓸 준비가 되었습니다.")
+		return m.t("Ready to review", "저장 전 확인"), m.t("Ready to write initial intent artifacts if you confirm.", "확인하면 초기 intent artifact를 쓸 준비가 되었습니다.")
 	case stageDone:
 		if m.canceled {
-			return "done / canceled", m.t("Canceled; no files were written.", "취소되었습니다. 파일은 쓰지 않았습니다.")
+			return m.t("Cancelled", "취소됨"), m.t("No files written. You can run namba-intent init again.", "파일은 쓰지 않았습니다. namba-intent init을 다시 실행할 수 있습니다.")
 		}
 		if m.confirmed {
-			return "done / written", m.t("Initial intent artifacts were written.", "초기 intent artifact를 저장했습니다.")
+			return m.t("Ready for status", "status 확인 가능"), m.t("Initial intent artifacts were written.", "초기 intent artifact를 저장했습니다.")
 		}
-		return "done", m.t("The TUI flow has ended.", "TUI 흐름이 끝났습니다.")
+		return m.t("Closed", "닫힘"), m.t("The TUI flow has ended.", "TUI 흐름이 끝났습니다.")
 	default:
-		return "blocked / drafting", m.t("The plan is not locked. Downstream work must wait for status, end, and run.", "Plan은 아직 locked 상태가 아닙니다. downstream 작업은 status, end, run 이후까지 대기해야 합니다.")
+		return m.t("Drafting", "초안 작성 중"), m.t("The plan is not locked. Downstream work must wait for status, end, and run.", "Plan은 아직 locked 상태가 아닙니다. downstream 작업은 status, end, run 이후까지 대기해야 합니다.")
 	}
 }
 
@@ -970,9 +987,39 @@ func (m Model) statusSummary() string {
 	return status + " · " + m.currentSelection()
 }
 
+func (m Model) stateLabel() string {
+	switch m.stage {
+	case stageConfirm:
+		return m.t("Ready", "준비됨")
+	case stageExisting:
+		return m.t("Protected", "보호 중")
+	case stageDone:
+		if m.canceled {
+			return m.t("No files written", "파일 쓰지 않음")
+		}
+		return m.t("Staged", "저장됨")
+	default:
+		return m.t("Drafting", "초안 작성")
+	}
+}
+
 func (m Model) statusDetail() string {
 	_, detail := m.statusLine()
 	return detail
+}
+
+func (m Model) statusStyle() lipgloss.Style {
+	switch m.stage {
+	case stageExisting:
+		return warningStyle
+	case stageConfirm, stageDone:
+		if m.canceled {
+			return warningStyle
+		}
+		return successStyle
+	default:
+		return statusStyle
+	}
 }
 
 func (m Model) totalSteps() int {
@@ -1192,13 +1239,6 @@ func (m Model) currentSelection() string {
 	}
 }
 
-func (m Model) motionLabel() string {
-	if !m.animationOn {
-		return "deterministic/off"
-	}
-	return fmt.Sprintf("tick/%02d", m.frame)
-}
-
 func (m Model) selectionPulse() string {
 	return "▸"
 }
@@ -1305,9 +1345,6 @@ func renderProgress(current int, total int, frame int, layout layoutSpec) string
 		}
 	}
 	label := fmt.Sprintf("Step %d/%d  %s", current, total, b.String())
-	if layout.mode != layoutTiny {
-		label += "  " + string(layout.mode)
-	}
 	return truncatePlain(label, max(8, layout.panelWidth-8))
 }
 

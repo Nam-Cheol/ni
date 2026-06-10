@@ -186,6 +186,9 @@ func TestInitNonInteractiveBehaviorIsStable(t *testing.T) {
 	if strings.Contains(stdout.String(), "Guided namba-intent init") {
 		t.Fatalf("non-interactive init should not prompt, got %q", stdout.String())
 	}
+	if strings.Contains(stdout.String(), "\x1b[") {
+		t.Fatalf("non-interactive init should not emit ANSI escape sequences, got %q", stdout.String())
+	}
 	if !strings.Contains(stdout.String(), "next: use model-user planning conversation") {
 		t.Fatalf("expected non-interactive next step, got %q", stdout.String())
 	}

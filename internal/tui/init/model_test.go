@@ -2,12 +2,17 @@ package initui
 
 import (
 	"fmt"
+	"os"
+	"path/filepath"
+	"regexp"
 	"strings"
 	"testing"
 
 	tea "charm.land/bubbletea/v2"
 	"charm.land/lipgloss/v2"
 )
+
+var ansiPattern = regexp.MustCompile(`\x1b\[[0-9;?]*[ -/]*[@-~]`)
 
 func TestModelInitialStateUsesAltScreen(t *testing.T) {
 	m := NewModel(Config{Dir: ".", DefaultName: "demo"})
@@ -200,7 +205,7 @@ func TestTinyModeShowsCoreControlsWithoutScrolling(t *testing.T) {
 	for _, want := range []string{
 		"Write initial intent artifacts?",
 		"▸ ■ Write initial intent artifacts",
-		"Status: ready / review",
+		"Status: Ready to review",
 		"scroll:",
 		"no downstream work",
 	} {
@@ -256,16 +261,129 @@ func TestResponsiveSizesKeepViewportAndBars(t *testing.T) {
 	}
 }
 
+func TestPlainRenderSnapshotsCoverResponsiveBreakpoints(t *testing.T) {
+	for _, tc := range []struct {
+		name string
+		size tea.WindowSizeMsg
+	}{
+		{"120x40", tea.WindowSizeMsg{Width: 120, Height: 40}},
+		{"80x24", tea.WindowSizeMsg{Width: 80, Height: 24}},
+		{"60x18", tea.WindowSizeMsg{Width: 60, Height: 18}},
+		{"40x12", tea.WindowSizeMsg{Width: 40, Height: 12}},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			m := NewModel(Config{Dir: "/tmp/demo", DefaultName: "demo"})
+			m.animationOn = false
+			m = updateForTest(t, m, tc.size)
+			rendered := normalizePlainRender(m.renderShell())
+			for _, want := range []string{"Main Panel", "Korean", "Status", "scroll:", "초안"} {
+				if !strings.Contains(rendered, want) {
+					t.Fatalf("snapshot precondition missing %q\n%s", want, rendered)
+				}
+			}
+			path := filepath.Join("testdata", "render", "init_language_"+tc.name+".golden")
+			if os.Getenv("UPDATE_RENDER_SNAPSHOTS") == "1" {
+				if err := os.MkdirAll(filepath.Dir(path), 0o755); err != nil {
+					t.Fatalf("creating snapshot dir: %v", err)
+				}
+				if err := os.WriteFile(path, []byte(rendered), 0o644); err != nil {
+					t.Fatalf("writing snapshot: %v", err)
+				}
+			}
+			want, err := os.ReadFile(path)
+			if err != nil {
+				t.Fatalf("reading snapshot %s: %v", path, err)
+			}
+			if rendered != string(want) {
+				t.Fatalf("render snapshot mismatch for %s\nwant:\n%s\ngot:\n%s", tc.name, string(want), rendered)
+			}
+		})
+	}
+}
+
+func TestRenderDoesNotExposeInternalDebugCopy(t *testing.T) {
+	for _, tc := range []struct {
+		name string
+		size tea.WindowSizeMsg
+	}{
+		{"120x40", tea.WindowSizeMsg{Width: 120, Height: 40}},
+		{"80x24", tea.WindowSizeMsg{Width: 80, Height: 24}},
+		{"60x18", tea.WindowSizeMsg{Width: 60, Height: 18}},
+		{"40x12", tea.WindowSizeMsg{Width: 40, Height: 12}},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			m := NewModel(Config{Dir: "/tmp/demo", DefaultName: "demo"})
+			m = updateForTest(t, m, tc.size)
+			view := normalizePlainRender(m.renderShell())
+			for _, banned := range []string{"tick", "frame", "deterministic", "wide", "medium", "narrow", "tiny"} {
+				if strings.Contains(view, banned) {
+					t.Fatalf("render exposed internal copy %q\n%s", banned, view)
+				}
+			}
+		})
+	}
+}
+
+func TestNoColorRenderKeepsSemanticSelectionAndStatus(t *testing.T) {
+	t.Setenv("NO_COLOR", "1")
+	m := NewModel(Config{Dir: "/tmp/demo", DefaultName: "demo"})
+	m = selectEnglishForTest(t, m)
+	m.stage = stageConfirm
+	m = updateForTest(t, m, tea.WindowSizeMsg{Width: 40, Height: 12})
+
+	view := normalizePlainRender(m.renderShell())
+	for _, want := range []string{"▸ ■ Write initial intent artifacts", "  □ Cancel; write nothing", "Status: Ready to review", "no downstream work"} {
+		if !strings.Contains(view, want) {
+			t.Fatalf("NO_COLOR render lost semantic marker %q\n%s", want, view)
+		}
+	}
+}
+
+func TestCancellationRenderCannotLookSuccessful(t *testing.T) {
+	m := NewModel(Config{Dir: "/tmp/demo", DefaultName: "demo"})
+	m = selectEnglishForTest(t, m)
+	m.stage = stageConfirm
+	m = updateForTest(t, m, key(tea.KeyDown))
+	m = updateForTest(t, m, key(tea.KeyEnter))
+	m = updateForTest(t, m, tea.WindowSizeMsg{Width: 40, Height: 12})
+
+	view := normalizePlainRender(m.renderShell())
+	for _, want := range []string{"Cancelled", "No files written", "init again", "Status: Cancelled"} {
+		if !strings.Contains(view, want) {
+			t.Fatalf("cancellation render missing %q\n%s", want, view)
+		}
+	}
+	for _, banned := range []string{"captured", "Ready for status", "Initial intent artifacts"} {
+		if strings.Contains(view, banned) {
+			t.Fatalf("cancellation render looked successful via %q\n%s", banned, view)
+		}
+	}
+}
+
 func TestAnimationTickAdvancesDeterministically(t *testing.T) {
 	m := NewModel(Config{Dir: ".", DefaultName: "demo"})
 	before := m.renderShell()
 	m = updateForTest(t, m, initTickMsg{})
 	if m.frame != 1 {
-		t.Fatalf("expected animation frame to advance to 1, got %d", m.frame)
+		t.Fatalf("expected animation step to advance to 1, got %d", m.frame)
 	}
 	after := m.renderShell()
 	if before == after {
-		t.Fatalf("expected tick frame to affect rendered motion")
+		t.Fatalf("expected animation step to affect rendered motion")
+	}
+}
+
+func TestAnimationCanBeDisabledForDeterministicSnapshots(t *testing.T) {
+	m := NewModel(Config{Dir: ".", DefaultName: "demo"})
+	m.animationOn = false
+	before := m.renderShell()
+	m = updateForTest(t, m, initTickMsg{})
+	after := m.renderShell()
+	if m.frame != 0 {
+		t.Fatalf("expected disabled animation to keep frame at 0, got %d", m.frame)
+	}
+	if before != after {
+		t.Fatalf("expected disabled animation render to stay deterministic")
 	}
 }
 
@@ -394,4 +512,16 @@ func textKey(value string) tea.KeyPressMsg {
 
 func ctrlKey(value rune) tea.KeyPressMsg {
 	return tea.KeyPressMsg(tea.Key{Code: value, Mod: tea.ModCtrl})
+}
+
+func stripANSI(value string) string {
+	return ansiPattern.ReplaceAllString(value, "")
+}
+
+func normalizePlainRender(value string) string {
+	lines := strings.Split(stripANSI(value), "\n")
+	for i, line := range lines {
+		lines[i] = strings.TrimRight(line, " ")
+	}
+	return strings.Join(lines, "\n")
 }
