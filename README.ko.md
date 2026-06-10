@@ -22,7 +22,7 @@ Namba Intent는 planning conversation을 docs contract로 바꾸고, readiness�
 확인하고, accepted plan을 lock하고, bounded downstream handoff prompt를
 compile합니다.
 
-v0.6.3는 current published Namba Intent release입니다. Primary command는
+v0.6.4는 current published Namba Intent release입니다. Primary command는
 `namba-intent`이고, legacy `ni` command는 deprecated shim only입니다.
 
 <p align="center">
@@ -130,7 +130,7 @@ execution runtime이 아닙니다.
 ## Status
 
 - v0.5.1 publication: historical `ni` command 기준 verified.
-- v0.6.3 release: macOS darwin/arm64에서 `namba-intent` 기준 published and verified.
+- v0.6.4 release: macOS darwin/arm64에서 `namba-intent` 기준 published and verified.
 - Primary command: `namba-intent`.
 - Deprecated transition shim: `ni`는 `ni is deprecated; use namba-intent.`를 warning합니다.
 - Repository: `Nam-Cheol/ni` retained.

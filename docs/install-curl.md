@@ -6,23 +6,23 @@ Intent binary without requiring Go. Current main selects
 directory, and prints next steps. With explicit opt-in, it can add a reversible
 zsh/bash PATH block. It does not install model skills or run downstream work.
 
-Status: Available for the verified v0.6.3 macOS `namba-intent` path. The
+Status: Available for the verified v0.6.4 macOS `namba-intent` path. The
 verified v0.5.1 GitHub Release assets use historical `ni_<version>` names and
 remain documented in the v0.5.1 post-release verification record.
 
 ## Safer Script Path
 
-For the verified v0.6.3 macOS install:
+For the verified v0.6.4 macOS install:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/Nam-Cheol/ni/main/install.sh | sh -s -- --update-path --version 0.6.3
+curl -fsSL https://raw.githubusercontent.com/Nam-Cheol/ni/main/install.sh | sh -s -- --update-path --version 0.6.4
 ```
 
 When you want an inspect-first or reproducible pinned install, download the
 installer before any local install:
 
 ```bash
-VERSION="0.6.3"
+VERSION="0.6.4"
 curl -fsSLO https://raw.githubusercontent.com/Nam-Cheol/ni/main/install.sh
 sed -n '1,320p' install.sh
 sh install.sh --dry-run --version "$VERSION"
@@ -37,7 +37,7 @@ BINDIR="$HOME/bin" sh install.sh --dry-run --version "$VERSION"
 ```
 
 If you omit `--version`, the installer asks GitHub for the latest release tag.
-Use `--version 0.6.3` when you want to reproduce the verified Namba Intent
+Use `--version 0.6.4` when you want to reproduce the verified Namba Intent
 release path. Pin `VERSION="0.5.1"` only when using historical scripts or
 evidence covered by
 [v0.5.1 Post-Release Verification](132_V0_5_1_POST_RELEASE_VERIFICATION.md);
@@ -157,17 +157,17 @@ tested without network access and without Go:
 bash scripts/test-install-sh.sh
 ```
 
-The v0.6.3 macOS installer path has real release verification. For later
+The v0.6.4 macOS installer path has real release verification. For later
 releases, repeat that verification before changing public availability language:
 
 ```bash
-VERSION="0.6.3"
+VERSION="0.6.4"
 sh install.sh --dry-run --version "$VERSION"
 BINDIR="$(mktemp -d)" sh install.sh --version "$VERSION"
 ```
 
 The historical v0.5.1 verification passed on 2026-06-08 for the old `ni`
-release assets. The v0.6.3 macOS verification is recorded in
-[`142_V0_6_3_POST_RELEASE_VERIFICATION.md`](142_V0_6_3_POST_RELEASE_VERIFICATION.md).
+release assets. The v0.6.4 macOS verification is recorded in
+[`143_V0_6_4_POST_RELEASE_VERIFICATION.md`](143_V0_6_4_POST_RELEASE_VERIFICATION.md).
 Current tree command-name verification is covered by `bash scripts/install-check.sh`
 with a temporary install directory and fresh shell PATH context.

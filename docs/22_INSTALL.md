@@ -1,9 +1,9 @@
 # Install Namba Intent
 
 Namba Intent is usable from source, from a locally built current-tree binary,
-and from the published v0.6.3 release as `namba-intent`.
+and from the published v0.6.4 release as `namba-intent`.
 
-The v0.6.3 macOS curl installer path has been published and verified for
+The v0.6.4 macOS curl installer path has been published and verified for
 darwin/arm64. Historical v0.5.1 GitHub Release evidence remains tied to the
 older `ni` command.
 
@@ -36,8 +36,8 @@ Every public install path has exactly one status:
 | --- | --- | --- |
 | Source | Available | Run `go run ./cmd/namba-intent ...` from this checkout. |
 | Local binary | Available | Build or install `namba-intent` locally from this checkout. |
-| Release binary | Available | Use the verified v0.6.3 GitHub Release archives and checksums for `namba-intent`. Historical v0.5.1 evidence remains `ni` only. |
-| Curl installer | Available | `install.sh --version 0.6.3` retrieves and verifies published `namba-intent_<version>...` assets on macOS darwin/arm64. |
+| Release binary | Available | Use the verified v0.6.4 GitHub Release archives and checksums for `namba-intent`. Historical v0.5.1 evidence remains `ni` only. |
+| Curl installer | Available | `install.sh --version 0.6.4` retrieves and verifies published `namba-intent_<version>...` assets on macOS darwin/arm64. |
 | Homebrew | Planned | No tap or formula is published or tested. |
 | Model workspaces | Experimental | Repo-local model assistance can draft docs; the CLI remains authority. |
 | No-terminal method | Experimental | Assisted planning only; deterministic validation still requires CLI proof. |
@@ -108,10 +108,10 @@ PATH="$tmpdir/bin:$PATH" sh -c 'namba-intent --help && namba-intent version'
 
 Release binary status: Available.
 
-The v0.6.3 GitHub Release contains the expected Namba Intent OS/arch archives
-and `namba-intent_0.6.3_checksums.txt`:
+The v0.6.4 GitHub Release contains the expected Namba Intent OS/arch archives
+and `namba-intent_0.6.4_checksums.txt`:
 
-<https://github.com/Nam-Cheol/ni/releases/tag/v0.6.3>
+<https://github.com/Nam-Cheol/ni/releases/tag/v0.6.4>
 
 Use this matrix to choose the archive for your OS and architecture:
 
@@ -132,7 +132,7 @@ name.
 Linux example:
 
 ```bash
-VERSION="0.6.3"
+VERSION="0.6.4"
 curl -fSLO "https://github.com/Nam-Cheol/ni/releases/download/v${VERSION}/namba-intent_${VERSION}_linux_amd64.tar.gz"
 curl -fSLO "https://github.com/Nam-Cheol/ni/releases/download/v${VERSION}/namba-intent_${VERSION}_checksums.txt"
 grep " namba-intent_${VERSION}_linux_amd64.tar.gz$" "namba-intent_${VERSION}_checksums.txt" | sha256sum -c -
@@ -145,7 +145,7 @@ PATH="$HOME/.local/bin:$PATH" namba-intent version
 macOS example:
 
 ```bash
-VERSION="0.6.3"
+VERSION="0.6.4"
 curl -fSLO "https://github.com/Nam-Cheol/ni/releases/download/v${VERSION}/namba-intent_${VERSION}_darwin_arm64.tar.gz"
 curl -fSLO "https://github.com/Nam-Cheol/ni/releases/download/v${VERSION}/namba-intent_${VERSION}_checksums.txt"
 grep " namba-intent_${VERSION}_darwin_arm64.tar.gz$" "namba-intent_${VERSION}_checksums.txt" | shasum -a 256 -c -
@@ -158,7 +158,7 @@ PATH="$HOME/.local/bin:$PATH" namba-intent version
 Windows PowerShell:
 
 ```powershell
-$Version = "0.6.3"
+$Version = "0.6.4"
 Invoke-WebRequest "https://github.com/Nam-Cheol/ni/releases/download/v$Version/namba-intent_$($Version)_windows_amd64.zip" -OutFile "namba-intent_$($Version)_windows_amd64.zip"
 Invoke-WebRequest "https://github.com/Nam-Cheol/ni/releases/download/v$Version/namba-intent_$($Version)_checksums.txt" -OutFile "namba-intent_$($Version)_checksums.txt"
 Get-FileHash "namba-intent_$($Version)_windows_amd64.zip" -Algorithm SHA256
@@ -169,7 +169,7 @@ Expand-Archive "namba-intent_$($Version)_windows_amd64.zip" -DestinationPath "na
 ```
 
 Compare the `Get-FileHash` output with the checksum line printed by
-`Select-String` before trusting the extracted binary. The v0.6.3 Windows asset
+`Select-String` before trusting the extracted binary. The v0.6.4 Windows asset
 and checksum file are published, but execution on a real Windows host remains
 manually unverified. The historical v0.5.1 Windows asset and checksum are
 verified in
@@ -179,7 +179,7 @@ handling and global command setup.
 
 ## Curl installer
 
-Curl installer status: Available for verified v0.6.3 macOS `namba-intent`
+Curl installer status: Available for verified v0.6.4 macOS `namba-intent`
 retrieval.
 
 Current-main `install.sh` can install a published `namba-intent` release archive
@@ -191,8 +191,8 @@ does not install model skills or run downstream work.
 Historical v0.5.1 curl installer verification remains valid only for the
 previous `ni` public release path recorded in
 [`132_V0_5_1_POST_RELEASE_VERIFICATION.md`](132_V0_5_1_POST_RELEASE_VERIFICATION.md).
-The public v0.6.3 macOS curl installer path is verified in
-[`142_V0_6_3_POST_RELEASE_VERIFICATION.md`](142_V0_6_3_POST_RELEASE_VERIFICATION.md).
+The public v0.6.4 macOS curl installer path is verified in
+[`143_V0_6_4_POST_RELEASE_VERIFICATION.md`](143_V0_6_4_POST_RELEASE_VERIFICATION.md).
 
 For the latest-by-default README path:
 
@@ -201,14 +201,14 @@ curl -fsSL https://raw.githubusercontent.com/Nam-Cheol/ni/main/install.sh | sh -
 ```
 
 If you omit `--version`, the installer asks GitHub for the latest release tag
-during actual install. Use `--version 0.6.3` when you want to reproduce the
+during actual install. Use `--version 0.6.4` when you want to reproduce the
 verified Namba Intent release path.
 
-For reproducible v0.6.3 checks, download and inspect the script, then pin the
+For reproducible v0.6.4 checks, download and inspect the script, then pin the
 verified release version:
 
 ```bash
-VERSION="0.6.3"
+VERSION="0.6.4"
 curl -fsSLO https://raw.githubusercontent.com/Nam-Cheol/ni/main/install.sh
 sed -n '1,320p' install.sh
 sh install.sh --dry-run --version "$VERSION"
@@ -281,11 +281,11 @@ If you omit `-Version`, the installer asks GitHub for the latest release tag
 during actual install. Windows host execution is still pending until a real
 Windows transcript exists.
 
-For reproducible v0.6.3 checks, inspect and dry-run the script from the
+For reproducible v0.6.4 checks, inspect and dry-run the script from the
 directory where you downloaded `install.ps1`, then pin the release:
 
 ```powershell
-$Version = "0.6.3"
+$Version = "0.6.4"
 irm https://raw.githubusercontent.com/Nam-Cheol/ni/main/install.ps1 -OutFile install.ps1
 Get-Content .\install.ps1
 .\install.ps1 -DryRun -Version $Version
@@ -367,7 +367,7 @@ bash scripts/release-check.sh
 
 Namba Intent is licensed under the [MIT License](../LICENSE).
 
-This install document claims v0.6.3 `namba-intent` release binary and macOS curl
+This install document claims v0.6.4 `namba-intent` release binary and macOS curl
 installer availability only where verified. Historical v0.5.1 evidence remains
 tied to `ni`. It does not claim package distribution, Homebrew support, Scoop support, no-terminal
 deterministic validation, runtime execution behavior, Windows execution
