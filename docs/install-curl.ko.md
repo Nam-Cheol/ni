@@ -6,23 +6,23 @@ infrastructure이다. Current main은 `namba-intent_<version>` release assets를
 Model skills를 install하지 않으며 downstream work를 실행하지 않는다. 명시적으로 opt
 in하면 reversible zsh/bash PATH block을 추가할 수 있다.
 
-Status: verified v0.6.2 macOS `namba-intent` path는 Available이다. Verified
+Status: verified v0.6.3 macOS `namba-intent` path는 Available이다. Verified
 v0.5.1 GitHub Release assets는 historical `ni_<version>` names를 사용하며 v0.5.1
 post-release verification record에 계속 기록되어 있다.
 
 ## 더 안전한 Script 경로
 
-검증된 v0.6.2 macOS install:
+검증된 v0.6.3 macOS install:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/Nam-Cheol/ni/main/install.sh | sh -s -- --update-path --version 0.6.2
+curl -fsSL https://raw.githubusercontent.com/Nam-Cheol/ni/main/install.sh | sh -s -- --update-path --version 0.6.3
 ```
 
 Inspect-first 또는 reproducible pinned install을 원할 때는 local install 전에
 installer를 먼저 download한다:
 
 ```bash
-VERSION="0.6.2"
+VERSION="0.6.3"
 curl -fsSLO https://raw.githubusercontent.com/Nam-Cheol/ni/main/install.sh
 sed -n '1,320p' install.sh
 sh install.sh --dry-run --version "$VERSION"
@@ -36,7 +36,7 @@ BINDIR="$HOME/bin" sh install.sh --dry-run --version "$VERSION"
 ```
 
 `--version`을 생략하면 installer는 GitHub에서 latest release tag를 확인한다.
-Verified Namba Intent release path를 재현하려면 `--version 0.6.2`을 사용한다.
+Verified Namba Intent release path를 재현하려면 `--version 0.6.3`을 사용한다.
 Historical script 또는
 [v0.5.1 Post-Release Verification](132_V0_5_1_POST_RELEASE_VERIFICATION.ko.md)이
 cover한 evidence를 사용할 때만 `VERSION="0.5.1"`을 고정한다. Current-main
@@ -151,17 +151,17 @@ local fake release asset을 사용한다:
 bash scripts/test-install-sh.sh
 ```
 
-v0.6.2 macOS installer path는 real release verification을 거쳤다. 이후 release에서는
+v0.6.3 macOS installer path는 real release verification을 거쳤다. 이후 release에서는
 public availability wording을 바꾸기 전에 그 verification을 반복한다:
 
 ```bash
-VERSION="0.6.2"
+VERSION="0.6.3"
 sh install.sh --dry-run --version "$VERSION"
 BINDIR="$(mktemp -d)" sh install.sh --version "$VERSION"
 ```
 
 Historical v0.5.1 verification은 2026-06-08에 old `ni` release assets 기준으로
-통과했다. v0.6.2 macOS verification은
-[`141_V0_6_2_POST_RELEASE_VERIFICATION.ko.md`](141_V0_6_2_POST_RELEASE_VERIFICATION.ko.md)에
+통과했다. v0.6.3 macOS verification은
+[`142_V0_6_3_POST_RELEASE_VERIFICATION.ko.md`](142_V0_6_3_POST_RELEASE_VERIFICATION.ko.md)에
 기록되어 있다. Current tree command-name verification은 `bash scripts/install-check.sh`가
 temporary install directory와 fresh shell PATH context로 cover한다.

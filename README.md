@@ -22,7 +22,7 @@ Namba Intent turns a planning conversation into a docs contract, checks
 readiness, locks the accepted plan, and compiles a bounded downstream handoff
 prompt.
 
-v0.6.2 is the current published Namba Intent release. The primary command is
+v0.6.3 is the current published Namba Intent release. The primary command is
 `namba-intent`; the legacy `ni` command is a deprecated shim only.
 
 <p align="center">
@@ -129,7 +129,7 @@ downstream execution runtime.
 ## Status
 
 - v0.5.1 publication: verified for the historical `ni` command.
-- v0.6.2 release: published and verified for `namba-intent` on macOS darwin/arm64.
+- v0.6.3 release: published and verified for `namba-intent` on macOS darwin/arm64.
 - Primary command in current tree: `namba-intent`.
 - Deprecated transition shim: `ni` warns `ni is deprecated; use namba-intent.`
 - Repository: `Nam-Cheol/ni` retained.

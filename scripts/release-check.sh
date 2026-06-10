@@ -3,7 +3,7 @@ set -euo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 QUICKSTART_TMP="$(mktemp -d "${TMPDIR:-/tmp}/ni-release-check.XXXXXX")"
-CURRENT_RELEASE_VERSION="v0.5.1"
+CURRENT_RELEASE_VERSION="v0.6.3"
 PLANNED_RELEASE_VERSION="post-release follow-up"
 
 trap 'rm -rf "$QUICKSTART_TMP"' EXIT
@@ -486,6 +486,63 @@ for path in required_paths:
             raise SystemExit(f"{path} appears to make a forbidden v0.5.1 claim: {claim}")
 PY
 
+run_step "v0.6.3 post-release docs are factual" python3 - <<'PY'
+from pathlib import Path
+
+required_paths = [
+    Path("docs/142_V0_6_3_POST_RELEASE_VERIFICATION.md"),
+    Path("docs/142_V0_6_3_POST_RELEASE_VERIFICATION.ko.md"),
+]
+
+for path in required_paths:
+    if not path.exists():
+        raise SystemExit(f"{path} is missing")
+
+required_markers = {
+    Path("docs/142_V0_6_3_POST_RELEASE_VERIFICATION.md"): [
+        "V0_6_3_RELEASE_EXECUTED_AND_VERIFIED",
+        "d048158a91f64888a71304ee1547ff6c4bbebe0e",
+        "https://github.com/Nam-Cheol/ni/releases/tag/v0.6.3",
+        "27244128964",
+        "2026-06-10T00:11:42Z",
+        "namba-intent_0.6.3_checksums.txt",
+        "namba-intent_0.6.3_darwin_arm64.tar.gz",
+        "namba-intent_0.6.3_windows_amd64.zip",
+        "Default `gh release view --repo Nam-Cheol/ni` returned `v0.6.3`",
+        "Installed binary version | `0.6.3`",
+        "Returned expected first-run `BLOCKED` status",
+        "Printed guidance only; no download or install",
+        "Windows real-host install execution remains deferred",
+        "no task runner, SPEC runner,",
+        "downstream execution layer was added",
+    ],
+    Path("docs/142_V0_6_3_POST_RELEASE_VERIFICATION.ko.md"): [
+        "V0_6_3_RELEASE_EXECUTED_AND_VERIFIED",
+        "d048158a91f64888a71304ee1547ff6c4bbebe0e",
+        "https://github.com/Nam-Cheol/ni/releases/tag/v0.6.3",
+        "27244128964",
+        "2026-06-10T00:11:42Z",
+        "namba-intent_0.6.3_checksums.txt",
+        "namba-intent_0.6.3_darwin_arm64.tar.gz",
+        "namba-intent_0.6.3_windows_amd64.zip",
+        "Default `gh release view --repo Nam-Cheol/ni`는 `v0.6.3`를 반환",
+        "Installed binary version | `0.6.3`",
+        "Expected first-run `BLOCKED` status 반환",
+        "Guidance만 출력; download/install 없음",
+        "Windows real-host\n  install execution은 Windows transcript가 있을 때까지 deferred",
+        "task runner, SPEC runner, shell adapter, Codex",
+        "downstream execution layer는",
+        "추가하지 않았다",
+    ],
+}
+
+for path, markers in required_markers.items():
+    text = path.read_text(encoding="utf-8")
+    missing = [marker for marker in markers if marker not in text]
+    if missing:
+        raise SystemExit(f"{path} is missing v0.6.3 post-release markers: {missing}")
+PY
+
 run_step "release facts match repository resources" python3 - <<'PY'
 from pathlib import Path
 
@@ -562,13 +619,13 @@ release_claim_markers = {
     "README.md": [
         "README shows two primary first-success paths for the current tree.",
         "Homebrew: Planned / v0.5 candidate.",
-        "v0.6.2 release: published and verified for `namba-intent` on macOS darwin/arm64.",
+        "v0.6.3 release: published and verified for `namba-intent` on macOS darwin/arm64.",
         "Primary command in current tree: `namba-intent`.",
     ],
     "README.ko.md": [
         "README는 current tree의 첫 성공을 위한 두 가지 primary path만 보여줍니다.",
         "Homebrew: Planned / v0.5 candidate.",
-        "v0.6.2 release: macOS darwin/arm64에서 `namba-intent` 기준 published and verified.",
+        "v0.6.3 release: macOS darwin/arm64에서 `namba-intent` 기준 published and verified.",
         "Primary command: `namba-intent`.",
     ],
 }
