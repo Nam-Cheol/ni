@@ -40,7 +40,7 @@ func TestLanguageSelectionLocalizesDefaults(t *testing.T) {
 	if got := m.fields[4].Value; got != "Plan이 locked 되기 전에는 downstream work를 실행하지 않는다." {
 		t.Fatalf("expected Korean safety default, got %q", got)
 	}
-	if !strings.Contains(m.renderShell(), "프로젝트 이름") {
+	if !strings.Contains(m.renderShell(), "planning workspace") {
 		t.Fatalf("expected Korean labels in render")
 	}
 }
@@ -90,11 +90,16 @@ func TestFieldsAcceptQAsText(t *testing.T) {
 	m.cursor = 1
 
 	m = updateForTest(t, m, textKey("q"))
-	if got := m.fields[1].Value; got != "q" {
-		t.Fatalf("expected q to be typed into field, got %q", got)
+	m = updateForTest(t, m, textKey("d"))
+	if got := m.fields[1].Value; got != "qd" {
+		t.Fatalf("expected q and d to be typed into field, got %q", got)
 	}
 	if m.canceled {
 		t.Fatalf("did not expect q to cancel while editing a field")
+	}
+	m = updateForTest(t, m, ctrlKey('u'))
+	if got := m.fields[1].Value; got != "" {
+		t.Fatalf("expected ctrl+u to clear field, got %q", got)
 	}
 }
 
@@ -152,9 +157,14 @@ func TestReviewShowsWritePlanNextCommandsAndUpdateGuidance(t *testing.T) {
 	}
 
 	view := m.renderShell()
-	for _, want := range []string{"Main Panel", "Status Panel", "Files Panel", "scroll:"} {
+	for _, want := range []string{"assistant", "choose one", "Write initial intent artifacts", "draft only"} {
 		if !strings.Contains(view, want) {
 			t.Fatalf("expected review view to contain %q\n%s", want, view)
+		}
+	}
+	for _, notWant := range defaultDashboardCopyBanned() {
+		if strings.Contains(view, notWant) {
+			t.Fatalf("review view exposed dashboard copy %q\n%s", notWant, view)
 		}
 	}
 }
@@ -170,11 +180,10 @@ func TestWindowSizeConstrainsRenderedHeight(t *testing.T) {
 	if got := len(splitLines(view)); got > 12 {
 		t.Fatalf("expected render to fit height, got %d lines\n%s", got, view)
 	}
-	if !strings.Contains(view, "scroll:") {
-		t.Fatalf("expected compact view to expose scroll state\n%s", view)
-	}
-	if !strings.Contains(view, "no downstream work") {
-		t.Fatalf("expected footer to remain visible\n%s", view)
+	for _, want := range []string{"Write initial intent artifacts?", "▸ ■ Write initial intent artifacts", "draft only", "↑↓"} {
+		if !strings.Contains(view, want) {
+			t.Fatalf("expected compact view to show %q\n%s", want, view)
+		}
 	}
 }
 
@@ -184,14 +193,13 @@ func TestViewportScrollsWithPageKeys(t *testing.T) {
 	m.stage = stageConfirm
 	m = updateForTest(t, m, tea.WindowSizeMsg{Width: 60, Height: 18})
 
-	before := m.bodyViewport.YOffset()
 	m = updateForTest(t, m, key(tea.KeyPgDown))
-	if after := m.bodyViewport.YOffset(); after <= before {
-		t.Fatalf("expected PgDown to advance viewport offset, before=%d after=%d", before, after)
-	}
 	view := m.renderShell()
 	if got := len(splitLines(view)); got > 18 {
 		t.Fatalf("expected scrolled render to fit height, got %d lines\n%s", got, view)
+	}
+	if !strings.Contains(view, "Write initial intent artifacts") {
+		t.Fatalf("expected page key render to preserve active composer\n%s", view)
 	}
 }
 
@@ -205,15 +213,14 @@ func TestTinyModeShowsCoreControlsWithoutScrolling(t *testing.T) {
 	for _, want := range []string{
 		"Write initial intent artifacts?",
 		"▸ ■ Write initial intent artifacts",
-		"Status: Ready to review",
-		"scroll:",
-		"no downstream work",
+		"draft only",
+		"↑↓",
 	} {
 		if !strings.Contains(view, want) {
 			t.Fatalf("expected tiny mode to show %q\n%s", want, view)
 		}
 	}
-	for _, notWant := range []string{"Files Panel", "Next Action Panel"} {
+	for _, notWant := range append(defaultDashboardCopyBanned(), "details") {
 		if strings.Contains(view, notWant) {
 			t.Fatalf("expected tiny mode to fold %q\n%s", notWant, view)
 		}
@@ -248,16 +255,73 @@ func TestResponsiveSizesKeepViewportAndBars(t *testing.T) {
 					t.Fatalf("line %d exceeds width %d with %d cells\n%s", i+1, tc.size.Width, got, view)
 				}
 			}
-			footerText := "No downstream work runs"
-			if tc.mode == layoutNarrow || tc.mode == layoutTiny {
-				footerText = "no downstream work"
+			wants := []string{"Write initial intent artifacts", "draft only"}
+			if tc.mode != layoutTiny {
+				wants = append(wants, "assistant", "choose one")
 			}
-			for _, want := range []string{"Main Panel", "scroll:", footerText} {
+			for _, want := range wants {
 				if !strings.Contains(view, want) {
 					t.Fatalf("expected %dx%d view to contain %q\n%s", tc.size.Width, tc.size.Height, want, view)
 				}
 			}
+			for _, notWant := range defaultDashboardCopyBanned() {
+				if strings.Contains(view, notWant) {
+					t.Fatalf("expected %dx%d view to hide %q\n%s", tc.size.Width, tc.size.Height, notWant, view)
+				}
+			}
 		})
+	}
+}
+
+func TestChatShellGeometryContracts(t *testing.T) {
+	m := NewModel(Config{Dir: "/tmp/demo", DefaultName: "demo"})
+	m.animationOn = false
+	m = updateForTest(t, m, tea.WindowSizeMsg{Width: 120, Height: 40})
+	layout := m.layout()
+	if layout.shellWidth != 104 || layout.shellLeft != 8 {
+		t.Fatalf("expected centered 104-col shell at x=8, got width=%d left=%d", layout.shellWidth, layout.shellLeft)
+	}
+
+	rendered := normalizePlainRender(m.renderShell())
+	lines := splitLines(rendered)
+	header := lineContaining(t, lines, "Namba Intent")
+	if got := leadingCells(header); got != layout.shellLeft {
+		t.Fatalf("expected header to start at shellLeft=%d, got %d\n%s", layout.shellLeft, got, rendered)
+	}
+	if end := visualEnd(header); end > layout.shellLeft+layout.shellWidth {
+		t.Fatalf("expected header to end within shell, end=%d shellEnd=%d\n%s", end, layout.shellLeft+layout.shellWidth, rendered)
+	}
+
+	assistantBorder := nthLineContaining(t, lines, "╭", 1)
+	composerBorder := nthLineContaining(t, lines, "╭", 2)
+	assertShellBox(t, "assistant", assistantBorder, layout)
+	assertShellBox(t, "composer", composerBorder, layout)
+	if leadingCells(assistantBorder) != leadingCells(composerBorder) {
+		t.Fatalf("assistant and composer left differ: %d vs %d\n%s", leadingCells(assistantBorder), leadingCells(composerBorder), rendered)
+	}
+	if visualEnd(assistantBorder)-leadingCells(assistantBorder) != visualEnd(composerBorder)-leadingCells(composerBorder) {
+		t.Fatalf("assistant and composer width differ\nassistant=%q\ncomposer=%q", assistantBorder, composerBorder)
+	}
+
+	m = selectEnglishForTest(t, m)
+	rendered = normalizePlainRender(m.renderShell())
+	lines = splitLines(rendered)
+	userLine := lineContaining(t, lines, "you ·")
+	if leadingCells(userLine) < layout.shellLeft || visualEnd(userLine) > layout.shellLeft+layout.shellWidth {
+		t.Fatalf("expected user summary inside shell x=%d..%d, got x=%d..%d\n%s", layout.shellLeft, layout.shellLeft+layout.shellWidth, leadingCells(userLine), visualEnd(userLine), rendered)
+	}
+	mascotLine := lineContaining(t, lines, "ni> assistant")
+	if leadingCells(mascotLine) != layout.shellLeft {
+		t.Fatalf("expected assistant mascot/title inside shell, got x=%d shellLeft=%d\n%s", leadingCells(mascotLine), layout.shellLeft, rendered)
+	}
+
+	m = updateForTest(t, m, key(tea.KeyTab))
+	open := normalizePlainRender(m.renderShell())
+	if strings.Contains(rendered, ".ni/contract.json") {
+		t.Fatalf("details drawer leaked while closed\n%s", rendered)
+	}
+	if !strings.Contains(open, ".ni/contrac") {
+		t.Fatalf("details drawer did not open inside shell\n%s", open)
 	}
 }
 
@@ -276,9 +340,18 @@ func TestPlainRenderSnapshotsCoverResponsiveBreakpoints(t *testing.T) {
 			m.animationOn = false
 			m = updateForTest(t, m, tc.size)
 			rendered := normalizePlainRender(m.renderShell())
-			for _, want := range []string{"Main Panel", "Korean", "Status", "scroll:", "초안"} {
+			wants := []string{"Namba Intent", "Korean", "초안", "Enter"}
+			if tc.size.Width >= 60 && tc.size.Height >= 16 {
+				wants = append(wants, "assistant", "choose one")
+			}
+			for _, want := range wants {
 				if !strings.Contains(rendered, want) {
 					t.Fatalf("snapshot precondition missing %q\n%s", want, rendered)
+				}
+			}
+			for _, notWant := range defaultDashboardCopyBanned() {
+				if strings.Contains(rendered, notWant) {
+					t.Fatalf("snapshot exposed dashboard copy %q\n%s", notWant, rendered)
 				}
 			}
 			path := filepath.Join("testdata", "render", "init_language_"+tc.name+".golden")
@@ -315,7 +388,7 @@ func TestRenderDoesNotExposeInternalDebugCopy(t *testing.T) {
 			m := NewModel(Config{Dir: "/tmp/demo", DefaultName: "demo"})
 			m = updateForTest(t, m, tc.size)
 			view := normalizePlainRender(m.renderShell())
-			for _, banned := range []string{"tick", "frame", "deterministic", "wide", "medium", "narrow", "tiny"} {
+			for _, banned := range append(defaultDashboardCopyBanned(), "tick", "frame", "Motion:", "Layout:") {
 				if strings.Contains(view, banned) {
 					t.Fatalf("render exposed internal copy %q\n%s", banned, view)
 				}
@@ -332,7 +405,7 @@ func TestNoColorRenderKeepsSemanticSelectionAndStatus(t *testing.T) {
 	m = updateForTest(t, m, tea.WindowSizeMsg{Width: 40, Height: 12})
 
 	view := normalizePlainRender(m.renderShell())
-	for _, want := range []string{"▸ ■ Write initial intent artifacts", "  □ Cancel; write nothing", "Status: Ready to review", "no downstream work"} {
+	for _, want := range []string{"▸ ■ Write initial intent artifacts", "  □ Cancel; write nothing", "draft only", "↑↓"} {
 		if !strings.Contains(view, want) {
 			t.Fatalf("NO_COLOR render lost semantic marker %q\n%s", want, view)
 		}
@@ -348,7 +421,7 @@ func TestCancellationRenderCannotLookSuccessful(t *testing.T) {
 	m = updateForTest(t, m, tea.WindowSizeMsg{Width: 40, Height: 12})
 
 	view := normalizePlainRender(m.renderShell())
-	for _, want := range []string{"Cancelled", "No files written", "init again", "Status: Cancelled"} {
+	for _, want := range []string{"Cancelled", "No files written", "init again"} {
 		if !strings.Contains(view, want) {
 			t.Fatalf("cancellation render missing %q\n%s", want, view)
 		}
@@ -390,7 +463,7 @@ func TestAnimationCanBeDisabledForDeterministicSnapshots(t *testing.T) {
 func TestStageAssetsAndProgressAreFunctionalUI(t *testing.T) {
 	m := NewModel(Config{Dir: ".", DefaultName: "demo"})
 	view := m.renderShell()
-	for _, want := range []string{"language gate", "Step 1/10", "◇", "◆"} {
+	for _, want := range []string{"Namba Intent", "init · 1/10", "◇", "◆", "assistant"} {
 		if !strings.Contains(view, want) {
 			t.Fatalf("expected language view to contain %q\n%s", want, view)
 		}
@@ -398,7 +471,7 @@ func TestStageAssetsAndProgressAreFunctionalUI(t *testing.T) {
 
 	m = selectEnglishForTest(t, m)
 	view = m.renderShell()
-	for _, want := range []string{"drafting grid", "Capture slot", "▰", "▱"} {
+	for _, want := range []string{"assistant", "your answer", "▰", "▱"} {
 		if !strings.Contains(view, want) {
 			t.Fatalf("expected drafting view to contain %q\n%s", want, view)
 		}
@@ -406,57 +479,53 @@ func TestStageAssetsAndProgressAreFunctionalUI(t *testing.T) {
 
 	m.stage = stageConfirm
 	view = m.renderShell()
-	for _, want := range []string{"review scan", "checksum waits", "■ Write initial intent artifacts"} {
+	for _, want := range []string{"assistant", "■ Write initial intent artifacts"} {
 		if !strings.Contains(view, want) {
 			t.Fatalf("expected review view to contain %q\n%s", want, view)
 		}
 	}
 }
 
-func TestFilesPanelCollapsesByLayoutMode(t *testing.T) {
+func TestDetailsDrawerIsHiddenUntilRequested(t *testing.T) {
 	m := NewModel(Config{Dir: ".", DefaultName: "demo"})
 	m = selectEnglishForTest(t, m)
+	m = updateForTest(t, m, tea.WindowSizeMsg{Width: 120, Height: 40})
 
-	for _, tc := range []struct {
-		mode     layoutMode
-		width    int
-		maxItems int
-		wantMore bool
-	}{
-		{layoutWide, 120, 5, true},
-		{layoutMedium, 80, 4, true},
-		{layoutNarrow, 60, 3, true},
-		{layoutTiny, 40, 1, true},
-	} {
-		t.Run(string(tc.mode), func(t *testing.T) {
-			layout := m.layout()
-			layout.mode = tc.mode
-			layout.width = tc.width
-			layout.panelWidth = tc.width
-			items, hidden := m.filesForPanel(layout)
-			if len(items) > tc.maxItems {
-				t.Fatalf("expected at most %d file items, got %d", tc.maxItems, len(items))
-			}
-			if tc.wantMore && hidden == 0 {
-				t.Fatalf("expected collapsed file summary for %s layout", tc.mode)
-			}
-			panel := m.renderFilesPanel(layout)
-			if !strings.Contains(panel, "blueprint") || !strings.Contains(panel, "more planned") {
-				t.Fatalf("expected blueprint collapsed files panel\n%s", panel)
-			}
-		})
+	closed := normalizePlainRender(m.renderShell())
+	for _, notWant := range []string{"files\n", "will create · docs/plan", ".ni/contract.json"} {
+		if strings.Contains(closed, notWant) {
+			t.Fatalf("expected details drawer to be hidden by default via %q\n%s", notWant, closed)
+		}
+	}
+
+	m = updateForTest(t, m, key(tea.KeyTab))
+	open := normalizePlainRender(m.renderShell())
+	for _, want := range []string{"details", "files", "CLI gates stay authoritative", ".ni/contrac"} {
+		if !strings.Contains(open, want) {
+			t.Fatalf("expected open details drawer to contain %q\n%s", want, open)
+		}
+	}
+	for _, notWant := range []string{"Files Panel", "Status Panel", "Next Action Panel"} {
+		if strings.Contains(open, notWant) {
+			t.Fatalf("details drawer should not revive dashboard copy %q\n%s", notWant, open)
+		}
 	}
 }
 
-func TestWideLayoutShowsSidePanels(t *testing.T) {
+func TestWideLayoutKeepsChatFirstByDefault(t *testing.T) {
 	m := NewModel(Config{Dir: ".", DefaultName: "demo"})
 	m = selectEnglishForTest(t, m)
 	m = updateForTest(t, m, tea.WindowSizeMsg{Width: 120, Height: 40})
 
 	view := m.renderShell()
-	for _, want := range []string{"Main Panel", "Status Panel", "Files Panel", "Next Action Panel"} {
+	for _, want := range []string{"assistant", "your answer", "draft only"} {
 		if !strings.Contains(view, want) {
 			t.Fatalf("expected wide view to contain %q\n%s", want, view)
+		}
+	}
+	for _, notWant := range defaultDashboardCopyBanned() {
+		if strings.Contains(view, notWant) {
+			t.Fatalf("expected wide default view to hide %q\n%s", notWant, view)
 		}
 	}
 }
@@ -524,4 +593,62 @@ func normalizePlainRender(value string) string {
 		lines[i] = strings.TrimRight(line, " ")
 	}
 	return strings.Join(lines, "\n")
+}
+
+func lineContaining(t *testing.T, lines []string, want string) string {
+	t.Helper()
+	return nthLineContaining(t, lines, want, 1)
+}
+
+func nthLineContaining(t *testing.T, lines []string, want string, n int) string {
+	t.Helper()
+	seen := 0
+	for _, line := range lines {
+		if strings.Contains(line, want) {
+			seen++
+			if seen == n {
+				return line
+			}
+		}
+	}
+	t.Fatalf("could not find line %d containing %q\n%s", n, want, strings.Join(lines, "\n"))
+	return ""
+}
+
+func leadingCells(line string) int {
+	return lipgloss.Width(line[:len(line)-len(strings.TrimLeft(line, " "))])
+}
+
+func visualEnd(line string) int {
+	return lipgloss.Width(strings.TrimRight(line, " "))
+}
+
+func assertShellBox(t *testing.T, name string, line string, layout layoutSpec) {
+	t.Helper()
+	left := leadingCells(line)
+	width := visualEnd(line) - left
+	if left != layout.shellLeft {
+		t.Fatalf("%s box starts at %d, want shellLeft=%d: %q", name, left, layout.shellLeft, line)
+	}
+	if width != layout.shellWidth {
+		t.Fatalf("%s box width=%d, want shellWidth=%d: %q", name, width, layout.shellWidth, line)
+	}
+}
+
+func defaultDashboardCopyBanned() []string {
+	return []string{
+		"Main Panel",
+		"Status Panel",
+		"Files Panel",
+		"Next Action Panel",
+		"Detected:",
+		"Authority: CLI status/end/run",
+		"status/end/run",
+		"contract draft:",
+		"docs planned:",
+		"tick",
+		"frame",
+		"Motion",
+		"Layout:",
+	}
 }

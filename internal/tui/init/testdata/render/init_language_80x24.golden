@@ -1,24 +1,24 @@
-Namba Intent                                     namba-intent init / 언어 선택
-╭─────────────────────────────────────────╮┌───────────────────────┐
-│                                         ││                       │
-│  Main Panel                             ││  Status Panel         │
-│  ╭─ Namba Intent ─╮                     ││  초안 준비            │
-│  │ language gate  │  ◇ ko  ◆ en         ││  Project directory를  │
-│  ╰─ draft path ┄──╯                     ││  감지했습니다.        │
-│  Project Intent 초기화                  ││  guided               │
-│                                         ││  intent capture 전에  │
-│  Step 1/10  ▓▱▱▱▱▱▱▱▱▱                  ││  언어를 선택합니다.   │
-│                                         ││                       │
-│  Intent 수집 gate에 사용할 언어를       ││  Current: Korean      │
-│  선택하세요.                            ││  State: 초안 작성     │
-│  이 화면은 intent 초안만 만듭니다.      ││  Authority: CLI       │
-│  status/lock/handoff 권한은 CLI에       ││  status/end/run       │
-│  남습니다.                              ││  Detected: /tmp/demo  │
-│                                         ││                       │
-│  ▸ ◆ Korean                             │└───────────────────────┘
-│      한국어 사용자에게 자연스러운       │┌───────────────────────┐
-│  planning                               ││                       │
-│  안내를 보여줍니다.                     ││  Files Panel          │
-│    ◇ English                            ││  blueprint:           │
-↑↓ Enter 1/2 q  |  scroll: 1/22 ▾ PgDn/End
-downstream 작업은 실행하지 않습니다. init은 docs와 contract 초안만 만듭니다.
+  Namba Intent                            init · 1/10 · ▓▱▱▱▱▱▱▱▱▱ · d details
+  ╭──────────────────────────────────────────────────────────────────────────╮
+  │                                                                          │
+  │  ni> assistant                                                           │
+  │  먼저 intent를 어떤 언어로 작성할까요?                                   │
+  │  문서와 리뷰 안내에 같은 언어를 사용합니다.                              │
+  │  아래에서 하나를 고르세요. ·                                             │
+  │                                                                          │
+  ╰──────────────────────────────────────────────────────────────────────────╯
+
+
+
+
+
+
+
+
+  ╭──────────────────────────────────────────────────────────────────────────╮
+  │ choose one                                                               │
+  │ ▸ ◆ Korean                                                               │
+  │   ◇ English                                                              │
+  ╰──────────────────────────────────────────────────────────────────────────╯
+  초안만 · 파일 쓰지 않음 · d details
+  ↑↓ choose · Enter select · 1/2 quick select · q quit · d details

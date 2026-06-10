@@ -1,18 +1,18 @@
-Namba Intent                 namba-intent init / 언어 선택
-╭────────────────────────────────────────────────────╮
-│                                                    │
-│  Main Panel                                        │
-│  NI language gate ◇◆                               │
-│  Project Intent 초기화                             │
-│                                                    │
-│  Step 1/10  ▓▱▱▱▱▱▱▱▱▱                             │
-│                                                    │
-│  Intent 수집 gate에 사용할 언어를 선택하세요.      │
-│  Status: 초안 준비 · Korean                        │
-│                                                    │
-│  ▸ ◆ Korean                                        │
-│    ◇ English                                       │
-│                                                    │
-│                                                    │
-↑↓ Enter 1/2 q  |  scroll: 1/32 ▾ PgDn/End
-init은 초안만 작성; 실행 없음.
+ Namba Intent          init · 1/10 · ▓▱▱▱▱▱▱▱▱▱ · d details
+ ni> assistant: 먼저 intent를 어떤 언어로 작성할까요? 문서…
+
+
+
+
+
+ ╭────────────────────────────────────────────────────────╮
+ │ choose one                                             │
+ │ ▸ ◆ Korean                                             │
+ │   ◇ English                                            │
+ ╰────────────────────────────────────────────────────────╯
+ 초안만 · 파일 쓰지 않음 · d details
+
+
+
+
+ ↑↓ choose · Enter select · 1/2 quick select · q quit · d …

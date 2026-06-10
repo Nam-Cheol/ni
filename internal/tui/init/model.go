@@ -98,6 +98,7 @@ type Model struct {
 	bodyViewport   viewport.Model
 	frame          int
 	animationOn    bool
+	detailsOpen    bool
 	confirmed      bool
 	canceled       bool
 	choice         ExistingChoice
@@ -188,6 +189,23 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		m.canceled = true
 		m.stage = stageDone
 		return m, tea.Quit
+	case "ctrl+u":
+		if m.stage == stageFields {
+			m.fields[m.cursor].Value = ""
+			return m, nil
+		}
+	case "tab":
+		if m.layout().mode != layoutTiny {
+			m.detailsOpen = !m.detailsOpen
+			m.resetViewport()
+		}
+		return m, nil
+	case "d":
+		if m.stage != stageFields && m.layout().mode != layoutTiny {
+			m.detailsOpen = !m.detailsOpen
+			m.resetViewport()
+			return m, nil
+		}
 	}
 
 	if next, handled := m.updateViewport(key); handled {
@@ -410,11 +428,15 @@ func (m Model) Result() Result {
 }
 
 type layoutSpec struct {
-	width      int
-	height     int
-	bodyHeight int
-	panelWidth int
-	mode       layoutMode
+	width       int
+	height      int
+	bodyHeight  int
+	panelWidth  int
+	shellLeft   int
+	shellWidth  int
+	chatWidth   int
+	drawerWidth int
+	mode        layoutMode
 }
 
 func newBodyViewport(width int, height int) viewport.Model {
@@ -445,14 +467,10 @@ func (m *Model) resetViewport() {
 func (m Model) renderShell() string {
 	layout := m.layout()
 	m.refreshViewport()
-	bodyHeight := m.bodyViewport.Height()
-	totalLines := m.bodyViewport.TotalLineCount()
-	offset := m.bodyViewport.YOffset()
 	header := m.renderHeader(layout)
-	footer := m.renderFooter(layout)
-	help := m.renderHelpBar(layout, totalLines, bodyHeight, offset)
+	help := m.renderBottomHelp(layout)
 	body := m.bodyViewport.View()
-	screen := lipgloss.JoinVertical(lipgloss.Left, header, body, help, footer)
+	screen := lipgloss.JoinVertical(lipgloss.Left, header, body, help)
 	return fitToHeight(screen, layout.height)
 }
 
@@ -478,133 +496,290 @@ func (m Model) layout() layoutSpec {
 	default:
 		mode = layoutWide
 	}
-	bodyHeight := height - 3
+	bodyHeight := height - 2
 	if bodyHeight < 1 {
 		bodyHeight = 1
 	}
+	horizontalMargin := 2
+	maxShellWidth := 104
+	switch mode {
+	case layoutMedium:
+		horizontalMargin = 2
+		maxShellWidth = max(24, width-4)
+	case layoutNarrow:
+		horizontalMargin = 1
+		maxShellWidth = max(24, width-2)
+	case layoutTiny:
+		horizontalMargin = 0
+		maxShellWidth = width
+	}
+	availableWidth := max(24, width-horizontalMargin*2)
+	shellWidth := min(availableWidth, maxShellWidth)
+	shellLeft := max(0, (width-shellWidth)/2)
+	chatWidth := shellWidth
+	drawerWidth := 0
+	if mode == layoutWide && m.detailsOpen {
+		drawerWidth = min(36, max(28, shellWidth/3))
+		chatWidth = max(48, shellWidth-drawerWidth-2)
+	} else if m.detailsOpen && mode != layoutTiny {
+		drawerWidth = shellWidth
+	}
 	return layoutSpec{
-		width:      width,
-		height:     height,
-		bodyHeight: bodyHeight,
-		panelWidth: max(24, width),
-		mode:       mode,
+		width:       width,
+		height:      height,
+		bodyHeight:  bodyHeight,
+		panelWidth:  chatWidth,
+		shellLeft:   shellLeft,
+		shellWidth:  shellWidth,
+		chatWidth:   chatWidth,
+		drawerWidth: drawerWidth,
+		mode:        mode,
 	}
 }
 
 func (m Model) renderHeader(layout layoutSpec) string {
-	mode := m.modeLabel()
 	left := headerTitleStyle.Render("Namba Intent")
-	right := headerMetaStyle.Render(fmt.Sprintf("%s init / %s", m.commandName, mode))
+	progress := fmt.Sprintf("init · %d/%d · %s · d details", m.currentStep(), m.totalSteps(), renderProgress(m.currentStep(), m.totalSteps(), m.frame, layout))
+	if m.stage == stageDone {
+		progress = m.t("init · closed", "init · 종료")
+	}
+	right := headerMetaStyle.Render(progress)
 	if layout.mode == layoutTiny {
-		line := compactModeStyle.Render(truncatePlain("Namba Intent / "+m.commandName+" init / "+mode, layout.width))
+		line := compactModeStyle.Render(truncatePlain("Namba Intent  "+progress, layout.shellWidth))
 		return headerBarStyle.Width(layout.width).Render(line)
 	}
-	gap := max(1, layout.width-lipgloss.Width(left)-lipgloss.Width(right)-2)
-	return headerBarStyle.Width(layout.width).Render(left + strings.Repeat(" ", gap) + right)
+	gap := max(1, layout.shellWidth-lipgloss.Width(left)-lipgloss.Width(right))
+	content := left + strings.Repeat(" ", gap) + right
+	line := strings.Repeat(" ", layout.shellLeft) + truncatePlain(content, layout.shellWidth)
+	return headerBarStyle.Width(layout.width).Render(line)
 }
 
 func (m Model) renderBody(layout layoutSpec) string {
 	if layout.mode == layoutTiny {
-		return m.renderTinyBody(layout)
+		return m.renderTinyChat(layout)
 	}
-	main := m.renderMainPanel(layout)
-	status := m.renderStatusPanel(layout)
-	if m.stage == stageDone && m.canceled {
-		switch layout.mode {
-		case layoutWide, layoutMedium:
-			leftWidth := max(44, layout.width*62/100)
-			rightWidth := max(28, layout.width-leftWidth)
-			return lipgloss.JoinHorizontal(lipgloss.Top,
-				m.renderMainPanel(layout.withWidth(leftWidth)),
-				m.renderStatusPanel(layout.withWidth(rightWidth)),
-			)
-		default:
-			return lipgloss.JoinVertical(lipgloss.Left, main, status)
-		}
+	chat := m.renderChatShell(layout.withWidth(layout.chatWidth))
+	if !m.detailsOpen {
+		return renderShellContent(layout, chat)
 	}
-	next := m.renderNextActionPanel(layout)
-	files := m.renderFilesPanel(layout)
-	switch layout.mode {
-	case layoutWide:
-		leftWidth := max(44, layout.width*48/100)
-		middleWidth := max(28, layout.width*25/100)
-		rightWidth := max(24, layout.width-leftWidth-middleWidth)
-		left := m.renderMainPanel(layout.withWidth(leftWidth))
-		middle := lipgloss.JoinVertical(lipgloss.Left,
-			m.renderStatusPanel(layout.withWidth(middleWidth)),
-			m.renderNextActionPanel(layout.withWidth(middleWidth)),
+	if layout.mode == layoutWide {
+		body := lipgloss.JoinHorizontal(lipgloss.Top,
+			chat,
+			"  ",
+			m.renderDetailsDrawer(layout.withWidth(layout.drawerWidth)),
 		)
-		right := m.renderFilesPanel(layout.withWidth(rightWidth))
-		return lipgloss.JoinHorizontal(lipgloss.Top, left, middle, right)
-	case layoutMedium:
-		leftWidth := max(44, layout.width*62/100)
-		rightWidth := max(28, layout.width-leftWidth)
-		return lipgloss.JoinHorizontal(lipgloss.Top,
-			m.renderMainPanel(layout.withWidth(leftWidth)),
-			lipgloss.JoinVertical(lipgloss.Left,
-				m.renderStatusPanel(layout.withWidth(rightWidth)),
-				m.renderFilesPanel(layout.withWidth(rightWidth)),
-				m.renderNextActionPanel(layout.withWidth(rightWidth)),
-			),
-		)
-	case layoutNarrow:
-		return lipgloss.JoinVertical(lipgloss.Left, main, status, files, next)
-	default:
-		return lipgloss.JoinVertical(lipgloss.Left,
-			m.renderMainPanel(layout.withWidth(layout.width)),
-			m.renderStatusPanel(layout.withWidth(layout.width)),
-			m.renderNextActionPanel(layout.withWidth(layout.width)),
-		)
+		return renderShellContent(layout, body)
 	}
+	return renderShellContent(layout, lipgloss.JoinVertical(lipgloss.Left, chat, m.renderDetailsDrawer(layout.withWidth(layout.drawerWidth))))
 }
 
 func (l layoutSpec) withWidth(width int) layoutSpec {
 	l.panelWidth = width
 	l.width = width
+	l.shellLeft = 0
+	l.shellWidth = width
+	l.chatWidth = width
+	l.drawerWidth = 0
 	return l
 }
 
-func (m Model) renderMainPanel(layout layoutSpec) string {
+func (m Model) renderChatShell(layout layoutSpec) string {
+	inner := layout.withWidth(layout.chatWidth)
+	parts := []string{}
+	transcript := m.renderChatTranscript(inner)
+	parts = append(parts, transcript)
+	if chips := m.renderDoneCommandChips(inner); chips != "" {
+		parts = append(parts, chips)
+	}
+	composerParts := []string{}
+	switch m.stage {
+	case stageLanguage, stageExisting, stageConfirm:
+		composerParts = append(composerParts, m.renderChoiceComposer(inner))
+	case stageFields:
+		composerParts = append(composerParts, m.renderTextComposer(inner))
+	}
+	composerParts = append(composerParts, m.renderQuietSummary(inner))
+	spacerHeight := max(1, layout.bodyHeight-renderLineCount(parts)-renderLineCount(composerParts)-1)
+	if layout.mode == layoutNarrow {
+		spacerHeight = max(1, min(spacerHeight, 3))
+	}
+	parts = append(parts, strings.Repeat("\n", spacerHeight))
+	parts = append(parts, composerParts...)
+	return strings.Join(parts, "\n")
+}
+
+func (m Model) renderChatTranscript(layout layoutSpec) string {
+	rows := []string{}
+	for _, summary := range m.recentUserSummaries(layout) {
+		rows = append(rows, m.renderUserSummaryBubble(summary, layout))
+	}
+	rows = append(rows, m.renderAssistantRow(layout))
+	return strings.Join(rows, "\n")
+}
+
+func (m Model) renderAssistantRow(layout layoutSpec) string {
+	if layout.mode == layoutNarrow {
+		avatar := asciiStyle.Render(m.stageAsset(layout).Compact)
+		message := "assistant: " + stripNewlines(m.assistantMessage(layout))
+		return avatar + " " + secondaryStyle.Render(truncatePlain(message, max(12, layout.panelWidth-lipgloss.Width(m.stageAsset(layout).Compact)-1))) + "\n"
+	}
+	title := asciiStyle.Render(m.stageAsset(layout).Compact) + " " + sectionStyle.Render("assistant")
+	return m.renderChatBox(title, m.assistantMessage(layout), layout.chatWidth, assistantBubbleStyle) + "\n"
+}
+
+func (m Model) renderUserSummaryBubble(summary string, layout layoutSpec) string {
+	chip := userChipStyle.Render(truncatePlain("you · "+summary, max(12, layout.panelWidth-4)))
+	pad := 0
+	if layout.mode != layoutNarrow {
+		pad = max(0, layout.panelWidth-lipgloss.Width(chip)-2)
+	}
+	return lipgloss.NewStyle().MarginLeft(pad).Render(chip) + "\n"
+}
+
+func (m Model) renderChoiceComposer(layout layoutSpec) string {
 	switch m.stage {
 	case stageLanguage:
-		return m.renderLanguagePanel(layout)
+		options := []struct {
+			label string
+			help  string
+		}{
+			{"Korean", "한국어 사용자에게 자연스러운 planning 안내"},
+			{"English", "English labels, examples, and review guidance"},
+		}
+		lines := make([]string, 0, len(options))
+		for i, option := range options {
+			help := option.help
+			if layout.mode == layoutNarrow || layout.mode == layoutMedium {
+				help = ""
+			}
+			lines = append(lines, strings.TrimRight(m.renderChoiceLine(i == m.languageCursor, option.label, help, layout), "\n"))
+		}
+		return m.renderComposerBox("choose one", strings.Join(lines, "\n"), layout)
 	case stageExisting:
-		return m.renderExistingPanel(layout)
+		options := []string{
+			m.t("Add missing files only", "누락된 파일만 추가"),
+			m.t("Keep existing and exit", "기존 파일 유지 후 종료"),
+			m.t("Abort", "중단"),
+		}
+		lines := make([]string, 0, len(options))
+		for i, option := range options {
+			lines = append(lines, strings.TrimRight(m.renderOption(i == m.existingCursor, option, layout.panelWidth-8), "\n"))
+		}
+		return m.renderComposerBox("choose one", strings.Join(lines, "\n"), layout)
 	case stageConfirm:
-		return m.renderConfirmPanel(layout)
-	case stageDone:
-		return m.renderDonePanel(layout)
+		options := []string{
+			m.t("Write initial intent artifacts", "초기 intent 파일 저장"),
+			m.t("Cancel; write nothing", "취소하고 아무것도 쓰지 않기"),
+		}
+		lines := make([]string, 0, len(options))
+		for i, option := range options {
+			lines = append(lines, strings.TrimRight(m.renderOption(i == m.confirmCursor, option, layout.panelWidth-8), "\n"))
+		}
+		return m.renderComposerBox("choose one", strings.Join(lines, "\n"), layout)
 	default:
-		return m.renderFieldsPanel(layout)
+		return ""
 	}
 }
 
-func (m Model) renderTinyBody(layout layoutSpec) string {
-	lines := []string{sectionStyle.Render("Main Panel")}
+func (m Model) renderTextComposer(layout layoutSpec) string {
+	guide := m.fieldGuide(m.fields[m.cursor].Key)
+	value := strings.TrimSpace(m.fields[m.cursor].Value)
+	if value == "" {
+		value = "> " + m.textPlaceholder(guide)
+	} else {
+		value = "> " + value
+	}
+	width := m.composerWidth(layout)
+	body := answerStyle.Render(m.wrapComposerText(value, width-8))
+	return m.renderComposerBox(m.t("your answer", "your answer"), body, layout)
+}
+
+func (m Model) renderDoneCommandChips(layout layoutSpec) string {
+	if m.stage != stageDone || !m.confirmed {
+		return ""
+	}
+	commands := []string{
+		fmt.Sprintf("%s status --proof --next-questions", m.commandName),
+		fmt.Sprintf("%s end", m.commandName),
+	}
+	lines := make([]string, 0, len(commands))
+	for _, command := range commands {
+		lines = append(lines, commandChipStyle.Render(truncatePlain(command, max(12, layout.panelWidth-4))))
+	}
+	return strings.Join(lines, "\n")
+}
+
+func (m Model) renderDetailsDrawer(layout layoutSpec) string {
+	width := max(28, layout.panelWidth)
+	required := docstore.RequiredPaths()
+	items, _ := m.filesForPanel(layout.withWidth(width))
+	lines := []string{
+		fmt.Sprintf("docs planned: %d · contract draft: ready", len(required)),
+		"CLI gates stay authoritative",
+		"status, end, run",
+		"init writes drafts only; no downstream work runs",
+		"",
+		"files",
+	}
+	if len(items) == 0 {
+		lines = append(lines, "  no existing planning files detected")
+	} else {
+		for _, item := range items {
+			label := "will create"
+			if len(m.existingFiles) > 0 {
+				label = "preserve"
+			}
+			lines = append(lines, truncatePlain("  "+label+" · "+item.Path, max(8, width-6)))
+		}
+	}
+	if hidden := len(required) - len(items); hidden > 0 && len(m.existingFiles) == 0 {
+		lines = append(lines, fmt.Sprintf("  +%d more in docs/plan and .ni", hidden))
+	}
+	lines = append(lines, "", "Tab or d closes details")
+	return m.renderChatBox(sectionStyle.Render("details"), strings.Join(lines, "\n"), width, detailsDrawerStyle)
+}
+
+func (m Model) renderBottomHelp(layout layoutSpec) string {
+	var text string
+	switch m.stage {
+	case stageLanguage:
+		text = "↑↓ choose · Enter select · 1/2 quick select · q quit · d details"
+	case stageFields:
+		text = "type answer · Enter send · Esc back · Ctrl+U clear · q quit · d details"
+	case stageConfirm:
+		text = "↑↓ choose · Enter confirm · Esc back · q quit · d details"
+	case stageDone:
+		text = "q quit"
+	default:
+		text = "↑↓ choose · Enter send · Esc back · q quit · d details"
+	}
+	if layout.mode == layoutTiny {
+		text = "↑↓ · Enter · Esc · q"
+	}
+	content := truncatePlain(text, layout.shellWidth)
+	return helpBarStyle.Width(layout.width).Render(strings.Repeat(" ", layout.shellLeft) + content)
+}
+
+func (m Model) renderTinyChat(layout layoutSpec) string {
+	lines := []string{
+		asciiStyle.Render(m.stageAsset(layout).Compact),
+	}
 	switch m.stage {
 	case stageLanguage:
 		lines = append(lines,
-			asciiStyle.Render(m.stageAsset(layout).Compact),
-			panelHeadingStyle.Render(m.t("Project Intent initialization", "Project Intent 초기화")),
-			progressStyle.Render(renderProgress(m.currentStep(), m.totalSteps(), m.frame, layout)),
 			questionStyle.Render(truncatePlain(m.t("Choose intent language.", "Intent 언어를 선택하세요."), layout.width)),
 			strings.TrimRight(m.renderChoiceLine(m.languageCursor == 0, "Korean", "", layout), "\n"),
 			strings.TrimRight(m.renderChoiceLine(m.languageCursor == 1, "English", "", layout), "\n"),
 		)
 	case stageExisting:
 		lines = append(lines,
-			asciiStyle.Render(m.stageAsset(layout).Compact),
-			panelHeadingStyle.Render(m.t("Existing files", "기존 파일 보호")),
-			questionStyle.Render(truncatePlain(m.t("Choose a non-overwrite path.", "덮어쓰지 않는 경로를 선택하세요."), layout.width)),
+			questionStyle.Render(truncatePlain(m.t("Choose a safe existing-file path.", "기존 파일 처리 방식을 선택하세요."), layout.width)),
 			strings.TrimRight(m.renderOption(m.existingCursor == 0, m.t("Add missing files only", "누락분만 추가"), layout.width), "\n"),
-			strings.TrimRight(m.renderOption(m.existingCursor == 1, m.t("Keep existing and exit", "기존 파일 유지"), layout.width), "\n"),
+			strings.TrimRight(m.renderOption(m.existingCursor == 1, m.t("Keep existing and exit", "기존 유지"), layout.width), "\n"),
 			strings.TrimRight(m.renderOption(m.existingCursor == 2, m.t("Abort", "중단"), layout.width), "\n"),
 		)
 	case stageConfirm:
 		lines = append(lines,
-			asciiStyle.Render(m.stageAsset(layout).Compact),
-			panelHeadingStyle.Render(m.t("Review before write", "저장 전 확인")),
-			progressStyle.Render(renderProgress(m.currentStep(), m.totalSteps(), m.frame, layout)),
 			questionStyle.Render(truncatePlain(m.t("Write initial intent artifacts?", "초기 intent 파일을 저장할까요?"), layout.width)),
 			strings.TrimRight(m.renderOption(m.confirmCursor == 0, m.t("Write initial intent artifacts", "초기 intent 파일 저장"), layout.width), "\n"),
 			strings.TrimRight(m.renderOption(m.confirmCursor == 1, m.t("Cancel; write nothing", "취소하고 쓰지 않기"), layout.width), "\n"),
@@ -612,311 +787,187 @@ func (m Model) renderTinyBody(layout layoutSpec) string {
 	case stageDone:
 		if m.canceled {
 			lines = append(lines,
-				asciiStyle.Render(m.stageAsset(layout).Compact),
-				panelHeadingStyle.Render(m.t("Canceled", "취소됨")),
-				secondaryStyle.Render(truncatePlain(m.statusDetail(), layout.width)),
-				secondaryStyle.Render(truncatePlain(m.t("Run namba-intent init again.", "namba-intent init을 다시 실행할 수 있습니다."), layout.width)),
+				questionStyle.Render("Cancelled"),
+				secondaryStyle.Render("No files written"),
+				secondaryStyle.Render(truncatePlain("Run namba-intent init again", layout.width)),
 			)
-			break
+		} else {
+			lines = append(lines,
+				questionStyle.Render(m.t("Done", "완료")),
+				secondaryStyle.Render(truncatePlain(m.t("Initial intent draft is ready.", "초기 intent 초안이 준비됐습니다."), layout.width)),
+			)
 		}
-		lines = append(lines,
-			asciiStyle.Render(m.stageAsset(layout).Compact),
-			panelHeadingStyle.Render(m.t("Done", "완료")),
-			secondaryStyle.Render(truncatePlain(m.statusDetail(), layout.width)),
-		)
 	default:
 		guide := m.fieldGuide(m.fields[m.cursor].Key)
 		value := strings.TrimSpace(m.fields[m.cursor].Value)
 		if value == "" {
-			value = m.t("TODO allowed", "TODO 가능")
+			value = "> " + m.textPlaceholder(guide)
+		} else {
+			value = "> " + value
 		}
 		lines = append(lines,
-			asciiStyle.Render(m.stageAsset(layout).Compact),
-			progressStyle.Render(renderProgress(m.currentStep(), m.totalSteps(), m.frame, layout)),
 			questionStyle.Render(truncatePlain(guide.Hint, layout.width)),
-			labelStyle.Render(m.t("Current answer", "현재 답변"))+" "+truncatePlain(value, max(8, layout.width-16)),
-			selectedStyle.Render(truncatePlain("▸ ◆ "+guide.Label, layout.width)),
+			answerStyle.Render(truncatePlain(value, layout.width)),
 		)
 	}
-	lines = append(lines, mutedStyle.Render(truncatePlain("Status: "+m.statusSummary(), layout.width)))
+	lines = append(lines, mutedStyle.Render(truncatePlain(m.compactDraftSummary(), layout.width)))
 	return strings.TrimSpace(strings.Join(lines, "\n"))
 }
 
-func (m Model) renderLanguagePanel(layout layoutSpec) string {
-	var b strings.Builder
-	b.WriteString(m.renderStageArt(layout))
-	b.WriteString("\n")
-	b.WriteString(panelHeadingStyle.Render(m.t("Project Intent initialization", "Project Intent 초기화")))
-	b.WriteString("\n\n")
-	b.WriteString(progressStyle.Render(renderProgress(m.currentStep(), m.totalSteps(), m.frame, layout)))
-	b.WriteString("\n\n")
-	b.WriteString(questionStyle.Render(m.wrapText(m.t("Choose the language for the intent capture gate.", "Intent 수집 gate에 사용할 언어를 선택하세요."), layout.panelWidth-8)))
-	b.WriteString("\n")
-	if layout.mode == layoutNarrow {
-		b.WriteString(mutedStyle.Render(truncatePlain("Status: "+m.statusSummary(), max(8, layout.panelWidth-8))))
-		b.WriteString("\n\n")
-	} else {
-		b.WriteString(secondaryStyle.Render(m.wrapText(m.t("This screen drafts intent only; status, lock, and handoff remain CLI-authoritative.", "이 화면은 intent 초안만 만듭니다. status/lock/handoff 권한은 CLI에 남습니다."), layout.panelWidth-8)))
-		b.WriteString("\n\n")
-	}
-	options := []struct {
-		label string
-		help  string
-	}{
-		{"Korean", "한국어 사용자에게 자연스러운 planning 안내를 보여줍니다."},
-		{"English", "Use English labels, examples, and review guidance."},
-	}
-	for i, option := range options {
-		b.WriteString(m.renderChoiceLine(i == m.languageCursor, option.label, option.help, layout))
-	}
-	return m.renderPanel("Main Panel", b.String(), layout.panelWidth, activePanelStyle)
-}
-
-func (m Model) renderFieldsPanel(layout layoutSpec) string {
-	var b strings.Builder
-	guide := m.fieldGuide(m.fields[m.cursor].Key)
-	b.WriteString(m.renderStageArt(layout))
-	b.WriteString("\n")
-	b.WriteString(panelHeadingStyle.Render(m.t("Intent drafting machine", "Intent 수집 기계")))
-	b.WriteString("\n\n")
-	b.WriteString(progressStyle.Render(renderProgress(m.currentStep(), m.totalSteps(), m.frame, layout)))
-	b.WriteString("\n\n")
-	b.WriteString(questionStyle.Render(m.wrapText(guide.Hint, layout.panelWidth-8)))
-	b.WriteString("\n")
-	if layout.mode == layoutNarrow {
-		b.WriteString(mutedStyle.Render(truncatePlain("Status: "+m.statusSummary(), max(8, layout.panelWidth-8))))
-	} else {
-		b.WriteString(secondaryStyle.Render(m.wrapText(guide.Why, layout.panelWidth-8)))
-	}
-	b.WriteString("\n\n")
-	value := strings.TrimSpace(m.fields[m.cursor].Value)
-	if value == "" {
-		value = m.t("Type here; TODO is allowed when uncertainty should stay blocking.", "여기에 입력하세요. 불확실하면 TODO로 남겨 blocker가 보이게 해도 됩니다.")
-	}
-	answer := labelStyle.Render(m.t("Current answer", "현재 답변")) + "\n" + answerStyle.Render(m.wrapText(value, layout.panelWidth-12))
-	b.WriteString(m.renderPanel(m.t("Capture slot", "수집 슬롯"), answer, max(24, layout.panelWidth-4), activeInnerPanelStyle))
-	b.WriteString("\n")
-	if layout.mode != layoutTiny {
-		b.WriteString(sectionStyle.Render(m.t("Draft sequence", "초안 순서")))
-		b.WriteString("\n")
-	}
-	for _, i := range m.fieldIndexesForLayout(layout) {
-		field := m.fields[i]
-		fieldLabel := m.fieldGuide(field.Key).Label
-		value := strings.TrimSpace(field.Value)
-		if value == "" {
-			value = m.t("(empty)", "(비어 있음)")
-		}
-		line := fieldLabel + ": " + value
-		if i == m.cursor {
-			b.WriteString(selectedStyle.Render("▸ ◆ " + truncatePlain(line, max(8, layout.panelWidth-12))))
-		} else {
-			b.WriteString(normalStyle.Render("  ◇ " + truncatePlain(line, max(8, layout.panelWidth-12))))
-		}
-		b.WriteString("\n")
-	}
-	if hidden := len(m.fields) - len(m.fieldIndexesForLayout(layout)); hidden > 0 {
-		b.WriteString(mutedStyle.Render(fmt.Sprintf("  · +%d fields in this drafting pass", hidden)))
-		b.WriteString("\n")
-	}
-	if layout.mode != layoutTiny {
-		b.WriteString("\n")
-		b.WriteString(m.renderPanel(m.t("Field guide", "입력 안내"), m.renderGuide(guide, layout.panelWidth-14), max(24, layout.panelWidth-4), infoPanelStyle))
-	}
-	return m.renderPanel("Main Panel", b.String(), layout.panelWidth, activePanelStyle)
-}
-
-func (m Model) renderConfirmPanel(layout layoutSpec) string {
-	var b strings.Builder
-	b.WriteString(m.renderStageArt(layout))
-	b.WriteString("\n")
-	b.WriteString(panelHeadingStyle.Render(m.t("Review before write", "저장 전 마지막 확인")))
-	b.WriteString("\n")
-	b.WriteString(progressStyle.Render(renderProgress(m.currentStep(), m.totalSteps(), m.frame, layout)))
-	b.WriteString("\n\n")
-	if layout.mode == layoutNarrow {
-		b.WriteString(mutedStyle.Render(truncatePlain("Status: "+m.statusSummary(), max(8, layout.panelWidth-8))))
-		b.WriteString("\n\n")
-	}
-	indices := []int{0, 1, 2, 3, 5, 6, 7}
+func (m Model) renderQuietSummary(layout layoutSpec) string {
 	if layout.mode == layoutTiny {
-		indices = []int{0, 1, 5}
+		return mutedStyle.Render(truncatePlain(m.compactDraftSummary(), layout.width))
 	}
-	for _, index := range indices {
-		guide := m.fieldGuide(m.fields[index].Key)
-		value := strings.TrimSpace(m.fields[index].Value)
-		if value == "" {
-			value = "TODO"
-		}
-		b.WriteString(labelStyle.Render(guide.Label + ": "))
-		b.WriteString(m.wrapText(value, max(8, layout.panelWidth-14)))
-		b.WriteString("\n")
-	}
-	b.WriteString("\n")
-	for i, option := range []string{m.t("Write initial intent artifacts", "초기 intent 파일 저장"), m.t("Cancel; write nothing", "취소하고 아무것도 쓰지 않기")} {
-		b.WriteString(m.renderOption(i == m.confirmCursor, option, layout.panelWidth-8))
-	}
-	return m.renderPanel("Main Panel", b.String(), layout.panelWidth, activePanelStyle)
+	return mutedStyle.Render(truncatePlain(m.compactDraftSummary()+" · d details", layout.panelWidth))
 }
 
-func (m Model) renderExistingPanel(layout layoutSpec) string {
-	var b strings.Builder
-	b.WriteString(m.renderStageArt(layout))
-	b.WriteString("\n")
-	b.WriteString(panelHeadingStyle.Render(m.t("Existing planning files found", "기존 planning 파일을 찾았습니다")))
-	b.WriteString("\n")
-	b.WriteString(m.wrapText(m.t("Namba Intent init will not overwrite existing planning state. Choose a safe path.", "Namba Intent init은 기존 planning state를 덮어쓰지 않습니다. 안전한 경로를 선택하세요."), layout.panelWidth-8))
-	b.WriteString("\n\n")
-	for i, option := range []string{m.t("Add missing files only", "누락된 파일만 추가"), m.t("Keep existing and exit", "기존 파일 유지 후 종료"), m.t("Abort", "중단")} {
-		b.WriteString(m.renderOption(i == m.existingCursor, option, layout.panelWidth-8))
-	}
-	return m.renderPanel("Main Panel", b.String(), layout.panelWidth, activePanelStyle)
-}
-
-func (m Model) renderDonePanel(layout layoutSpec) string {
-	var b strings.Builder
-	b.WriteString(m.renderStageArt(layout))
-	b.WriteString("\n")
-	if m.canceled {
-		b.WriteString(panelHeadingStyle.Render(m.t("Canceled", "취소됨")))
-	} else {
-		b.WriteString(panelHeadingStyle.Render(m.t("Done", "완료")))
-	}
-	b.WriteString("\n\n")
-	b.WriteString(secondaryStyle.Render(m.wrapText(m.statusDetail(), layout.panelWidth-8)))
-	return m.renderPanel("Main Panel", b.String(), layout.panelWidth, activePanelStyle)
-}
-
-func (m Model) renderStatusPanel(layout layoutSpec) string {
-	status, detail := m.statusLine()
-	style := m.statusStyle()
-	lines := []string{
-		style.Render(status),
-		secondaryStyle.Render(m.wrapText(detail, layout.panelWidth-8)),
-		"",
-		labelStyle.Render("Current:") + " " + truncatePlain(m.currentSelection(), max(8, layout.panelWidth-18)),
-		labelStyle.Render("State:") + " " + m.stateLabel(),
-		labelStyle.Render("Authority:") + " " + "CLI status/end/run",
-		labelStyle.Render("Detected:") + " " + truncatePlain(m.dir, max(8, layout.panelWidth-18)),
-	}
-	if layout.mode == layoutTiny {
-		lines = lines[:min(len(lines), 5)]
-	}
-	return m.renderPanel("Status Panel", strings.Join(lines, "\n"), layout.panelWidth, statusPanelStyle)
-}
-
-func (m Model) renderFilesPanel(layout layoutSpec) string {
-	var b strings.Builder
-	items, hidden := m.filesForPanel(layout)
-	b.WriteString(blueprintStyle.Render(m.filesBlueprintLine(layout)))
-	b.WriteString("\n")
-	if len(items) == 0 {
-		b.WriteString(m.t("No planning files detected yet.", "아직 감지된 planning 파일이 없습니다."))
-	} else {
-		for _, item := range items {
-			b.WriteString(fileStatusStyle(item.Status).Render(item.Status))
-			b.WriteString(" ")
-			b.WriteString(blueprintTextStyle.Render(truncatePlain(item.Path, max(8, layout.panelWidth-18))))
-			b.WriteString("\n")
-		}
-	}
-	if hidden > 0 {
-		status := "planned"
-		if len(m.existingFiles) > 0 {
-			status = "skipped"
-		}
-		b.WriteString(mutedStyle.Render(fmt.Sprintf("+%d more %s", hidden, status)))
-		b.WriteString("\n")
-	}
-	return m.renderPanel("Files Panel", strings.TrimRight(b.String(), "\n"), layout.panelWidth, blueprintPanelStyle)
-}
-
-func (m Model) renderNextActionPanel(layout layoutSpec) string {
-	content := strings.Join([]string{
-		m.t("Next commands:", "다음 명령:"),
-		fmt.Sprintf("- %s status --proof --next-questions", m.commandName),
-		fmt.Sprintf("- %s end", m.commandName),
-		fmt.Sprintf("- %s run --max-chars 4000", m.commandName),
-		"",
-		m.t("Update check:", "업데이트 확인:"),
-		fmt.Sprintf("- %s version", m.commandName),
-	}, "\n")
-	switch m.stage {
-	case stageLanguage:
-		content = m.t("Choose a language, then capture the first project intent draft.", "언어를 선택한 뒤 첫 project intent 초안을 작성하세요.")
-	case stageExisting:
-		content = strings.Join([]string{
-			m.t("Choose how to handle existing files.", "기존 파일 처리 방식을 선택하세요."),
-			m.t("No locked planning state is modified by this screen.", "이 화면은 locked planning state를 수정하지 않습니다."),
-		}, "\n")
-	case stageConfirm:
-		content = strings.Join([]string{
-			m.t("Confirm write, then run:", "저장 확인 후 실행:"),
-			fmt.Sprintf("- %s status --proof --next-questions", m.commandName),
-			"",
-			m.t("This screen does not decide readiness or lock.", "이 화면은 readiness나 lock을 결정하지 않습니다."),
-			fmt.Sprintf("- %s version", m.commandName),
-		}, "\n")
-	}
-	return m.renderPanel("Next Action Panel", content, layout.panelWidth, statusPanelStyle)
-}
-
-func (m Model) renderHelpBar(layout layoutSpec, totalLines int, bodyHeight int, offset int) string {
-	scroll := "scroll: all visible"
-	if totalLines > bodyHeight {
-		hint := "▾"
-		if (m.frame/2)%2 == 1 {
-			hint = "▿"
-		}
-		if offset > 0 && offset >= totalLines-bodyHeight {
-			hint = "▴"
-		}
-		scroll = fmt.Sprintf("scroll: %d/%d %s PgDn/End", offset+1, max(1, totalLines-bodyHeight+1), hint)
-	}
-	var keys string
-	switch m.stage {
-	case stageLanguage:
-		keys = "↑↓ Enter 1/2 q"
-	case stageFields:
-		keys = m.t("↑↓ type Enter Esc", "↑↓ 입력 Enter Esc")
-	case stageConfirm:
-		keys = m.t("↑↓ Enter Esc q", "↑↓ Enter Esc q")
-	default:
-		keys = m.t("↑↓ Enter Esc/q", "↑↓ Enter Esc/q")
-	}
-	text := keys + "  |  " + scroll
-	if layout.mode == layoutTiny {
-		text = compactModeStyle.Render(scroll + " | " + keys)
-	}
-	text = truncatePlain(text, layout.width)
-	return helpBarStyle.Width(layout.width).Render(text)
-}
-
-func (m Model) renderFooter(layout layoutSpec) string {
-	summary := m.t("No downstream work runs. Init drafts docs and contract only.", "downstream 작업은 실행하지 않습니다. init은 docs와 contract 초안만 만듭니다.")
-	if layout.mode == layoutNarrow || layout.mode == layoutTiny {
-		summary = m.t("init drafts only; no downstream work.", "init은 초안만 작성; 실행 없음.")
-	}
-	if m.stage == stageDone {
-		if m.canceled {
-			summary = m.t("Canceled; no files written.", "취소됨; 파일을 쓰지 않았습니다.")
-		} else {
-			summary = m.t("Done.", "완료.")
-		}
-	}
-	return footerStyle.Width(layout.width).Render(truncatePlain(summary, layout.width))
-}
-
-func (m Model) renderPanel(title string, body string, width int, style lipgloss.Style) string {
+func (m Model) renderChatBox(title string, body string, width int, style lipgloss.Style) string {
 	width = max(20, width)
-	contentWidth := max(8, width-6)
-	titleLine := sectionStyle.Render(title)
-	if body != "" {
-		body = titleLine + "\n" + body
-	} else {
-		body = titleLine
+	return style.Width(width).Render(title + "\n" + body)
+}
+
+func (m Model) renderComposerBox(title string, body string, layout layoutSpec) string {
+	width := m.composerWidth(layout)
+	return composerStyle.Width(width).Render(sectionStyle.Render(title) + "\n" + body)
+}
+
+func (m Model) composerWidth(layout layoutSpec) int {
+	return max(28, layout.chatWidth)
+}
+
+func (m Model) avatarWidth(layout layoutSpec) int {
+	if layout.mode == layoutNarrow {
+		return lipgloss.Width(m.stageAsset(layout).Compact)
 	}
-	return style.Width(contentWidth).Render(body)
+	width := 0
+	for _, line := range m.stageAsset(layout).Lines {
+		width = max(width, lipgloss.Width(line))
+	}
+	return width
+}
+
+func (m Model) recentUserSummaries(layout layoutSpec) []string {
+	summaries := []string{}
+	if m.stage != stageLanguage {
+		summaries = append(summaries, m.t("language: "+m.languageLabel(), "언어: "+m.languageLabel()))
+	}
+	if m.stage == stageFields && m.cursor > 0 {
+		if summary := m.fieldSummary(m.cursor - 1); summary != "" {
+			summaries = append(summaries, summary)
+		}
+	}
+	if m.stage == stageConfirm || m.stage == stageDone {
+		indexes := []int{max(0, len(m.fields)-2), len(m.fields) - 1}
+		if len(m.fields) > 2 {
+			indexes = []int{1, 5}
+		}
+		for _, index := range indexes {
+			if summary := m.fieldSummary(index); summary != "" {
+				summaries = append(summaries, summary)
+			}
+		}
+	}
+	if len(summaries) > 2 {
+		summaries = summaries[len(summaries)-2:]
+	}
+	if layout.mode == layoutNarrow && len(summaries) > 1 {
+		return summaries[len(summaries)-1:]
+	}
+	return summaries
+}
+
+func (m Model) fieldSummary(index int) string {
+	if index < 0 || index >= len(m.fields) {
+		return ""
+	}
+	value := strings.TrimSpace(m.fields[index].Value)
+	if value == "" {
+		return ""
+	}
+	label := m.fieldGuide(m.fields[index].Key).Label
+	return truncatePlain(label+": "+value, 72)
+}
+
+func (m Model) languageLabel() string {
+	if m.language == languageEnglish {
+		return "English"
+	}
+	return "Korean"
+}
+
+func (m Model) textPlaceholder(guide fieldGuide) string {
+	switch guide.Label {
+	case "One-sentence project goal", "프로젝트 목표 한 문장":
+		return m.t("enter the project goal in one sentence", "프로젝트 목표를 한 문장으로 입력하세요")
+	case "Project name", "프로젝트 이름":
+		return m.t("type a short project name", "짧은 프로젝트 이름을 입력하세요")
+	default:
+		return m.t("type your answer here", "여기에 답을 입력하세요")
+	}
+}
+
+func (m Model) wrapComposerText(text string, width int) string {
+	lines := splitLines(m.wrapText(text, max(8, width)))
+	if len(lines) > 3 {
+		lines = lines[len(lines)-3:]
+	}
+	return strings.Join(lines, "\n")
+}
+
+func (m Model) typingIndicator() string {
+	switch (m.frame / 3) % 3 {
+	case 0:
+		return "·"
+	case 1:
+		return "··"
+	default:
+		return "···"
+	}
+}
+
+func (m Model) assistantMessage(layout layoutSpec) string {
+	typing := m.typingIndicator()
+	switch m.stage {
+	case stageLanguage:
+		return m.wrapText(m.t(
+			"Which language should we use for this intent?\nI will use it for labels and review guidance.\nChoose one below. "+typing,
+			"먼저 intent를 어떤 언어로 작성할까요?\n문서와 리뷰 안내에 같은 언어를 사용합니다.\n아래에서 하나를 고르세요. "+typing,
+		), max(8, layout.panelWidth-8))
+	case stageExisting:
+		return m.wrapText(m.t(
+			"I found existing planning files.\nI will not overwrite them.\nChoose the safest path. "+typing,
+			"기존 planning 파일을 찾았습니다.\n덮어쓰지 않습니다.\n안전한 경로를 골라주세요. "+typing,
+		), max(8, layout.panelWidth-8))
+	case stageConfirm:
+		return m.wrapText(m.t(
+			"Ready to write the initial intent draft?\nThis still does not decide readiness or lock the plan.\nConfirm only if this draft looks right. "+typing,
+			"초기 intent 초안을 저장할까요?\nreadiness 판단이나 lock은 아직 CLI gate의 일입니다.\n초안이 맞으면 확인하세요. "+typing,
+		), max(8, layout.panelWidth-8))
+	case stageDone:
+		if m.canceled {
+			return m.wrapText(m.t(
+				"Cancelled\nNo files written\nRun namba-intent init again when ready.",
+				"Cancelled\nNo files written\n준비되면 namba-intent init을 다시 실행하세요.",
+			), max(8, layout.panelWidth-8))
+		}
+		return m.wrapText(m.t(
+			"Initial intent draft is ready.\nUse the command chips below for the next gate.\nKeep answering blockers before locking.",
+			"초기 intent 초안이 준비됐습니다.\n아래 command chip으로 다음 gate를 확인하세요.\nlock 전에는 blocker를 계속 답하세요.",
+		), max(8, layout.panelWidth-8))
+	default:
+		guide := m.fieldGuide(m.fields[m.cursor].Key)
+		return m.wrapText(guide.Hint+"\n"+guide.Why+"\n"+m.t("Answer in one compact sentence if you can. ", "가능하면 한 문장으로 답하세요. ")+typing, max(8, layout.panelWidth-8))
+	}
+}
+
+func (m Model) compactDraftSummary() string {
+	if m.stage == stageDone && m.confirmed {
+		return m.t("draft written", "초안 저장됨")
+	}
+	if m.stage == stageDone && m.canceled {
+		return m.t("no files written", "파일 쓰지 않음")
+	}
+	return m.t("draft only · no files written", "초안만 · 파일 쓰지 않음")
 }
 
 func (m Model) renderChoiceLine(selected bool, label string, help string, layout layoutSpec) string {
@@ -928,6 +979,9 @@ func (m Model) renderChoiceLine(selected bool, label string, help string, layout
 	}
 	line := prefix + label
 	if layout.mode == layoutTiny || layout.mode == layoutNarrow {
+		return style.Render(truncatePlain(line, layout.panelWidth-8)) + "\n"
+	}
+	if strings.TrimSpace(help) == "" {
 		return style.Render(truncatePlain(line, layout.panelWidth-8)) + "\n"
 	}
 	return style.Render(truncatePlain(line, layout.panelWidth-8)) + "\n" +
@@ -944,82 +998,9 @@ func (m Model) renderOption(selected bool, option string, width int) string {
 	return style.Render(truncatePlain(prefix+option, max(8, width))) + "\n"
 }
 
-func (m Model) renderGuide(guide fieldGuide, width int) string {
-	lines := []string{
-		labelStyle.Render(m.t("Prompt", "질문")) + " " + m.wrapText(guide.Hint, width),
-		labelStyle.Render(m.t("Why", "왜 필요한가요")) + " " + m.wrapText(guide.Why, width),
-		labelStyle.Render(m.t("Good answer", "좋은 답변")) + " " + m.wrapText(guide.Good, width),
-		labelStyle.Render(m.t("Example", "예시")) + " " + m.wrapText(guide.Example, width),
-		labelStyle.Render(m.t("Can be blank?", "비워도 되나요")) + " " + m.wrapText(guide.Optional, width),
-		labelStyle.Render(m.t("Reflected in", "반영되는 곳")) + " " + m.wrapText(guide.MapsTo, width),
-	}
-	return strings.Join(lines, "\n")
-}
-
 func (m Model) wrapText(text string, width int) string {
 	width = max(8, width)
 	return lipgloss.NewStyle().Width(width).Render(text)
-}
-
-func (m Model) statusLine() (string, string) {
-	switch m.stage {
-	case stageLanguage:
-		return m.t("Drafting", "초안 준비"), m.t("Project directory detected. Language is needed before guided intent capture.", "Project directory를 감지했습니다. guided intent capture 전에 언어를 선택합니다.")
-	case stageExisting:
-		return m.t("Existing files", "기존 파일 보호"), m.t("Planning files already exist. Init will not overwrite them.", "Planning 파일이 이미 있습니다. init은 덮어쓰지 않습니다.")
-	case stageConfirm:
-		return m.t("Ready to review", "저장 전 확인"), m.t("Ready to write initial intent artifacts if you confirm.", "확인하면 초기 intent artifact를 쓸 준비가 되었습니다.")
-	case stageDone:
-		if m.canceled {
-			return m.t("Cancelled", "취소됨"), m.t("No files written. You can run namba-intent init again.", "파일은 쓰지 않았습니다. namba-intent init을 다시 실행할 수 있습니다.")
-		}
-		if m.confirmed {
-			return m.t("Ready for status", "status 확인 가능"), m.t("Initial intent artifacts were written.", "초기 intent artifact를 저장했습니다.")
-		}
-		return m.t("Closed", "닫힘"), m.t("The TUI flow has ended.", "TUI 흐름이 끝났습니다.")
-	default:
-		return m.t("Drafting", "초안 작성 중"), m.t("The plan is not locked. Downstream work must wait for status, end, and run.", "Plan은 아직 locked 상태가 아닙니다. downstream 작업은 status, end, run 이후까지 대기해야 합니다.")
-	}
-}
-
-func (m Model) statusSummary() string {
-	status, _ := m.statusLine()
-	return status + " · " + m.currentSelection()
-}
-
-func (m Model) stateLabel() string {
-	switch m.stage {
-	case stageConfirm:
-		return m.t("Ready", "준비됨")
-	case stageExisting:
-		return m.t("Protected", "보호 중")
-	case stageDone:
-		if m.canceled {
-			return m.t("No files written", "파일 쓰지 않음")
-		}
-		return m.t("Staged", "저장됨")
-	default:
-		return m.t("Drafting", "초안 작성")
-	}
-}
-
-func (m Model) statusDetail() string {
-	_, detail := m.statusLine()
-	return detail
-}
-
-func (m Model) statusStyle() lipgloss.Style {
-	switch m.stage {
-	case stageExisting:
-		return warningStyle
-	case stageConfirm, stageDone:
-		if m.canceled {
-			return warningStyle
-		}
-		return successStyle
-	default:
-		return statusStyle
-	}
 }
 
 func (m Model) totalSteps() int {
@@ -1039,117 +1020,71 @@ func (m Model) currentStep() int {
 	}
 }
 
-func (m Model) fieldIndexesForLayout(layout layoutSpec) []int {
-	if layout.mode == layoutTiny {
-		return []int{m.cursor}
-	}
-	if layout.mode == layoutNarrow {
-		start := max(0, m.cursor-1)
-		end := min(len(m.fields), m.cursor+3)
-		indexes := make([]int, 0, end-start)
-		for i := start; i < end; i++ {
-			indexes = append(indexes, i)
-		}
-		return indexes
-	}
-	indexes := make([]int, 0, len(m.fields))
-	for i := range m.fields {
-		indexes = append(indexes, i)
-	}
-	return indexes
-}
-
-func (m Model) renderStageArt(layout layoutSpec) string {
-	mark := m.stageAsset(layout)
-	if layout.mode == layoutTiny || layout.mode == layoutNarrow {
-		return asciiStyle.Render(truncatePlain(mark.Compact, layout.panelWidth-8))
-	}
-	lines := mark.Lines
-	return asciiStyle.Render(strings.Join(lines, "\n"))
-}
-
 type stageAsset struct {
 	Compact string
 	Lines   []string
 }
 
 func (m Model) stageAsset(layout layoutSpec) stageAsset {
-	pulse := []string{"░", "▒", "▓", "▒"}[(m.frame/2)%4]
-	scan := []string{"┄", "─", "┄", "·"}[(m.frame/3)%4]
+	eye := []string{"o", "o", "-", "o"}[(m.frame/6)%4]
+	spark := []string{"*", "+", "*", "."}[(m.frame/3)%4]
+	stamp := []string{"[ ]", "[=]", "[#]", "[=]"}[(m.frame/4)%4]
 	switch m.stage {
 	case stageLanguage:
 		return stageAsset{
-			Compact: "NI language gate ◇◆",
+			Compact: "ni>",
 			Lines: []string{
-				"╭─ Namba Intent ─╮",
-				"│ language gate  │  ◇ ko  ◆ en",
-				"╰─ draft path " + scan + "──╯",
+				"      (\\_/)",
+				"  ni  (" + eye + "_" + eye + ") " + spark,
+				"      / >▣",
 			},
 		}
 	case stageExisting:
 		return stageAsset{
-			Compact: "NI guard ■ existing",
+			Compact: "ni!",
 			Lines: []string{
-				"╭─ existing-state guard ─╮",
-				"│ ■ preserve  □ fill gap │",
-				"╰─ no overwrite " + scan + "────╯",
+				"      (\\_/)",
+				"  ni  (o_o)",
+				"      / >□",
 			},
 		}
 	case stageConfirm:
 		return stageAsset{
-			Compact: "NI review scan ▒▒",
+			Compact: "ni#",
 			Lines: []string{
-				"╭─ review scan ─╮",
-				"│ checksum waits │ " + pulse + pulse + " planned",
-				"╰─ write only on confirm ─╯",
+				"      (\\_/)",
+				"  ni  (" + eye + "_" + eye + ")",
+				"      / >" + stamp,
 			},
 		}
 	case stageDone:
 		if m.canceled {
 			return stageAsset{
-				Compact: "NI canceled □ no write",
+				Compact: "nix",
 				Lines: []string{
-					"╭─ canceled ─╮",
-					"│ □ no files written │",
-					"╰─ intent unchanged ─╯",
+					"      (\\_/)",
+					"  ni  (._.)",
+					"      / >□",
 				},
 			}
 		}
 		return stageAsset{
-			Compact: "NI done ■ sealed",
+			Compact: "ni✓",
 			Lines: []string{
-				"╭─ completion stamp ─╮",
-				"│ ■ intent captured  │",
-				"╰─ next: status gate ─╯",
+				"      (\\_/)",
+				"  ni  (^_^)",
+				"      / >▣",
 			},
 		}
 	default:
 		return stageAsset{
-			Compact: fmt.Sprintf("NI draft grid %s step %d", pulse, m.currentStep()),
+			Compact: "ni>",
 			Lines: []string{
-				"┌─ drafting grid ─────────┐",
-				fmt.Sprintf("│ field %02d scans %s%s%s       │", m.cursor+1, pulse, scan, pulse),
-				"└─ purpose → contract → lock ─┘",
+				"      (\\_/)",
+				"  ni  (" + eye + "_" + eye + ")",
+				"      / >" + spark,
 			},
 		}
-	}
-}
-
-func (m Model) modeLabel() string {
-	switch m.stage {
-	case stageLanguage:
-		return m.t("language select", "언어 선택")
-	case stageExisting:
-		return m.t("existing-file guard", "기존 파일 보호")
-	case stageConfirm:
-		return m.t("review/write", "검토/저장")
-	case stageDone:
-		if m.canceled {
-			return m.t("canceled", "취소됨")
-		}
-		return m.t("done", "완료")
-	default:
-		return m.t("guided draft", "guided 초안")
 	}
 }
 
@@ -1189,56 +1124,6 @@ func filePanelLimit(layout layoutSpec) int {
 	}
 }
 
-func (m Model) filesBlueprintLine(layout layoutSpec) string {
-	if layout.mode == layoutTiny {
-		return "blueprint: planned files folded"
-	}
-	return "blueprint: docs/plan + .ni contract"
-}
-
-func fileStatusStyle(status string) lipgloss.Style {
-	switch status {
-	case "created":
-		return successStyle
-	case "skipped", "unchanged":
-		return mutedStyle.Bold(true)
-	case "blocked":
-		return blockedStyle
-	default:
-		return blueprintLabelStyle
-	}
-}
-
-func (m Model) currentSelection() string {
-	switch m.stage {
-	case stageLanguage:
-		if m.languageCursor == 1 {
-			return "English"
-		}
-		return "Korean"
-	case stageExisting:
-		options := []string{"add missing files", "keep existing", "abort"}
-		return options[min(m.existingCursor, len(options)-1)]
-	case stageConfirm:
-		if m.confirmCursor == 0 {
-			return "write initial intent artifacts"
-		}
-		return "cancel; write nothing"
-	case stageDone:
-		if m.canceled {
-			return "canceled"
-		}
-		return "done"
-	default:
-		guide := m.fieldGuide(m.fields[m.cursor].Key)
-		value := strings.TrimSpace(m.fields[m.cursor].Value)
-		if value == "" {
-			value = "empty"
-		}
-		return guide.Label + " = " + value
-	}
-}
-
 func (m Model) selectionPulse() string {
 	return "▸"
 }
@@ -1248,6 +1133,34 @@ func splitLines(text string) []string {
 		return []string{""}
 	}
 	return strings.Split(text, "\n")
+}
+
+func stripNewlines(text string) string {
+	fields := strings.Fields(strings.ReplaceAll(text, "\n", " "))
+	return strings.Join(fields, " ")
+}
+
+func renderShellContent(layout layoutSpec, content string) string {
+	if layout.shellLeft <= 0 {
+		return content
+	}
+	pad := strings.Repeat(" ", layout.shellLeft)
+	lines := splitLines(content)
+	for i, line := range lines {
+		lines[i] = truncatePlain(pad+line, layout.width)
+	}
+	return strings.Join(lines, "\n")
+}
+
+func renderLineCount(parts []string) int {
+	total := 0
+	for _, part := range parts {
+		if part == "" {
+			continue
+		}
+		total += len(splitLines(part))
+	}
+	return total
 }
 
 func fitToHeight(text string, height int) string {
@@ -1344,7 +1257,7 @@ func renderProgress(current int, total int, frame int, layout layoutSpec) string
 			b.WriteString("▱")
 		}
 	}
-	label := fmt.Sprintf("Step %d/%d  %s", current, total, b.String())
+	label := b.String()
 	return truncatePlain(label, max(8, layout.panelWidth-8))
 }
 
@@ -1521,54 +1434,61 @@ func koreanGuide(key string) fieldGuide {
 }
 
 var (
-	textPrimary   = lipgloss.Color("#f8fafc")
-	textSecondary = lipgloss.Color("#cbd5e1")
-	textMuted     = lipgloss.Color("#94a3b8")
-	accent        = lipgloss.Color("#2dd4bf")
-	selected      = lipgloss.Color("#0f766e")
-	success       = lipgloss.Color("#86efac")
-	warning       = lipgloss.Color("#fbbf24")
-	blocked       = lipgloss.Color("#fb7185")
-	borderSubtle  = lipgloss.Color("#475569")
-	borderActive  = lipgloss.Color("#2dd4bf")
-	blueprint     = lipgloss.Color("#7dd3fc")
-	helpBar       = lipgloss.Color("#e2e8f0")
-	surface       = lipgloss.Color("#111118")
-	surfaceRaised = lipgloss.Color("#181820")
+	brandPrimary       = lipgloss.Color("#ff7e13")
+	brandPrimaryDim    = lipgloss.Color("#9a4d16")
+	brandPrimaryStrong = lipgloss.Color("#ffb15e")
+	textPrimary        = lipgloss.Color("#f8fafc")
+	textSecondary      = lipgloss.Color("#cbd5e1")
+	textMuted          = lipgloss.Color("#94a3b8")
+	surface            = lipgloss.Color("#111118")
+	surfaceRaised      = lipgloss.Color("#1b1714")
+	borderSubtle       = lipgloss.Color("#4b5563")
+	borderActive       = lipgloss.Color("#ff7e13")
+	selected           = lipgloss.Color("#7c2d12")
+	success            = lipgloss.Color("#86efac")
+	warning            = lipgloss.Color("#fbbf24")
+	blocked            = lipgloss.Color("#fb7185")
+	help               = lipgloss.Color("#e2e8f0")
 
-	baseStyle             = lipgloss.NewStyle().Foreground(textPrimary).Background(surface)
-	borderStyle           = lipgloss.NewStyle().BorderForeground(borderSubtle)
-	panelStyle            = baseStyle.Padding(1, 2).Border(lipgloss.RoundedBorder(), true).Inherit(borderStyle)
-	activePanelStyle      = baseStyle.Padding(1, 2).Border(lipgloss.RoundedBorder(), true).BorderForeground(borderActive)
-	statusPanelStyle      = baseStyle.Padding(1, 2).Border(lipgloss.NormalBorder(), true).BorderForeground(borderSubtle)
-	blueprintPanelStyle   = baseStyle.Padding(1, 2).Border(lipgloss.NormalBorder(), true).BorderForeground(borderSubtle)
-	infoPanelStyle        = baseStyle.Padding(1, 2).Border(lipgloss.NormalBorder(), true).Inherit(borderStyle)
-	activeInnerPanelStyle = baseStyle.Padding(1, 2).Border(lipgloss.NormalBorder(), true).BorderForeground(selected).Background(surfaceRaised)
-	headerBarStyle        = lipgloss.NewStyle().Foreground(lipgloss.Color("#041014")).Background(accent)
-	footerStyle           = lipgloss.NewStyle().Foreground(helpBar).Background(lipgloss.Color("#2a2a34"))
-	helpBarStyle          = lipgloss.NewStyle().Foreground(helpBar).Background(lipgloss.Color("#20202a"))
-	compactModeStyle      = lipgloss.NewStyle().Bold(true)
+	baseStyle        = lipgloss.NewStyle().Foreground(textPrimary).Background(surface)
+	headerBarStyle   = lipgloss.NewStyle().Foreground(lipgloss.Color("#160b02")).Background(brandPrimary)
+	helpBarStyle     = lipgloss.NewStyle().Foreground(help).Background(lipgloss.Color("#20202a"))
+	compactModeStyle = lipgloss.NewStyle().Bold(true)
 
-	headerTitleStyle    = lipgloss.NewStyle().Bold(true).Foreground(lipgloss.Color("#041014"))
-	headerMetaStyle     = lipgloss.NewStyle().Foreground(lipgloss.Color("#042f2e"))
-	panelHeadingStyle   = lipgloss.NewStyle().Bold(true).Foreground(accent)
-	questionStyle       = lipgloss.NewStyle().Bold(true).Foreground(textPrimary)
-	answerStyle         = lipgloss.NewStyle().Bold(true).Foreground(textPrimary)
-	secondaryStyle      = lipgloss.NewStyle().Foreground(textSecondary)
-	sectionStyle        = lipgloss.NewStyle().Bold(true).Foreground(textMuted)
-	focusedStyle        = lipgloss.NewStyle().Bold(true).Foreground(accent)
-	selectedStyle       = lipgloss.NewStyle().Bold(true).Foreground(textPrimary).Background(selected)
-	labelStyle          = lipgloss.NewStyle().Bold(true).Foreground(textPrimary)
-	normalStyle         = baseStyle.Foreground(textSecondary)
-	mutedStyle          = lipgloss.NewStyle().Foreground(textMuted).Background(surface)
-	progressStyle       = lipgloss.NewStyle().Foreground(warning)
-	safetyStyle         = lipgloss.NewStyle().Foreground(blocked)
-	statusStyle         = lipgloss.NewStyle().Bold(true).Foreground(textMuted)
-	successStyle        = lipgloss.NewStyle().Bold(true).Foreground(success)
-	warningStyle        = lipgloss.NewStyle().Bold(true).Foreground(warning)
-	blockedStyle        = lipgloss.NewStyle().Bold(true).Foreground(blocked)
-	asciiStyle          = lipgloss.NewStyle().Foreground(accent)
-	blueprintStyle      = lipgloss.NewStyle().Foreground(textSecondary)
-	blueprintTextStyle  = lipgloss.NewStyle().Foreground(textMuted)
-	blueprintLabelStyle = lipgloss.NewStyle().Bold(true).Foreground(textSecondary)
+	headerTitleStyle     = lipgloss.NewStyle().Bold(true).Foreground(lipgloss.Color("#160b02"))
+	headerMetaStyle      = lipgloss.NewStyle().Foreground(lipgloss.Color("#261204"))
+	questionStyle        = lipgloss.NewStyle().Bold(true).Foreground(textPrimary)
+	answerStyle          = lipgloss.NewStyle().Bold(true).Foreground(textPrimary)
+	secondaryStyle       = lipgloss.NewStyle().Foreground(textSecondary)
+	sectionStyle         = lipgloss.NewStyle().Bold(true).Foreground(textMuted)
+	selectedStyle        = lipgloss.NewStyle().Bold(true).Foreground(textPrimary).Background(selected)
+	labelStyle           = lipgloss.NewStyle().Bold(true).Foreground(textPrimary)
+	normalStyle          = baseStyle.Foreground(textSecondary)
+	mutedStyle           = lipgloss.NewStyle().Foreground(textMuted).Background(surface)
+	progressStyle        = lipgloss.NewStyle().Foreground(brandPrimaryStrong)
+	asciiStyle           = lipgloss.NewStyle().Foreground(brandPrimary)
+	assistantBubbleStyle = baseStyle.Padding(1, 2).
+				Border(lipgloss.RoundedBorder(), true).
+				BorderForeground(borderSubtle)
+	userBubbleStyle = baseStyle.Padding(1, 2).
+			Border(lipgloss.RoundedBorder(), true).
+			BorderForeground(brandPrimaryDim).
+			Background(surfaceRaised)
+	userChipStyle = lipgloss.NewStyle().
+			Foreground(textSecondary).
+			Background(surfaceRaised).
+			Padding(0, 1)
+	commandChipStyle = lipgloss.NewStyle().
+				Foreground(textPrimary).
+				Background(surfaceRaised).
+				Border(lipgloss.NormalBorder(), true).
+				BorderForeground(brandPrimaryDim).
+				Padding(0, 1)
+	composerStyle = baseStyle.Padding(0, 1).
+			Border(lipgloss.RoundedBorder(), true).
+			BorderForeground(borderActive)
+	detailsDrawerStyle = baseStyle.Padding(1, 2).
+				Border(lipgloss.NormalBorder(), true).
+				BorderForeground(borderSubtle).
+				Background(surfaceRaised)
 )
