@@ -41,30 +41,61 @@ func TestLanguageSelectionLocalizesDefaults(t *testing.T) {
 	if got := m.fields[4].Value; got != "Plan이 locked 되기 전에는 downstream work를 실행하지 않는다." {
 		t.Fatalf("expected Korean safety default, got %q", got)
 	}
-	if !strings.Contains(m.renderShell(), "planning workspace") {
+	if !strings.Contains(m.renderShell(), "작성 도우미") {
 		t.Fatalf("expected Korean labels in render")
 	}
 }
 
-func TestUpdateHandlesUpDownAndLeftRight(t *testing.T) {
+func TestAnswerFieldArrowsEditTextInsteadOfChangingSteps(t *testing.T) {
 	m := NewModel(Config{Dir: ".", DefaultName: "demo"})
 	m = selectEnglishForTest(t, m)
+	m.cursor = 1
 
-	m = updateForTest(t, m, key(tea.KeyDown))
+	m = updateForTest(t, m, textKey("a"))
+	m = updateForTest(t, m, textKey("b"))
+	m = updateForTest(t, m, textKey("c"))
+	m = updateForTest(t, m, key(tea.KeyLeft))
+	m = updateForTest(t, m, key(tea.KeyLeft))
+	m = updateForTest(t, m, textKey("X"))
 	if m.cursor != 1 {
-		t.Fatalf("expected down to move cursor to 1, got %d", m.cursor)
+		t.Fatalf("expected answer editing to keep field step at 1, got %d", m.cursor)
 	}
-	m = updateForTest(t, m, key(tea.KeyRight))
-	if m.cursor != 2 {
-		t.Fatalf("expected right to move cursor to 2, got %d", m.cursor)
+	if got := m.fields[1].Value; got != "aXbc" {
+		t.Fatalf("expected cursor insertion inside answer text, got %q", got)
 	}
 	m = updateForTest(t, m, key(tea.KeyUp))
 	if m.cursor != 1 {
-		t.Fatalf("expected up to move cursor to 1, got %d", m.cursor)
+		t.Fatalf("expected up in single-line answer to keep field step at 1, got %d", m.cursor)
 	}
-	m = updateForTest(t, m, key(tea.KeyLeft))
+	m = updateForTest(t, m, key(tea.KeyDown))
+	if m.cursor != 1 {
+		t.Fatalf("expected down in single-line answer to keep field step at 1, got %d", m.cursor)
+	}
+	m = updateForTest(t, m, key(tea.KeyBackspace))
+	if got := m.fields[1].Value; got != "abc" {
+		t.Fatalf("expected backspace to edit answer text, got %q", got)
+	}
+}
+
+func TestAnswerFieldStepNavigationUsesTabEnterAndCtrlArrows(t *testing.T) {
+	m := NewModel(Config{Dir: ".", DefaultName: "demo"})
+	m = selectEnglishForTest(t, m)
+
+	m = updateForTest(t, m, key(tea.KeyTab))
+	if m.cursor != 1 {
+		t.Fatalf("expected tab to move to next answer field, got %d", m.cursor)
+	}
+	m = updateForTest(t, m, modifiedKey(tea.KeyTab, tea.ModShift))
 	if m.cursor != 0 {
-		t.Fatalf("expected left to move cursor to 0, got %d", m.cursor)
+		t.Fatalf("expected shift+tab to move to previous answer field, got %d", m.cursor)
+	}
+	m = updateForTest(t, m, modifiedKey(tea.KeyRight, tea.ModCtrl))
+	if m.cursor != 1 {
+		t.Fatalf("expected ctrl+right to move to next answer field, got %d", m.cursor)
+	}
+	m = updateForTest(t, m, modifiedKey(tea.KeyLeft, tea.ModCtrl))
+	if m.cursor != 0 {
+		t.Fatalf("expected ctrl+left to move to previous answer field, got %d", m.cursor)
 	}
 }
 
@@ -82,6 +113,25 @@ func TestUpdateHandlesEnterEscAndCtrlC(t *testing.T) {
 	m = updateForTest(t, m, ctrlKey('c'))
 	if !m.canceled {
 		t.Fatalf("expected ctrl+c to cancel")
+	}
+}
+
+func TestMenuQQuitsWithoutStealingAnswerText(t *testing.T) {
+	m := NewModel(Config{Dir: ".", DefaultName: "demo"})
+	m = updateForTest(t, m, textKey("q"))
+	if !m.canceled || m.stage != stageDone {
+		t.Fatalf("expected q to quit menu stage, got stage=%v canceled=%v", m.stage, m.canceled)
+	}
+
+	m = NewModel(Config{Dir: ".", DefaultName: "demo"})
+	m = selectEnglishForTest(t, m)
+	m.cursor = 1
+	m = updateForTest(t, m, textKey("q"))
+	if m.canceled || m.stage != stageFields {
+		t.Fatalf("expected q to stay editable inside answer field, got stage=%v canceled=%v", m.stage, m.canceled)
+	}
+	if got := m.fields[1].Value; got != "q" {
+		t.Fatalf("expected q to be typed into answer field, got %q", got)
 	}
 }
 
@@ -211,7 +261,7 @@ func TestReviewShowsWritePlanNextCommandsAndUpdateGuidance(t *testing.T) {
 	}
 
 	view := m.renderShell()
-	for _, want := range []string{"assistant", "choose one", "Write initial intent artifacts", "draft only"} {
+	for _, want := range []string{"setup guide", "choose one", "Write initial intent artifacts", "draft only"} {
 		if !strings.Contains(view, want) {
 			t.Fatalf("expected review view to contain %q\n%s", want, view)
 		}
@@ -315,8 +365,10 @@ func TestResponsiveSizesKeepViewportAndBars(t *testing.T) {
 			} else {
 				wants = append(wants, "Write initial intent artifacts")
 			}
-			if tc.mode != layoutTiny {
-				wants = append(wants, "assistant", "choose one")
+			if tc.mode == layoutNarrow {
+				wants = append(wants, "guide", "choose one")
+			} else if tc.mode != layoutTiny {
+				wants = append(wants, "setup guide", "choose one")
 			}
 			for _, want := range wants {
 				if !strings.Contains(view, want) {
@@ -412,7 +464,7 @@ func TestChatShellGeometryContracts(t *testing.T) {
 		t.Fatalf("expected mascot inside diorama rail x=%d..%d, got x=%d..%d\n%s", layout.shellLeft, layout.shellLeft+layout.habitatWidth, leadingCells(mascotArtSegment), visualEnd(mascotArtSegment), rendered)
 	}
 
-	m = updateForTest(t, m, key(tea.KeyTab))
+	m = updateForTest(t, m, ctrlKey('d'))
 	open := normalizePlainRender(m.renderShell())
 	if strings.Contains(rendered, ".ni/contract.json") {
 		t.Fatalf("details drawer leaked while closed\n%s", rendered)
@@ -431,14 +483,17 @@ func TestFieldComposerKeepsGuidanceInAssistantAndTypedInputClean(t *testing.T) {
 	m = updateForTest(t, m, tea.WindowSizeMsg{Width: 120, Height: 40})
 
 	rendered := normalizePlainRender(m.renderShell())
-	if !strings.Contains(rendered, "좋은 답변 형태:") {
-		t.Fatalf("expected answer guidance inside assistant message\n%s", rendered)
+	if !strings.Contains(rendered, "쓸 내용") ||
+		!strings.Contains(rendered, "예시") ||
+		!strings.Contains(rendered, "READY") ||
+		!strings.Contains(rendered, "자세히 써도") {
+		t.Fatalf("expected answer guidance inside setup guide message\n%s", rendered)
 	}
 	if strings.Contains(rendered, "choose one") {
 		t.Fatalf("field stage should not keep choice composer label\n%s", rendered)
 	}
 	composer := blockContaining(rendered, "your answer")
-	for _, notWant := range []string{"좋은 답변 형태:", "여기에 입력하세요", "TODO로 남겨도", "프로젝트 목표를 한 문장으로 입력하세요"} {
+	for _, notWant := range []string{"쓸 내용", "예시", "READY", "자세히 써도", "프로젝트 목표를 한 문장으로 입력하세요"} {
 		if strings.Contains(composer, notWant) {
 			t.Fatalf("typed composer should only show user text, but found %q\ncomposer:\n%s\nfull:\n%s", notWant, composer, rendered)
 		}
@@ -484,7 +539,7 @@ func TestResponsiveMascotDensity(t *testing.T) {
 	}{
 		{"wide", tea.WindowSizeMsg{Width: 120, Height: 40}, "█████████▓▓■▓▓██▓▓■▓▓█████████"},
 		{"medium", tea.WindowSizeMsg{Width: 80, Height: 24}, "█████████▓■▓██▓■▓█████████"},
-		{"narrow", tea.WindowSizeMsg{Width: 60, Height: 18}, "ni·· assistant"},
+		{"narrow", tea.WindowSizeMsg{Width: 60, Height: 18}, "ni·· 도우미"},
 		{"tiny", tea.WindowSizeMsg{Width: 40, Height: 12}, "ni▣"},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
@@ -791,8 +846,10 @@ func TestPlainRenderSnapshotsCoverResponsiveBreakpoints(t *testing.T) {
 			m = updateForTest(t, m, tc.size)
 			rendered := normalizePlainRender(m.renderShell())
 			wants := []string{"Namba Intent", "Korean", "초안", "Enter"}
-			if tc.size.Width >= 60 && tc.size.Height >= 16 {
-				wants = append(wants, "assistant", "choose one")
+			if tc.size.Width == 60 {
+				wants = append(wants, "도우미", "choose one")
+			} else if tc.size.Width >= 60 && tc.size.Height >= 16 {
+				wants = append(wants, "작성 도우미", "choose one")
 			}
 			for _, want := range wants {
 				if !strings.Contains(rendered, want) {
@@ -932,7 +989,7 @@ func TestAnimationCanBeDisabledForDeterministicSnapshots(t *testing.T) {
 func TestStageAssetsAndProgressAreFunctionalUI(t *testing.T) {
 	m := NewModel(Config{Dir: ".", DefaultName: "demo"})
 	view := m.renderShell()
-	for _, want := range []string{"Namba Intent", "init · 1/10", "◇", "◆", "assistant"} {
+	for _, want := range []string{"Namba Intent", "init · 1/10", "◇", "◆", "작성 도우미"} {
 		if !strings.Contains(view, want) {
 			t.Fatalf("expected language view to contain %q\n%s", want, view)
 		}
@@ -940,7 +997,7 @@ func TestStageAssetsAndProgressAreFunctionalUI(t *testing.T) {
 
 	m = selectEnglishForTest(t, m)
 	view = m.renderShell()
-	for _, want := range []string{"assistant", "your answer", "[##--------]"} {
+	for _, want := range []string{"setup guide", "your answer", "[##--------]"} {
 		if !strings.Contains(view, want) {
 			t.Fatalf("expected drafting view to contain %q\n%s", want, view)
 		}
@@ -948,7 +1005,7 @@ func TestStageAssetsAndProgressAreFunctionalUI(t *testing.T) {
 
 	m.stage = stageConfirm
 	view = m.renderShell()
-	for _, want := range []string{"assistant", "■ Write initial intent artifacts"} {
+	for _, want := range []string{"setup guide", "■ Write initial intent artifacts"} {
 		if !strings.Contains(view, want) {
 			t.Fatalf("expected review view to contain %q\n%s", want, view)
 		}
@@ -967,7 +1024,7 @@ func TestDetailsDrawerIsHiddenUntilRequested(t *testing.T) {
 		}
 	}
 
-	m = updateForTest(t, m, key(tea.KeyTab))
+	m = updateForTest(t, m, ctrlKey('d'))
 	open := normalizePlainRender(m.renderShell())
 	for _, want := range []string{"details", "files", "CLI gates stay authoritative", ".ni/contrac"} {
 		if !strings.Contains(open, want) {
@@ -987,7 +1044,7 @@ func TestWideLayoutKeepsChatFirstByDefault(t *testing.T) {
 	m = updateForTest(t, m, tea.WindowSizeMsg{Width: 120, Height: 40})
 
 	view := m.renderShell()
-	for _, want := range []string{"assistant", "your answer", "draft only"} {
+	for _, want := range []string{"setup guide", "your answer", "draft only"} {
 		if !strings.Contains(view, want) {
 			t.Fatalf("expected wide view to contain %q\n%s", want, view)
 		}
@@ -1046,6 +1103,10 @@ func key(code rune) tea.KeyPressMsg {
 func textKey(value string) tea.KeyPressMsg {
 	runes := []rune(value)
 	return tea.KeyPressMsg(tea.Key{Code: runes[0], Text: value})
+}
+
+func modifiedKey(code rune, mod tea.KeyMod) tea.KeyPressMsg {
+	return tea.KeyPressMsg(tea.Key{Code: code, Mod: mod})
 }
 
 func ctrlKey(value rune) tea.KeyPressMsg {
@@ -1124,7 +1185,7 @@ func lineIndexContainingFrom(t *testing.T, lines []string, want string, after in
 
 func firstSceneLineIndex(t *testing.T, lines []string) int {
 	t.Helper()
-	for _, marker := range []string{"██████████████", "██████████", "ni·· assistant", "ni▣"} {
+	for _, marker := range []string{"██████████████", "██████████", "ni·· 도우미", "ni▣"} {
 		for i, line := range lines {
 			if strings.Contains(line, marker) {
 				return i

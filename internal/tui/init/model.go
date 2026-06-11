@@ -52,6 +52,11 @@ type fieldGuide struct {
 	MapsTo   string
 }
 
+type guideLine struct {
+	Label string
+	Body  string
+}
+
 type stage int
 
 const (
@@ -87,6 +92,7 @@ type Model struct {
 	dir            string
 	fields         []field
 	cursor         int
+	fieldCursor    int
 	stage          stage
 	language       language
 	languageCursor int
@@ -113,26 +119,28 @@ func NewModel(cfg Config) Model {
 	if commandName == "" {
 		commandName = "namba-intent"
 	}
+	fields := []field{
+		{Key: "project_name", Value: defaultName},
+		{Key: "project_goal"},
+		{Key: "target_users"},
+		{Key: "downstream_task"},
+		{Key: "constraints"},
+		{Key: "success"},
+		{Key: "blockers"},
+		{Key: "deferrals"},
+	}
 	m := Model{
 		commandName:   commandName,
 		dir:           cfg.Dir,
 		language:      languageKorean,
+		fieldCursor:   len([]rune(defaultName)),
 		width:         100,
 		height:        32,
 		bodyViewport:  newBodyViewport(100, 27),
 		animationOn:   true,
 		existingFiles: append([]string(nil), cfg.ExistingFiles...),
 		choice:        ExistingChoiceMissing,
-		fields: []field{
-			{Key: "project_name", Value: defaultName},
-			{Key: "project_goal"},
-			{Key: "target_users"},
-			{Key: "downstream_task"},
-			{Key: "constraints"},
-			{Key: "success"},
-			{Key: "blockers"},
-			{Key: "deferrals"},
-		},
+		fields:        fields,
 	}
 	return m
 }
@@ -209,15 +217,24 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	case "ctrl+u":
 		if m.stage == stageFields {
 			m.fields[m.cursor].Value = ""
+			m.fieldCursor = 0
 			m.resetViewport()
 			return m, clearScreenCmd()
 		}
 	case "tab", "ctrl+i":
-		if m.layout().mode != layoutTiny {
+		if m.stage == stageFields {
+			m.advanceField()
+		} else if m.layout().mode != layoutTiny {
 			m.detailsOpen = !m.detailsOpen
 			m.resetViewport()
 		}
 		return m, clearScreenCmd()
+	case "shift+tab":
+		if m.stage == stageFields {
+			m.previousField()
+			m.resetViewport()
+			return m, clearScreenCmd()
+		}
 	case "ctrl+d":
 		if m.layout().mode != layoutTiny {
 			m.detailsOpen = !m.detailsOpen
@@ -286,6 +303,10 @@ func (m *Model) constrainScroll() {
 
 func (m Model) updateLanguage(key tea.KeyPressMsg) (tea.Model, tea.Cmd) {
 	switch key.String() {
+	case "q", "Q":
+		m.canceled = true
+		m.stage = stageDone
+		return m, tea.Quit
 	case "up", "left":
 		m.languageCursor = 0
 	case "down", "right":
@@ -318,6 +339,7 @@ func (m Model) chooseLanguage() (tea.Model, tea.Cmd) {
 	} else {
 		m.stage = stageFields
 	}
+	m.fieldCursor = len([]rune(m.fields[m.cursor].Value))
 	m.resetViewport()
 	return m, nil
 }
@@ -333,6 +355,11 @@ func (m *Model) applyLocalizedDefaults() {
 
 func (m Model) updateExisting(key tea.KeyPressMsg) (tea.Model, tea.Cmd) {
 	switch key.String() {
+	case "q", "Q":
+		m.choice = ExistingChoiceAbort
+		m.canceled = true
+		m.stage = stageDone
+		return m, tea.Quit
 	case "up", "left":
 		if m.existingCursor > 0 {
 			m.existingCursor--
@@ -366,30 +393,30 @@ func (m Model) updateExisting(key tea.KeyPressMsg) (tea.Model, tea.Cmd) {
 
 func (m Model) updateFields(key tea.KeyPressMsg) (tea.Model, tea.Cmd) {
 	switch key.String() {
-	case "up", "left":
-		if m.cursor > 0 {
-			m.cursor--
-		}
-	case "down", "right", "enter":
-		if m.cursor < len(m.fields)-1 {
-			m.cursor++
-		} else {
-			m.stage = stageConfirm
-			m.resetViewport()
-		}
+	case "ctrl+left":
+		m.previousField()
+	case "ctrl+right", "enter":
+		m.advanceField()
+	case "left":
+		m.moveFieldCursor(-1)
+	case "right":
+		m.moveFieldCursor(1)
+	case "up":
+		m.moveFieldCursorVertical(-1)
+	case "down":
+		m.moveFieldCursorVertical(1)
 	case "esc":
 		if m.cursor > 0 {
-			m.cursor--
+			m.previousField()
 		} else {
 			m.canceled = true
 			m.stage = stageDone
 			return m, tea.Quit
 		}
 	case "backspace":
-		value := []rune(m.fields[m.cursor].Value)
-		if len(value) > 0 {
-			m.fields[m.cursor].Value = string(value[:len(value)-1])
-		}
+		m.backspaceFieldText()
+	case "delete":
+		m.deleteFieldText()
 	default:
 		text := key.Key().Text
 		if text == "" && len(key.String()) == 1 {
@@ -403,11 +430,100 @@ func (m Model) updateFields(key tea.KeyPressMsg) (tea.Model, tea.Cmd) {
 	return m, nil
 }
 
+func (m *Model) advanceField() {
+	if m.cursor < len(m.fields)-1 {
+		m.cursor++
+		m.fieldCursor = len([]rune(m.fields[m.cursor].Value))
+		return
+	}
+	m.stage = stageConfirm
+	m.resetViewport()
+}
+
+func (m *Model) previousField() {
+	if m.cursor <= 0 {
+		return
+	}
+	m.cursor--
+	m.fieldCursor = len([]rune(m.fields[m.cursor].Value))
+}
+
 func (m *Model) appendFieldText(text string) {
 	if text == "" || m.stage != stageFields {
 		return
 	}
-	m.fields[m.cursor].Value += text
+	value := []rune(m.fields[m.cursor].Value)
+	cursor := min(max(0, m.fieldCursor), len(value))
+	inserted := []rune(text)
+	next := make([]rune, 0, len(value)+len(inserted))
+	next = append(next, value[:cursor]...)
+	next = append(next, inserted...)
+	next = append(next, value[cursor:]...)
+	m.fields[m.cursor].Value = string(next)
+	m.fieldCursor = cursor + len(inserted)
+}
+
+func (m *Model) moveFieldCursor(delta int) {
+	value := []rune(m.fields[m.cursor].Value)
+	m.fieldCursor = min(max(0, m.fieldCursor+delta), len(value))
+}
+
+func (m *Model) moveFieldCursorVertical(direction int) {
+	value := []rune(m.fields[m.cursor].Value)
+	if len(value) == 0 {
+		return
+	}
+	starts := []int{0}
+	for i, r := range value {
+		if r == '\n' {
+			starts = append(starts, i+1)
+		}
+	}
+	if len(starts) == 1 {
+		return
+	}
+	cursor := min(max(0, m.fieldCursor), len(value))
+	line := 0
+	for i, start := range starts {
+		if start <= cursor {
+			line = i
+		}
+	}
+	targetLine := line + direction
+	if targetLine < 0 || targetLine >= len(starts) {
+		return
+	}
+	lineStart := starts[line]
+	col := cursor - lineStart
+	targetStart := starts[targetLine]
+	targetEnd := len(value)
+	if targetLine+1 < len(starts) {
+		targetEnd = starts[targetLine+1] - 1
+	}
+	m.fieldCursor = targetStart + min(col, max(0, targetEnd-targetStart))
+}
+
+func (m *Model) backspaceFieldText() {
+	value := []rune(m.fields[m.cursor].Value)
+	cursor := min(max(0, m.fieldCursor), len(value))
+	if cursor == 0 {
+		return
+	}
+	next := append([]rune{}, value[:cursor-1]...)
+	next = append(next, value[cursor:]...)
+	m.fields[m.cursor].Value = string(next)
+	m.fieldCursor = cursor - 1
+}
+
+func (m *Model) deleteFieldText() {
+	value := []rune(m.fields[m.cursor].Value)
+	cursor := min(max(0, m.fieldCursor), len(value))
+	if cursor >= len(value) {
+		return
+	}
+	next := append([]rune{}, value[:cursor]...)
+	next = append(next, value[cursor+1:]...)
+	m.fields[m.cursor].Value = string(next)
 }
 
 func normalizePasteText(text string) string {
@@ -417,6 +533,11 @@ func normalizePasteText(text string) string {
 
 func (m Model) updateConfirm(key tea.KeyPressMsg) (tea.Model, tea.Cmd) {
 	switch key.String() {
+	case "q", "Q":
+		m.confirmed = false
+		m.canceled = true
+		m.stage = stageDone
+		return m, tea.Quit
 	case "up", "down", "left", "right":
 		if m.confirmCursor == 0 {
 			m.confirmCursor = 1
@@ -599,7 +720,11 @@ func (m Model) layout() layoutSpec {
 func (m Model) renderHeader(layout layoutSpec) string {
 	left := headerTitleStyle.Render("Namba Intent")
 	rail := progressStyle.Render(renderProgress(m.currentStep(), m.totalSteps(), m.frame, layout))
-	progress := fmt.Sprintf("init · %d/%d · %s · Tab details", m.currentStep(), m.totalSteps(), rail)
+	detailsKey := "Tab details"
+	if m.stage == stageFields {
+		detailsKey = "Ctrl+D details"
+	}
+	progress := fmt.Sprintf("init · %d/%d · %s · %s", m.currentStep(), m.totalSteps(), rail, detailsKey)
 	if m.stage == stageDone {
 		progress = m.t("init · closed", "init · 종료")
 	}
@@ -698,16 +823,24 @@ func (m Model) renderChatTranscript(layout layoutSpec) string {
 func (m Model) renderAssistantRow(layout layoutSpec) string {
 	if layout.mode == layoutNarrow {
 		avatar := asciiStyle.Render(m.stageAsset(layout).Compact)
-		message := "assistant: " + stripNewlines(m.assistantMessage(layout))
+		message := m.guideInlineLabel() + ": " + stripNewlines(m.assistantMessage(layout))
 		return avatar + " " + secondaryStyle.Render(truncatePlain(message, max(12, layout.chatWidth-lipgloss.Width(m.stageAsset(layout).Compact)-1)))
 	}
 	avatarWidth, gap, bubbleWidth := m.assistantGeometry(layout)
 	if avatarWidth == 0 {
-		return m.renderChatBox(sectionStyle.Render("assistant"), m.assistantMessage(layout.withWidth(bubbleWidth)), bubbleWidth, assistantBubbleStyle)
+		return m.renderChatBox(sectionStyle.Render(m.guideBoxTitle()), m.assistantMessage(layout.withWidth(bubbleWidth)), bubbleWidth, assistantBubbleStyle)
 	}
 	avatar := m.renderAssistantAvatar(layout, avatarWidth)
-	bubble := m.renderChatBox(sectionStyle.Render("assistant"), m.assistantMessage(layout.withWidth(bubbleWidth)), bubbleWidth, assistantBubbleStyle)
+	bubble := m.renderChatBox(sectionStyle.Render(m.guideBoxTitle()), m.assistantMessage(layout.withWidth(bubbleWidth)), bubbleWidth, assistantBubbleStyle)
 	return lipgloss.JoinHorizontal(lipgloss.Top, avatar, strings.Repeat(" ", gap), bubble)
+}
+
+func (m Model) guideBoxTitle() string {
+	return m.t("setup guide", "작성 도우미")
+}
+
+func (m Model) guideInlineLabel() string {
+	return m.t("guide", "도우미")
 }
 
 func (m Model) renderUserSummaryBubble(summary string, layout layoutSpec) string {
@@ -777,7 +910,7 @@ func (m Model) renderChoiceComposer(layout layoutSpec, height int) string {
 
 func (m Model) renderTextComposer(layout layoutSpec, height int) string {
 	guide := m.fieldGuide(m.fields[m.cursor].Key)
-	value := strings.TrimSpace(m.fields[m.cursor].Value)
+	value := m.displayFieldValue()
 	if value == "" {
 		value = "> " + m.textPlaceholder(guide)
 	} else {
@@ -786,7 +919,7 @@ func (m Model) renderTextComposer(layout layoutSpec, height int) string {
 	width := m.composerWidth(layout)
 	body := answerStyle.Render(m.wrapComposerText(value, width-8))
 	if strings.TrimSpace(m.fields[m.cursor].Value) == "" {
-		body += "\n" + mutedStyle.Render(truncatePlain(m.t("Type here. Enter sends this answer.", "여기에 입력하세요. Enter로 답변을 보냅니다."), max(8, width-8)))
+		body += "\n" + mutedStyle.Render(truncatePlain(m.t("Type rough notes. Enter continues.", "거친 답변도 괜찮습니다. Enter로 다음으로 갑니다."), max(8, width-8)))
 	}
 	return m.renderComposerBox(m.t("your answer", "your answer"), body, layout, height)
 }
@@ -832,7 +965,11 @@ func (m Model) renderDetailsDrawer(layout layoutSpec) string {
 	if hidden := len(required) - len(items); hidden > 0 && len(m.existingFiles) == 0 {
 		lines = append(lines, fmt.Sprintf("  +%d more in docs/plan and .ni", hidden))
 	}
-	lines = append(lines, "", "Tab closes details")
+	closeKey := "Tab closes details"
+	if m.stage == stageFields {
+		closeKey = "Ctrl+D closes details"
+	}
+	lines = append(lines, "", closeKey)
 	return m.renderChatBox(sectionStyle.Render("details"), strings.Join(lines, "\n"), width, detailsDrawerStyle)
 }
 
@@ -840,15 +977,15 @@ func (m Model) renderBottomHelp(layout layoutSpec) string {
 	var text string
 	switch m.stage {
 	case stageLanguage:
-		text = "↑↓ choose · Enter select · 1/2 quick select · ^Q quit · Tab details"
+		text = "↑↓ choose · Enter select · q quit · Tab details"
 	case stageFields:
-		text = "type answer · Enter send · Esc back · Ctrl+U clear · ^Q quit · Tab details"
+		text = "type/edit · ←→ cursor · ↑↓ line · Enter/Tab next · ⇧Tab/^← prev · ^D details · ^Q quit"
 	case stageConfirm:
-		text = "↑↓ choose · Enter confirm · Esc back · ^Q quit · Tab details"
+		text = "↑↓ choose · Enter confirm · Esc back · q quit · Tab details"
 	case stageDone:
 		text = "^Q quit"
 	default:
-		text = "↑↓ choose · Enter send · Esc back · ^Q quit · Tab details"
+		text = "↑↓ choose · Enter · Esc · q quit · Tab details"
 	}
 	if layout.mode == layoutTiny {
 		text = "↑↓ · Enter · Esc · ^Q"
@@ -896,7 +1033,7 @@ func (m Model) renderTinyChat(layout layoutSpec) string {
 		}
 	default:
 		guide := m.fieldGuide(m.fields[m.cursor].Key)
-		value := strings.TrimSpace(m.fields[m.cursor].Value)
+		value := m.displayFieldValue()
 		if value == "" {
 			value = "> " + m.textPlaceholder(guide)
 		} else {
@@ -916,7 +1053,11 @@ func (m Model) renderQuietSummary(layout layoutSpec) string {
 		return mutedStyle.Render(truncatePlain(m.compactDraftSummary(), layout.width))
 	}
 	_, _, bubbleWidth := m.assistantGeometry(layout)
-	return m.indentToAssistantBubble(layout, mutedStyle.Render(truncatePlain(m.compactDraftSummary()+" · Tab details", bubbleWidth)))
+	detailsKey := "Tab details"
+	if m.stage == stageFields {
+		detailsKey = "Ctrl+D details"
+	}
+	return m.indentToAssistantBubble(layout, mutedStyle.Render(truncatePlain(m.compactDraftSummary()+" · "+detailsKey, bubbleWidth)))
 }
 
 func (m Model) renderChatBox(title string, body string, width int, style lipgloss.Style) string {
@@ -1268,7 +1409,7 @@ func (m Model) assistantMessage(layout layoutSpec) string {
 	case stageConfirm:
 		return m.wrapText(m.t(
 			"Ready to write the initial intent draft?\nThis still does not decide readiness or lock the plan.\nConfirm only if this draft looks right. "+typing,
-			"초기 intent 초안을 저장할까요?\nreadiness 판단이나 lock은 아직 CLI gate의 일입니다.\n초안이 맞으면 확인하세요. "+typing,
+			"처음 적은 내용을 파일로 저장할까요?\n아직 계획을 확정하거나 잠그는 단계는 아닙니다.\n초안이 괜찮으면 저장을 선택하세요. "+typing,
 		), max(8, layout.panelWidth-8))
 	case stageDone:
 		if m.canceled {
@@ -1279,18 +1420,93 @@ func (m Model) assistantMessage(layout layoutSpec) string {
 		}
 		return m.wrapText(m.t(
 			"Initial intent draft is ready.\nUse the command chips below for the next gate.\nKeep answering blockers before locking.",
-			"초기 intent 초안이 준비됐습니다.\n아래 command chip으로 다음 gate를 확인하세요.\nlock 전에는 blocker를 계속 답하세요.",
+			"처음 계획 초안이 준비됐습니다.\n이제 빠진 게 있는지 확인하면 됩니다.\n잠그기 전에는 남은 질문부터 차근차근 답하세요.",
 		), max(8, layout.panelWidth-8))
 	default:
 		guide := m.fieldGuide(m.fields[m.cursor].Key)
-		lines := []string{
-			guide.Hint,
-			guide.Why,
-			m.t("Good answer shape: ", "좋은 답변 형태: ") + guide.Good,
-			m.t("If unsure, leave TODO in the answer. ", "모르면 답변 안에 TODO로 남겨도 됩니다. ") + typing,
+		if m.language == languageKorean {
+			if layout.mode == layoutNarrow || layout.mode == layoutTiny {
+				return m.wrapText(m.koreanFieldMessagePlain(guide, typing), max(8, layout.panelWidth-8))
+			}
+			return m.renderKoreanFieldGuide(guide, typing, max(8, layout.panelWidth-8))
 		}
-		return m.wrapText(strings.Join(lines, "\n"), max(8, layout.panelWidth-8))
+		return m.wrapText(m.englishFieldMessage(guide, typing), max(8, layout.panelWidth-8))
 	}
+}
+
+func (m Model) englishFieldMessage(guide fieldGuide, typing string) string {
+	lines := []string{
+		"What to write",
+		guide.Hint,
+		"",
+		"Example",
+		guide.Example,
+		"",
+		"If you are not sure",
+		guide.Optional,
+		"",
+		fmt.Sprintf("%s status --proof --next-questions will show what is missing.", m.commandName),
+		"READY means the plan is ready to lock, not that the product is finished. " + typing,
+	}
+	return strings.Join(lines, "\n")
+}
+
+func (m Model) koreanFieldMessagePlain(guide fieldGuide, typing string) string {
+	lines := m.koreanFieldGuideLines(guide, typing)
+	plain := make([]string, 0, len(lines))
+	for _, line := range lines {
+		plain = append(plain, line.Label+" "+line.Body)
+	}
+	return strings.Join(plain, "\n")
+}
+
+func (m Model) renderKoreanFieldGuide(guide fieldGuide, typing string, width int) string {
+	lines := m.koreanFieldGuideLines(guide, typing)
+	rendered := make([]string, 0, len(lines)*2)
+	labelWidth := 7
+	for _, line := range lines {
+		rendered = append(rendered, renderGuideLine(line.Label, line.Body, labelWidth, width))
+	}
+	return strings.Join(rendered, "\n")
+}
+
+func (m Model) koreanFieldGuideLines(guide fieldGuide, typing string) []guideLine {
+	return []guideLine{
+		{Label: "쓸 내용", Body: guide.Hint},
+		{Label: "예시", Body: guide.Example},
+		{Label: "모르면", Body: guide.Optional},
+		{Label: "다음", Body: "status가 빠진 점 안내"},
+		{Label: "READY", Body: "계획 준비, 완성 아님. " + typing},
+	}
+}
+
+func renderGuideLine(label string, body string, labelWidth int, width int) string {
+	labelText := label + strings.Repeat(" ", max(0, labelWidth-lipgloss.Width(label)))
+	bodyWidth := max(8, width-labelWidth-1)
+	bodyLines := splitLines(lipgloss.NewStyle().Width(bodyWidth).Render(body))
+	if len(bodyLines) == 0 {
+		bodyLines = []string{""}
+	}
+	rendered := make([]string, 0, len(bodyLines))
+	rendered = append(rendered, guideLabelStyle.Render(labelText)+" "+guideBodyStyle.Render(bodyLines[0]))
+	pad := strings.Repeat(" ", labelWidth+1)
+	for _, bodyLine := range bodyLines[1:] {
+		rendered = append(rendered, pad+guideBodyStyle.Render(bodyLine))
+	}
+	return strings.Join(rendered, "\n")
+}
+
+func (m Model) displayFieldValue() string {
+	value := []rune(m.fields[m.cursor].Value)
+	if len(value) == 0 {
+		return ""
+	}
+	cursor := min(max(0, m.fieldCursor), len(value))
+	withCursor := make([]rune, 0, len(value)+1)
+	withCursor = append(withCursor, value[:cursor]...)
+	withCursor = append(withCursor, '▏')
+	withCursor = append(withCursor, value[cursor:]...)
+	return string(withCursor)
 }
 
 func (m Model) compactDraftSummary() string {
@@ -1875,81 +2091,81 @@ func koreanGuide(key string) fieldGuide {
 	case "project_name":
 		return fieldGuide{
 			Label:    "프로젝트 이름",
-			Hint:     "이 planning workspace를 부를 짧은 이름입니다.",
-			Why:      "계약이 같은 의도를 계속 가리키려면 안정적인 이름이 필요합니다.",
+			Hint:     "나중에 알아볼 짧은 이름을 적어주세요.",
+			Why:      "나중에 여러 문서와 명령이 같은 일을 가리켜야 해서 이름이 필요합니다.",
 			Good:     "짧고 구체적이며 나중에 다시 봐도 알아볼 수 있는 이름.",
-			Example:  "고객 문의 handoff 개선",
-			Optional: "그대로 두면 현재 폴더 이름을 사용합니다.",
+			Example:  "고객 문의 넘겨주기 개선",
+			Optional: "그대로 두세요. 현재 폴더 이름을 써도 됩니다.",
 			MapsTo:   ".ni/contract.json project, .ni/project.json, docs/plan/00_project_brief.md",
 		}
 	case "project_goal":
 		return fieldGuide{
 			Label:    "프로젝트 목표 한 문장",
-			Hint:     "누구에게 무엇이 좋아져야 하고, 왜 필요한가요?",
-			Why:      "목표는 project purpose 초안이 되고 readiness 질문의 기준점이 됩니다.",
+			Hint:     "누가 쓰고 뭐가 좋아지나요? 자세히 써도 돼요.",
+			Why:      "이 답변이 앞으로 만들 계획의 출발점이 됩니다.",
 			Good:     "대상, 변화, 이유가 한 문장 안에 들어간 답변.",
-			Example:  "한국어 사용자가 agent에게 일을 맡기기 전에 의도와 경계를 안전하게 정리하게 한다.",
-			Optional: "모르면 TODO 또는 모름이라고 써도 됩니다. status가 blocker로 되돌려줍니다.",
+			Example:  "AI 일을 미리 정리한다.",
+			Optional: "주 사용자 미정",
 			MapsTo:   "docs/plan/00_project_brief.md, .ni/contract.json project.purpose",
 		}
 	case "target_users":
 		return fieldGuide{
 			Label:    "대상 사용자 / 독자",
-			Hint:     "이 plan에 기대는 사람이나 agent는 누구인가요?",
-			Why:      "Actor를 알아야 누구의 요구, 권한, 결과를 보호해야 하는지 정할 수 있습니다.",
+			Hint:     "볼 사람, 쓸 사람, 검토할 사람은 누구인가요?",
+			Why:      "누가 쓰는지 알아야 그 사람에게 필요한 결과와 조심해야 할 점을 정할 수 있습니다.",
 			Good:     "주 사용자와 검토자, 운영자, handoff를 받을 agent를 함께 적습니다.",
-			Example:  "비개발자 한국어 사용자, planning을 도와주는 모델, 최종 handoff를 받을 구현 agent.",
-			Optional: "모르면 모름이라고 적어도 됩니다. lock 전에는 좁혀야 합니다.",
+			Example:  "처음 쓰는 사용자, 계획을 도와줄 AI, 구현할 개발자.",
+			Optional: "주 사용자는 아직 정하지 못함",
 			MapsTo:   "docs/plan/01_actors_outcomes.md",
 		}
 	case "downstream_task":
 		return fieldGuide{
 			Label:    "나중에 agent가 할 일",
-			Hint:     "lock과 handoff 뒤에야 해도 되는 일은 무엇인가요?",
-			Why:      "Namba Intent는 downstream 일이 너무 일찍 시작되지 않도록 그 일을 먼저 이름 붙입니다.",
+			Hint:     "계획을 잠근 뒤 맡길 일을 적어주세요. 지금 실행하지 않아요.",
+			Why:      "나중에 맡길 일을 미리 적어두면, 지금은 계획만 세우고 실행은 멈춰둘 수 있습니다.",
 			Good:     "미래 작업을 설명하되, init이 그 일을 실행하는 것처럼 쓰지 않습니다.",
-			Example:  "Plan이 locked 된 뒤 onboarding TUI 개선을 구현할 handoff prompt를 compile한다.",
-			Optional: "흐릿하게 적어도 됩니다. status가 더 구체적인 범위를 물어봅니다.",
+			Example:  "TUI 개선 작업을 맡길 프롬프트를 만든다.",
+			Optional: "나중에 구현할 작업을 더 정해야 함",
 			MapsTo:   "docs/plan/02_capabilities.md, docs/plan/08_delivery_operation.md",
 		}
 	case "constraints":
 		return fieldGuide{
 			Label:    "제약 / 하지 않을 일",
-			Hint:     "반드시 지켜야 할 경계와 non-goal입니다.",
-			Why:      "제약은 planning이 너무 빨리 실행 도구로 변하는 것을 막습니다.",
+			Hint:     "이번에 하지 말 일, 조심할 일을 적어주세요.",
+			Why:      "선을 미리 그어두면 AI가 계획 단계를 넘어가서 일을 실행해버리는 일을 막을 수 있습니다.",
 			Good:     "단호한 경계와 이번 범위에서 제외할 일을 함께 적습니다.",
-			Example:  "웹 GUI, shell adapter, queue, PR automation, downstream executor는 만들지 않는다.",
-			Optional: "추가 제약이 없으면 기본 문장을 유지해도 됩니다.",
+			Example:  "지금은 shell 실행, PR 자동화, release 자동화를 만들지 않는다.",
+			Optional: "기본 문장을 그대로 두세요.",
 			MapsTo:   "docs/plan/05_constraints.md, .ni/contract.json non_goals",
 		}
 	case "success":
 		return fieldGuide{
 			Label:    "성공 기준",
-			Hint:     "이 plan이 괜찮다고 어떻게 판단할 수 있나요?",
-			Why:      "모든 capability는 lock 전에 evaluation과 연결되어야 합니다.",
+			Hint:     "나중에 무엇을 보면 '됐다'고 할까요?",
+			Why:      "성공 기준이 있어야 계획을 잠그기 전에 빠진 부분을 찾을 수 있습니다.",
 			Good:     "검토자가 실제로 확인할 수 있는 관찰 가능한 기준.",
-			Example:  "처음 온 사용자가 status 결과에서 blocker와 다음 질문을 이해할 수 있다.",
-			Optional: "모르면 TODO라고 적으세요. readiness를 통과하지 못하게 막아줍니다.",
+			Example:  "처음 온 사용자가 안내만 보고 답을 적고 다음 할 일을 이해한다.",
+			Optional: "성공 기준은 아직 더 정해야 함",
 			MapsTo:   "docs/plan/07_evaluation_contract.md, .ni/contract.json evaluations",
 		}
 	case "blockers":
 		return fieldGuide{
 			Label:    "막힌 점 / 열린 질문",
-			Hint:     "확실하지 않아서 lock을 막아야 하는 질문입니다.",
-			Why:      "Open blocker는 사용자가 해결할 때까지 계속 보이는 상태로 남아야 합니다.",
+			Hint:     "아직 몰라서 물어봐야 할 점은 무엇인가요?",
+			Why:      "모르는 걸 숨기면 나중에 AI가 틀린 방향으로 일을 시작할 수 있습니다.",
 			Good:     "무엇이 불확실한지와 왜 중요한지를 함께 적습니다.",
-			Example:  "Windows 사용자의 primary install/update 경로를 아직 검증하지 못했다.",
-			Optional: "없으면 없음이라고 적어도 됩니다. status가 새 blocker를 찾을 수도 있습니다.",
+			Example:  "Windows 설치 방법을 아직 직접 확인하지 못했다.",
+			Optional: "지금 떠오르는 막힌 점 없음",
 			MapsTo:   "docs/plan/10_open_questions.md, docs/plan/06_risks_security.md",
 		}
 	case "deferrals":
 		return fieldGuide{
 			Label:    "나중으로 미룰 일",
-			Hint:     "이번 plan 밖으로 명시적으로 미루는 범위입니다.",
-			Why:      "Deferral은 나중 작업이 locked plan 안으로 몰래 들어오는 것을 막습니다.",
+			Hint:     "중요하지만 이번엔 미룰 일을 적어주세요.",
+			Why:      "미룰 일을 적어두면, 이번 계획에 몰래 섞여 들어오는 걸 막을 수 있습니다.",
 			Good:     "이번에 하지 않는 일을 분명한 이름으로 적습니다.",
-			Example:  "웹 GUI, 자동 update 실행, downstream execution layer는 이번 범위에서 제외한다.",
-			Optional: "아직 미룰 일이 없으면 기본값을 그대로 둬도 됩니다.",
+			Example:  "웹 화면, 자동 업데이트, AI가 직접 실행하는 기능은 나중에 한다.",
+			Optional: "없으면 기본값을 두거나 '아직 없음'이라고 적어주세요.",
 			MapsTo:   "docs/plan/10_open_questions.md",
 		}
 	}
@@ -1989,6 +2205,8 @@ var (
 	secondaryStyle          = lipgloss.NewStyle().Foreground(textSecondary)
 	sectionStyle            = lipgloss.NewStyle().Bold(true).Foreground(textMuted)
 	focusedStyle            = lipgloss.NewStyle().Bold(true).Foreground(brandPrimaryStrong)
+	guideLabelStyle         = lipgloss.NewStyle().Bold(true).Foreground(warning)
+	guideBodyStyle          = lipgloss.NewStyle().Foreground(textPrimary)
 	selectedStyle           = lipgloss.NewStyle().Bold(true).Foreground(textPrimary).Background(selected)
 	labelStyle              = lipgloss.NewStyle().Bold(true).Foreground(textPrimary)
 	normalStyle             = baseStyle.Foreground(textSecondary)

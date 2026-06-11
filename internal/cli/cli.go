@@ -1045,11 +1045,10 @@ func runInit(args []string, stdout io.Writer, stderr io.Writer) int {
 	}
 	printInitSummary(stdout, result, readinessProfile, productType, surfaces, interactionMode)
 	if guided {
-		fmt.Fprintf(stdout, "guided init wrote initial intent draft; run %s status --proof --next-questions next.\n", commandName())
+		fmt.Fprintln(stdout, "guided init wrote initial intent draft.")
 	} else {
-		fmt.Fprintf(stdout, "next: use model-user planning conversation, then run %s status --proof --next-questions.\n", commandName())
+		fmt.Fprintln(stdout, "non-interactive init wrote the planning scaffold.")
 	}
-	printInitNextCommands(stdout)
 	return 0
 }
 
@@ -1229,27 +1228,56 @@ func printInitSummary(stdout io.Writer, result docstore.Result, readinessProfile
 	fmt.Fprintf(stdout, "product type: %s\n", productType)
 	fmt.Fprintf(stdout, "delivery surfaces: %s\n", strings.Join(surfaces, ", "))
 	fmt.Fprintf(stdout, "interaction mode: %s\n", interactionMode)
-	for _, path := range result.Created {
-		fmt.Fprintf(stdout, "created %s\n", path)
-	}
-	for _, path := range result.Existing {
-		fmt.Fprintf(stdout, "exists %s\n", path)
-		fmt.Fprintf(stdout, "unchanged %s\n", path)
-	}
+	fmt.Fprintln(stdout)
+	fmt.Fprintln(stdout, "What was created?")
 	if len(result.Created) == 0 {
 		fmt.Fprintln(stdout, "created files: none")
+	} else {
+		for _, path := range result.Created {
+			fmt.Fprintf(stdout, "- created %s\n", path)
+		}
 	}
+	fmt.Fprintln(stdout)
+	fmt.Fprintln(stdout, "What was skipped or unchanged?")
 	if len(result.Existing) == 0 {
 		fmt.Fprintln(stdout, "skipped files: none")
 		fmt.Fprintln(stdout, "unchanged files: none")
+	} else {
+		for _, path := range result.Existing {
+			fmt.Fprintf(stdout, "- unchanged %s\n", path)
+		}
 	}
+	fmt.Fprintln(stdout)
+	fmt.Fprintln(stdout, "What state am I in now?")
+	fmt.Fprintln(stdout, "- You have a draft planning workspace, not a locked plan.")
+	fmt.Fprintln(stdout, "- READY means planning readiness, not product readiness.")
+	fmt.Fprintln(stdout, "- Execution must not start until the CLI gate and lock allow the handoff.")
+	fmt.Fprintln(stdout)
+	fmt.Fprintln(stdout, "What do I do next?")
+	fmt.Fprintf(stdout, "- Run `%s status --proof --next-questions`.\n", commandName())
+	fmt.Fprintln(stdout, "- If status is BLOCKED, answer the listed questions or refine docs/plan/**.")
+	fmt.Fprintf(stdout, "- When status is READY and you agree with the plan, run `%s end`.\n", commandName())
+	fmt.Fprintf(stdout, "- Then run `%s run --max-chars 4000` to compile a bounded handoff prompt.\n", commandName())
+	fmt.Fprintf(stdout, "- `%s run` does not execute the prompt or run an agent.\n", commandName())
+	fmt.Fprintln(stdout)
+	fmt.Fprintln(stdout, "How can I use an AI assistant?")
+	fmt.Fprintln(stdout, "- Ask it to read docs/plan/**, .ni/contract.json, and .ni/session.json.")
+	fmt.Fprintln(stdout, "- Ask it to help answer next questions and update docs/plan/** plus .ni/contract.json together.")
+	fmt.Fprintln(stdout, "- Do not let the model claim readiness; CLI decides.")
+	fmt.Fprintln(stdout, "- Skills are UX; CLI is authority.")
+	fmt.Fprintln(stdout)
+	fmt.Fprintln(stdout, "What does Namba Intent not do?")
+	fmt.Fprintln(stdout, "- It is not a task runner, SPEC runner, execution harness, shell adapter, Codex adapter, queue, PR automation, release automation, or downstream execution layer.")
+	fmt.Fprintln(stdout, "- Init does not create or install model skills.")
 }
 
 func printInitNextCommands(stdout io.Writer) {
 	fmt.Fprintln(stdout, "next suggested commands:")
-	fmt.Fprintf(stdout, "- %s status --proof --next-questions\n", commandName())
-	fmt.Fprintf(stdout, "- %s end\n", commandName())
-	fmt.Fprintf(stdout, "- %s run --max-chars 4000\n", commandName())
+	fmt.Fprintf(stdout, "- Run `%s status --proof --next-questions`.\n", commandName())
+	fmt.Fprintln(stdout, "- If status is BLOCKED, answer the listed questions or refine docs/plan/**.")
+	fmt.Fprintf(stdout, "- When status is READY and you agree with the plan, run `%s end`.\n", commandName())
+	fmt.Fprintf(stdout, "- Then run `%s run --max-chars 4000` to compile a bounded handoff prompt.\n", commandName())
+	fmt.Fprintf(stdout, "- `%s run` does not execute the prompt or run an agent.\n", commandName())
 }
 
 func lockExists(root string) bool {

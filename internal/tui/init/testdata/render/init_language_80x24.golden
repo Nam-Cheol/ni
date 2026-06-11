@@ -1,7 +1,7 @@
   Namba Intent                        init · 1/10 · [#---------] · Tab details
                                     ╭──────────────────────────────────────╮
                                     │                                      │
-                                    │  assistant                           │
+                                    │  작성 도우미                         │
                                     │  먼저 intent를 어떤 언어로           │
            ▄██▄ ▐█▌ ▄██▄            │  작성할까요?                         │
             ▀███▄██▄███▀            │  문서와 리뷰 안내에 같은 언어를      │
@@ -21,4 +21,4 @@
                                     │ Enter 선택 · 1/2 빠른 선택           │
                                     ╰──────────────────────────────────────╯
                                     초안만 · 파일 쓰지 않음 · Tab details
-  ↑↓ choose · Enter select · 1/2 quick select · ^Q quit · Tab details
+  ↑↓ choose · Enter select · q quit · Tab details

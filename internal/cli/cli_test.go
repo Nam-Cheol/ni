@@ -189,8 +189,16 @@ func TestInitNonInteractiveBehaviorIsStable(t *testing.T) {
 	if strings.Contains(stdout.String(), "\x1b[") {
 		t.Fatalf("non-interactive init should not emit ANSI escape sequences, got %q", stdout.String())
 	}
-	if !strings.Contains(stdout.String(), "next: use model-user planning conversation") {
-		t.Fatalf("expected non-interactive next step, got %q", stdout.String())
+	for _, want := range []string{
+		"What do I do next?",
+		"Run `namba-intent status --proof --next-questions`.",
+		"If status is BLOCKED",
+		"Skills are UX; CLI is authority.",
+		"non-interactive init wrote the planning scaffold.",
+	} {
+		if !strings.Contains(stdout.String(), want) {
+			t.Fatalf("expected non-interactive summary to contain %q, got %q", want, stdout.String())
+		}
 	}
 }
 
@@ -239,6 +247,12 @@ func TestInitInteractiveFlowFromStdin(t *testing.T) {
 	}
 	if !strings.Contains(stdout.String(), "guided init wrote initial intent draft") {
 		t.Fatalf("expected guided init summary, got %q", stdout.String())
+	}
+	if !strings.Contains(stdout.String(), "READY means planning readiness, not product readiness") {
+		t.Fatalf("expected guided init to explain planning readiness boundary, got %q", stdout.String())
+	}
+	if !strings.Contains(stdout.String(), "`namba-intent run` does not execute the prompt or run an agent") {
+		t.Fatalf("expected guided init to explain run boundary, got %q", stdout.String())
 	}
 }
 

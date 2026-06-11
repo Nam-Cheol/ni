@@ -23,21 +23,27 @@ REMOTE_LINK_RE = re.compile(r"^[a-z][a-z0-9+.-]*:", re.IGNORECASE)
 SPECIFIC_RUNTIME_PRODUCTS = ["Codex", "Claude", "Hyper Run", "Ouroboros", "Namba AI", "SPEC Kit"]
 TOP_SECTIONS = {
     "README.md": [
-        ("hero image", "assets/hero.svg"),
+        ("hero image", "assets/namba-intent-hero.png"),
+        ("title", "# namba-intent"),
         ("language chips", "assets/badge-english.svg"),
         ("factual trust badges", "img.shields.io/badge/license-MIT"),
-        ("slogan", "<h1 align=\"center\">"),
-        ("one-line product description", "<p align=\"center\"><strong>"),
-        ("why Namba Intent", "## Why Namba Intent"),
+        ("slogan", "Don't run the agent yet. Compile the intent first."),
+        ("one-line product description", "namba-intent is a Project Intent Compiler for AI Agents."),
+        ("workflow", "## Workflow"),
+        ("flow image", "assets/namba-intent-flow.png"),
+        ("why namba-intent", "## Why namba-intent"),
         ("install", "## Install"),
     ],
     "README.ko.md": [
-        ("hero image", "assets/hero.svg"),
+        ("hero image", "assets/namba-intent-hero.png"),
+        ("title", "# namba-intent"),
         ("language chips", "assets/badge-english.svg"),
         ("factual trust badges", "img.shields.io/badge/license-MIT"),
-        ("slogan", "<h1 align=\"center\">"),
-        ("one-line product description", "<p align=\"center\"><strong>"),
-        ("why Namba Intent", "## Why Namba Intent"),
+        ("slogan", "Agent를 아직 실행하지 마세요. 먼저 intent를 compile하세요."),
+        ("one-line product description", "namba-intent는 AI agent를 위한 Project Intent Compiler입니다."),
+        ("workflow", "## Workflow"),
+        ("flow image", "assets/namba-intent-flow.png"),
+        ("why namba-intent", "## Why namba-intent"),
         ("install", "## Install"),
     ],
 }
@@ -113,7 +119,9 @@ def check_top_section_order() -> None:
                 fail(f"{path} top section renders out of order at {label}")
             last_line = line_number
 
-        slogan_line = find_line(lines, "<h1 align=\"center\">")
+        slogan_line = find_line(lines, "Don't run the agent yet. Compile the intent first.")
+        if slogan_line == 0:
+            slogan_line = find_line(lines, "Agent를 아직 실행하지 마세요. 먼저 intent를 compile하세요.")
         for line_number, line in enumerate(lines[: slogan_line - 1], start=1):
             if "Trust signals:" in line or "신뢰 신호:" in line:
                 fail(f"{path}:{line_number} has visible trust-signal text before the slogan")

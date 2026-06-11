@@ -43,7 +43,7 @@ INSTALL_EXPECTED = {
 REQUIRED_MARKERS = {
     "README.md": [
         "README shows two primary first-success paths for the current tree.",
-        "v0.6.4 is the current published Namba Intent release.",
+        "v0.6.4 is the current published namba-intent release.",
         "### macOS",
         "### Windows",
         LATEST_MAC_INSTALL,
@@ -53,13 +53,13 @@ REQUIRED_MARKERS = {
         "powershell -NoProfile -ExecutionPolicy Bypass -File $Installer",
         "PowerShell alias cleanup for `ni -> New-Item` is legacy v0.5.x guidance",
         "namba-intent init .",
-        "Namba Intent keeps\n`.ni/` for compatibility",
+        "namba-intent keeps\n`.ni/` for compatibility",
         "Homebrew: Planned / v0.5 candidate",
         "Real-host Windows execution remains deferred",
     ],
     "README.ko.md": [
         "README는 current tree의 첫 성공을 위한 두 가지 primary path만 보여줍니다.",
-        "v0.6.4는 current published Namba Intent release입니다.",
+        "v0.6.4는 current published namba-intent release입니다.",
         "### macOS",
         "### Windows",
         LATEST_MAC_INSTALL,

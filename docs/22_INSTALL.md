@@ -1,6 +1,6 @@
-# Install Namba Intent
+# Install namba-intent
 
-Namba Intent is usable from source, from a locally built current-tree binary,
+namba-intent is usable from source, from a locally built current-tree binary,
 and from the published v0.6.4 release as `namba-intent`.
 
 The v0.6.4 macOS curl installer path has been published and verified for
@@ -47,7 +47,7 @@ planned path only; do not present Homebrew as an available README install path.
 
 ## Run from source
 
-Use this mode when developing Namba Intent or trying the CLI without creating a
+Use this mode when developing namba-intent or trying the CLI without creating a
 binary:
 
 ```bash
@@ -108,7 +108,7 @@ PATH="$tmpdir/bin:$PATH" sh -c 'namba-intent --help && namba-intent version'
 
 Release binary status: Available.
 
-The v0.6.4 GitHub Release contains the expected Namba Intent OS/arch archives
+The v0.6.4 GitHub Release contains the expected namba-intent OS/arch archives
 and `namba-intent_0.6.4_checksums.txt`:
 
 <https://github.com/Nam-Cheol/ni/releases/tag/v0.6.4>
@@ -123,7 +123,7 @@ Use this matrix to choose the archive for your OS and architecture:
 | macOS | arm64 | `namba-intent_<version>_darwin_arm64.tar.gz` |
 | Windows | amd64 | `namba-intent_<version>_windows_amd64.zip` |
 
-Each current Namba Intent release must include
+Each current namba-intent release must include
 `namba-intent_<version>_checksums.txt`. Download the archive and checksum file
 from the same release, verify the archive, unpack the binary into a directory on
 `PATH`, and then run `namba-intent --help` and `namba-intent version` by command
@@ -202,7 +202,7 @@ curl -fsSL https://raw.githubusercontent.com/Nam-Cheol/ni/main/install.sh | sh -
 
 If you omit `--version`, the installer asks GitHub for the latest release tag
 during actual install. Use `--version 0.6.4` when you want to reproduce the
-verified Namba Intent release path.
+verified namba-intent release path.
 
 For reproducible v0.6.4 checks, download and inspect the script, then pin the
 verified release version:
@@ -337,7 +337,7 @@ verified until a real Windows PowerShell install, new-session help/version, and
 uninstall transcript exists.
 
 Package manager status: Planned. Do not use package manager instructions for
-Namba Intent yet; Homebrew and Scoop packages are not published.
+namba-intent yet; Homebrew and Scoop packages are not published.
 
 ## Validation
 
@@ -365,7 +365,7 @@ bash scripts/release-check.sh
 
 ## License
 
-Namba Intent is licensed under the [MIT License](../LICENSE).
+namba-intent is licensed under the [MIT License](../LICENSE).
 
 This install document claims v0.6.4 `namba-intent` release binary and macOS curl
 installer availability only where verified. Historical v0.5.1 evidence remains
